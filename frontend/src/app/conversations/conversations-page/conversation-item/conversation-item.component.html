@@ -1,0 +1,16 @@
+<ion-item [button]="true" class="rounded" (click)="navigate()" (setClickLock)="setClickLock($event)"
+  [class.unread]="conversationView().unreadMessages > 0"
+  [class.selected]="selectionService().selectedIds().includes(conversationView().id)"
+  holdDirective (hold)="onConversationHold(conversationView().id)"
+  (click)="onConversationClick(conversationView().id)">
+  <ion-avatar aria-hidden="true" slot="start"> 
+    <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+  </ion-avatar>
+
+  <!-- CONVERSATION INFO -->
+  <ion-label class="ion-text-nowrap">
+    <h2>{{ this.profile() | visibleName: true }}</h2>
+    <p>{{conversationView().lastMessageText}}</p>
+  </ion-label>
+  @if (conversationView().unreadMessages > 0) { <ion-badge slot="end" color="primary" class="rounded">{{conversationView().unreadMessages}}</ion-badge> }
+</ion-item>

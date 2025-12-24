@@ -1,0 +1,90 @@
+ion-textarea.message-input {
+  --ion-margin: 8px;
+  --color: inherit;
+  min-height: 36px !important;
+  label {
+    --background: var(--ion-background-color-step-25, #f2f2f2);
+    --border-radius: 20px;
+    border-bottom-width: 0px !important;
+    --highlight-color-focused: rgba(0, 0, 0, 0);
+    border-end-end-radius: var(--border-radius) !important;
+    border-end-start-radius: var(--border-radius) !important;
+    
+    --padding-top: 12px;
+    --padding-bottom: 11px;
+    --padding-start: 15px;
+    --padding-end: 12px;  // overriden on ios
+    
+    div.textarea-highlight {
+      display: none;
+    }
+  }
+}
+.ios ion-textarea.message-input label {
+  --padding-end: 11px;
+}
+.ios ion-textarea.message-input label {
+  --background: var(--ion-background-color-step-150, #d9d9d9);
+}
+// .ios ion-textarea.message-input label div div textarea {
+//   margin: 0px 15px 10px 15px;
+//   margin-left: 15px;
+//   margin-right: 15px;
+//   margin-bottom: 10px;
+//   width: initial;
+// }
+
+
+// The ".focused" class has to be controlled manually
+ion-textarea.glow-on-focus {
+  label {
+    outline: 1px solid;
+    outline-color: rgba(0, 0, 0, 0);
+    transition: outline-color 0.5s !important;
+  }
+  &.has-focus label {
+    outline-color: var(--ion-color-primary);
+  }
+}
+
+ion-searchbar.glow-on-focus {
+  div.searchbar-input-container
+  {
+    input {
+      outline: 1px solid rgba(0, 0, 0, 0);
+      transition: outline-color 0.5s;
+    }
+    input:focus {
+      outline-color: var(--ion-color-primary);
+    }
+  }
+}
+
+ion-button.round-button {
+  min-height: 50px !important;
+  min-width: 50px !important;
+  // &::part(native) {
+  //   outline: 3px solid var(--ion-color-primary-tint);
+  // }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+button.alert-button.danger {
+  font-weight: bolder;
+  color: var(--ion-color-danger);
+}
+
+.danger-text {
+  color: var(--ion-color-danger) !important;
+  ion-icon {
+    color: var(--ion-color-danger) !important;
+  }
+}
+
+.bold-text {
+  font-weight: bold;
+}
+

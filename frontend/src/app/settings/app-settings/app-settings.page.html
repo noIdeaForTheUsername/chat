@@ -1,0 +1,37 @@
+<app-standard-header [title]="'page.app-settings.title' | translate"/>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <h1>{{'common.settings' | translate}}</h1>
+
+  <!-- ACCOUNT -->
+  <ion-item-group>
+    <ion-item-divider><ion-label>{{"common.account" | translate}}</ion-label></ion-item-divider>
+      <!-- profile -->
+      <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${this.profileService.userId}`"/>
+      <!-- lock -->
+      <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
+      <!-- auto-lock toggle -->
+      <app-item-toggle [text]="'page.app-settings.auto-lock' | translate" icon="lock-closed"/>
+      <!-- change account information -->
+      <app-item-button [text]="'page.app-settings.modify-account' | translate" icon="build"/>
+      <!-- log out -->
+      <app-item-button [text]="'page.app-settings.logout' | translate" icon="log-out" iconColor="danger"/>
+  </ion-item-group>
+
+  <!-- APP -->
+  <ion-item-group>
+    <ion-item-divider><ion-label>{{"common.app" | translate}}</ion-label></ion-item-divider>
+      <!-- language -->
+      <app-item-select text="Language / Język" icon="language">
+        <ion-select-option value="polish">Polski</ion-select-option>
+        <ion-select-option value="english">English</ion-select-option>
+      </app-item-select>
+  </ion-item-group>
+
+  <!-- DANGER ZONE -->
+  <ion-item-group>
+    <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider>
+    <!-- delete all messages -->
+    <app-item-button [text]="'page.app-settings.delete-messages' | translate" icon="trash" iconColor="danger"/>
+  </ion-item-group>
+</ion-content>

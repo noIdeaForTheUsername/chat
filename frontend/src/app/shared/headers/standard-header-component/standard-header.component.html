@@ -1,0 +1,9 @@
+<ion-header [translucent]="false">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      @if (backButton()) { <ion-back-button defaultHref="/chats"></ion-back-button> }
+    </ion-buttons>
+    <ion-title>{{title()}}</ion-title>
+    <ng-content></ng-content>
+  </ion-toolbar>
+</ion-header>

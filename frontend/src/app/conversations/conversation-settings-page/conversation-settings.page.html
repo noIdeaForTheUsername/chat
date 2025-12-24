@@ -1,0 +1,49 @@
+<app-standard-header [title]="'page.conversation-options.title' | translate"></app-standard-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  @if (dataLoaded()) {
+    <app-profile-preview [profile]="participant!" [viewProfileButton]="true" />
+    <!-- GENERAL SETTINGS -->
+    <ion-item-group>
+      <ion-item-divider><ion-label>{{"page.conversation-options.general.header" | translate}}</ion-label></ion-item-divider>
+
+      <app-item-button [text]="'profile.call' | translate" icon="call" iconColor="primary" /> <!-- call -->
+      <app-item-button [text]="'page.conversation-options.general.search' | translate" icon="search" /> <!-- search -->
+      <app-item-button [text]="'page.conversation-options.general.show-multimedia' | translate"
+        icon="images" /> <!-- media -->
+    </ion-item-group>
+
+    <!-- USER ACTIONS -->
+    <ion-item-group>
+      <ion-item-divider><ion-label>{{"common.actions" | translate}}</ion-label></ion-item-divider> 
+
+      <!-- verify security -->
+      <app-item-button [text]="'profile.verify-security' | translate" [routerLink]="['/profiles', participant!.id, 'security-verification']"
+        icon="lock-closed" />
+      <!-- block -->
+      <app-item-button (click)="alertService.displayBlockConfirm(conversationId)" [text]="'profile.block' | translate"
+        icon="ban" iconColor="danger" />
+    </ion-item-group>
+
+    <!-- CONVERSATION OPTIONS -->
+    <ion-item-group>
+      <ion-item-divider><ion-label>{{"page.conversation-options.settings.header" | translate}}</ion-label></ion-item-divider>
+
+      <!-- notifications -->
+      <app-item-toggle [text]="'page.conversation-options.settings.notifications' | translate" icon="notifications"></app-item-toggle>
+    </ion-item-group>
+
+    <!-- DANGER ZONE (DELETING) -->
+    <ion-item-group>
+      <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider>
+
+      <app-item-button [text]="'page.conversation-options.danger-zone.delete' | translate"
+        icon="trash" iconColor="danger" />
+      <app-item-button [text]="'page.conversation-options.danger-zone.delete-with-contact' | translate"
+        icon="person-remove" iconColor="danger" />
+    </ion-item-group>
+  }
+  @else {
+    <app-loading-indicator />
+  }
+</ion-content>

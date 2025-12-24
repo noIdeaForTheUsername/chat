@@ -1,0 +1,29 @@
+@if (value() !== undefined || editable()) {
+  <ion-item lines="full" [class.unset]="false" [class.editable]="editable()">
+
+  <ion-label class="title">
+    <span>{{title()}}</span>
+    @if (infoBox()) {
+      <ion-icon name="information-circle" size="large" class="clickable" (click)="displayInfoBox()"></ion-icon>
+      <!-- <ion-popover [trigger]="`info-box-${title}`">
+        <ng-template>
+          <ion-content class="ion-padding ion-bords">{{infoBoxContent()}}</ion-content>
+        </ng-template>
+      </ion-popover> -->
+    }
+  </ion-label>
+
+  @if (editable()) {
+    <ion-input
+      [type]="type()"
+      class="editable"
+      [placeholder]="'common.empty' | translate"
+      [value]="value()">
+      <ion-icon name="pencil" slot="end"></ion-icon>
+    </ion-input>
+  }
+  @else {
+    <ion-label slot="end">{{valueDisplay()}}</ion-label>
+  }
+</ion-item>
+}

@@ -1,0 +1,23 @@
+<div class="ion-display-flex ion-align-items-center ion-flex-column ion-justify-content-center">
+  <!-- Loading spinner (progress, no error) -->
+  @if (displaySpinner()) {
+    <ion-spinner [class]="size()" [name]="type()" [color]="color()"></ion-spinner>
+  }
+
+  <!-- Load error -->
+  @else {
+
+    <ion-icon [name]="errorIconName()" color="danger" [class]="size()"></ion-icon>
+
+    <!-- Text + button -->
+    @if (size() == "large") {
+      <h2>{{`${errorMessageKey()}.header` | translate}}</h2>
+      <p>{{`${errorMessageKey()}.description` | translate:{code: (errorId() || '???')} }}</p>
+
+      <ion-button fill="outline" color="danger">{{"common.retry" | translate}}</ion-button>
+    }
+    @else {
+      <p>{{`${errorMessageKey()}.header` | translate}}</p>
+    }
+  }
+</div>

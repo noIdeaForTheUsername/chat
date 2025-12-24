@@ -1,0 +1,102 @@
+<app-standard-header [title]="'page.profile.title' | translate"></app-standard-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  @if (dataLoaded()) {
+    <div class="profile-header-container">
+      <!-- PROFILE PREVIEW -->
+      <app-profile-preview [viewProfileButton]="false" [profile]="profile()!"/>
+      <!-- EDIT/SAVE BUTTON -->
+      @if (profileSaving()) {
+        <app-loading-indicator size="medium" type="dots" [handleErrors]="false"/>
+      } 
+      @else if (own() && editMode()) {
+        <ion-button color="primary" fill="solid" shape="round" (click)="saveOwnProfileChanges()">{{"page.profile.save-btn" | translate}}</ion-button>
+      }
+      @else if (own()) {
+        <ion-button color="primary" fill="solid" shape="round" (click)="enterEditMode()">{{"page.profile.edit-btn" | translate}}</ion-button>
+      }
+    </div>
+
+    <!-- BASIC INFO SECTION -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>{{"page.profile.section.basic-info" | translate}}</ion-label>
+      </ion-item-divider>
+
+      @let p = profile()!;
+
+      <!-- SHARED PROPERTIES (USER + GROUP) -->
+      @if (!own()) {
+        <profile-info-item [title]="'profile.nick' | translate" [value]="p.userNick" [editable]="true"
+        [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
+      }
+
+      <!-- USER-ONLY PROPERTIES -->
+      @if (p.type == 'user') {
+        <profile-info-item [title]="'profile.login' | translate" [value]="p.login"/>
+
+        <profile-info-item [title]="'profile.name' | translate" [value]="p.name" [editable]="editMode()"/>
+
+        <profile-info-item [title]="'profile.telephone' | translate" [value]="p.telephone" [editable]="editMode()" type="tel"/>
+      }      
+    </ion-item-group>
+
+    <!-- BIO SECTION -->
+    @if (p.bio !== undefined || own()) {
+    <ion-item-group class="rounded">
+      <ion-card>
+        <ion-card-subtitle>{{`profile.${p.type}-bio` | translate}}</ion-card-subtitle>
+        <hr>
+        @if (editMode()) {
+          <ion-textarea [autoGrow]="true"
+          [placeholder]="'page.profile.about-me-placeholder' | translate">
+            <ion-icon name="pencil" slot="start"></ion-icon>
+          </ion-textarea>
+        }
+        @else {
+          <p>{{p.bio || '(empty)'}}</p>
+        }
+      </ion-card>
+    </ion-item-group>
+    }
+    
+
+    <!-- ACTIONS SECTION -->
+    @if (!own()) {
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>{{'common.actions' | translate}}</ion-label>
+        </ion-item-divider>
+
+        <!-- display conversation button -->
+        <app-item-button (click)="goToConversationSettingsPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
+
+        <!-- verify chat security button -->
+        <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
+      
+        <!-- block button -->
+        <app-item-button (click)="alertService.displayBlockConfirm(this.profile()!.id)" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
+
+      </ion-item-group>
+    }
+
+    <!-- "OTHER" SECTION -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>{{'common.other' | translate}}</ion-label>
+      </ion-item-divider>
+
+      <profile-info-item [title]="'profile.id' | translate" [value]="p.id.toString()"/>
+    </ion-item-group>
+
+    <!-- BOTTOM NOTE ("looking for other settings?") -->
+    @if (!own()) {
+      <ion-note (click)="goToConversationSettingsPage()" [innerHTML]="'page.profile.not-found-hint' | translate">  <!--TODO: CHANGE THE LINK TO THE SETTINGS PAGE -->
+      </ion-note>
+    }
+
+  }
+  @else {
+    <app-loading-indicator [handleErrors]="true"/>
+  }
+</ion-content>

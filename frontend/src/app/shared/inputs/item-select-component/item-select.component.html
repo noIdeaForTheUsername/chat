@@ -1,0 +1,6 @@
+<ion-item lines="full">
+  @if (icon()) { <ion-icon [name]="icon()" slot="start" aria-hidden="true"></ion-icon> }
+  <ion-select [label]="text()">
+    <ng-content></ng-content>
+  </ion-select>
+</ion-item>

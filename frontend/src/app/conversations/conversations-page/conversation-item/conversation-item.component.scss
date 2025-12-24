@@ -1,0 +1,16 @@
+ion-item.unread {
+  ion-label {
+    h2 {
+      color: var(--ion-color-primary-shade);
+      font-weight: bold;
+    }
+    p {
+      color: var(--ion-color-primary-shade);
+      font-weight: bold;
+    }
+  }
+}
+
+ion-item.selected {
+  --background: rgba(0, 255, 255, 0.484) !important;
+}

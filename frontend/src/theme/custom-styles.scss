@@ -1,0 +1,46 @@
+input, textarea {  // Input cursor color
+  caret-color: var(--caret-color) !important;
+}
+
+// Text selection color
+::-moz-selection {
+  color: rgb(0, 0, 0);
+  background: var(--ion-color-primary-tint, white);
+}
+::selection {
+  color: rgb(0, 0, 0);
+  background: var(--ion-color-primary-tint, white);
+}
+
+// Rounded badge
+ion-badge {
+  border-radius: 8px;
+  --padding-start: 5px;
+  --padding-end: 5px;
+  --padding-top: 5px;
+  --padding-bottom: 5px;
+  min-width: 22px;
+}
+
+*[color="primary"] ::selection, *[color="secondary"] ::selection, *[color="tertiary"] ::selection {
+  color: var(--ion-text-color);
+  background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
+  //background-color: var(--green-background-selection-color, white);
+}
+*[color="primary"] ::-moz-selection, [color="secondary"] ::-moz-selection, *[color="tertiary"] ::-moz-selection {
+  color: var(--ion-text-color);
+  background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
+  //background-color: var(--green-background-selection-color, white);;
+}
+
+// ::part(scroll) slot {
+//   overflow-anchor: none;
+// }
+
+// * {
+//   overflow-anchor: none;
+// }
+
+// ion-card ::-moz-selection {
+//   background-color: red;
+// }

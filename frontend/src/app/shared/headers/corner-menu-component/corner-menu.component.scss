@@ -1,0 +1,8 @@
+ion-popover ion-content {
+  &::part(scroll) {
+    width: 100%;
+  }
+  ion-list {
+    padding: 0;
+  }
+}

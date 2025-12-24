@@ -1,0 +1,49 @@
+@let repliedId = message().repliedId;
+@let repliedText = message().repliedText;
+
+@if (unreadNoteAbove()) {
+  <app-chat-note [line]="true" class="red space-before" [text]="'page.chat.new-messages' | translate"/>
+}
+
+<div class="message-container"
+[class.own]="message().isOwn"
+[class.space-before]="spaceBefore()"
+[class.selected]="selectionService().selectedIds().includes(message().id)"
+holdDirective (hold)="onMessageHold(message().id)" (setClickLock)="setClickLock($event)"
+(click)="onMessageClick(message().id)">
+
+  @if (displayMetadata()) { <ion-note>{{profile | visibleName}} | {{displayedDate()}}</ion-note> }
+  <ion-card
+    [id]="'msg-' + message().id"
+    class="message-card"
+    [class.own]="message().isOwn"
+    [color]="color">
+      @if (repliedId !== undefined && repliedText !== undefined) {
+        <ion-card class="replied-preview" (click)="onRepliedClickInternal(repliedId)">
+          <ion-card-content><ion-icon name="arrow-redo"></ion-icon>&nbsp;<span [innerHTML]="repliedText"></span></ion-card-content>
+        </ion-card>
+      }
+      <ion-card-content>
+        {{message().text}}
+      </ion-card-content>
+  </ion-card>
+</div>
+
+<!-- 
+@if (message[1].senderId == this.conversation.participantId) { participant's
+        <ion-card
+          class="message-card other ion-text-left ion-float-left">
+          <ion-card-content>
+            {{message[1].text}}
+          </ion-card-content>
+        </ion-card>
+      }
+      @else { user's
+        <ion-card
+          color="secondary"
+          class="message-card my ion-text-right ion-float-right">
+          <ion-card-content>
+            {{message[1].text}}
+          </ion-card-content>
+        </ion-card>
+      } -->

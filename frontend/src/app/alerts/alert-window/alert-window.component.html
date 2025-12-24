@@ -1,0 +1,9 @@
+<ion-alert
+  [isOpen]="alertService.open()"
+  [class]="'type-' + type()"
+  [header]="alertService.header()"
+  [subHeader]="alertService.subheader()"
+  [message]="alertService.message()"
+  [buttons]="buttons()"
+  (didDismiss)="onDismiss()"
+></ion-alert>

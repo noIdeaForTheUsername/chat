@@ -1,0 +1,178 @@
+{
+  "app": {
+    "title": "Chat"
+  },
+
+
+  "common": {
+    "ok": "OK",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "search": "Search",
+    "settings": "Settings",
+    "options": "Options",
+    "delete": "Delete",
+    "actions": "Actions",
+    "other": "Other",
+    "copy-text": "Copy text",
+    "retry": "Retry",
+    "empty": "Empty",
+    "danger-zone": "Danger zone",
+
+    "account": "Account",
+    "app": "App",
+    "lock-app": "Lock the app",
+
+    "are-you-sure": "Are you sure?",
+    "step": "Step {{number}}.",
+    "nothing-to-show": "Nothing to show",
+    "search-filter-hint": "Displaying search results. Clear the searchbar to show everything.",
+
+    "selecting": "Selecting...",
+    "selection-mode": "Selection mode",
+    "enter-selection": "Enter selection mode",
+    "exit-selection": "Exit selection mode"
+  },
+
+
+  "page": {
+
+    "conversations": {
+      "title": "Conversations",
+      "add-conversation-hint": "Use the + button in the bottom-right corner to start the first chat",
+      "plus-action": {
+        "header": "New conversation...",
+        "conversation": "Find a user",
+        "group": "Create a new group"
+      },
+      "conversation-action": {
+        "header": "Selected conversations...",
+        "delete": "Delete all selected messages and contacts permamently",
+        "clear-messages": "Clear all messages while keeping contacts"
+      }
+    },
+
+    "discovery": {
+      "title": "New Chat...",
+      "header": "Find a user",
+      "info": "Use the searchbar above. Enter a login, name, display name or phone number.",
+      "searchbar-hint": "Name, login or phone number...",
+      "found": "Found",
+      "no-results": "No results"
+    },
+
+    "chat": {
+      "no-more-messages": "These are all the stored messages with this user",
+      "new-messages": "New messages",
+      "message-input": "Input message...",
+      "message-action": {
+        "header": "Selected message actions...",
+        "reply": "Reply",
+        "download-all": "Download all selected files",
+        "delete-all": "Delete all selected"
+      },
+      "options": "Chat options"
+    },
+
+    "profile": {
+      "title": "User profile",
+      "section": {
+        "basic-info": "Basic information"
+      },
+      "nick-info": "A nick you can set yourself for every user. Only you can see it.",
+      "edit-btn": "Edit profile",
+      "save-btn": "Save changes",
+      
+      "unset": "Unset/private",
+      "show-conversation": "Show conversation",
+      "not-found-hint": "Were you looking for other settings such as notifications or chat actions? Check out the <a>conversation settings page</a> instead.",
+      "about-me-placeholder": "A few sentences about yourself. This is encrypted and only visible to the users you accepted conversation with"
+    },
+
+    "conversation-options": {
+      "title": "Conversation options",
+      "general": {
+        "header": "General",
+        "search": "Search in conversation",
+        "show-multimedia": "Show conversation media"
+      },
+      "settings": {
+        "header": "Conversation settings",
+        "notifications": "Receive notifications",
+        "auto-download": "Auto-download all files"
+      },
+      "danger-zone": {
+        "delete": "Delete all messages",
+        "delete-with-contact": "Delete all messages and this contact"
+      }
+    },
+
+    "app-settings": {
+      "title": "App settings",
+      "auto-lock": "Auto-lock on close",
+      "modify-account": "Modify account data",
+      "logout": "Log out",
+      "delete-messages": "Delete all the messages in all conversations"
+    },
+
+    "security-verification": {
+      "title": "Security verification",
+      "header": "Encryption verification: {{name}}",
+      "description": "This verification will help you ensure that no one has messed with the encryption parameters between you and this user (public keys / security codes).",
+      "security-codes": "Security codes",
+      "my-code": "My code (A)",
+      "other-code": "{{name}}'s code (B)",
+      "instructions-header": "Verification instructions",
+      "step-1-description": "Exchange these codes via a safe communications channel (other than this app) or physically.<br/>Verify if <b>both</b> your and {{name}}'s code are exactly the same on both devices.<br/>(your device's <b>A</b> must match their device's <b>B</b> and vice versa).",
+      "step-2-description": "Your conversations are <b>only</b> secure if both pairs do match. Mismatch is a critical alert. Once verified successfully, there's no need to redo this in the future."
+    }
+  },
+
+  "profile": {
+    "id": "ID",
+    "nick": "Nick",
+    "login": "Login",
+    "name": "Name",
+    "telephone": "Phone number",
+    "user-bio": "About me...",
+    "group-bio": "About the group",
+
+    "my": "My profile",
+    "view-profile": "View profile",
+    "block": "Block",
+    "call": "Call",
+    "verify-security": "Verify chat security"
+  },
+
+
+  "prompt": {
+    "block": {
+      "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
+      "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
+    }
+  },
+
+
+  "error": {
+    "0": {
+      "header": "Server not responding",
+      "description": "The app's server is probably down. Contact the administrator if the issue persists."
+    },
+    "no-internet": {
+      "header": "No internet connection",
+      "description": "This data can't be loaded until you're online again"
+    },
+    "not-found": {
+      "header": "Data not found",
+      "description": "The data you wanted to view doesn't exist, or you don't have access to it. This is likely due to a bad URL. Try going back to the app home page."
+    },
+    "bad-url": {
+      "header": "Bad URL",
+      "description": "Try going back to the home page"
+    },
+    "unknown": {
+      "header": "Unknown error",
+      "description": "Code: {{code}}. Please note this code and contact the administrator if the issue persists."
+    }
+  }
+}

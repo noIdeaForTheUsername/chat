@@ -1,0 +1,112 @@
+<ion-header [translucent]="false">
+@if (selectionService.selectionMode()) {
+  <app-selection-toolbar (leaveSelectionMode)="this.selectionService.toggleSelectionMode()" (openActionMenu)="this.openMultiselectActionSheet()"/>
+}
+@else {
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/chats"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{this.participant | visibleName:false}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="this.cornerMenu.open($event)">
+        <ion-icon name="ellipsis-horizontal" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+}
+</ion-header>
+
+
+<ion-content [fullscreen]="false" fixedSlotPlacement="before" [scrollEvents]="true" (ionScroll)="onScroll($any($event))">
+  <!-- CONVERSATION PRELOADING SCREEN -->
+  @if (initialLoading()) {
+    <app-loading-indicator [handleErrors]="true"></app-loading-indicator>
+  }
+  <!-- NORMAL VIEW -->
+  @else {
+
+    <!-- TOP PROFILE PREVIEW (if scrolled to the very begin of the chat) -->
+    @if (displayingOldestMessages() && !messageLoading()) {
+      <app-profile-preview [profile]="participant" [viewProfileButton]="true"></app-profile-preview>
+      <app-chat-note [line]="true" [text]="'page.chat.no-more-messages' | translate"/>
+    }
+
+    <!-- TOP MESSAGE LOADING INDICATOR -->
+    @if (!displayingOldestMessages()) {
+      <app-message-loading-indicator [showLoadingAnim]="messageLoading() && loadingMessagesAreOlder()"/>
+    }
+
+    <!-- MESSAGE LIST -->
+    @for (message of this.messages(); track message.id) {
+      @let previousMessage = $index > 0 ? this.messages()[$index - 1] : undefined;
+      <app-message-card
+        [message]="message"
+        [selectionService]="selectionService"
+        [class.action-select]="this.actionMessageId() == message.id"
+        (repliedClick)="onMessageRepliedClick($event)"
+        (showActionMenu)="openMessageActionSheet($event)"
+        [unreadNoteAbove]="oldestUnreadMessageId() == message.id"
+        [previousMessage]="previousMessage"/>
+      <!-- [spaceBefore]="previousMessage && previousMessage.isOwn != message.isOwn"
+       -->
+    }
+    <div style="display: block; height: 10px;">&nbsp;</div> <!--professional workaround when shit doesn't work to cooperate :P-->
+
+    <!-- BOTTOM MESSAGE LOADING INDICATOR -->
+    @if (!displayingNewestMessages()) {
+      <app-message-loading-indicator [showLoadingAnim]="messageLoading() && !loadingMessagesAreOlder()"/>
+    }
+  }
+
+  <!-- RETURN TO THE NEWEST MESSAGES BUTTON -->
+  @if (showScrollDownButton()) {
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin">
+      <ion-fab-button color="tertiary" (click)="scrollToBottom(1000, true)">
+        <ion-icon name="arrow-down"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+
+  <!-- CORNER OPTIONS MENU -->
+  <app-corner-menu #corner_menu>
+    <app-item-button [text]="'page.chat.options' | translate" icon="settings" [routerLink]="'options'"/>
+    @if (this.conversationService.dataLoaded()) {
+      <app-item-button [text]="'profile.view-profile' | translate" icon="person"
+      [routerLink]="['/', 'profiles', this.conversationService.getConversationById(this.conversationId).participantId]"/>
+    }
+    <app-item-button [text]="'common.selection-mode' | translate" icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
+  </app-corner-menu>
+
+  <!-- MESSAGE ACTIONS MENU -->
+  <ion-action-sheet [isOpen]="messageActionSheetOpen()" [buttons]="messageActionButtons()" (didDismiss)="onMessageActionSheetDismiss($event)"
+      [header]="'page.chat.message-action.header' | translate">
+  </ion-action-sheet>
+</ion-content>
+
+
+<ion-footer>
+  <div class="toolbar-container">
+    <ion-toolbar>
+      <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
+        <!-- ATTACH BUTTON -->
+        <ion-button shape="round" class="round-button" id="open-modal">
+          <ion-icon name="attach" slot="icon-only"></ion-icon>
+        </ion-button>
+        <!-- MESSAGE INPUT FIELD -->
+        <ion-textarea fill="solid" [autoGrow]="true"
+          (ionInput)="onMessageFieldInput($event)"
+          [placeholder]="'page.chat.message-input' | translate"
+          maxlength="700"
+          rows="1"
+          class="message-input glow-on-focus ion-margin ion-flex-auto"
+          [autofocus]="true">
+        </ion-textarea>
+        <!-- SEND BUTTON -->
+        <ion-button shape="round" color="primary" fill="solid" class="round-button" [disabled]="this.initialLoading() || this.enteredMessage().length == 0">
+          <ion-icon name="paper-plane" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </div>
+</ion-footer>

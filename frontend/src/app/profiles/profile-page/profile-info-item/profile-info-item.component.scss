@@ -1,0 +1,48 @@
+ion-item.unset ion-label {
+  color: var(--ion-text-color-step-550);
+  font-style: italic;
+}
+
+ion-item.editable {
+  --inner-padding-end: 0;
+}
+
+// ion-label {
+//   text-wrap-mode: nowrap;
+//   flex: 0;
+//   min-width: 30%;
+// }
+
+// ion-label[slot="end"] {
+//   flex: 1;
+//   text-align: right;
+// }
+
+ion-input.editable {
+  text-align: right;
+}
+
+.ios ion-input.editable {
+  background-color: var(--ion-background-color);
+}
+
+ion-label.title {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-right: 10px;
+}
+
+.title span {
+  display: block;
+  margin-right: 10px;
+}
+
+ion-icon {
+  display: block;
+}
+
+// div.label-text-wrapper div.label-text {
+//   text-align: left;
+// }

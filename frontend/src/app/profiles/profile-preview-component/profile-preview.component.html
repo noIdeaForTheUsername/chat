@@ -1,0 +1,7 @@
+<ion-avatar aria-hidden="true">
+  <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+</ion-avatar>
+<h2>{{profile() | visibleName }}</h2>
+@if (viewProfileButton()) {
+  <ion-button color="primary" fill="solid" shape="round" [routerLink]="`/profiles/${profile()?.id}`">{{"profile.view-profile" | translate}}</ion-button>
+}

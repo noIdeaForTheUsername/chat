@@ -1,0 +1,33 @@
+<app-standard-header [title]="'page.discovery.title' | translate"></app-standard-header>
+
+<ion-content [fullscreen]="true">
+  <ion-searchbar (ionInput)="displaySearchResults($event)" [debounce]="600"
+  [placeholder]="'page.discovery.searchbar-hint' | translate" class="glow-on-focus"></ion-searchbar>
+  @if (searchBarFilled() && searchLoading()) {
+    <div class="loadingContainer"><app-loading-indicator type="dots" [handleErrors]="true"></app-loading-indicator></div>
+  }
+  @else if (searchBarFilled() && searchResults().size > 0) {
+    <h1 class="ion-margin">{{'page.discovery.found' | translate}}:</h1>
+    <ion-list lines="full">
+      @for (entry of this.searchResults().entries(); track entry[0]) {
+        <ion-item [button]="true" class="rounded">
+          <ion-avatar aria-hidden="true" slot="start">
+            <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+          </ion-avatar>
+          <ion-label class="ion-text-nowrap">
+            <h2>{{entry[1] | visibleName:true}}</h2>
+            <p>{{entry[1].telephone ? entry[1].telephone : ""}}</p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+  @else if (searchBarFilled() && !searchLoading()) {  <!-- no results -->
+    <h1 class="ion-margin">{{'page.discovery.no-results' | translate}}</h1>
+  }
+  @else { <!--if search bar not filled-->
+    <h1 class="ion-margin">{{'page.discovery.header' | translate}}</h1>
+    <p class="ion-margin">{{'page.discovery.info' | translate}}</p>
+  }
+  
+</ion-content>

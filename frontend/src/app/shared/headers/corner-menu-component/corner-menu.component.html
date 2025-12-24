@@ -1,0 +1,11 @@
+<ion-popover #corner_menu_popover [dismissOnSelect]="true" [isOpen]="isOpen()"><ng-template><ion-content>
+  <ion-list lines="full">
+    <ng-content></ng-content>
+    <!-- <ion-item [button]="true" routerLink="options">{{"page.chat.options" | translate}}<ion-icon name="settings" slot="end"></ion-icon></ion-item>
+    @if (this.conversationService.dataLoaded()) {
+      <ion-item [button]="true" [routerLink]="['/', 'profiles', this.conversationService.getConversationById(this.conversationId).participantId]">
+        {{"profile.view-profile" | translate}}<ion-icon name="person" slot="end"></ion-icon></ion-item>
+    }
+    <ion-item [button]="true" (click)="this.selectionService.toggleSelectionMode()">{{"common.selection-mode" | translate}}<ion-icon name="checkbox-outline" slot="end"></ion-icon></ion-item> -->
+  </ion-list>
+</ion-content></ng-template></ion-popover>

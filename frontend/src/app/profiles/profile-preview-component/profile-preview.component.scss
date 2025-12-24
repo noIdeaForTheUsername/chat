@@ -1,0 +1,58 @@
+:host {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  padding: 20px;
+}
+
+
+ion-avatar {
+  flex: 4;
+  width: auto;
+}
+
+h2 {
+  flex: 1;
+  font-size: 2rem;
+}
+
+ion-button { 
+  flex: 1;
+}
+
+
+
+
+// :host {
+//   width: 100%;
+//   height: 300px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: space-evenly;
+//   flex-wrap: nowrap;
+//   padding: 20px;
+// }
+
+// div {
+//   width: 100%;
+//   flex-grow: 1;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: space-evenly;
+//   flex-wrap: nowrap;
+
+//   ion-avatar {
+//     flex-grow: 1;
+//     width: auto;
+//   }
+
+//   h2 {
+//     font-size: 2rem;
+//   }
+// }
