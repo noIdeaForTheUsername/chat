@@ -6,10 +6,13 @@ import { LoginDto } from './dto/login.dto';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { UserId } from './verification/user-id.decorator';
 import { PublicAccess } from './verification/public-access.decotaror';
+import { PartialType } from '@nestjs/mapped-types';
+import { plainToInstance } from 'class-transformer';
+import { AccountResponseDto } from './dto/account-reponse.dto';
 
 @Controller()
 @PublicAccess()
-export class AuthController {
+export class AccountsController {
   constructor(private readonly authService: AuthService, private readonly accountsService: AccountsService) {}
 
   @Post("register")
@@ -38,8 +41,9 @@ export class AuthController {
 
   @Get("me")
   @PublicAccess(false)
-  async getCurrectUser(@UserId() userId: number) {
-    return userId;
+  async getCurrentUser(@UserId() userId: number) {
+    const account = await this.accountsService.findById(userId, true);
+    return plainToInstance(AccountResponseDto, account, { excludeExtraneousValues: true });
   }
 
   private sendJwtCookie(res: Response, jwt: string) {

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ConversationsModule } from './conversations/conversations.module';
@@ -11,12 +10,15 @@ import { UserConversation } from './conversations/entities/user-conversation.ent
 import { AccountsModule } from './accounts/accounts.module';
 import { Account } from './accounts/entities/account.entity';
 import { APP_GUARD } from '@nestjs/core';
-import { LoggedInGuard } from './auth/verification/logged-in.guard';
+import { LoggedInGuard } from './accounts/verification/logged-in.guard';
 import { ProfilesModule } from './profiles/profiles.module';
+import { UserContact } from './profiles/entities/user-contact.entity';
+import { Profile } from './profiles/entities/profile.entity';
+import { FullProfile } from './profiles/entities/full-profile.entity';
+import { Contact } from './profiles/entities/contact.entity';
 
 @Module({
   imports: [
-    AuthModule,
     AccountsModule,
     TypeOrmModule.forRoot({
       type: "postgres",
@@ -26,7 +28,10 @@ import { ProfilesModule } from './profiles/profiles.module';
       password: "chat",
       database: "chat",
       schema: "public",
-      entities: [Account, Conversation, Participation, UserConversation],
+      entities: [
+        Account, Profile, FullProfile, Contact, UserContact,  // accounts and profiles
+        Conversation, Participation, UserConversation,  // conversations
+      ],
     }),
     ConversationsModule,
     ProfilesModule,
