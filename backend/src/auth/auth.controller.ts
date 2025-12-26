@@ -3,26 +3,20 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import type { Response } from 'express';
 import { LoginDto } from './dto/login.dto';
-import { UsersService } from 'src/users/users.service';
-import { LoggedIn } from './verification-helpers/logged-in.guard';
-import { User } from './verification-helpers/user.decorator';
-import type { UserAuth } from './verification-helpers/user-auth.interface';
+import { AccountsService } from 'src/accounts/accounts.service';
+import { UserId } from './verification/user-id.decorator';
+import { PublicAccess } from './verification/public-access.decotaror';
 
 @Controller()
+@PublicAccess()
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly usersService: UsersService) {}
+  constructor(private readonly authService: AuthService, private readonly accountsService: AccountsService) {}
 
   @Post("register")
   async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response) {
     // Verify that passwords match
     if (body.password !== body.passwordRepeat) 
       throw new BadRequestException('Given passwords do not match');
-    // Delete unwanted characters from phone number & validate
-    if (body.phoneNumber) {
-      body.phoneNumber = body.phoneNumber?.replaceAll(" ", "");
-      body.phoneNumber = body.phoneNumber?.replaceAll("-", "");
-      if (body.phoneNumber.length > 13) throw new BadRequestException('Phone number incorrect');
-    }
     
     const { authJwt } = await this.authService.register(body.login, body.password,
       body.email, body.phoneNumber);
@@ -42,10 +36,10 @@ export class AuthController {
     this.sendJwtCookie(res, '');
   }
 
-  @Get("protected-action")
-  @UseGuards(LoggedIn)
-  async protectedAction(@User() user: UserAuth) {
-    return { message: `Hello, user with ID ${user.id}! This is a protected action.` };
+  @Get("me")
+  @PublicAccess(false)
+  async getCurrectUser(@UserId() userId: number) {
+    return userId;
   }
 
   private sendJwtCookie(res: Response, jwt: string) {

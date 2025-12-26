@@ -4,7 +4,7 @@ import { Account } from './entities/account.entity';
 import { QueryFailedError, Repository } from 'typeorm';
 
 @Injectable()
-export class UsersService {
+export class AccountsService {
   constructor(
     @InjectRepository(Account) private accounts: Repository<Account>,
   ) {}

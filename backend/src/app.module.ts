@@ -3,14 +3,21 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Account } from './users/entities/account.entity';
-import { UsersModule } from './users/users.module';
 import { DataSource } from 'typeorm';
+import { ConversationsModule } from './conversations/conversations.module';
+import { Conversation } from './conversations/entities/conversation.entity';
+import { Participation } from './conversations/entities/participation.entity';
+import { UserConversation } from './conversations/entities/user-conversation.entity';
+import { AccountsModule } from './accounts/accounts.module';
+import { Account } from './accounts/entities/account.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { LoggedInGuard } from './auth/verification/logged-in.guard';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
     AuthModule,
-    UsersModule,
+    AccountsModule,
     TypeOrmModule.forRoot({
       type: "postgres",
       host: "localhost",
@@ -19,11 +26,19 @@ import { DataSource } from 'typeorm';
       password: "chat",
       database: "chat",
       schema: "public",
-      entities: [Account],
+      entities: [Account, Conversation, Participation, UserConversation],
     }),
+    ConversationsModule,
+    ProfilesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: LoggedInGuard,
+    }
+  ],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {} 
