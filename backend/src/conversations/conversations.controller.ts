@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
-import { UserId } from 'src/accounts/verification/user-id.decorator';
+import { UserId } from 'src/shared/auth/user-id.decorator';
 
 @Controller('conversations')
 export class ConversationsController {

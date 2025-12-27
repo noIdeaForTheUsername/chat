@@ -26,8 +26,15 @@ export class ProfilesService {
     return await this.userKnownProfiles.findBy({ contactOwnerId: userId });
   }
 
-  async getProfile(id: number, exceptionOnNotFound = false) {
+  async getFullPublicProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.fullProfiles.findOneBy( { id } );
+    if (!profile && exceptionOnNotFound)
+      throw new NotFoundException(`Profile not found`);
+    return profile;
+  }
+
+  async getRawProfile(id: number, exceptionOnNotFound = false) {
+    const profile = await this.profiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
       throw new NotFoundException(`Profile not found`);
     return profile;

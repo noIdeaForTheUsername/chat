@@ -1,19 +1,16 @@
-import { Controller, Post, Body, BadRequestException, Res, UnauthorizedException, UseGuards, HttpCode, HttpStatus, Get } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { UsersService } from './users.service';
 import { RegisterDto } from './dto/register.dto';
-import type { Response } from 'express';
+import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { AccountsService } from 'src/accounts/accounts.service';
-import { UserId } from './verification/user-id.decorator';
-import { PublicAccess } from './verification/public-access.decotaror';
-import { PartialType } from '@nestjs/mapped-types';
-import { plainToInstance } from 'class-transformer';
-import { AccountResponseDto } from './dto/account-reponse.dto';
+import type { Response } from 'express';
+import { PublicAccess } from 'src/shared/auth/public-access.decorator';
+
 
 @Controller()
 @PublicAccess()
-export class AccountsController {
-  constructor(private readonly authService: AuthService, private readonly accountsService: AccountsService) {}
+export class UsersController {
+  constructor(private readonly authService: AuthService) {}
 
   @Post("register")
   async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response) {
@@ -22,7 +19,7 @@ export class AccountsController {
       throw new BadRequestException('Given passwords do not match');
     
     const { authJwt } = await this.authService.register(body.login, body.password,
-      body.email, body.phoneNumber);
+      body.email, body.phoneNumber, body.name, body.bio);
     this.sendJwtCookie(res, authJwt);
   }
 
@@ -39,14 +36,7 @@ export class AccountsController {
     this.sendJwtCookie(res, '');
   }
 
-  @Get("me")
-  @PublicAccess(false)
-  async getCurrentUser(@UserId() userId: number) {
-    const account = await this.accountsService.findById(userId, true);
-    return plainToInstance(AccountResponseDto, account, { excludeExtraneousValues: true });
-  }
-
   private sendJwtCookie(res: Response, jwt: string) {
     res.cookie('authJwt', jwt, { httpOnly: true, sameSite: 'strict' });
   }
-} 
+}

@@ -11,5 +11,6 @@ import { Contact } from './entities/contact.entity';
   imports: [TypeOrmModule.forFeature([UserContact, Profile, FullProfile, Contact])],
   controllers: [ProfilesController],
   providers: [ProfilesService],
+  exports: [ProfilesService],
 })
 export class ProfilesModule {}

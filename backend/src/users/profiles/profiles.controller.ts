@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseBoolPipe, Patch } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Query } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { UserId } from 'src/accounts/verification/user-id.decorator';
+import { UserId } from '../../shared/auth/user-id.decorator';
 import { PatchProfileDto } from './dto/patch-profile.dto';
 
 
@@ -13,14 +13,9 @@ export class ProfilesController {
     return await this.profilesService.getUserKnownProfiles(userId);
   }
 
-  @Get(":id")
-  async getProfileById(@Param("id") id: number) {
-    return await this.profilesService.getProfile(id, true);
-  }
-
   @Get('me')
   async getMyProfile(@UserId() userId: number) {
-    return await this.profilesService.getProfile(userId, true);
+    return await this.profilesService.getRawProfile(userId, true);
   }
 
   @Patch("me")
@@ -29,7 +24,7 @@ export class ProfilesController {
   }
 
   @Get("search")
-  async searchProfiles(@Body("search") search: string) {
+  async searchProfiles(@Query("search") search: string) {
     if (typeof search !== "string" || search.length === 0)
       throw new BadRequestException("search must be a non-empty string");
     return await this.profilesService.searchProfiles(search);
@@ -38,7 +33,7 @@ export class ProfilesController {
   @Patch(":id/blocked")
   async setContactBlockedStatus(
     @UserId() callerId: number,
-    @Param("id") blockedId: number,
+    @Param("id", ParseIntPipe) blockedId: number,
     @Body("blocked", ParseBoolPipe) blockedValue: boolean,
   ) {
     return await this.profilesService.setProfileBlockedStatus(callerId, blockedId, blockedValue);
@@ -47,9 +42,14 @@ export class ProfilesController {
   @Patch(":id/nick")
   async setContactNick(
     @UserId() callerId: number,
-    @Param("id") userId: number,
+    @Param("id", ParseIntPipe) userId: number,
     @Body("nick") nick: string,
   ) {
     return await this.profilesService.setContactNick(callerId, userId, nick);
+  }
+
+  @Get(":id")
+  async getProfileById(@Param("id") id: number) {
+    return await this.profilesService.getFullPublicProfile(id, true);
   }
 }
