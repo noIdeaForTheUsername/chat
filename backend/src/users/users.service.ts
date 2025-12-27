@@ -4,17 +4,24 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { Account } from './accounts/entities/account.entity';
 import { Profile } from './profiles/entities/profile.entity';
 import { DataSource } from 'typeorm';
+import { ProfilesService } from './profiles/profiles.service';
 
 @Injectable()
 export class UsersService {
 
   constructor(
     private dataSource: DataSource,
+    private profilesService: ProfilesService,
     // @InjectRepository(Account)
     // private accounts: Repository<Account>,
     // @InjectRepository(Profile)
     // private profiles: Repository<Profile>,
   ) {}
+
+  async getProfileExists(id: number) {
+    const found = await this.profilesService.getRawProfile(id, false);
+    return found !== null;
+  }
 
   async createUser(login: string, passwordHash: string, email?: string, phoneNumber?: string,
     name?: string, bio?: string) {
