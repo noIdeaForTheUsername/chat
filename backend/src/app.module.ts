@@ -3,42 +3,53 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { ConversationsModule } from './conversations/conversations.module';
-import { Conversation } from './conversations/entities/conversation.entity';
-import { Participation } from './conversations/entities/participation.entity';
-import { UserConversation } from './conversations/entities/user-conversation.entity';
-import { AccountsModule } from './users/accounts/accounts.module';
-import { Account } from './users/accounts/entities/account.entity';
+import { Conversation } from './domain/conversations/entities/conversation.entity';
+import { Participation } from './domain/conversations/entities/participation.entity';
+import { UserConversation } from './domain/conversations/entities/user-conversation.entity';
+import { Account } from './domain/accounts/entities/account.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { LoggedInGuard } from './shared/auth/logged-in.guard';
-import { ProfilesModule } from './users/profiles/profiles.module';
-import { UserContact } from './users/profiles/entities/user-contact.entity';
-import { Profile } from './users/profiles/entities/profile.entity';
-import { FullProfile } from './users/profiles/entities/full-profile.entity';
-import { Contact } from './users/profiles/entities/contact.entity';
-import { UsersModule } from './users/users.module';
-import { MessagesModule } from './messages/messages.module';
+import { UserContact } from './domain/profiles/entities/user-contact.entity';
+import { Profile } from './domain/profiles/entities/profile.entity';
+import { FullProfile } from './domain/profiles/entities/full-profile.entity';
+import { Contact } from './domain/profiles/entities/contact.entity';
+import { ConversationsModule } from './application/conversations/conversations.module';
+import { addTransactionalDataSource } from 'typeorm-transactional';
+import { AccountsModule } from './application/users/accounts/accounts.module';
+import { AuthModule } from './application/users/auth/auth.module';
+import { ProfilesModule } from './application/users/profiles/profiles.module';
 
 @Module({
   imports: [
     AccountsModule,
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "localhost",
-      port: 5432,
-      username: "chat",
-      password: "chat",
-      database: "chat",
-      schema: "public",
-      entities: [
-        Account, Profile, FullProfile, Contact, UserContact,  // accounts and profiles
-        Conversation, Participation, UserConversation,  // conversations
-      ],
+    AuthModule,
+    ProfilesModule,
+    ConversationsModule,
+
+    TypeOrmModule.forRootAsync({
+      useFactory() {
+        return {
+          type: "postgres",
+          host: "localhost",
+          port: 5432,
+          username: "chat",
+          password: "chat",
+          database: "chat",
+          schema: "public",
+          entities: [
+            Account, Profile, FullProfile, Contact, UserContact,  // accounts and profiles
+            Conversation, Participation, UserConversation,  // conversations
+          ],
+        };
+      },
+      async dataSourceFactory(options: any) {
+        if (!options) {
+          throw new Error('Invalid options passed');
+        }
+        return addTransactionalDataSource(new DataSource(options));
+      },
     }),
     ConversationsModule,
-    ProfilesModule,
-    UsersModule,
-    MessagesModule,
   ],
   controllers: [AppController],
   providers: [
