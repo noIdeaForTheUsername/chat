@@ -6,7 +6,6 @@ import { AccountsController } from './accounts.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtSecret } from '../jwt-constants';
 import { APP_GUARD } from '@nestjs/core';
-import { LoggedInGuard } from './logged-in.guard';
 
 @Module({
   controllers: [AccountsController],
@@ -19,11 +18,7 @@ import { LoggedInGuard } from './logged-in.guard';
     }),
   ],
   providers: [
-    AccountsService,
-    {
-      provide: APP_GUARD,
-      useClass: LoggedInGuard,
-    }
+    AccountsService
   ],
   exports: [AccountsService],
 })

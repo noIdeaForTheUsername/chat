@@ -9,7 +9,7 @@ import { PublicAccess } from 'src/shared/auth/public-access.decorator';
 
 @Controller()
 @PublicAccess()
-export class UsersController {
+export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("register")

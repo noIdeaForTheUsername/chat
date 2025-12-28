@@ -4,7 +4,7 @@ import { Conversation } from './entities/conversation.entity';
 import { Participation } from './entities/participation.entity';
 import { Repository } from 'typeorm';
 import { UserConversation } from './entities/user-conversation.entity';
-import { DataSource } from 'typeorm/browser';
+import { DataSource } from 'typeorm';
 import { ConversationType } from './entities/conversation-type.enum';
 import { UsersService } from 'src/users/users.service';
 
@@ -43,7 +43,7 @@ export class ConversationsService {
         select: { id: true },
         where: { ownerId: callerId, participantId: participantId, type: ConversationType.Direct }
       }),
-      this.usersService.getProfileExists(participantId),
+      this.usersService.profileExists(participantId),
     ]);
 
     if (sameConversationId !== null)
@@ -52,7 +52,7 @@ export class ConversationsService {
       throw new NotFoundException('Participant user not found');
 
     // Data operations
-    this.dataSource.manager.transaction(async manager => {
+    await this.dataSource.manager.transaction(async manager => {
       const conversationObjectObj = manager.create(Conversation, { type: ConversationType.Direct });
       const conversation = await manager.save(conversationObjectObj);
 
@@ -94,5 +94,9 @@ export class ConversationsService {
       { userId: callerId, conversationId: conversationId },
       { accepted: true }
     );
+  }
+
+  public async deleteConversation(callerId: number, conversationId: number) {
+
   }
 }

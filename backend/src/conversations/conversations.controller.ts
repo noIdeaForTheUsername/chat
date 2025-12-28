@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { UserId } from 'src/shared/auth/user-id.decorator';
 import { CreateConversationDto } from './dto/create-conversation.dto';
@@ -31,10 +31,12 @@ export class ConversationsController {
 
   @Post(":id/accept")
   @HttpCode(HttpStatus.NO_CONTENT)
-  async acceptConversation(
-    @UserId() callerId: number,
-    @Param("id", ParseIntPipe) conversationId: number
-  ) {
+  async acceptConversation(@UserId() callerId: number, @Param("id", ParseIntPipe) conversationId: number) {
     return await this.conversationsService.acceptConversation(callerId, conversationId);
+  }
+
+  @Delete(":id")
+  async deleteConversation(@UserId() calledId: number, @Param("id", ParseIntPipe) conversationId: number) {
+    
   }
 }

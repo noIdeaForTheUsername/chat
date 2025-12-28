@@ -9,16 +9,14 @@ import { ProfilesService } from './profiles/profiles.service';
 @Injectable()
 export class UsersService {
 
+  // THIS SERVICE ONLY HANDLES ACTIONS INVOLVING BOTH ACCOUNTS AND PROFILES
+
   constructor(
     private dataSource: DataSource,
     private profilesService: ProfilesService,
-    // @InjectRepository(Account)
-    // private accounts: Repository<Account>,
-    // @InjectRepository(Profile)
-    // private profiles: Repository<Profile>,
   ) {}
 
-  async getProfileExists(id: number) {
+  async profileExists(id: number) {
     const found = await this.profilesService.getRawProfile(id, false);
     return found !== null;
   }

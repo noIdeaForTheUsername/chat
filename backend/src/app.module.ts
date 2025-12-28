@@ -10,13 +10,14 @@ import { UserConversation } from './conversations/entities/user-conversation.ent
 import { AccountsModule } from './users/accounts/accounts.module';
 import { Account } from './users/accounts/entities/account.entity';
 import { APP_GUARD } from '@nestjs/core';
-import { LoggedInGuard } from './users/accounts/logged-in.guard';
+import { LoggedInGuard } from './shared/auth/logged-in.guard';
 import { ProfilesModule } from './users/profiles/profiles.module';
 import { UserContact } from './users/profiles/entities/user-contact.entity';
 import { Profile } from './users/profiles/entities/profile.entity';
 import { FullProfile } from './users/profiles/entities/full-profile.entity';
 import { Contact } from './users/profiles/entities/contact.entity';
 import { UsersModule } from './users/users.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -37,10 +38,15 @@ import { UsersModule } from './users/users.module';
     ConversationsModule,
     ProfilesModule,
     UsersModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: LoggedInGuard,
+    }
   ],
 })
 export class AppModule {
