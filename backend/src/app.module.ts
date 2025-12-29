@@ -18,6 +18,10 @@ import { addTransactionalDataSource } from 'typeorm-transactional';
 import { AccountsModule } from './application/users/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
 import { ProfilesModule } from './application/users/profiles/profiles.module';
+import { Message } from './domain/messages/entities/message.entity';
+import { MessagesModule } from './application/messages/messages.module';
+import { UserMessage } from './domain/messages/entities/user-message.entity';
+import { LatestUserMessage } from './domain/messages/entities/latest-user-message.entity';
 
 @Module({
   imports: [
@@ -38,7 +42,8 @@ import { ProfilesModule } from './application/users/profiles/profiles.module';
           schema: "public",
           entities: [
             Account, Profile, FullProfile, Contact, UserContact,  // accounts and profiles
-            Conversation, Participation, UserConversation,  // conversations
+            Conversation, Participation, UserConversation, // conversations
+            Message, UserMessage, LatestUserMessage // messages
           ],
         };
       },
@@ -50,6 +55,7 @@ import { ProfilesModule } from './application/users/profiles/profiles.module';
       },
     }),
     ConversationsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [

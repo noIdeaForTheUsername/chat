@@ -28,6 +28,7 @@ export class ConversationsService {
   }
 
   async deleteConversation(callerId: number, conversationId: number) {
-    return this.conversations.deleteConversation(callerId, conversationId);
+    const conversation = await this.conversations.findUserConversation(callerId, conversationId, true);
+    return this.conversations.deleteConversation(conversationId);
   }
 }

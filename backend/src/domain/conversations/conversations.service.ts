@@ -99,7 +99,7 @@ export class ConversationsDomainService {
 
   // DELETING
 
-  public async deleteConversation(callerId: number, conversationId: number) {
-
+  public async deleteConversation(conversationId: number) {
+    await this.conversations.delete({ id: conversationId });
   }
 }
