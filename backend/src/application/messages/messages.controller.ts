@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { UserId } from 'src/shared/auth/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
@@ -16,18 +16,20 @@ export class MessagesController {
   @Get("conversation/:id")
   async getConversationMessages(
     @UserId() callerId: number,
+    @Param('id') conversationId: number,
     @Query() query: ConversationMessagesQuery
   ) {
     return await this.messagesService.getConversationMessages(
-      callerId, query.conversationId, query.globalIdStart, query.older);
+      callerId, conversationId, query.globalIdStart, query.older);
   }
 
   @Post()
+  @HttpCode(HttpStatus.NO_CONTENT)
   async sendMessage(
     @UserId() callerId: number,
     @Body() body: SendMessageDto
   ) {
-    return await this.messagesService.sendMessage(
+    await this.messagesService.sendMessage(
       callerId, body.conversationId, body.text, body.timestamp, body.repliedId);
   }
 }

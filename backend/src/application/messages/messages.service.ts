@@ -32,7 +32,6 @@ export class MessagesService {
     return await this.messagesDomainService.findMostRecentUserMessagePerConversation(callerId);
   }
 
-  @Transactional()  // TODO: think if transaction is really needed here (won't it just throw an exception without any further side effects?)
   async sendMessage(callerId: number, conversationId: number,
     text: string, timestamp: Date, repliedId?: number)
   {
@@ -46,7 +45,7 @@ export class MessagesService {
     if (messageLate || messageInTheFuture)
       throw new BadRequestException("Provided message timestamp is too far from the actual current time");  
 
-    return await this.messagesDomainService.createMessage(
+    await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
   }
 }

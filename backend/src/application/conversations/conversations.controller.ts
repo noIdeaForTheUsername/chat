@@ -17,7 +17,7 @@ export class ConversationsController {
   async createConversation(@UserId() callerId: number, @Body() body: CreateConversationDto) {
     // Direct conversation
     if (body.type === ConversationType.Direct) {
-      return this.conversationsService.createConversation(callerId, body);
+      return await this.conversationsService.createConversation(callerId, body.type, body.participantId);
     }
     // TODO: group conversation
     return undefined;
@@ -31,6 +31,7 @@ export class ConversationsController {
 
   @Delete(':id')
   async deleteConversation(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
+    throw new BadRequestException('Not implemented yet');
     return await this.conversationsService.deleteConversation(callerId, conversationId);
   }
 }

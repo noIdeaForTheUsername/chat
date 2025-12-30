@@ -30,18 +30,13 @@ export class MessagesDomainService {
     return await this.messageRepository.save(message);
   }
 
-  // async findRecentlyReceivedUserMessages(userId: number, limit: number) {
-  //   return await this.userMessageRepository.find({
-  //     where: { userId: userId },
-  //     order: { timestamp: "DESC" },
-  //     take: limit,
-  //   });
-  // }
-
   async findMostRecentUserMessagePerConversation(userId: number) {
-    return await this.latestUserMessageRepository.find({
+    const msgs = await this.latestUserMessageRepository.find({
+      select: { globalId: true, conversationId: true, senderId: true,
+        text: true, timestamp: true, repliedId: true },
       where: { userId: userId },
     });
+    return msgs;
   }
 
   async findMessages(conversationId: number, globalIdStartExclusive: number, olderThanStart: boolean, limit: number) {

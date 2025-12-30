@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ProfilesDomainService } from './profiles.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserContact } from './entities/user-contact.entity';
+import { UserKnownProfile } from './entities/user-known-profile.entity';
 import { Profile } from './entities/profile.entity';
 import { FullProfile } from './entities/full-profile.entity';
-import { Contact } from './entities/contact.entity';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserContact, Profile, FullProfile, Contact])],
+  imports: [TypeOrmModule.forFeature([UserKnownProfile, Profile, FullProfile])],
   providers: [ProfilesDomainService],
   exports: [ProfilesDomainService],
 })

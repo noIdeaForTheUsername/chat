@@ -1,14 +1,21 @@
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import type { Response } from 'express';
 import { PublicAccess } from 'src/shared/auth/public-access.decorator';
+import { UserId } from 'src/shared/auth/user-id.decorator';
+import { AccountResponseDto } from './dto/account-response.dto';
+import { plainToInstance } from 'class-transformer';
+import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 
 @Controller()
-@PublicAccess()
+@PublicAccess(true)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly accountsService: AccountsDomainService
+  ) {}
 
   @Post('register')
   async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response) {
@@ -33,6 +40,13 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Res({ passthrough: true }) res: Response) {
     this.sendJwtCookie(res, '');
+  }
+
+  @Get('me')
+  @PublicAccess(false)
+  async getCurrentUser(@UserId() userId: number) {
+    const account = await this.accountsService.findAccountById(userId, true);
+    return plainToInstance(AccountResponseDto, account);
   }
 
   private sendJwtCookie(res: Response, jwt: string) {

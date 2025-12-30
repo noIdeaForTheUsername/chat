@@ -1,19 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserContact } from './entities/user-contact.entity';
+import { UserKnownProfile } from './entities/user-known-profile.entity';
 import { Like, Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
-import { PatchProfileDto } from '../../application/users/profiles/dto/patch-profile.dto';
 import { FullProfile } from './entities/full-profile.entity';
-import { Contact } from './entities/contact.entity';
 
 @Injectable()
 export class ProfilesDomainService {
   constructor(
-    @InjectRepository(Contact)
-    private contacts: Repository<Contact>,
-    @InjectRepository(UserContact)
-    private userKnownProfiles: Repository<UserContact>,
+    @InjectRepository(UserKnownProfile)
+    private userKnownProfiles: Repository<UserKnownProfile>,
     @InjectRepository(Profile)
     private profiles: Repository<Profile>,
     @InjectRepository(FullProfile)
@@ -26,14 +22,24 @@ export class ProfilesDomainService {
     return await this.userKnownProfiles.findBy({ contactOwnerId: userId });
   }
 
-  async findFullPublicProfiles(id: number, exceptionOnNotFound = false) {
+  async findUserKnownProfile(userId: number, profileId: number, exceptionOnNotFound = false) {
+    const profile = await this.userKnownProfiles.findOneBy({
+      contactOwnerId: userId,
+      id: profileId
+    });
+    if (!profile && exceptionOnNotFound)
+      throw new NotFoundException('Profile not found');
+    return profile;
+  }
+
+  async findFullPublicProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.fullProfiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
       throw new NotFoundException('Profile not found');
     return profile;
   }
 
-  async findRawProfiles(id: number, exceptionOnNotFound = false) {
+  async findRawProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.profiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
       throw new NotFoundException('Profile not found');
@@ -41,13 +47,12 @@ export class ProfilesDomainService {
   }
 
   async findSearchedProfiles(search: string) {
-    const likeExp = Like(`%${search}%`);
     return await this.fullProfiles.find({
       where: [
-        { login: likeExp },
-        { name: likeExp },
-        { email: likeExp },
-        { phoneNumber: likeExp },
+        { login: search },
+        { name: search },
+        { email: search },
+        { phoneNumber: search },
       ]
     });
   }
@@ -69,27 +74,10 @@ export class ProfilesDomainService {
 
   // UPDATING DATA
 
-  async updateProfile(id: number, updatedFieldsObject: PatchProfileDto) {
+  async updateProfile(id: number, updatedFieldsObject: Partial<Profile>) {
+    updatedFieldsObject.id = undefined;  // Prevent changing the ID
+    // execute
     const result = await this.profiles.update({ id }, updatedFieldsObject);
-    if (result.affected === 0) throw new NotFoundException('Profile not found');
-    console.log('genMaps: ', result.generatedMaps);
-    console.log('raw: ', result.raw);
-    return result;
-  }
-
-  async setContactBlockedStatus(callerId: number, blockedId: number, blockedValue: boolean) {
-    const result = await this.contacts.update(
-      { ownerId: callerId, participantId: blockedId },
-      { blocked: blockedValue }
-    );
-    if (result.affected === 0) throw new NotFoundException('Profile not found');
-  }
-
-  async setContactNick(callerId: number, profileId: number, nick: string) {
-    const result = await this.contacts.update(
-      { ownerId: callerId, participantId: profileId },
-      { nick: nick }
-    );
     if (result.affected === 0) throw new NotFoundException('Profile not found');
   }
 }

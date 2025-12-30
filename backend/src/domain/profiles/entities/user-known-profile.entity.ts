@@ -1,7 +1,7 @@
 import { ViewColumn, ViewEntity } from 'typeorm';
 
 @ViewEntity('user_known_profiles')
-export class UserContact {
+export class UserKnownProfile {
   @ViewColumn({ name: 'contact_owner_id' })
   contactOwnerId: number;
 

@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConversationsController } from './conversations.controller';
 import { ConversationsService } from './conversations.service';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
+import { ProfilesDomainModule } from 'src/domain/profiles/profiles.module';
+import { ContactsDomainModule } from 'src/domain/contacts/contacts.module';
 
 @Module({
-  imports: [ConversationsDomainModule],
+  imports: [ConversationsDomainModule, ProfilesDomainModule, ContactsDomainModule],
   controllers: [ConversationsController],
   providers: [ConversationsService],
 })

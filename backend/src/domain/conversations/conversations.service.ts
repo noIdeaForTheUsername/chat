@@ -33,68 +33,59 @@ export class ConversationsDomainService {
     return conv;
   }
 
+  public async findDirectConversationBetweenUsers(user1Id: number, user2Id: number) {
+    return await this.userConversations.findOne({
+      where: { ownerId: user1Id, participantId: user2Id, type: ConversationType.Direct }
+    });
+  }
+
   // CREATING
 
   public async createDirectConversation(callerId: number, participantId: number) {
-    // Checks
-    const [sameConversationId] = await Promise.all([
-      this.userConversations.findOne({
-        select: { id: true },
-        where: { ownerId: callerId, participantId: participantId, type: ConversationType.Direct }
-      }),
-      // this.usersService.profileExists(participantId),
-    ]);
+    // Conversation
+    const conversationObjectObj = this.conversations.create({ type: ConversationType.Direct });
+    return await this.conversations.save(conversationObjectObj);
 
-    if (sameConversationId !== null)
-      throw new ConflictException('A direct conversation between you and the given participant already exists');
-    // if (!participantExists)
-    //   throw new NotFoundException('Participant user not found');
-
-    // Data operations
-    await this.dataSource.manager.transaction(async manager => {
-      const conversationObjectObj = manager.create(Conversation, { type: ConversationType.Direct });
-      const conversation = await manager.save(conversationObjectObj);
-
-      const callerParticipationObj = manager.create(Participation, {
-        userId: callerId,
-        conversationId: conversation.id,
-        accepted: true,
-      });
-
-      const participantParticipationObj = manager.create(Participation, {
-        userId: participantId,
-        conversationId: conversation.id,
-        accepted: false,
-      });
-      
-      try {
-        await Promise.all([
-          manager.save(callerParticipationObj),
-          manager.save(participantParticipationObj),
-        ]);
-      }
-      catch (e) {
-        // TODO: (potentially) ERROR HANDLING
-        console.log(typeof e);
-        throw e;
-      }
-
-      return await this.findUserConversation(callerId, conversation.id, true);
-    });
-
+    // Participations
+    // const callerParticipationObj = this.participations.create({
+    //   userId: callerId,
+    //   conversationId: conversation.id,
+    //   accepted: true,
+    // });
+    // const participantParticipationObj = this.participations.create({
+    //   userId: participantId,
+    //   conversationId: conversation.id,
+    //   accepted: false,
+    // });
+    
+    // await Promise.all([
+    //   this.participations.save(callerParticipationObj),
+    //   this.participations.save(participantParticipationObj),
+    // ]);
   }
 
-  public async createGroupConversation() {  // TODO: implement after Groups are ready on DB
+  public async createParticipation(userId: number, conversationId: number, accepted = false) {
+    const participationObj = this.participations.create({
+      userId: userId,
+      conversationId: conversationId,
+      accepted: accepted,
+    });
+    return await this.participations.save(participationObj);
+  }
+
+  public async createGroupConversation() {  // TODO: implement after Groups are ready on DB 
 
   }
 
   // UPDATING
 
-  public async acceptConversation(callerId: number, conversationId: number) {
-    await this.participations.update(
-      { userId: callerId, conversationId: conversationId },
+  public async acceptConversation(userId: number, conversationId: number) {
+    const result = await this.participations.update(
+      { userId: userId, conversationId: conversationId },
       { accepted: true }
     );
+    if (result.affected === 0)
+      throw new NotFoundException('Conversation not found');
   }
 
   // DELETING

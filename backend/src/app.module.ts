@@ -9,27 +9,22 @@ import { UserConversation } from './domain/conversations/entities/user-conversat
 import { Account } from './domain/accounts/entities/account.entity';
 import { APP_GUARD } from '@nestjs/core';
 import { LoggedInGuard } from './shared/auth/logged-in.guard';
-import { UserContact } from './domain/profiles/entities/user-contact.entity';
+import { UserKnownProfile } from './domain/profiles/entities/user-known-profile.entity';
 import { Profile } from './domain/profiles/entities/profile.entity';
 import { FullProfile } from './domain/profiles/entities/full-profile.entity';
-import { Contact } from './domain/profiles/entities/contact.entity';
+import { Contact } from './domain/contacts/entities/contact.entity';
 import { ConversationsModule } from './application/conversations/conversations.module';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-import { AccountsModule } from './application/users/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
-import { ProfilesModule } from './application/users/profiles/profiles.module';
+import { ProfilesModule } from './application/users/profiles-and-contacts/profiles.module';
 import { Message } from './domain/messages/entities/message.entity';
 import { MessagesModule } from './application/messages/messages.module';
 import { UserMessage } from './domain/messages/entities/user-message.entity';
 import { LatestUserMessage } from './domain/messages/entities/latest-user-message.entity';
+import { ContactsDomainModule } from './domain/contacts/contacts.module';
 
 @Module({
   imports: [
-    AccountsModule,
-    AuthModule,
-    ProfilesModule,
-    ConversationsModule,
-
     TypeOrmModule.forRootAsync({
       useFactory() {
         return {
@@ -41,7 +36,7 @@ import { LatestUserMessage } from './domain/messages/entities/latest-user-messag
           database: "chat",
           schema: "public",
           entities: [
-            Account, Profile, FullProfile, Contact, UserContact,  // accounts and profiles
+            Account, Profile, FullProfile, Contact, UserKnownProfile,  // accounts and profiles
             Conversation, Participation, UserConversation, // conversations
             Message, UserMessage, LatestUserMessage // messages
           ],
@@ -54,6 +49,9 @@ import { LatestUserMessage } from './domain/messages/entities/latest-user-messag
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
+    
+    AuthModule,
+    ProfilesModule,
     ConversationsModule,
     MessagesModule,
   ],
