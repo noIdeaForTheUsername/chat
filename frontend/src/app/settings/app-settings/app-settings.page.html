@@ -5,7 +5,7 @@
 
   <!-- ACCOUNT -->
   <ion-item-group>
-    <ion-item-divider><ion-label>{{"common.account" | translate}}</ion-label></ion-item-divider>
+    <ion-item-divider><ion-label>{{"profile.account" | translate}}</ion-label></ion-item-divider>
       <!-- profile -->
       <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${this.profileService.userId}`"/>
       <!-- lock -->
@@ -15,7 +15,8 @@
       <!-- change account information -->
       <app-item-button [text]="'page.app-settings.modify-account' | translate" icon="build"/>
       <!-- log out -->
-      <app-item-button [text]="'page.app-settings.logout' | translate" icon="log-out" iconColor="danger"/>
+      <app-item-button [text]="'page.app-settings.logout' | translate"
+      icon="log-out" iconColor="danger" (click)="authService.logout()"/>
   </ion-item-group>
 
   <!-- APP -->

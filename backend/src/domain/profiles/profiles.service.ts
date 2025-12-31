@@ -33,21 +33,21 @@ export class ProfilesDomainService {
       id: profileId
     });
     if (!profile && exceptionOnNotFound)
-      throw new NotFoundException('Profile not found');
+      throw new NotFoundException('not-found.profile');
     return profile;
   }
 
   async findFullPublicProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.fullProfiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
-      throw new NotFoundException('Profile not found');
+      throw new NotFoundException('not-found.profile');
     return profile;
   }
 
   async findRawProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.profiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
-      throw new NotFoundException('Profile not found');
+      throw new NotFoundException('not-found.profile');
     return profile;
   }
 
@@ -87,6 +87,6 @@ export class ProfilesDomainService {
     updatedFieldsObject.id = undefined;  // Prevent changing the ID
     // execute
     const result = await this.profiles.update({ id }, updatedFieldsObject);
-    if (result.affected === 0) throw new NotFoundException('Profile not found');
+    if (result.affected === 0) throw new NotFoundException('not-found.profile');
   }
 }

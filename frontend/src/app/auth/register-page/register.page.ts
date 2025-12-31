@@ -69,4 +69,7 @@ export class RegisterPage {
     this.auth.register(body);
   }
 
+  ionViewWillLeave() {
+    this.form.patchValue({ password: '', passwordRepeat: '' });
+  }
 }

@@ -24,7 +24,7 @@ export class ProfilesController {
   @Get('search')
   async searchProfiles(@Query('q') search: string) {
     if (typeof search !== 'string' || search.length === 0)
-      throw new BadRequestException('search must be a non-empty string');
+      throw new BadRequestException('search-empty');
     return await this.profilesService.findSearchedProfiles(search);
   }
 

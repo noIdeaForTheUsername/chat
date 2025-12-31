@@ -20,6 +20,6 @@ export class ContactsDomainService {
       { ownerId, participantId },
       newValues,
     );
-    if (result.affected === 0) throw new NotFoundException('Contact not found');
+    if (result.affected === 0) throw new NotFoundException('not-found.contact');
   }
 }

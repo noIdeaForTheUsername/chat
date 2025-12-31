@@ -22,7 +22,7 @@ export class LoggedInGuard implements CanActivate {
     }
     catch (e) {
       if (publicAccess) return true;
-      throw new UnauthorizedException('Invalid authentication token');
+      throw new UnauthorizedException('token-invalid');
     }
 
     return true;
@@ -31,7 +31,7 @@ export class LoggedInGuard implements CanActivate {
   private extractTokenFromRequest(req: Request, exceptionOnFail = true): string {
     const jwt = req.cookies?.['authJwt'];
     if (!jwt && exceptionOnFail)
-      throw new UnauthorizedException('No authentication token provided');
+      throw new UnauthorizedException('token-invalid');
     return jwt;
   }
 }

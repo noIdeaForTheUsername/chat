@@ -18,6 +18,25 @@ import { GroupProfile, Profile, UserProfile } from "@app/profiles/profile.interf
   // }
 // }
 
+export type ServerUserProfile = Omit<UserProfile, "type">;
+
+export function mapUserProfile(profile: ServerUserProfile): UserProfile {
+  return {
+    type: 'user' as const,
+    ...profile,
+  };
+}
+
+export function mapProfileList(profiles: ServerUserProfile[]) {
+  let profileMap = new Map<number, UserProfile>();
+  profiles.forEach((profile) => {
+    const convertedProfile = mapUserProfile(profile);
+    profileMap.set(profile.id, convertedProfile);
+  });
+  return profileMap;
+}
+
+
 export function serverToClientUserProfile(profile: UserProfile): UserProfile {
   return {
     id: profile.id,

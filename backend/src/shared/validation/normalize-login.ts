@@ -9,7 +9,7 @@ export function NormalizeLogin() {
 
 export function normalizeLogin(value: string) {
   if (typeof value !== 'string')
-    throw new BadRequestException('Login must be a string');
+    throw new BadRequestException('login must be a string');
   
   let normalized = value
     .toLowerCase()

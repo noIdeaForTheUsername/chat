@@ -1,4 +1,4 @@
-<app-standard-header [title]="'common.register' | translate" [backButton]="false"></app-standard-header>
+<app-standard-header [title]="'profile.register' | translate" [backButton]="false"></app-standard-header>
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="form">
@@ -26,13 +26,13 @@
 
     <div class="floating-input">
       <label>
-        <p>{{ 'page.register.password-input' | translate }}:</p>
+        <p>{{ 'profile.password' | translate }}:</p>
         <input formControlName="password" type="password">
       </label>
     </div>
     <div class="floating-input">
       <label>
-        <p>{{ 'page.register.repeat-password-input' | translate }}:</p>
+        <p>{{ 'profile.password-repeat' | translate }}:</p>
         <input formControlName="passwordRepeat" type="password">
       </label>
     </div>
@@ -58,9 +58,8 @@
     <!-- email and phone settings -->
 
     <p>{{ 'page.register.email-phone-settings' | translate }}:</p>
-    <ion-toggle formControlName="emailPublic">{{'common.email' | translate }}</ion-toggle><br/><br/>
-    <ion-toggle formControlName="phoneNumberPublic">{{'common.phone-number' | translate }}</ion-toggle><br/><br/>
-
+    <ion-toggle alignment="center" formControlName="emailPublic">{{'profile.email' | translate }}</ion-toggle><br/>
+    <ion-toggle alignment="center" formControlName="phoneNumberPublic">{{'profile.phone-number' | translate }}</ion-toggle><br/>
     <hr>
     <!-- bio -->
 
@@ -74,11 +73,11 @@
     <hr>
 
     <ion-button fill="solid" (click)="register()" [disabled]="this.auth.processing()">
-      {{ 'common.register' | translate }}
+      {{ 'profile.register' | translate }}
     </ion-button>
     <p class="hint">{{ "page.register.login-hint" | translate }}</p>
     <ion-button fill="outline" routerLink="/login">
-      {{ 'common.login' | translate }}
+      {{ 'profile.log-in' | translate }}
     </ion-button>
   </div>
   </form>

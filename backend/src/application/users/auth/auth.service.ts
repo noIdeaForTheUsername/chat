@@ -33,9 +33,13 @@ export class AuthService {
   async login(account: string, plainPassword: string) {
     const found = await this.accountsService.findAccountByUniqueField(account);
     if (!found || !(await bcrypt.compare(plainPassword, found.passwordHash))) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('credentials-invalid');
     }
     return { authJwt: await this.jwtService.signAsync({ sub: found.id }) };
+  }
+
+  async getFullProfile(userId: number) {
+    return this.profilesService.findFullPublicProfile(userId, true);
   }
 
 
@@ -46,7 +50,7 @@ export class AuthService {
     name?: string, bio?: string
   ) {
     if (!email && !phoneNumber)
-      throw new BadRequestException('Either email or phone number must be provided');
+      throw new BadRequestException('email-or-phone-required');
 
     // Create and return ID
     try {
@@ -59,11 +63,11 @@ export class AuthService {
         const constraint = err.driverError.constraint;
         switch (constraint) {
           case 'unique_login':
-            throw new ConflictException('User with this login already exists');
+            throw new ConflictException('exists.login');
           case 'unique_email':
-            throw new ConflictException('User with this email already exists');
+            throw new ConflictException('exists.email');
           case 'unique_phone_number':
-            throw new ConflictException('User with this phone number already exists');
+            throw new ConflictException('exists.phone-number');
         }
       }
       throw err;

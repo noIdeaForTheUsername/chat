@@ -9,7 +9,7 @@ export function NormalizeEmail() {
 
 export function normalizeEmail(value: string) {
   if (typeof value !== 'string')
-    throw new BadRequestException('Email must be a string');
+    throw new BadRequestException('email must be a string');
   
   let normalized = value
     .trim()

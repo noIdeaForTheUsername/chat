@@ -78,4 +78,15 @@ export class AlertService {
     () => console.log(`The user ID=${userId} will be blocked!`), undefined,
     this.translate.instant("profile.block"), this.translate.instant("common.are-you-sure"));
   }
+
+  displayErrorById(errorId: string, confirmHandler?: Function) {
+    const header = this.translate.instant(`error.${errorId}.header`);
+    const message = this.translate.instant(`error.${errorId}.description`);
+    this.displayMessageAlert(AlertType.ERROR, message, confirmHandler, header);
+  }
+
+  displayServerConnectionError() {
+    this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.0.description'),
+      () => {}, this.translate.instant("error.0.header"));
+  }
 }

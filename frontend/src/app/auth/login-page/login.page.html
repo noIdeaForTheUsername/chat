@@ -1,4 +1,4 @@
-<app-standard-header [title]="'common.login' | translate" [backButton]="false"></app-standard-header>
+<app-standard-header [title]="'profile.login' | translate" [backButton]="false"></app-standard-header>
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="loginForm">
@@ -14,18 +14,18 @@
     
     <div class="floating-input">
       <label>
-        <p>{{ 'page.login.password-input' | translate }}:</p>
+        <p>{{ 'profile.password' | translate }}:</p>
         <input formControlName="password" type="password">
       </label>
     </div>
 
     <ion-button fill="solid" (click)="login()" [disabled]="this.auth.processing()">
-      {{ 'common.login' | translate }}
+      {{ 'profile.log-in' | translate }}
     </ion-button>
     <hr>
     <p class="hint">{{ "page.login.register-hint" | translate }}</p>
     <ion-button fill="outline" routerLink="/register">
-      {{ 'common.register' | translate }}
+      {{ 'profile.register' | translate }}
     </ion-button>
   </div>
   </form>

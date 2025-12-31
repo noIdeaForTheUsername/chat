@@ -34,4 +34,9 @@ export class LoginPage {
     const body = this.loginForm.getRawValue();
     this.auth.login(body);
   }
+
+  ionViewWillLeave() {
+    this.loginForm.patchValue({ account: '', password: '' });
+    this.loginForm.reset();
+  }
 }

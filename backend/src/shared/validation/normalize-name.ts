@@ -9,7 +9,7 @@ export function NormalizeName() {
 
 export function normalizeName(value: string) {
   if (typeof value !== 'string')
-    throw new BadRequestException('Name must be a string');
+    throw new BadRequestException('name must be a string');
   
   let normalized = value.trim()
     .split(" ")

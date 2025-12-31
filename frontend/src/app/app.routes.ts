@@ -3,8 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'chats',
-    pathMatch: 'full',
+    loadComponent: () => import('./loading/loading-page/loading.page').then(m => m.LoadingPage),
   },
   {
     path: 'chats',

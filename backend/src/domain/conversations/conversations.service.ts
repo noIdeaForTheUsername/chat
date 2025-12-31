@@ -29,7 +29,7 @@ export class ConversationsDomainService {
       select: { id: true, type: true, participantId: true, accepted: true, notifications: true },
       where: { ownerId: userId, id: conversationId }
     });
-    if (!conv && exceptionOnNotFound) throw new NotFoundException('Conversation not found');
+    if (!conv && exceptionOnNotFound) throw new NotFoundException('not-found.conversation');
     return conv;
   }
 
@@ -67,7 +67,7 @@ export class ConversationsDomainService {
       { accepted: true }
     );
     if (result.affected === 0)
-      throw new NotFoundException('Conversation not found');
+      throw new NotFoundException('not-found.conversation');
   }
 
   // DELETING

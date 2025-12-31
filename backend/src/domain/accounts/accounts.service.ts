@@ -17,14 +17,14 @@ export class AccountsDomainService {
   async findAccountById(id: number, exceptionOnNotFound = false) {
     const found = await this.accounts.findOneBy({ id });
     if (!found && exceptionOnNotFound)
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('not-found.user');
     return found;
   }
 
   async findAccountByLogin(login: string, exceptionOnNotFound = false) {
     const found = await this.accounts.findOneBy({ login });
     if (!found && exceptionOnNotFound)
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('not-found.user');
     return found;
   }
 

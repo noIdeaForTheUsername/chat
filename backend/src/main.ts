@@ -2,13 +2,18 @@ import { initializeTransactionalContext } from 'typeorm-transactional';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  // cookies
   app.use(cookieParser());
+  // Validation
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
+    throw new BadRequestException(`invalid.${errors[0].property}`);
+  }}));
+  // CORS
   app.enableCors({
     origin: "http://localhost:8100",
     credentials: true,

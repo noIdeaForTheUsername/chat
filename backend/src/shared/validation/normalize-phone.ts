@@ -9,7 +9,7 @@ export function NormalizePhone() {
 
 export function normalizePhone(value: string) {
   if (typeof value !== 'string')
-    throw new BadRequestException('Phone number must be a string');
+    throw new BadRequestException('phone number must be a string');
   
   let normalized = value.trim().replaceAll(" ", "").replaceAll("-", "");
   if (!normalized.startsWith("+") && normalized.length <= 9) 

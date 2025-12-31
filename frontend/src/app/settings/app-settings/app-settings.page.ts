@@ -9,6 +9,7 @@ import { ItemSelectComponent } from "../../shared/inputs/item-select-component/i
 import { ItemToggleComponent } from "@app/shared/inputs/item-toggle-component/item-toggle.component";
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '@app/auth/auth.service';
 
 @Component({
   selector: 'app-settings',
@@ -18,13 +19,9 @@ import { RouterLink } from '@angular/router';
   imports: [IonContent, IonItemGroup, IonItemDivider, IonLabel, IonSelectOption,
     CommonModule, FormsModule, RouterLink, TranslatePipe, StandardHeaderComponent, ItemButtonComponent, ItemSelectComponent, ItemToggleComponent]
 })
-export class AppSettingsPage implements OnInit {
+export class AppSettingsPage {
 
   protected profileService = inject(ProfileService);
-
-  constructor() { }
-
-  ngOnInit() {
-  }
+  protected authService = inject(AuthService);
 
 }

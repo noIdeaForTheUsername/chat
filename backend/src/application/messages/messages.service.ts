@@ -42,7 +42,7 @@ export class MessagesService {
     const messageLate = now - messageTime > this.lateMessageThresholdMs;
     const messageInTheFuture = messageTime - now > this.earlyMessageThresholdMs;
     if (messageLate || messageInTheFuture)
-      throw new BadRequestException("Provided message timestamp is too far from the actual current time");  
+      throw new BadRequestException("bad-timestamp");  
 
     await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);

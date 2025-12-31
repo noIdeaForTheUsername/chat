@@ -20,7 +20,7 @@ export class AuthController {
   @Post('register')
   async register(@Body() body: RegisterDto, @Res({ passthrough: true }) res: Response) {
     if (body.password !== body.passwordRepeat)
-      throw new BadRequestException('Given passwords do not match');
+      throw new BadRequestException('passwords-different');
     const { authJwt } = await this.authService.register(
       body.login, body.password,
       body.emailPublic, body.phoneNumberPublic,
@@ -45,8 +45,7 @@ export class AuthController {
   @Get('me')
   @PublicAccess(false)
   async getCurrentUser(@UserId() userId: number) {
-    const account = await this.accountsService.findAccountById(userId, true);
-    return plainToInstance(AccountResponseDto, account);
+    return await this.authService.getFullProfile(userId);
   }
 
   private sendJwtCookie(res: Response, jwt: string) {

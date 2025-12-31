@@ -16,16 +16,13 @@
     "copy-text": "Copy text",
     "retry": "Retry",
     "empty": "Empty",
+    "loading": "Loading...",
     "info": "Information",
     "error": "Error",
     "danger-zone": "Danger zone",
 
     "form-invalid": "Provided data is invalid. Please check all the form fields.",
-    "account": "Account",
-    "email": "Email",
-    "phone-number": "Phone number",
-    "login": "Log in",
-    "register": "Register",
+    "form-field-invalid": "Invalid form field value:",
     "app": "App",
     "lock-app": "Lock the app",
 
@@ -137,7 +134,6 @@
     "login": {
       "header": "Log in to your account",
       "account-input": "Login, email or phone number",
-      "password-input": "Password",
       "register-hint": "Don't have an account?"
     },
 
@@ -145,8 +141,6 @@
       "header": "Create a new account",
       "name-input": "Full name (optional, but recommended)",
       "login-input": "Unique login",
-      "password-input": "Password",
-      "repeat-password-input": "Repeat password",
       "email-input": "Email address (optional)",
       "phone-input": "Phone with country code (optional)",
       "email-phone-settings": "Make other users able to find me by my",
@@ -161,7 +155,7 @@
     "nick": "Nick",
     "login": "Login",
     "name": "Name",
-    "telephone": "Phone number",
+    "phone-number": "Phone number",
     "user-bio": "About me...",
     "group-bio": "About the group",
 
@@ -169,7 +163,14 @@
     "view-profile": "View profile",
     "block": "Block",
     "call": "Call",
-    "verify-security": "Verify chat security"
+    "verify-security": "Verify chat security",
+
+    "account": "Account",
+    "log-in": "Log in",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "password-repeat": "Repeat password"
   },
 
 
@@ -177,6 +178,9 @@
     "block": {
       "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
+    },
+    "logout-success": {
+      "description": "You have been successfully logged out."
     }
   },
 
@@ -198,9 +202,31 @@
       "header": "Bad URL",
       "description": "Try going back to the home page"
     },
+
     "unknown": {
       "header": "Unknown error",
       "description": "Code: {{code}}. Please note this code and contact the administrator if the issue persists."
+    },
+    "logout-failed": {
+      "header": "Logout failed",
+      "description": "An error occurred while logging out. If necessary, try erasing the browser cookies and data."
+    },
+    "session-expired": {
+      "header": "Session expired",
+      "description": "Please log in again. Otherwise, you will only be able to browse old data"
+    },
+
+    "credentials-invalid": {
+      "header": "Invalid credentials",
+      "description": "Incorrect account name or password."
+    },
+    "email-or-phone-required": {
+      "header": "Error",
+      "description": "Email or phone required"
+    },
+    "exists": {
+      "header": "Conflict",
+      "description": "User with this {{field}} already exists"
     }
   }
 }

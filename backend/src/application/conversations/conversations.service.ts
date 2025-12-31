@@ -39,7 +39,7 @@ export class ConversationsService {
     // assert conversation does not already exist
     const existing = await this.conversations.findDirectConversationBetweenUsers(callerId, participantId);
     if (existing !== null) 
-      throw new ConflictException('Direct conversation between these users already exists');
+      throw new ConflictException('conversation-exists');
 
     // create conversation
     const conversation = await this.conversations.createConversation(ConversationType.Direct);
