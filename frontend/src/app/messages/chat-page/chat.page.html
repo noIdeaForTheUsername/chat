@@ -94,7 +94,8 @@
           <ion-icon name="attach" slot="icon-only"></ion-icon>
         </ion-button>
         <!-- MESSAGE INPUT FIELD -->
-        <ion-textarea fill="solid" [autoGrow]="true"
+        <ion-textarea #msg_field
+          fill="solid" [autoGrow]="true"
           (ionInput)="onMessageFieldInput($event)"
           [placeholder]="'page.chat.message-input' | translate"
           maxlength="700"
@@ -103,7 +104,9 @@
           [autofocus]="true">
         </ion-textarea>
         <!-- SEND BUTTON -->
-        <ion-button shape="round" color="primary" fill="solid" class="round-button" [disabled]="this.initialLoading() || this.enteredMessage().length == 0">
+        <ion-button shape="round" color="primary" fill="solid" class="round-button"
+        [disabled]="this.initialLoading() || this.enteredMessage().length == 0"
+        (click)="sendMessage()">
           <ion-icon name="paper-plane" slot="icon-only"></ion-icon>
         </ion-button>
       </ion-buttons>

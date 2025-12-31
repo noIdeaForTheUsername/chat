@@ -27,11 +27,12 @@ export class BackendMessageApi {
     );
   }
 
-  sendMessage(conversationId: number, text: string, timestamp: Date) {
+  sendMessage(conversationId: number, text: string, timestamp: Date, repliedId?: number) {
     return this.http.post(`/conversations/${conversationId}/messages`, {
       conversationId,
       text,
-      timestamp
+      timestamp,
+      repliedId,
     });
   }
 }

@@ -89,8 +89,7 @@
       
       "unset": "Unset/private",
       "show-conversation": "Show conversation",
-      "not-found-hint": "Were you looking for other settings such as notifications or chat actions? Check out the <a>conversation settings page</a> instead.",
-      "about-me-placeholder": "A few sentences about yourself. This is encrypted and only visible to the users you accepted conversation with"
+      "not-found-hint": "Were you looking for other settings such as notifications or chat actions? Check out the <a>conversation settings page</a> instead."
     },
 
     "conversation-options": {
@@ -141,8 +140,9 @@
       "header": "Create a new account",
       "name-input": "Full name (optional, but recommended)",
       "login-input": "Unique login",
-      "email-input": "Email address (optional)",
-      "phone-input": "Phone with country code (optional)",
+      "email-input": "Email address",
+      "phone-input": "Phone with country code",
+      "email-phone-hint": "At least one is required (phone recommended):",
       "email-phone-settings": "Make other users able to find me by my",
       "bio-input": "Profile description (optional)",
       "bio-placeholder": "A few sentences about yourself...",
@@ -178,9 +178,6 @@
     "block": {
       "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
-    },
-    "logout-success": {
-      "description": "You have been successfully logged out."
     }
   },
 

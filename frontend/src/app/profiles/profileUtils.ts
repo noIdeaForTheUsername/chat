@@ -65,7 +65,7 @@ export function profileMatchesSearch(profile: Profile | undefined, search: strin
   if (profile === undefined) return false;
   if (profile.type == "user")
     return profile.login.toLowerCase().includes(search) || profile.name?.toLocaleLowerCase().includes(search)
-      || profile.id.toString().includes(search);
+      || profile.nick?.toLocaleLowerCase().includes(search) || profile.id.toString().includes(search);
   else
     return true;
 }

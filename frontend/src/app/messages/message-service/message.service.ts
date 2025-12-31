@@ -164,6 +164,28 @@ export class MessageService implements LoadingStatus {
     this.loadConvMessages(loadAmount, false, callBeforeComplete, this.highestDisplayedId);
   }
 
+  sendMessage(text: string, repliedId?: number) {
+    const timestamp = new Date();
+    this.api.sendMessage(this.currentConvId, text, timestamp, repliedId).subscribe({
+      next: (res: any) => {
+        console.log("send message res: ", res);
+        if (res.id === undefined) return;
+        this.displayedMessages.update((msgs) => {
+          return [...msgs, {
+            globalId: res.id,
+            numberInConversation: 0,  // todo in the future
+            conversationId: this.currentConvId,
+            senderId: this.authService.getUserId()!,
+            text: text,
+            timestamp,
+            isOwn: true,
+            repliedId,
+          }];
+        });
+      }
+    });
+  }
+
   exitConversation() {
     this.cancelMessageLoad();
     this.displayedMessages.set([]);

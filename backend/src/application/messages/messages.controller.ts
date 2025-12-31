@@ -31,12 +31,12 @@ export class MessagesController {
   }
 
   @Post("conversations/:id/messages")
-  @HttpCode(HttpStatus.NO_CONTENT)
   async sendMessage(
     @UserId() callerId: number,
     @Body() body: SendMessageDto
   ) {
-    await this.messagesService.sendMessage(
+    const id = await this.messagesService.sendMessage(
       callerId, body.conversationId, body.text, body.timestamp, body.repliedId);
+    return { id };
   }
 }

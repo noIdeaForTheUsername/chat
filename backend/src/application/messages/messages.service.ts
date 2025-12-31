@@ -44,7 +44,8 @@ export class MessagesService {
     if (messageLate || messageInTheFuture)
       throw new BadRequestException("bad-timestamp");  
 
-    await this.messagesDomainService.createMessage(
+    const sent = await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
+    return sent.globalId;
   }
 }

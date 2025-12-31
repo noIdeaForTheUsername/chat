@@ -41,9 +41,11 @@ export class ConversationsPage {
 
   // Data
   protected conversations = computed(() => this.convertConversations(this.conversationService.conversations(), this.lastMessages()));
-  protected displayedConversations = computed(() => this.conversations().filter((conv) => {
-    return profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter());
-  }))
+  protected displayedConversations = computed(() =>
+    this.conversations().filter((conv) => {
+      return profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter());
+    }));
+  
   protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsLastMessages;
   protected profiles: Signal<Map<number, Profile>> = this.profileService.profiles;
 

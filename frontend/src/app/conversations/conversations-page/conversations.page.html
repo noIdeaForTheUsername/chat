@@ -18,7 +18,7 @@
 <ion-content [fullscreen]="true">
   @if (dataLoaded()) {
     <!-- SEARCHBAR + HEADER -->
-    <ion-searchbar [debounce]="250" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"></ion-searchbar>
+    <ion-searchbar [debounce]="400" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"></ion-searchbar>
     <div class="ion-padding">
       <h1>{{"page.conversations.title" | translate}}</h1>
       @if (searchFilter().length > 0) { <ion-note>{{"common.search-filter-hint" | translate}}</ion-note> }

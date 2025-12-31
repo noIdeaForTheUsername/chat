@@ -119,10 +119,7 @@ export class AuthService {
     this.api.logout().subscribe({
       next: () => {
         this.setUserId(null);
-        this.router.navigate(['/login']);
-        this.alertService.displayMessageAlert(AlertType.INFO,
-          this.translate.instant("prompt.logout-success.description")
-        );
+        window.location.replace("login");
       },
       error: () => {
         this.alertService.displayErrorById('logout-failed');

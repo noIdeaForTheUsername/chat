@@ -47,6 +47,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   public selectionService = inject(SelectionService);
 
   @ViewChild(IonContent) private content!: IonContent;
+  @ViewChild("msg_field") protected messageField!: IonTextarea;
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
   
   
@@ -137,9 +138,16 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // ------------------------------------------- MESSAGE SENDING FUNCTIONS -------------------------------------------
 
   onMessageFieldInput($event: Event) {
-    const val = ($event.target as HTMLIonTextareaElement).value;
-    if (typeof val != "string") this.enteredMessage.set("");
-    else this.enteredMessage.set(val);
+    this.enteredMessage.set(($event.target as HTMLIonTextareaElement).value ?? "");
+  }
+
+  sendMessage() {
+    const messageText = this.enteredMessage().trim();
+    if (messageText.length === 0) return;
+    this.messageField.value = "";
+    this.enteredMessage.set("");
+    const replyingTo = this.replyingToId();
+    this.messageService.sendMessage(messageText, replyingTo ?? undefined);
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
