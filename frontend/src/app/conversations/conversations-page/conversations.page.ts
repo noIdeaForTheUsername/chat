@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, S
 import { CommonModule } from '@angular/common';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonActionSheet, IonNote } from '@ionic/angular/standalone';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
-import { ConversationService } from '@app/conversations/conversation-service/conversation.service';
+import { ConversationService } from '@app/conversations/conversation.service';
 import { Conversation } from '@app/conversations/conversation.interface';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -58,15 +58,15 @@ export class ConversationsPage {
   protected dataLoaded: Signal<boolean> = this.loadingService.dataLoaded;
 
   // INIT + LOADING
-  constructor() {
+  ionViewWillEnter() {
     this.loadingService.setDataSources(this.conversationService, this.profileService);
   }
 
   convertConversations(conversations: Conversation[], lastMessages: Map<number, Message | null>) : ConversationView[] {
     return conversations.map((conv) => {
-      let lastMessageId = lastMessages.get(conv.id)?.id;
+      let lastMessageId = lastMessages.get(conv.id)?.globalId;
       let lastMessageText: string = lastMessages.get(conv.id)?.text || "";
-      let unreadMessages: number = (lastMessageId !== undefined && conv.newestMessageReadId !== undefined) ? lastMessageId - conv.newestMessageReadId : 0;
+      let unreadMessages: boolean = (lastMessageId !== undefined && conv.newestMessageReadId !== undefined) ? lastMessageId > conv.newestMessageReadId : false;
       return {
         ...conv,
         lastMessageText: lastMessageText,

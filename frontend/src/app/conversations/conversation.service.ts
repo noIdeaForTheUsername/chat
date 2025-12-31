@@ -1,15 +1,18 @@
-import { effect, Injectable, signal } from '@angular/core';
-import { Conversation } from '../conversation.interface';
+import { effect, inject, Injectable, signal } from '@angular/core';
+import { Conversation } from './conversation.interface';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { Message } from '@app/messages/message.interface';
 import { BackendConversationApi } from './backend-conversation-api';
 import { Profile } from '@app/profiles/profile.interface';
+import { AuthService } from '@app/auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConversationService implements LoadingStatus {
+  private authService = inject(AuthService);
+
   public readonly conversations = signal<Conversation[]>([]);
   public readonly dataLoaded = signal(false);
   public readonly loadErrorCode = signal<number | null>(null);
@@ -17,7 +20,7 @@ export class ConversationService implements LoadingStatus {
   // not included in dataLoaded boolean, because it's non-critical
   public readonly conversationsLastMessages = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
     
-  private api = new BackendConversationApi();
+  private api = new BackendConversationApi(this.authService.getUserId()!);
 
   constructor(private profileService: ProfileService) {
     this.loadData();
@@ -28,6 +31,7 @@ export class ConversationService implements LoadingStatus {
   }
 
   loadData() {
+    // Load conversations
     this.api.getUserConversations().subscribe({
       next: (val) => {
         this.conversations.set(val);
@@ -38,13 +42,12 @@ export class ConversationService implements LoadingStatus {
       }
     });
     
-    this.api.getUserConversationsLastMessages().subscribe({
-      next: (val) => {
-        this.conversationsLastMessages.set(val);
+    // Load message previews
+    this.api.getMessagePreviews().subscribe({
+      next: (previewsMap) => {
+        this.conversationsLastMessages.set(previewsMap);
       },
-      error: (err) => {
-        console.error("Failed to load conversations last messages");
-      }
+      // non-critical data, no error handling
     });
   }
 
@@ -69,7 +72,7 @@ export class ConversationService implements LoadingStatus {
     return found;
   }
 
-   getConversationIfExists(id: number): Conversation | undefined {
+  getConversationIfExists(id: number): Conversation | undefined {
     return this.conversations().find((c) => c.id === id);
   }
 

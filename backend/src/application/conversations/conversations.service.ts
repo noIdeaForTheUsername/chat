@@ -42,7 +42,7 @@ export class ConversationsService {
       throw new ConflictException('Direct conversation between these users already exists');
 
     // create conversation
-    const conversation = await this.conversations.createDirectConversation(callerId, participantId);
+    const conversation = await this.conversations.createConversation(ConversationType.Direct);
     // create participations and contacts
     await Promise.all([
       this.conversations.createParticipation(callerId, conversation.id, true),

@@ -88,3 +88,41 @@ button.alert-button.danger {
   font-weight: bold;
 }
 
+.floating-input {
+  display: block;
+  margin: auto;
+  width: 100%;
+
+  p {
+    margin: 4px 0 8px 4px;
+    font-size: 0.9rem;
+    color: var(--ion-text-color-step-350);
+  }
+
+  input, textarea {
+    width: 100%;
+    min-height: 40px;
+    border: 0;
+    border: 2px solid var(--ion-color-primary-shade);
+    outline: 4px solid transparent;
+    border-radius: 8px;
+    padding: 6px;
+
+    transition: border-color 0.5s ease-in-out, outline-color 0.5s ease-in-out;
+    &:focus-visible {
+      outline-color: rgba(var(--ion-color-primary-rgb), 0.5);
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: var(--ion-color-danger);
+      &:focus-visible {
+        outline-color: rgba(var(--ion-color-danger-rgb), 0.5);
+      }
+    }
+  }
+
+  textarea {
+    height: 120px;
+    resize: none;
+  }
+}

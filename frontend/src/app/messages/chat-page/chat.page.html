@@ -38,15 +38,15 @@
     }
 
     <!-- MESSAGE LIST -->
-    @for (message of this.messages(); track message.id) {
+    @for (message of this.messages(); track message.globalId) {
       @let previousMessage = $index > 0 ? this.messages()[$index - 1] : undefined;
       <app-message-card
         [message]="message"
         [selectionService]="selectionService"
-        [class.action-select]="this.actionMessageId() == message.id"
+        [class.action-select]="this.actionMessageId() == message.globalId"
         (repliedClick)="onMessageRepliedClick($event)"
         (showActionMenu)="openMessageActionSheet($event)"
-        [unreadNoteAbove]="oldestUnreadMessageId() == message.id"
+        [unreadNoteAbove]="oldestUnreadMessageId() == message.globalId"
         [previousMessage]="previousMessage"/>
       <!-- [spaceBefore]="previousMessage && previousMessage.isOwn != message.isOwn"
        -->
@@ -79,7 +79,7 @@
   </app-corner-menu>
 
   <!-- MESSAGE ACTIONS MENU -->
-  <ion-action-sheet [isOpen]="messageActionSheetOpen()" [buttons]="messageActionButtons()" (didDismiss)="onMessageActionSheetDismiss($event)"
+  <ion-action-sheet [isOpen]="messageActionSheetOpen()" [buttons]="displayedMessageActionButtons()" (didDismiss)="onMessageActionSheetDismiss($event)"
       [header]="'page.chat.message-action.header' | translate">
   </ion-action-sheet>
 </ion-content>

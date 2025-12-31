@@ -29,10 +29,12 @@ export class SecurityVerificationPage {
   // Data
   dataLoaded = this.profileService.dataLoaded;
   otherUserProfile!: Profile;
+
+  IonViewWillEnter() {
+    this.loadingService.setDataSources(this.profileService);
+  }
   
   constructor(private route: ActivatedRoute) { 
-    this.loadingService.setDataSources(this.profileService);
-
     let idStr = this.route.snapshot.paramMap.get('id');
     if (!idStr) this.loadingService.reportError("error.bad-url");
 

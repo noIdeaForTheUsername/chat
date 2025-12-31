@@ -8,6 +8,7 @@ import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directi
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
+import { MessageView } from './message-view.interface';
 
 @Component({
   selector: 'app-message-card',
@@ -21,9 +22,9 @@ export class MessageCardComponent  implements OnInit {
   static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
 
   // INPUTS
-  message = input.required<Message>();
+  message = input.required<MessageView>();
   selectionService = input.required<SelectionService>();
-  previousMessage = input<Message | undefined>();
+  previousMessage = input<MessageView | undefined>();
   unreadNoteAbove = input(false);  // if true, "New messages" note (line) will be displayed above
   // OUTPUTS
   repliedClick = output<number>();
@@ -46,11 +47,9 @@ export class MessageCardComponent  implements OnInit {
 
   constructor() {
     effect(() => {
-      const previousMessage = this.previousMessage();
       this.loadFormattedMetadata();
     });
   }
-
 
   ngOnInit() {
     this.profile = this.profileService.getProfile(this.message().senderId);
@@ -64,20 +63,22 @@ export class MessageCardComponent  implements OnInit {
     }
   }
 
-  // Selection
-  protected onMessageHold(id: number) {
+  // Output actions
+  protected showActionMenuInternal(id: number, eventPreventDefault?: Event) {
+    if (eventPreventDefault) eventPreventDefault.preventDefault();
     this.showActionMenu.emit(id);
   }
-  protected onMessageClick(id: number) {
+  protected toggleItemSelectionInternal(id: number) {
     if (!this.clickLock) this.selectionService().toggleItemSelection(id);
   }
-  protected setClickLock(value: boolean) {
-    this.clickLock = value;
-  }
-
-  protected onRepliedClickInternal(messageId: number) {
+  protected repliedClickInternal(messageId: number) {
     if (!this.selectionService().selectionMode())
       this.repliedClick.emit(messageId);
+  }
+
+  // hold directive click lock
+  protected setClickLock(value: boolean) {
+    this.clickLock = value;
   }
 
   

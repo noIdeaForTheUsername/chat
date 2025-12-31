@@ -27,7 +27,7 @@
 
       <!-- SHARED PROPERTIES (USER + GROUP) -->
       @if (!own()) {
-        <profile-info-item [title]="'profile.nick' | translate" [value]="p.userNick" [editable]="true"
+        <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick" [editable]="true"
         [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
       }
 
@@ -37,7 +37,7 @@
 
         <profile-info-item [title]="'profile.name' | translate" [value]="p.name" [editable]="editMode()"/>
 
-        <profile-info-item [title]="'profile.telephone' | translate" [value]="p.telephone" [editable]="editMode()" type="tel"/>
+        <!-- <profile-info-item [title]="'profile.telephone' | translate" [value]="p.phoneNumber" [editable]="editMode()" type="tel"/> -->
       }      
     </ion-item-group>
 

@@ -9,6 +9,9 @@ export class LatestUserMessage {
   @ViewColumn({ name: "conversation_id" })
   conversationId: number;
 
+  @ViewColumn({ name: "number_in_conversation" })
+  numberInConversation: number;
+
   @ViewColumn({ name: "sender_id" })
   senderId: number;
 

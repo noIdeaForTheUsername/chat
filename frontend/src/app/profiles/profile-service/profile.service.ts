@@ -1,30 +1,39 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { Profile, UserProfile, GroupProfile } from '@app/profiles/profile.interface';
-import { MockServer } from '@app/mock-server/mock.server';
+import { BackendProfileApi } from './backend-profile-api';
+import { forkJoin } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService implements LoadingStatus {
 
+  private readonly api = new BackendProfileApi();
+
   public readonly profiles = signal(new Map<number, Profile>());
   public readonly userId: number;
   public readonly dataLoaded = signal<boolean>(false);
   public readonly loadErrorCode: WritableSignal<number | null> = signal(null);
 
-  constructor(private mockServer: MockServer) {
-    this.userId = mockServer.userId;
+  constructor() {
+    this.userId = 24;
     this.loadData();
   }
 
   loadData() {
-    this.mockServer.apiGetUserKnownProfiles().subscribe({
-      next: (val) => {
-        this.profiles.set(val);
+    forkJoin({
+      profiles: this.api.getUserKnownProfiles(),
+      currentProfile: this.api.getCurrentProfile()
+    }).subscribe({
+      next: ({ profiles, currentProfile }) => {
+        this.profiles.set(profiles);
+        this.profiles().set(currentProfile.id, currentProfile);
         this.dataLoaded.set(true);
       },
       error: (e) => {
+        console.error("Error loading data:", e);
         this.loadErrorCode.set(e.status);
       }
     });
@@ -41,11 +50,11 @@ export class ProfileService implements LoadingStatus {
   }
 
   public getProfiles(): Map<number, Profile> {
-    if (!this.dataLoaded()) throw new Error("Profiles not loaded - service users should check that first!");
+    if (!this.dataLoaded()) throw new Error("Profiles not loaded - service users should check that first");
     return this.profiles();
   }
 
   public getPublicUserProfiles(search: string) {
-    return this.mockServer.apiGetSearchedProfiles(search);
+    return this.api.getSearchedProfiles(search);
   }
 }

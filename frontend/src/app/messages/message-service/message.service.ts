@@ -1,15 +1,18 @@
-import { effect, Injectable, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 import { Message } from '@app/messages/message.interface';
 import { BackendMessageApi } from './backend-message-api';
 import { Subscription } from 'rxjs';
 import { LoadingStatus } from '@app/loading/loading-status.interface';
-import { Conversation } from '@app/conversations/conversation.interface';
-// import { LoadingService } from '../loading/loading.service';
+import { MessageView } from '../chat-page/message-card-component/message-view.interface';
+import { AuthService } from '@app/auth/auth.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService implements LoadingStatus {
+  // SERVICES
+  private authService = inject(AuthService);
 
   // PRIVATE SETTINGS
   private readonly MAX_MESSAGES_DISPLAYED = 200;
@@ -19,7 +22,6 @@ export class MessageService implements LoadingStatus {
 
   // PRIVATE PROPERTIES
   private readonly api: BackendMessageApi;
-  private currentConv!: Conversation;
   private currentConvId: number = -1;
 
   private convMessagesSub?: Subscription;
@@ -34,7 +36,7 @@ export class MessageService implements LoadingStatus {
 
 
   // PUBLIC PROPERTIES
-  public readonly displayedMessages = signal<readonly Message[]>([]);  // expected to be sorted from oldest to newest!
+  public readonly displayedMessages = signal<readonly MessageView[]>([]);  // expected to be sorted from oldest to newest!
   public readonly displayingNewestMessages = signal(true);
   public readonly displayingOldestMessages = signal(false);
   public readonly oldestUnreadMessageId = signal<number | null>(null);
@@ -68,43 +70,56 @@ export class MessageService implements LoadingStatus {
     // (it has to be done manually because that message and the other ones might have been removed)
     if (this.storedOldestUnreadMessageId() === null) return;
     for (let i = this.displayedMessages().length - 1; i >= 0; i--) {
-      if (this.displayedMessages()[i].id <= this.storedOldestUnreadMessageId()!) {  // found READ message
+      if (this.displayedMessages()[i].globalId <= this.storedOldestUnreadMessageId()!) {  // found READ message
         if (i == this.displayedMessages().length - 1) {
           break;  // this will be reached if the 1st unread message and everything near it get removed
           // TODO: inform the server that all messages are read (optionally - maybe just implement an auto-check on the server instead?)
         }
-        this.oldestUnreadMessageId.set(this.displayedMessages()[i + 1].id);
+        this.oldestUnreadMessageId.set(this.displayedMessages()[i + 1].globalId);
         break;
       }
     }
   }
 
-  private loadConvMessages(startMessageId: number, messageNumber: number, older: boolean,
-    callBeforeComplete: Function = () => undefined, includeGivenId: boolean = false) {
+  // Load messages from the server while managing the state
+  private loadConvMessages(messageAmount: number, older: boolean,
+    callBeforeComplete: Function = () => undefined,
+    startMessageId?: number, includeGivenId: boolean = false
+  ) {
     this.cancelMessageLoad();
-    this.loadingMessagesAreOlder.set(startMessageId < this.highestDisplayedId);
+    this.loadingMessagesAreOlder.set(startMessageId !== undefined && startMessageId < this.highestDisplayedId);
     this.additionalMessagesLoading.set(true);
-    this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, startMessageId, messageNumber, older, includeGivenId).subscribe({
+    if (startMessageId !== undefined && includeGivenId)
+      startMessageId += older ? 1 : -1;
+
+    this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, messageAmount, older, startMessageId).subscribe({
       next: (val: Message[]) => {
+        // execute passed callback
         callBeforeComplete();
 
+        // create new displayed messages array
         const newArr = older ? [...val, ...this.displayedMessages()] : [...this.displayedMessages(), ...val];
-        // Delete excessive messages
+        // delete excessive messages
         let overflow = newArr.length - this.MAX_MESSAGES_DISPLAYED;
-        if (overflow > 0 && newArr[0].id < this.lowestDisplayedId) {  // if loaded older messages (lowestDisplayedId refers to the previous state)
+        if (overflow > 0 && newArr[0].globalId < this.lowestDisplayedId) {  // if loaded older messages (lowestDisplayedId refers to the previous state)
           newArr.splice(newArr.length - overflow, overflow);
         }
-        else if (overflow > 0 && newArr[newArr.length - 1].id > this.highestDisplayedId) {  // if loaded newer messages
+        else if (overflow > 0 && newArr[newArr.length - 1].globalId > this.highestDisplayedId) {  // if loaded newer messages
           newArr.splice(0, overflow);
         }
 
-        this.displayedMessages.set(newArr);
+        // Map Message -> MessageView
+        this.displayedMessages.set(newArr.map((msg) => ({
+          ...msg,
+          isOwn: msg.senderId === this.authService.getUserId()!
+        })));
 
-        this.lowestDisplayedId = newArr.length > 0 ? newArr[0].id : 0;
-        this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].id : 0;
+        // update control variables
+        this.lowestDisplayedId = newArr.length > 0 ? newArr[0].globalId : 0;
+        this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
         this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
-        this.displayingOldestMessages.set(older && val.length < messageNumber);
-
+        this.displayingOldestMessages.set(older && val.length < messageAmount);
+        // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
       },
@@ -124,13 +139,13 @@ export class MessageService implements LoadingStatus {
   loadConversationInitially(convId: number, callBeforeComplete: Function = () => undefined) {
     this.exitConversation();
     this.currentConvId = convId;
-    this.loadConvMessages(-1, this.LOADED_MESSAGES_AMOUNT, true, callBeforeComplete);
+    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, true, callBeforeComplete);
   }
 
-  loadMessagesById(messageId: number, older: boolean, callBeforeComplete: Function = () => undefined) {
+  loadMessagesByStartId(messageId: number, older: boolean, callBeforeComplete: Function = () => undefined) {
     this.displayedMessages.set([]);
     this.loadsCount++;
-    this.loadConvMessages(messageId, this.LOADED_MESSAGES_AMOUNT, older, callBeforeComplete, true);
+    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, older, callBeforeComplete, messageId, true);
   }
 
   setOldestUnreadMessageId(id: number | null) {  // for unread messages / "New messages" note display
@@ -140,13 +155,13 @@ export class MessageService implements LoadingStatus {
   loadOlderMessages(callBeforeComplete: Function = () => undefined) {
     let loadAmount = this.loadsCount < this.LOADS_BEFORE_INCREASING_LOADED_MESSAGES_AMOUNT ? this.LOADED_MESSAGES_AMOUNT : this.INCREASED_LOADED_MESSAGES_AMOUNT;
     this.loadsCount++;
-    this.loadConvMessages(this.lowestDisplayedId, loadAmount, true, callBeforeComplete);
+    this.loadConvMessages(loadAmount, true, callBeforeComplete, this.lowestDisplayedId);
   }
 
   loadNewerMessages(callBeforeComplete: Function = () => undefined) {
     let loadAmount = this.loadsCount < this.LOADS_BEFORE_INCREASING_LOADED_MESSAGES_AMOUNT ? this.LOADED_MESSAGES_AMOUNT : this.INCREASED_LOADED_MESSAGES_AMOUNT;
     this.loadsCount++;
-    this.loadConvMessages(this.highestDisplayedId, loadAmount, false, callBeforeComplete);
+    this.loadConvMessages(loadAmount, false, callBeforeComplete, this.highestDisplayedId);
   }
 
   exitConversation() {

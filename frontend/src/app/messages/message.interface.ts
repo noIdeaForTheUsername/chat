@@ -1,11 +1,10 @@
 export interface Message {
-  id: number,
+  globalId: number,
+  numberInConversation: number,
   conversationId: number,
   senderId: number,
-  isOwn: boolean,
   timestamp: Date,
   repliedId?: number,
-  repliedText?: string,
   text?: string,
   file?: string, // implement in future
 }

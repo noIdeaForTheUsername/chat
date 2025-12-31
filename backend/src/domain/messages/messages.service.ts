@@ -33,19 +33,26 @@ export class MessagesDomainService {
   async findMostRecentUserMessagePerConversation(userId: number) {
     const msgs = await this.latestUserMessageRepository.find({
       select: { globalId: true, conversationId: true, senderId: true,
-        text: true, timestamp: true, repliedId: true },
+        text: true, timestamp: true, repliedId: true, numberInConversation: true },
       where: { userId: userId },
     });
     return msgs;
   }
 
-  async findMessages(conversationId: number, globalIdStartExclusive: number, olderThanStart: boolean, limit: number) {
+  async findMessages(conversationId: number, limit: number,
+  olderThanStart: boolean, globalIdStartExclusive?: number) {
+    let globalIdCondition = undefined;
+    if (globalIdStartExclusive !== undefined)
+      globalIdCondition = olderThanStart ? LessThan(globalIdStartExclusive) : MoreThan(globalIdStartExclusive);
+    // purposefuly sorted in this way so the older messages are HIGHER (earlier) in UI
+    const orderDirection = olderThanStart ? 'ASC' : 'DESC';
+    
     return await this.messageRepository.find({
       where: {
         conversationId: conversationId,
-        globalId: olderThanStart ? LessThan(globalIdStartExclusive) : MoreThan(globalIdStartExclusive),
+        globalId: globalIdCondition,
       },
-      order: { timestamp: olderThanStart ? "DESC" : "ASC" },
+      order: { globalId: orderDirection },
       take: limit,
     });
   }

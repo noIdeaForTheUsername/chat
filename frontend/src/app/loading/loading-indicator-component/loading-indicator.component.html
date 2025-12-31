@@ -14,7 +14,7 @@
       <h2>{{`${errorMessageKey()}.header` | translate}}</h2>
       <p>{{`${errorMessageKey()}.description` | translate:{code: (errorId() || '???')} }}</p>
 
-      <ion-button fill="outline" color="danger">{{"common.retry" | translate}}</ion-button>
+      <ion-button fill="outline" color="danger" (click)="reloadPage()">{{"common.retry" | translate}}</ion-button>
     }
     @else {
       <p>{{`${errorMessageKey()}.header` | translate}}</p>

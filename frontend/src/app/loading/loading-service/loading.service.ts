@@ -10,15 +10,13 @@ import { errorIconMap } from './error-icon-map';
 export class LoadingService {
   public readonly internetConnection = signal(true);  // TODO: implement in the future
 
-  // public signals
+  // public signals, data for loading-indicator
   public readonly dataLoaded: Signal<boolean> = signal(false);
   public readonly errorId: Signal<string | null> = signal(null);
-  // public readonly errorMessage = signal<string | null>(null);
+  public readonly errorMessage: Signal<string | null> = signal(null);
   public readonly errorIconName: Signal<string> = signal("alert-circle-outline");
 
-  // data for loading-indicator
   
-
   // private signals
   private readonly errorIdOverride = signal<string | null>(null);
   private readonly dataSources = signal<LoadingStatus[]>([]);
@@ -65,20 +63,14 @@ export class LoadingService {
   }
 
   setDataSources(...sources: LoadingStatus[]) {
-    // this.errorListening = sources;
     this.dataSources.set(sources);
   } 
-
-  // reportError(message: string) {
-  //   this.errorMessage.set(message);
-  // }
 
   reportError(id: string) {
     this.errorIdOverride.set(id);
   }
 
   reset() {
-    // this.errorMessage.set(null);
     this.errorIdOverride.set(null);
     this.dataSources.set([]);
   }

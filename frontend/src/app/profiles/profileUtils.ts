@@ -24,7 +24,6 @@ export function serverToClientUserProfile(profile: UserProfile): UserProfile {
     type: profile.type,
     login: profile.login,
     name: profile.name,
-    telephone: profile.telephone,
     bio: profile.bio
   };
 }
@@ -46,8 +45,8 @@ export function profileMatchesSearch(profile: Profile | undefined, search: strin
   search = search.toLocaleLowerCase();
   if (profile === undefined) return false;
   if (profile.type == "user")
-    return profile.login.toLowerCase().includes(search) || profile.name?.toLocaleLowerCase().includes(search) ||
-      profile.telephone?.includes(search) || profile.id.toString().includes(search);
+    return profile.login.toLowerCase().includes(search) || profile.name?.toLocaleLowerCase().includes(search)
+      || profile.id.toString().includes(search);
   else
     return true;
 }

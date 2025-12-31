@@ -4,6 +4,11 @@ import { UserKnownProfile } from './entities/user-known-profile.entity';
 import { Like, Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
 import { FullProfile } from './entities/full-profile.entity';
+import { normalize } from 'path';
+import { normalizePhone } from 'src/shared/validation/normalize-phone';
+import { normalizeName } from 'src/shared/validation/normalize-name';
+import { normalizeLogin } from 'src/shared/validation/normalize-login';
+import { normalizeEmail } from 'src/shared/validation/normalize-email';
 
 @Injectable()
 export class ProfilesDomainService {
@@ -47,12 +52,16 @@ export class ProfilesDomainService {
   }
 
   async findSearchedProfiles(search: string) {
+    const loginSearch = normalizeLogin(search);
+    const emailSearch = normalizeEmail(search);
+    const nameSearch = normalizeName(search);
+    const phoneNumberSearch = normalizePhone(search);
     return await this.fullProfiles.find({
       where: [
-        { login: search },
-        { name: search },
-        { email: search },
-        { phoneNumber: search },
+        { login: loginSearch },
+        { name: nameSearch },
+        { email: emailSearch },
+        { phoneNumber: phoneNumberSearch },
       ]
     });
   }

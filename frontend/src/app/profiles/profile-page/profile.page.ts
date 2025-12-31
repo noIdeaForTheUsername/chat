@@ -8,7 +8,7 @@ import { Profile } from '@app/profiles/profile.interface';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ProfileInfoItemComponent } from './profile-info-item/profile-info-item.component';
-import { ConversationService } from '@app/conversations/conversation-service/conversation.service';
+import { ConversationService } from '@app/conversations/conversation.service';
 import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { AlertService } from '@app/alerts/alert-service/alert.service';
@@ -53,14 +53,16 @@ export class ProfilePage {
       return;
     }
 
-    this.loadingService.setDataSources(this.conversationService, this.profileService);
-
     if (this.dataLoaded()) this.finishLoading(idStr);
     else {
       effect(() => {
         if (this.dataLoaded() && this.profile() === undefined) this.finishLoading(idStr);
       });
     }
+  }
+
+  IonViewWillEnter() {
+    this.loadingService.setDataSources(this.conversationService, this.profileService);
   }
 
   private finishLoading(idStr: string) {

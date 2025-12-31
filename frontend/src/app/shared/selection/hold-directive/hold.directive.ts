@@ -4,9 +4,15 @@ import { Directive, HostListener, output } from '@angular/core';
   selector: '[holdDirective]'
 })
 export class HoldDirective {
-  hold = output<void>();
+  hold = output<void>();  // called after the item has been held for long enough
+
+  // This event notifies the parent component to stop detecting all click events (true),
+  // or to resume detecting them normally (false). This prevents a bug where a click event
+  // occurs just after the user releases the hold, resulting in annoying behavior
   setClickLock = output<boolean>();
-  timeoutId: any;
+
+
+  private timeoutId: any;
   private readonly holdDurationMs = 500;
 
   private touchStartX = 0;

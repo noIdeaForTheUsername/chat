@@ -3,7 +3,6 @@
     "title": "Chat"
   },
 
-
   "common": {
     "ok": "OK",
     "confirm": "Confirm",
@@ -17,9 +16,16 @@
     "copy-text": "Copy text",
     "retry": "Retry",
     "empty": "Empty",
+    "info": "Information",
+    "error": "Error",
     "danger-zone": "Danger zone",
 
+    "form-invalid": "Provided data is invalid. Please check all the form fields.",
     "account": "Account",
+    "email": "Email",
+    "phone-number": "Phone number",
+    "login": "Log in",
+    "register": "Register",
     "app": "App",
     "lock-app": "Lock the app",
 
@@ -47,7 +53,7 @@
       },
       "conversation-action": {
         "header": "Selected conversations...",
-        "delete": "Delete all selected messages and contacts permamently",
+        "delete": "Delete all selected messages and contacts permanently",
         "clear-messages": "Clear all messages while keeping contacts"
       }
     },
@@ -55,10 +61,10 @@
     "discovery": {
       "title": "New Chat...",
       "header": "Find a user",
-      "info": "Use the searchbar above. Enter a login, name, display name or phone number.",
-      "searchbar-hint": "Name, login or phone number...",
+      "info": "In the search bar above, enter: <ul><li>a full name or</li><li>a full login or</li><li>a full email or</li><li>a full phone number with country code (e.g., +48 123 123 123)</li></ul> and press confirm",
+      "searchbar-hint": "Name, login, email or phone...",
       "found": "Found",
-      "no-results": "No results"
+      "not-found": "Not found"
     },
 
     "chat": {
@@ -71,7 +77,8 @@
         "download-all": "Download all selected files",
         "delete-all": "Delete all selected"
       },
-      "options": "Chat options"
+      "options": "Chat options",
+      "copy-failed": "Failed to copy text to clipboard"
     },
 
     "profile": {
@@ -79,7 +86,7 @@
       "section": {
         "basic-info": "Basic information"
       },
-      "nick-info": "A nick you can set yourself for every user. Only you can see it.",
+      "nick-info": "A nickname you can set for each user. Only visible to you.",
       "edit-btn": "Edit profile",
       "save-btn": "Save changes",
       
@@ -94,7 +101,7 @@
       "general": {
         "header": "General",
         "search": "Search in conversation",
-        "show-multimedia": "Show conversation media"
+        "show-media": "Show conversation media"
       },
       "settings": {
         "header": "Conversation settings",
@@ -102,7 +109,7 @@
         "auto-download": "Auto-download all files"
       },
       "danger-zone": {
-        "delete": "Delete all messages",
+        "delete": "Delete all messages in this conversation",
         "delete-with-contact": "Delete all messages and this contact"
       }
     },
@@ -112,7 +119,7 @@
       "auto-lock": "Auto-lock on close",
       "modify-account": "Modify account data",
       "logout": "Log out",
-      "delete-messages": "Delete all the messages in all conversations"
+      "delete-messages": "Delete all messages in all conversations"
     },
 
     "security-verification": {
@@ -125,6 +132,27 @@
       "instructions-header": "Verification instructions",
       "step-1-description": "Exchange these codes via a safe communications channel (other than this app) or physically.<br/>Verify if <b>both</b> your and {{name}}'s code are exactly the same on both devices.<br/>(your device's <b>A</b> must match their device's <b>B</b> and vice versa).",
       "step-2-description": "Your conversations are <b>only</b> secure if both pairs do match. Mismatch is a critical alert. Once verified successfully, there's no need to redo this in the future."
+    },
+
+    "login": {
+      "header": "Log in to your account",
+      "account-input": "Login, email or phone number",
+      "password-input": "Password",
+      "register-hint": "Don't have an account?"
+    },
+
+    "register": {
+      "header": "Create a new account",
+      "name-input": "Full name (optional, but recommended)",
+      "login-input": "Unique login",
+      "password-input": "Password",
+      "repeat-password-input": "Repeat password",
+      "email-input": "Email address (optional)",
+      "phone-input": "Phone with country code (optional)",
+      "email-phone-settings": "Make other users able to find me by my",
+      "bio-input": "Profile description (optional)",
+      "bio-placeholder": "A few sentences about yourself...",
+      "login-hint": "Already have an account?"
     }
   },
 
@@ -156,7 +184,7 @@
   "error": {
     "0": {
       "header": "Server not responding",
-      "description": "The app's server is probably down. Contact the administrator if the issue persists."
+      "description": "It's worth checking your internet connection, but most likely the app server is currently down. Contact the administrator if the issue persists."
     },
     "no-internet": {
       "header": "No internet connection",
@@ -164,7 +192,7 @@
     },
     "not-found": {
       "header": "Data not found",
-      "description": "The data you wanted to view doesn't exist, or you don't have access to it. This is likely due to a bad URL. Try going back to the app home page."
+      "description": "The data you wanted to view hasn't been found. This is likely due to a bad URL or a problem with internet connection. Try going back to the app home page."
     },
     "bad-url": {
       "header": "Bad URL",

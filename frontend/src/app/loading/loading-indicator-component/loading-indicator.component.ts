@@ -25,7 +25,7 @@ export class LoadingIndicator {
   size = input<'large' | 'medium'>('large');
 
   // Error handling options
-  handleErrors = input<boolean>(true);
+  public handleErrors = input<boolean>(true);
 
   // Error signals
   protected errorId = this.loadingService.errorId;  // this also enables handling of the no connection error
@@ -36,7 +36,7 @@ export class LoadingIndicator {
   protected displaySpinner = computed(() => (this.errorId() === null)/*still loading*/  || !this.handleErrors()/*not handling errors at all*/);
 
   
-  errorMessageKey = computed(() => {  // Set the proper error message key
+  protected errorMessageKey = computed(() => {  // Set the proper error message key
     if (this.errorId() !== null) {
       let key = `error.${this.errorId()}.header`;
       if (this.checkTranslationKeyExists(key)) return `error.${this.errorId()}`;
@@ -48,6 +48,10 @@ export class LoadingIndicator {
     if (key === null) return false;
     let foundValue = this.translateService.instant(key);
     return foundValue != key;
+  }
+
+  protected reloadPage() {
+    window.location.reload();
   }
 
   constructor() {}

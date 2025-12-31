@@ -13,19 +13,18 @@ export class MessagesService {
   // 2. When the message arrives to the server earlier than the provided timestamp
   private readonly earlyMessageThresholdMs = 1 * 60 * 1000;
 
-  private readonly messagesLoadedAtOnce = 50;
-
   constructor(
     private messagesDomainService: MessagesDomainService,
     private conversationsDomainService: ConversationsDomainService,
   ){}
 
-  async getConversationMessages(callerId: number, conversationId: number, globalIdStart: number, olderThanStart: boolean) {
+  async getConversationMessages(callerId: number, conversationId: number, limit: number,
+    globalIdStart?: number, olderThanStart: boolean = true) {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
     return await this.messagesDomainService.findMessages(
-      conversationId, globalIdStart, olderThanStart, this.messagesLoadedAtOnce);
+      conversationId, limit, olderThanStart, globalIdStart);
   }
 
   async getRecentMessagePreviews(callerId: number) {

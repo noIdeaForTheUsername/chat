@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import translationsEN from "@assets/i18n/en.json";
 
 import { addIcons } from 'ionicons';
-import { add, alertCircleOutline, arrowDown, arrowRedo, attach, ban, build, call, chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipsisHorizontal,
+import { add, alertCircleOutline, arrowDown, arrowRedo, attach, ban, build, call, chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
   help, images, informationCircle, key, language, lockClosed, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove, search, settings, trash, trashBin, wifiOutline } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
@@ -20,7 +20,7 @@ export class AppComponent {
       lockClosed, chatbubbleEllipses, pencil, key, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
       call, search, images, people, notifications, download, person, personAdd, personRemove,
-      build, logOut, language, copy,  });
+      build, logOut, language, copy, ellipse });
     translate.setTranslation('en', translationsEN);
     translate.setFallbackLang('en');
   }

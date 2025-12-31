@@ -8,18 +8,20 @@
 <div class="message-container"
 [class.own]="message().isOwn"
 [class.space-before]="spaceBefore()"
-[class.selected]="selectionService().selectedIds().includes(message().id)"
-holdDirective (hold)="onMessageHold(message().id)" (setClickLock)="setClickLock($event)"
-(click)="onMessageClick(message().id)">
+[class.selected]="selectionService().selectedIds().includes(message().globalId)"
+holdDirective (hold)="showActionMenuInternal(message().globalId)"
+(setClickLock)="setClickLock($event)"
+(click)="toggleItemSelectionInternal(message().globalId)"
+(contextmenu)="showActionMenuInternal(message().globalId, $event)">
 
   @if (displayMetadata()) { <ion-note>{{profile | visibleName}} | {{displayedDate()}}</ion-note> }
   <ion-card
-    [id]="'msg-' + message().id"
+    [id]="'msg-' + message().globalId"
     class="message-card"
     [class.own]="message().isOwn"
     [color]="color">
       @if (repliedId !== undefined && repliedText !== undefined) {
-        <ion-card class="replied-preview" (click)="onRepliedClickInternal(repliedId)">
+        <ion-card class="replied-preview" (click)="repliedClickInternal(repliedId)">
           <ion-card-content><ion-icon name="arrow-redo"></ion-icon>&nbsp;<span [innerHTML]="repliedText"></span></ion-card-content>
         </ion-card>
       }

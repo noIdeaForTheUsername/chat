@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Profile } from '@app/profiles/profile.interface';
-import { ConversationService } from '@app/conversations/conversation-service/conversation.service';
+import { ConversationService } from '@app/conversations/conversation.service';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonFooter,
   IonTextarea, IonButton, IonIcon, IonActionSheet, IonFab, IonFabButton, ScrollDetail, } from '@ionic/angular/standalone';
 import { Conversation } from '@app/conversations/conversation.interface';
@@ -22,6 +22,7 @@ import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolb
 import type { OverlayEventDetail } from '@ionic/core';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
+import { MessageActionButtons } from './message-action-buttons';
 
 
 @Component({
@@ -36,7 +37,7 @@ import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/it
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
+export class ChatPage implements AfterViewInit, OnDestroy {
   // Services
   private translate = inject(TranslateService);
   protected conversationService = inject(ConversationService);
@@ -49,24 +50,25 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
   
   
-  // Data
+  // DATA
   protected conversationId: number = -1;
   public conversation!: Conversation;
   public participant?: Profile;
-  messages = this.messageService.displayedMessages;
+  public messages = this.messageService.displayedMessages;
 
-  // INITIAL loading
+  // INITIAL loading (from loading service)
   initialLoading = computed(() => !this.loadingService.dataLoaded());
 
   // Other signals the UI depends on
 
-  // Displayed data
+  // Displayed data info
   enteredMessage = signal<string>("");
   replyingToId = signal<null | number>(null);
   oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
   // Loading
   messageLoading = this.messageService.additionalMessagesLoading;
   loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
+  private dataSources = [this.profileService, this.conversationService, this.messageService];
   
   // State
   displayingNewestMessages = this.messageService.displayingNewestMessages;
@@ -95,12 +97,22 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     this.conversationId = parseInt(id);
+
+    // Try loading conversation and participant immediately
+    // (unlike messages, it all should be already loaded if the user got to this page by clicking a button)
+    try {
+      this.conversation = this.conversationService.getConversationById(this.conversationId);
+      this.participant = this.profileService.getProfile(this.conversation.participantId);
+    } catch {}
     
     // Load conversation messages
     this.messageService.loadConversationInitially(this.conversationId, () => undefined);
 
+    this.loadingService.setDataSources(...this.dataSources);
+
     // One-time finish function call after everything is loaded
     effect(() => {
+      this.loadingService.setDataSources(...this.dataSources);
       const initialLoadingInProgress = this.initialLoading();
       if (!initialLoadingInProgress) {
         this.finishLoading();
@@ -108,8 +120,11 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-    this.loadingService.setDataSources(this.profileService, this.conversationService, this.messageService);
+  private finishLoading() {
+    this.conversation = this.conversationService.getConversationById(this.conversationId);
+    this.messageService.setOldestUnreadMessageId(this.conversation.newestMessageReadId || null);
+    this.participant = this.profileService.getProfile(this.conversation.participantId);
+    requestAnimationFrame(() => this.scrollToBottom(0));
   }
 
   ngAfterViewInit(): void {
@@ -117,13 +132,6 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
-  }
-
-  private finishLoading() {
-    this.conversation = this.conversationService.getConversationById(this.conversationId);
-    this.messageService.setOldestUnreadMessageId(this.conversation.newestMessageReadId || null);
-    this.participant = this.profileService.getProfile(this.conversation.participantId);
-    requestAnimationFrame(() => this.scrollToBottom(0));
   }
 
   // ------------------------------------------- MESSAGE SENDING FUNCTIONS -------------------------------------------
@@ -162,6 +170,7 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
+    if (this.initialLoading()) return;
     if (loadFirstMessages && !this.displayingNewestMessages())
       this.messageService.loadConversationInitially(this.conversationId, () => requestAnimationFrame(() => this.scrollToBottom(1000, false)));
     else
@@ -170,7 +179,7 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   scrollToMessage(messageId: number, alwaysScroll = false) {
-    if (messageId <= this.messages()[this.messages().length - 1].id && messageId >= this.messages()[0].id) {
+    if (messageId <= this.messages()[this.messages().length - 1].globalId && messageId >= this.messages()[0].globalId) {
       const elem = document.getElementById("msg-" + messageId);
       if (elem === null) return;
 
@@ -187,13 +196,13 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
     }
     else {
       // this.loadingMessagesAreOlder.set(true);
-      this.messageService.loadMessagesById(messageId, false, () => requestAnimationFrame(() => this.scrollToMessage(messageId, true)));
+      this.messageService.loadMessagesByStartId(messageId, false, () => requestAnimationFrame(() => this.scrollToMessage(messageId, true)));
     }
   }
 
   correctScrollOnMessageLoad(self: ChatPage) {
-    if (self.loadingMessagesAreOlder()) self.firstMessageId = "msg-" + self.messages()[0].id!;
-    else self.firstMessageId = "msg-" + self.messages()[self.messages().length - 1].id!;
+    if (self.loadingMessagesAreOlder()) self.firstMessageId = "msg-" + self.messages()[0].globalId!;
+    else self.firstMessageId = "msg-" + self.messages()[self.messages().length - 1].globalId!;
     const elem = document.getElementById(self.firstMessageId)!;
     self.firstMessageTopDistance = elem.getBoundingClientRect().top;
     requestAnimationFrame(() => {
@@ -217,6 +226,9 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
 
   // ------------------------------------------- MESSAGE SELECTION + OPENABLE MENUS (popover, action sheet) -------------------------------------------
 
+  private actionButtons = new MessageActionButtons(this.translate); 
+  protected displayedMessageActionButtons = signal<any>(this.actionButtons.notOwnMessage);
+
   openMessageActionSheet(messageId: number) {  // Displayed after holding a message
     if (this.selectionService.selectionMode()) {
       this.openMultiselectActionSheet();
@@ -224,16 +236,16 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
     }
     
     this.actionMessageId.set(messageId);
-    let msg = this.messages().find((m) => m.id == messageId);
+    let msg = this.messages().find((m) => m.globalId == messageId);
     if (msg !== undefined && msg.isOwn)
-      this.messageActionButtons.set(this.ownMessageActionButtons);
+      this.displayedMessageActionButtons.set(this.actionButtons.ownMessage);
     else
-      this.messageActionButtons.set(this.notOwnMessageActionButtons);
+      this.displayedMessageActionButtons.set(this.actionButtons.notOwnMessage);
     this.messageActionSheetOpen.set(true);
   }
 
   openMultiselectActionSheet() {
-    this.messageActionButtons.set(this.multiselectActionButtons);
+    this.displayedMessageActionButtons.set(this.actionButtons.multiselect);
     this.messageActionSheetOpen.set(true);
   }
 
@@ -250,74 +262,29 @@ export class ChatPage implements OnInit, AfterViewInit, OnDestroy {
     this.actionMessageId.set(null);
   }
 
-  public notOwnMessageActionButtons = [ // APPLIES ALSO TO OWN MESSAGE; Displayed after holding other user's message
-    {
-      text: this.translate.instant("page.chat.message-action.reply"),
-      icon: "arrow-redo",
-      data: "reply"
-    },
-    {
-      text: this.translate.instant("common.copy-text"),
-      icon: "copy",
-      data: "copy"
-    },
-    {
-      text: this.translate.instant("common.enter-selection"),
-      icon: "checkbox-outline",
-      data: "selection-mode"
-    },
-    {
-      text: this.translate.instant("common.cancel"),
-      // icon: "close-circle",
-      role: 'cancel',
-      cssClass: "bold-text"
-    },
-  ];
-  public ownMessageActionButtons = [  // Displayed after holding own message
-    {
-      text: this.translate.instant("common.delete"),
-      icon: "trash",
-      role: "destructive",
-      cssClass: "danger-text",
-      data: "delete"
-    },
-    ...this.notOwnMessageActionButtons
-  ];
-  public multiselectActionButtons = [  // Displayed after selecting multiple messages and clicking actions
-    {
-      text: this.translate.instant("page.chat.message-action.delete-all"),
-      icon: "trash",
-      role: "destructive",
-      cssClass: "danger-text",
-      data: "delete"
-    },
-    {
-      text: this.translate.instant("page.chat.message-action.download-all"),
-      icon: "download",
-      data: "download"
-    },
-    {
-      text: this.translate.instant("common.exit-selection"),
-      icon: "checkbox-outline",
-      data: "selection-mode"
-    },
-    {
-      text: this.translate.instant("common.cancel"),
-      // icon: "close-circle",
-      role: 'cancel',
-      cssClass: "bold-text"
-    },
-  ];
-
-  messageActionButtons = signal<any>(this.notOwnMessageActionButtons);
-
   // ------------------------------------------- OTHER FUNCTIONS -------------------------------------------
 
-  copySelectedMessageToClipboard(messageId: number) {
-    const msg = this.messages().find(m => m.id === messageId);
-      if (msg && msg.text) {
-        navigator.clipboard.writeText(msg.text);
+  async copySelectedMessageToClipboard(messageId: number) {
+    const msg = this.messages().find(m => m.globalId === messageId);
+    if (!msg || !msg.text) return;
+
+    try {
+      if (navigator.clipboard) {  // the easy way
+        await navigator.clipboard.writeText(msg.text);
       }
+      else {  // the fallback way
+        const textarea = document.createElement("textarea");
+        textarea.value = msg.text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+    }
+    catch (err) {
+      window.alert(`${this.translate.instant("page.chat.copy-failed")}
+      \n${msg.text}`);
+    }
   }
 
   ngOnDestroy() {

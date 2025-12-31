@@ -15,7 +15,7 @@ export class VisibleNamePipe implements PipeTransform {
 
     if (value.type == 'user') {
       let toReturn = "";
-      if (value.userNick) toReturn = value.userNick;
+      if (value.nick) toReturn = value.nick;
       else if (value.name) toReturn = value.name;
 
       if (toReturn.length > 0) {
@@ -25,7 +25,7 @@ export class VisibleNamePipe implements PipeTransform {
       else return '@' + value.login;
     }
     else {
-      if (value.userNick) return value.userNick;
+      if (value.nick) return value.nick;
       else return value.name;
     }
   }

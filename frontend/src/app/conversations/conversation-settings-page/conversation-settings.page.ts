@@ -5,7 +5,7 @@ import { IonContent, IonItemGroup, IonLabel, IonItemDivider, IonItem, IonToggle,
 import { TranslatePipe } from '@ngx-translate/core';
 import { ProfilePreviewComponent } from "@app/profiles/profile-preview-component/profile-preview.component";
 import { LoadingService } from '@app/loading/loading-service/loading.service';
-import { ConversationService } from '../conversation-service/conversation.service';
+import { ConversationService } from '../conversation.service';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
@@ -37,9 +37,11 @@ export class ConversationSettingsPage {
   protected conversationId!: number;
   protected participant?: Profile;
 
-  constructor() {
+  IonViewWillEnter() {
     this.loadingService.setDataSources(this.conversationSerivce, this.profileService);
+  }
 
+  constructor() {
     let idStr = this.route.snapshot.paramMap.get('id');
     if (idStr === null || isNaN(parseInt(idStr))) {
       this.loadingService.reportError("bad-url");

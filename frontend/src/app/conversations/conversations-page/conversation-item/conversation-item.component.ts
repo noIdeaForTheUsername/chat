@@ -4,14 +4,14 @@ import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directi
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
-import { IonAvatar, IonBadge, IonItem, IonLabel } from '@ionic/angular/standalone';
+import { IonAvatar, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
 import { ConversationView } from '../conversation-view.interface';
 
 @Component({
   selector: 'app-conversation-item',
   templateUrl: './conversation-item.component.html',
   styleUrls: ['./conversation-item.component.scss'],
-  imports: [IonAvatar, IonItem, IonLabel, IonBadge, VisibleNamePipe, HoldDirective],
+  imports: [IonAvatar, IonItem, IonIcon, IonLabel, VisibleNamePipe, HoldDirective],
 })
 export class ConversationItemComponent {
   private router = inject(Router);

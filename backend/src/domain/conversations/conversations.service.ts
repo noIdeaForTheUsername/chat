@@ -41,27 +41,9 @@ export class ConversationsDomainService {
 
   // CREATING
 
-  public async createDirectConversation(callerId: number, participantId: number) {
-    // Conversation
-    const conversationObjectObj = this.conversations.create({ type: ConversationType.Direct });
+  public async createConversation(type: ConversationType) {
+    const conversationObjectObj = this.conversations.create({ type });
     return await this.conversations.save(conversationObjectObj);
-
-    // Participations
-    // const callerParticipationObj = this.participations.create({
-    //   userId: callerId,
-    //   conversationId: conversation.id,
-    //   accepted: true,
-    // });
-    // const participantParticipationObj = this.participations.create({
-    //   userId: participantId,
-    //   conversationId: conversation.id,
-    //   accepted: false,
-    // });
-    
-    // await Promise.all([
-    //   this.participations.save(callerParticipationObj),
-    //   this.participations.save(participantParticipationObj),
-    // ]);
   }
 
   public async createParticipation(userId: number, conversationId: number, accepted = false) {

@@ -32,12 +32,27 @@ export class AlertService {
     this.cancelHandler.set(() => {});
   }
 
+  private getDefaultHeader(): string {
+    switch (this.type()) {
+      case AlertType.INFO:
+        return this.translate.instant("common.info");
+      case AlertType.PROMPT: 
+      case AlertType.DANGER_PROMPT:
+        return this.translate.instant("common.are-you-sure");
+      case AlertType.ERROR:
+        return this.translate.instant("common.error");
+      default:
+        return this.translate.instant("common.alert");
+    }
+      
+  }
+
   // ------------------------- MAIN ALERT FUNCTIONS -------------------------
 
   displayMessageAlert(type: AlertType.INFO | AlertType.ERROR, message: string,
     handler?: Function, header?: string, subheader?: string) {
     this.type.set(type);
-    this.header.set(header || "Alert");
+    this.header.set(header || this.getDefaultHeader());
     this.subheader.set(subheader);
     this.message.set(message);
     if (handler) this.confirmHandler.set(handler);

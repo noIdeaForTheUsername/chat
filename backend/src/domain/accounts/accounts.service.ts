@@ -2,6 +2,9 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { InjectRepository } from '@nestjs/typeorm';
 import { Account } from './entities/account.entity';
 import { QueryFailedError, Repository } from 'typeorm';
+import { normalizeLogin } from 'src/shared/validation/normalize-login';
+import { normalizeEmail } from 'src/shared/validation/normalize-email';
+import { normalizePhone } from 'src/shared/validation/normalize-phone';
 
 @Injectable()
 export class AccountsDomainService {
@@ -26,11 +29,15 @@ export class AccountsDomainService {
   }
 
   async findAccountByUniqueField(loginOrEmailOrPhone: string) {
+    const loginCheck = normalizeLogin(loginOrEmailOrPhone);
+    const emailCheck = normalizeEmail(loginOrEmailOrPhone);
+    const phoneNumberCheck = normalizePhone(loginOrEmailOrPhone);
+    
     return await this.accounts.findOne({
       where: [
-        { login: loginOrEmailOrPhone },
-        { email: loginOrEmailOrPhone },
-        { phoneNumber: loginOrEmailOrPhone }
+        { login: loginCheck },
+        { email: emailCheck },
+        { phoneNumber: phoneNumberCheck }
       ]
     });
   }

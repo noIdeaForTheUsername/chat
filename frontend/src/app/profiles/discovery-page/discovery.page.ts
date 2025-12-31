@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonList,
-  IonSearchbar, IonItem, IonAvatar, IonLabel,  IonButtons, IonBackButton } from '@ionic/angular/standalone';
-import { UserProfile } from '@app/profiles/profile.interface';
-import { ProfileService } from '../profile-service/profile.service';
-import { Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, ViewChild } from '@angular/core';
 import { LoadingIndicator } from "@app/loading/loading-indicator-component/loading-indicator.component";
-import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { LoadingService } from '@app/loading/loading-service/loading.service';
+import { UserProfile } from '@app/profiles/profile.interface';
+import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { IonAvatar, IonButton, IonContent, IonItem, IonLabel, IonSearchbar } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { ProfileService } from '../profile-service/profile.service';
 
 @Component({
   selector: 'app-discovery-page',
@@ -17,11 +16,11 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrls: ['./discovery.page.scss'],
   standalone: true,
   // providers: [ProfileService],
-  imports: [IonContent, IonList, IonSearchbar, IonItem, IonAvatar, IonLabel,
-    CommonModule, TranslatePipe, LoadingIndicator, VisibleNamePipe, StandardHeaderComponent],
+  imports: [IonContent, IonSearchbar, IonItem, IonAvatar, IonLabel,
+    CommonModule, TranslatePipe, LoadingIndicator, VisibleNamePipe, StandardHeaderComponent, IonButton],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DiscoveryPage implements OnInit, OnDestroy {
+export class DiscoveryPage implements OnDestroy {
 
   // Services
   private profileService = inject(ProfileService);
@@ -34,13 +33,14 @@ export class DiscoveryPage implements OnInit, OnDestroy {
 
   // Other
   private searchSubscription?: Subscription;
+  @ViewChild('searchBar') searchBar!: IonSearchbar;
 
-  ngOnInit(): void {
+  IonViewWillEnter() {
     this.loadingService.setDataSources(this.profileService);
   }
 
-  displaySearchResults(event: Event) {
-    const input = (event.target as HTMLIonSearchbarElement).value;
+  displaySearchResults() {
+    const input = this.searchBar.value;
     if (typeof input != "string" || input.length == 0) {
       this.searchResults().clear();
       this.searchBarFilled.set(false);
