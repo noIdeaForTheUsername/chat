@@ -6,9 +6,13 @@ import { UserProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { IonAvatar, IonButton, IonContent, IonItem, IonLabel, IonSearchbar } from '@ionic/angular/standalone';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ProfileService } from '../profile-service/profile.service';
+import { ConversationService } from '@app/conversations/conversation.service';
+import { AlertService } from '@app/alerts/alert-service/alert.service';
+import { AlertType } from '@app/alerts/alert-type.enum';
+import { getVisibleName } from '../profile-utils';
 
 @Component({
   selector: 'app-discovery-page',
@@ -24,7 +28,10 @@ export class DiscoveryPage implements OnDestroy {
 
   // Services
   private profileService = inject(ProfileService);
+  private conversationService = inject(ConversationService);
   private loadingService = inject(LoadingService);
+  private alertService = inject(AlertService);
+  private translate = inject(TranslateService);
 
   // Signals
   searchBarFilled = signal<boolean>(false);
@@ -33,7 +40,8 @@ export class DiscoveryPage implements OnDestroy {
 
   // Other
   private searchSubscription?: Subscription;
-  @ViewChild('searchBar') searchBar!: IonSearchbar;
+  @ViewChild('searchBar') public searchBar!: IonSearchbar;
+  protected getVisibleName = getVisibleName;  // for template use
 
   IonViewWillEnter() {
     this.loadingService.setDataSources(this.profileService);
@@ -60,6 +68,15 @@ export class DiscoveryPage implements OnDestroy {
     });
   }
 
+  initiateConversation(participantId: number, participantName: string) {
+    this.alertService.displayPromptAlert(
+      AlertType.PROMPT,
+      this.translate.instant("prompt.start-conversation"),
+      () => setTimeout(() => this.conversationService.createDirectConversation(participantId), 250),
+      undefined,
+      participantName
+    );
+  }
 
   ngOnDestroy() {
     this.searchSubscription?.unsubscribe();

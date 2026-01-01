@@ -13,6 +13,7 @@ import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { AuthService } from '@app/auth/auth.service';
 
 @Component({
   selector: 'app-profile-page',
@@ -30,6 +31,7 @@ export class ProfilePage {
   private router = inject(Router);
   private translate = inject(TranslateService);
 
+  private authService = inject(AuthService);
   private profileService = inject(ProfileService)
   private conversationService = inject(ConversationService)
   private loadingService = inject(LoadingService);
@@ -73,7 +75,7 @@ export class ProfilePage {
     }
 
     this.profile.set(profile);
-    if (profile.id == this.profileService.userId) {
+    if (profile.id == this.authService.getUserId()) {
       this.own.set(true);
     }
     else {

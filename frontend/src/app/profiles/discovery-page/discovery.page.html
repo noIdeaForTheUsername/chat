@@ -2,33 +2,43 @@
 
 <ion-content [fullscreen]="true">
   <!-- searchbar -->
-  <ion-searchbar #searchBar [placeholder]="'page.discovery.searchbar-hint' | translate" class="glow-on-focus"></ion-searchbar>
+  <ion-searchbar #searchBar
+    class="glow-on-focus"
+    [placeholder]="'page.discovery.searchbar-hint' | translate"/>
     
   <!-- instructions -->
   <h1 class="ion-margin">{{'page.discovery.header' | translate}}</h1>
   <p class="ion-margin" [innerHTML]="'page.discovery.info' | translate"></p>
 
   <!-- confirm button -->
-  <ion-button class="ion-padding search-button" (click)="displaySearchResults()">{{"common.confirm" | translate}}</ion-button>
+  <ion-button class="ion-padding search-button"
+    [disabled]="searchBar.value?.trim()?.length === 0"
+    (click)="displaySearchResults()">
+    {{"common.confirm" | translate}}
+  </ion-button>
 
-  <!-- loading or results -->
+  <!-- LOADING OR RESULTS -->
   @if (searchBarFilled() && searchLoading()) {
+    <!-- loading -->
     <div class="loadingContainer"><app-loading-indicator type="dots" [handleErrors]="true"></app-loading-indicator></div>
   }
-  @else if (searchBarFilled() && searchResults().size > 0) {
+  @else if (searchBarFilled() && searchResults().size > 0) { <!-- SEARCH RESULTS -->
     <h1 class="ion-margin">{{'page.discovery.found' | translate}}:</h1>
+
     @for (entry of this.searchResults().entries(); track entry[0]) {
-      <ion-item [button]="true" lines="full">
+      <!-- CONVERSATION LIST ITEMS -->
+      @let visibleName = entry[1] | visibleName:true;
+      <ion-item [button]="true" lines="full" (click)="initiateConversation(entry[0], visibleName)">
         <ion-avatar aria-hidden="true" slot="start">
           <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
         </ion-avatar>
         <ion-label class="ion-text-nowrap">
-          <h2>{{entry[1] | visibleName:true}}</h2>
+          <h2>{{visibleName}}</h2>
         </ion-label>
       </ion-item>
     }
   }
-  @else if (searchBarFilled() && !searchLoading()) {  <!-- no results -->
+  @else if (searchBarFilled() && !searchLoading()) {  <!-- NO RESULTS FOUND -->
     <h1 class="ion-margin">{{'page.discovery.not-found' | translate}}</h1>
   }
   

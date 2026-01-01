@@ -178,7 +178,9 @@
     "block": {
       "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
-    }
+    },
+    "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
+    "start-conversation": "Start a new conversation with this user?"
   },
 
 

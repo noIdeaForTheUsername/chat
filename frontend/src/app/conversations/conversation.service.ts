@@ -6,12 +6,19 @@ import { Message } from '@app/messages/message.interface';
 import { BackendConversationApi } from './backend-conversation-api';
 import { Profile } from '@app/profiles/profile.interface';
 import { AuthService } from '@app/auth/auth.service';
+import { AlertService } from '@app/alerts/alert-service/alert.service';
+import { AlertType } from '@app/alerts/alert-type.enum';
+import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConversationService implements LoadingStatus {
   private authService = inject(AuthService);
+  private alertService = inject(AlertService);
+  private router = inject(Router);
+  private translate = inject(TranslateService);
 
   public readonly conversations = signal<Conversation[]>([]);
   public readonly dataLoaded = signal(false);
@@ -32,13 +39,18 @@ export class ConversationService implements LoadingStatus {
 
   loadData() {
     // Load conversations
+    console.log("load data called");
     this.api.getUserConversations().subscribe({
       next: (val) => {
+        console.log("conversation srv load data success");
+        console.log("result:", val);
         this.conversations.set(val);
         this.dataLoaded.set(true); 
+        console.log("signal in srv changed");
       },
       error: (e) => {
         this.loadErrorCode.set(e.status);
+        console.log("conversation srv load data error");
       }
     });
     
@@ -51,7 +63,7 @@ export class ConversationService implements LoadingStatus {
     });
   }
 
-  sortConversations() {
+  protected sortConversations() {
     this.conversations.set(
       this.conversations().sort((conv, conv2) => {
         let msg = this.conversationsLastMessages().get(conv.id);
@@ -85,5 +97,32 @@ export class ConversationService implements LoadingStatus {
   getConversations(): readonly Conversation[] {
     if (!this.dataLoaded()) throw new Error("Conversations not yet loaded - service users should check that first!");
     return this.conversations();
+  }
+
+  createDirectConversation(participantId: number) {
+    const sameConversation = this.conversations().find(c => c.participantId === participantId);
+    if (sameConversation) {
+      this.displayExistingDirectConversationError(sameConversation.id);
+      return;
+    }
+
+    return this.api.createDirectConversation(participantId).subscribe({
+      next: (val) => {
+        this.loadData();  // reload conversations
+        this.profileService.loadData();
+      },
+      error: (e) => {
+        this.alertService.displayErrorById("unknown");
+      }
+    });
+  }
+  
+  private displayExistingDirectConversationError(conversationId: number) {
+    this.alertService.displayPromptAlert(AlertType.PROMPT,
+      this.translate.instant("prompt.conversation-exists"),
+      () => this.router.navigate(['/chats', conversationId]),
+      undefined,
+      this.translate.instant("common.error")
+    )
   }
 }

@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Profile } from '@app/profiles/profile.interface';
+import { getVisibleName } from '../profile-utils';
 // import { ProfileService } from '@app/profiles/profile-service/profile.service';
 
 @Pipe({
@@ -8,26 +9,7 @@ import { Profile } from '@app/profiles/profile.interface';
 export class VisibleNamePipe implements PipeTransform {
 
   transform(value: Profile | undefined, alwaysIncludeUserLogin: boolean = false): string {
-    // if ((value as Conversation).participantId !== undefined) { // Conversation passed
-      
-    // }
-    if (value === undefined) return "???";
-
-    if (value.type == 'user') {
-      let toReturn = "";
-      if (value.nick) toReturn = value.nick;
-      else if (value.name) toReturn = value.name;
-
-      if (toReturn.length > 0) {
-        if (alwaysIncludeUserLogin) toReturn += ` (@${value.login})`;
-        return toReturn;
-      }
-      else return '@' + value.login;
-    }
-    else {
-      if (value.nick) return value.nick;
-      else return value.name;
-    }
+    return getVisibleName(value, alwaysIncludeUserLogin);
   }
 
   // private getVisibleNameOfProfile(value: Profile, alwaysIncludeUserLogin: boolean) {

@@ -18,6 +18,7 @@ import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolb
 import { Profile } from '@app/profiles/profile.interface';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
+import { AuthService } from '@app/auth/auth.service';
 
 @Component({
   selector: 'app-conversations-page',
@@ -36,15 +37,26 @@ export class ConversationsPage {
   protected profileService = inject(ProfileService);
   private loadingService = inject(LoadingService);
   private translate = inject(TranslateService);
+  protected authService = inject(AuthService);
   private router = inject(Router);
   protected selectionService = inject(SelectionService);
 
   // Data
   protected conversations = computed(() => this.convertConversations(this.conversationService.conversations(), this.lastMessages()));
-  protected displayedConversations = computed(() =>
-    this.conversations().filter((conv) => {
-      return profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter());
-    }));
+  protected displayedConversations = computed(() => {
+    console.log("recomputing displayed conversations");
+    let conversationList = this.conversationService.conversations();
+    let searchFilter = this.searchFilter();
+    let convertedConversations = this.convertConversations(conversationList, this.lastMessages());
+    console.log("conversation list:", conversationList);
+    console.log("converted conversations:", convertedConversations);
+    
+    let filered = convertedConversations.filter((conv) => {  // filtered by search
+      return profileMatchesSearch(this.profiles().get(conv.participantId), searchFilter);
+    });
+    console.log("filtered conversations:", filered);
+    return filered;
+  });
   
   protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsLastMessages;
   protected profiles: Signal<Map<number, Profile>> = this.profileService.profiles;

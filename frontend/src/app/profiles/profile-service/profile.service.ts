@@ -4,21 +4,21 @@ import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { Profile, UserProfile, GroupProfile } from '@app/profiles/profile.interface';
 import { BackendProfileApi } from './backend-profile-api';
 import { forkJoin } from 'rxjs';
+import { ConversationService } from '@app/conversations/conversation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProfileService implements LoadingStatus {
 
+  // Dependencies
   private readonly api = new BackendProfileApi();
 
   public readonly profiles = signal(new Map<number, Profile>());
-  public readonly userId: number;
   public readonly dataLoaded = signal<boolean>(false);
   public readonly loadErrorCode: WritableSignal<number | null> = signal(null);
 
   constructor() {
-    this.userId = 24;
     this.loadData();
   }
 

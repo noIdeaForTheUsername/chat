@@ -64,8 +64,8 @@
   <!-- CORNER MENU (we can show it even if conversations are not loaded) -->
   <app-corner-menu #corner_menu>
     <app-item-button [text]="'common.settings' | translate" icon="settings" [routerLink]="'/settings'"/>
-    @if (profileService.userId) {
-      <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${profileService.userId}`"/>
+    @if (authService.getUserId()) {
+      <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${authService.getUserId()}`"/>
     }
     <app-item-button [text]="'common.selection-mode' | translate" icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
     <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>

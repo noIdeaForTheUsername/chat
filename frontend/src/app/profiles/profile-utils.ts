@@ -1,22 +1,26 @@
 import { GroupProfile, Profile, UserProfile } from "@app/profiles/profile.interface";
 
-// export function getVisibleName(p: Profile, alwaysIncludeUserLogin: boolean = false): string {
-  // if (p.type == 'user') {
-  //   let toReturn = "";
-  //   if (p.userNick) toReturn = p.userNick;
-  //   if (p.name) toReturn = p.name;
 
-  //   if (toReturn.length > 0) {
-  //     if (alwaysIncludeUserLogin) toReturn += ` (@${p.login})`;
-  //     return toReturn;
-  //   }
-  //   else return '@' + p.login;
-  // }
-  // else {
-  //   if (p.userNick) return p.userNick;
-  //   return p.name;
-  // }
-// }
+export function getVisibleName(value: Profile | undefined, alwaysIncludeUserLogin: boolean = false): string {
+  if (value === undefined) return "???";
+
+  if (value.type == 'user') {
+    let toReturn = "";
+    if (value.nick) toReturn = value.nick;
+    else if (value.name) toReturn = value.name;
+
+    if (toReturn.length > 0) {
+      if (alwaysIncludeUserLogin) toReturn += ` (@${value.login})`;
+      return toReturn;
+    }
+    else return '@' + value.login;
+  }
+  else {
+    if (value.nick) return value.nick;
+    else return value.name;
+  }
+}
+
 
 export type ServerUserProfile = Omit<UserProfile, "type">;
 
