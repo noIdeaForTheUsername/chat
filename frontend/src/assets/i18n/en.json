@@ -139,7 +139,7 @@
     "register": {
       "header": "Create a new account",
       "name-input": "Full name (optional, but recommended)",
-      "login-input": "Unique login",
+      "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
       "email-phone-hint": "At least one is required (phone recommended):",

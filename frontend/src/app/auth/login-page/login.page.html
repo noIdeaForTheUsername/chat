@@ -2,31 +2,31 @@
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="loginForm">
-  <div class="container">
-    <h1>{{ 'page.login.header' | translate }}</h1>
+    <div class="container">
+      <h1>{{ 'page.login.header' | translate }}</h1>
 
-    <div class="floating-input">
-      <label>
-        <p>{{ 'page.login.account-input' | translate }}:</p>
-        <input formControlName="account">
-      </label>
-    </div>
-    
-    <div class="floating-input">
-      <label>
-        <p>{{ 'profile.password' | translate }}:</p>
-        <input formControlName="password" type="password">
-      </label>
-    </div>
+      <div class="floating-input">
+        <label>
+          <p>{{ 'page.login.account-input' | translate }}:</p>
+          <input formControlName="account">
+        </label>
+      </div>
+      
+      <div class="floating-input">
+        <label>
+          <p>{{ 'profile.password' | translate }}:</p>
+          <input formControlName="password" type="password">
+        </label>
+      </div>
 
-    <ion-button fill="solid" (click)="login()" [disabled]="this.auth.processing()">
-      {{ 'profile.log-in' | translate }}
-    </ion-button>
-    <hr>
-    <p class="hint">{{ "page.login.register-hint" | translate }}</p>
-    <ion-button fill="outline" routerLink="/register">
-      {{ 'profile.register' | translate }}
-    </ion-button>
-  </div>
+      <ion-button fill="solid" (click)="login()" [disabled]="this.auth.processing()">
+        {{ 'profile.log-in' | translate }}
+      </ion-button>
+      <hr>
+      <p class="hint">{{ "page.login.register-hint" | translate }}</p>
+      <ion-button fill="outline" routerLink="/register">
+        {{ 'profile.register' | translate }}
+      </ion-button>
+    </div>
   </form>
 </ion-content>

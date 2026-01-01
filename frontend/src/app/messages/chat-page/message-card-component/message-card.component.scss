@@ -115,6 +115,13 @@ ion-card.message-card {
       text-overflow: ellipsis;
     }
   }
+
+  ion-card-content.message-text {
+    width: 100%;
+    display: block;
+
+    padding: 6px 10px;
+  }
 }
 
 // Highlight-pulse animation

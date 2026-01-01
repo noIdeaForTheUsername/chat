@@ -38,7 +38,7 @@ import { MessageActionButtons } from './message-action-buttons';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatPage implements AfterViewInit, OnDestroy {
-  // Services
+  // DEPENDENCIES
   private translate = inject(TranslateService);
   protected conversationService = inject(ConversationService);
   private profileService = inject(ProfileService);
@@ -46,46 +46,47 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private loadingService = inject(LoadingService);
   public selectionService = inject(SelectionService);
 
+  // SETTINGS
+  private readonly SCROLL_TO_BOTTOM_BUTTON_PX = 1500;
+  private readonly SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX = 150;
+
+  // HTML elements
   @ViewChild(IonContent) private content!: IonContent;
   @ViewChild("msg_field") protected messageField!: IonTextarea;
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
+  private scrollElement!: HTMLElement;
   
   
-  // DATA
+  // DATA TO DISPLAY
   protected conversationId: number = -1;
   public conversation!: Conversation;
   public participant?: Profile;
   public messages = this.messageService.displayedMessages;
 
-  // INITIAL loading (from loading service)
-  initialLoading = computed(() => !this.loadingService.dataLoaded());
-
-  // Other signals the UI depends on
-
-  // Displayed data info
-  enteredMessage = signal<string>("");
-  replyingToId = signal<null | number>(null);
-  oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
-  // Loading
-  messageLoading = this.messageService.additionalMessagesLoading;
-  loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
+  // LOADING
+  protected initialLoading = computed(() => !this.loadingService.dataLoaded());
+  protected messageLoading = this.messageService.additionalMessagesLoading;
+  protected loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
   private dataSources = [this.profileService, this.conversationService, this.messageService];
-  
-  // State
-  displayingNewestMessages = this.messageService.displayingNewestMessages;
-  displayingOldestMessages = this.messageService.displayingOldestMessages;
-  showScrollDownButton = signal(false);
 
-  // Action menu
-  actionMessageId = signal<number | null>(null);
-  messageActionSheetOpen = signal(false);
-  cornerMenuOpen = signal(false);
+  // MESSAGE INPUT
+  protected enteredMessage = signal<string>("");
+  protected replyingToId = signal<null | number>(null);
 
+  // DISPLAYED MESSAGES STATE
+  protected oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
+  protected displayingNewestMessages = this.messageService.displayingNewestMessages;
+  protected displayingOldestMessages = this.messageService.displayingOldestMessages;
+  protected showScrollDownButton = signal(false);
 
-  // Other control variables
+  // ACTION MENU
+  protected actionMessageId = signal<number | null>(null);
+  protected messageActionSheetOpen = signal(false);
+  protected cornerMenuOpen = signal(false);
+
+  // SCROLL MANAGEMENT
   private firstMessageId: string = "";
   private firstMessageTopDistance: number = -1;  // for infinite scroll correction
-  private scrollElement!: HTMLElement;
 
   // ------------------------------------------- INIT/LOAD FUNCTIONS -------------------------------------------
 
@@ -147,7 +148,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.messageField.value = "";
     this.enteredMessage.set("");
     const replyingTo = this.replyingToId();
-    this.messageService.sendMessage(messageText, replyingTo ?? undefined);
+    this.messageService.sendMessage(messageText, replyingTo ?? undefined,
+      () => this.correctScrollOnMessageSend(this)
+    );
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
@@ -160,16 +163,16 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
 
     // Handle scroll-down button
-    this.showScrollDownButton.set(this.getScrollPxAwayFromBottom() > 2000 || !this.displayingNewestMessages());
+    this.showScrollDownButton.set(
+      this.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_BUTTON_PX
+      || !this.displayingNewestMessages());
   }
   onInfiniteScrollUp() {
     if (this.displayingOldestMessages()) return;
-    // this.loadingMessagesAreOlder.set(true);
     this.messageService.loadOlderMessages(() => this.correctScrollOnMessageLoad(this));
   }
   onInfiniteScrollDown() {
     if (this.displayingNewestMessages()) return;
-    // this.loadingMessagesAreOlder.set(false);
     this.messageService.loadNewerMessages(() => this.correctScrollOnMessageLoad(this));
   }
 
@@ -203,21 +206,32 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       }
     }
     else {
-      // this.loadingMessagesAreOlder.set(true);
-      this.messageService.loadMessagesByStartId(messageId, false, () => requestAnimationFrame(() => this.scrollToMessage(messageId, true)));
+      this.messageService.loadMessagesByStartId(messageId, false,
+        () => requestAnimationFrame(() => this.scrollToMessage(messageId, true)));
     }
   }
 
-  correctScrollOnMessageLoad(self: ChatPage) {
-    if (self.loadingMessagesAreOlder()) self.firstMessageId = "msg-" + self.messages()[0].globalId!;
-    else self.firstMessageId = "msg-" + self.messages()[self.messages().length - 1].globalId!;
-    const elem = document.getElementById(self.firstMessageId)!;
-    self.firstMessageTopDistance = elem.getBoundingClientRect().top;
+  // Corrects scroll so the screen doesn't jump on msg reload. Call just before message list update
+  correctScrollOnMessageLoad(page: ChatPage = this) {
+    if (page.loadingMessagesAreOlder()) page.firstMessageId = "msg-" + page.messages()[0].globalId!;
+    else page.firstMessageId = "msg-" + page.messages()[page.messages().length - 1].globalId!;
+    const elem = document.getElementById(page.firstMessageId)!;
+    page.firstMessageTopDistance = elem.getBoundingClientRect().top;
     requestAnimationFrame(() => {
-      const elem2 = document.getElementById(self.firstMessageId)!;
-      const diff = elem2.getBoundingClientRect().top - self.firstMessageTopDistance;
-      self.content.scrollByPoint(0, diff, 0);
+      const elem2 = document.getElementById(page.firstMessageId)!;
+      const diff = elem2.getBoundingClientRect().top - page.firstMessageTopDistance;
+      page.content.scrollByPoint(0, diff, 0);
     });
+  }
+
+  // After the message is sent, correct the scroll (if the user is at the bottom)
+  // Call just before message list update
+  correctScrollOnMessageSend(page: ChatPage = this) {
+    if (!page.displayingNewestMessages()) return;
+    if (page.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
+    requestAnimationFrame(() => 
+      page.scrollToBottom(300)
+    );
   }
 
   getScrollPxAwayFromBottom() {

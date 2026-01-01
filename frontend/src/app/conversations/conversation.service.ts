@@ -20,7 +20,7 @@ export class ConversationService implements LoadingStatus {
   // not included in dataLoaded boolean, because it's non-critical
   public readonly conversationsLastMessages = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
     
-  private api = new BackendConversationApi(this.authService.getUserId()!);
+  private api = new BackendConversationApi(this.authService.getUserIdOrError());
 
   constructor(private profileService: ProfileService) {
     this.loadData();

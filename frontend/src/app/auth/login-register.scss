@@ -1,4 +1,6 @@
 .container {
+  width: min(100%, 600px);
+  margin: auto;
   padding: 32px;
 
   ion-button {

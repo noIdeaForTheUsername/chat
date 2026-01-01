@@ -2,10 +2,12 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Message } from "../message.interface";
 import { map } from "rxjs";
+import { AuthService } from "@app/auth/auth.service";
+import { ServerMessage, serverMessageToMessage } from "../message-utils";
 
-type ServerMessage = Omit<Message, "timestamp"> & { timestamp: string };
 
 export class BackendMessageApi {
+
   private readonly http = inject(HttpClient);
 
   getConversationMessages(conversationId: number, limit: number, older = true,
@@ -19,10 +21,7 @@ export class BackendMessageApi {
       }
     }).pipe(
       map((serverMessages: ServerMessage[]) => {
-        return serverMessages.map((msg) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp)
-        }));
+        return serverMessages.map(serverMessageToMessage);
       })
     );
   }

@@ -22,7 +22,6 @@ export class AuthService {
   private router = inject(Router);
 
   private userId: number | null = null;
-  public readonly getUserId = () => this.userId;
   public readonly processing = signal(false);
 
 
@@ -35,6 +34,17 @@ export class AuthService {
     this.userId = id;
     if (id === null) localStorage.removeItem("userId");
     else localStorage.setItem("userId", id.toString());
+  }
+
+  public getUserId(): number | null {
+    return this.userId;
+  }
+
+  public getUserIdOrError(): number {
+    if (this.userId === null) {
+      throw new Error("AuthService.getUserIdOrError: User ID null");
+    }
+    return this.userId;
   }
 
 

@@ -12,7 +12,7 @@ import { ConversationItemComponent } from './conversation-item/conversation-item
 import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { Router, RouterLink } from '@angular/router';
 import type { OverlayEventDetail } from '@ionic/core';
-import { profileMatchesSearch } from '@app/profiles/profileUtils';
+import { profileMatchesSearch } from '@app/profiles/profile-utils';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
 import { Profile } from '@app/profiles/profile.interface';

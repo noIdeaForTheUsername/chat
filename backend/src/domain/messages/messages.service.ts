@@ -44,8 +44,8 @@ export class MessagesDomainService {
     let globalIdCondition = undefined;
     if (globalIdStartExclusive !== undefined)
       globalIdCondition = olderThanStart ? LessThan(globalIdStartExclusive) : MoreThan(globalIdStartExclusive);
-    // purposefuly sorted in this way so the older messages are HIGHER (earlier) in UI
-    const orderDirection = olderThanStart ? 'ASC' : 'DESC';
+    
+    const orderDirection = olderThanStart ? 'DESC' : 'ASC';
     
     return await this.messageRepository.find({
       where: {

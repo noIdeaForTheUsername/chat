@@ -9,6 +9,14 @@ import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 
+
+function loginValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value as string | null | undefined;
+  if (value == null) return null;
+  const normalized = value.replace(/[^\p{L}\p{N}_]/gu, '');
+  return normalized === value ? null : { normalizedRemoval: true };
+}
+
 function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
   const passwordCtrl = group.get('password');
   const repeatCtrl = group.get('passwordRepeat');
@@ -32,6 +40,7 @@ function passwordsMatchValidator(group: AbstractControl): ValidationErrors | nul
   return null;
 }
 
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
@@ -48,7 +57,7 @@ export class RegisterPage {
 
   form = new FormGroup({
     name: new FormControl(''),
-    login: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    login: new FormControl('', { nonNullable: true, validators: [Validators.required, loginValidator] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     passwordRepeat: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     email: new FormControl('', [Validators.email]),
@@ -57,6 +66,23 @@ export class RegisterPage {
     emailPublic: new FormControl<boolean>(true, { nonNullable: true }),
     phoneNumberPublic: new FormControl<boolean>(true, { nonNullable: true }),
   }, { validators: passwordsMatchValidator });
+
+
+  ngOnInit() {
+    // Auto-complete login based on the entered name, if the login field is untouched
+    const nameCtrl = this.form.get('name');
+    const loginCtrl = this.form.get('login');
+    nameCtrl?.valueChanges.subscribe((name) => {
+      if (!loginCtrl) return;
+      if (loginCtrl.touched) return;
+      const auto = this.deriveLoginFromName(name ?? '');
+      loginCtrl.patchValue(auto, { emitEvent: false });
+    });
+  }
+
+  private deriveLoginFromName(name: string): string {
+    return (name || '').toLowerCase().replace(/[^\p{L}]/gu, '');
+  }
 
 
   register() {

@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { map, Observable } from "rxjs";
 import { UserProfile } from "@app/profiles/profile.interface";
-import { mapUserProfile, ServerUserProfile } from "@app/profiles/profileUtils";
+import { mapUserProfile, ServerUserProfile } from "@app/profiles/profile-utils";
 
 export interface RegisterBody {
 	name?: string | null;

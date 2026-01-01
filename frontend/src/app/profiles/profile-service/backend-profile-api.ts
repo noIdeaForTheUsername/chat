@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Profile, UserProfile } from "../profile.interface";
-import type { ServerUserProfile } from "../profileUtils";
-import { mapUserProfile, mapProfileList } from "../profileUtils";
+import type { ServerUserProfile } from "../profile-utils";
+import { mapUserProfile, mapProfileList } from "../profile-utils";
 import { map } from "rxjs";
 
 
