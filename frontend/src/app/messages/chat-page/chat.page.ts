@@ -1,28 +1,29 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Profile } from '@app/profiles/profile.interface';
 import { ConversationService } from '@app/conversations/conversation.service';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonBackButton, IonFooter,
-  IonTextarea, IonButton, IonIcon, IonActionSheet, IonFab, IonFabButton, ScrollDetail, } from '@ionic/angular/standalone';
-import { Conversation } from '@app/conversations/conversation.interface';
-import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { MessageService } from '../message-service/message.service';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
-import { MessageCardComponent } from './message-card-component/message-card.component';
-import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
-import { ChatNoteComponent } from './info-note/chat-note.component';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
-import { LoadingService } from '@app/loading/loading-service/loading.service';
-import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
-import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import type { OverlayEventDetail } from '@ionic/core';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
+import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
+import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab,
+  IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail,
+} from '@ionic/angular/standalone';
+import type { OverlayEventDetail } from '@ionic/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { MessageService } from '../message-service/message.service';
+import { ChatNoteComponent } from './info-note/chat-note.component';
 import { MessageActionButtons } from './message-action-buttons';
+import { MessageCardComponent } from './message-card-component/message-card.component';
+import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
+import { Conversation } from '@app/conversations/conversation.interface';
+import { Profile } from '@app/profiles/profile.interface';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -41,9 +42,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // DEPENDENCIES
   private translate = inject(TranslateService);
   protected conversationService = inject(ConversationService);
-  private profileService = inject(ProfileService);
+  protected profileService = inject(ProfileService);
   private messageService = inject(MessageService);
-  private loadingService = inject(LoadingService);
   public selectionService = inject(SelectionService);
 
   // SETTINGS
@@ -59,15 +59,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   
   // DATA TO DISPLAY
   protected conversationId: number = -1;
-  public conversation!: Conversation;
-  public participant?: Profile;
+  public conversation = signal<Conversation | undefined>(undefined);
+  public participant = signal<Profile | undefined>(undefined);
+    
   public messages = this.messageService.displayedMessages;
 
   // LOADING
-  protected initialLoading = computed(() => !this.loadingService.dataLoaded());
+  protected initialLoading = computed(() => (!this.metadataLoaded()) || !this.messageService.dataLoaded());
+  protected errorId = signal<string | null>(null);
+  protected metadataLoaded = signal(true);
   protected messageLoading = this.messageService.additionalMessagesLoading;
   protected loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
-  private dataSources = [this.profileService, this.conversationService, this.messageService];
 
   // MESSAGE INPUT
   protected enteredMessage = signal<string>("");
@@ -86,7 +88,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // SCROLL MANAGEMENT
   private firstMessageId: string = "";
-  private firstMessageTopDistance: number = -1;  // for infinite scroll correction
+  private firstMessageTopDistance: number | undefined = undefined;  // for infinite scroll correction
 
   // ------------------------------------------- INIT/LOAD FUNCTIONS -------------------------------------------
 
@@ -95,38 +97,33 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     // Get participant and conversation data
     let id = this.route.snapshot.paramMap.get('id');
     if (id === null || isNaN(parseInt(id))) {
-      this.loadingService.reportError("bad-url");
+      this.errorId.set('bad-url');
       return;
     }
     this.conversationId = parseInt(id);
-
-    // Try loading conversation and participant immediately
-    // (unlike messages, it all should be already loaded if the user got to this page by clicking a button)
-    try {
-      this.conversation = this.conversationService.getConversationById(this.conversationId);
-      this.participant = this.profileService.getProfile(this.conversation.participantId);
-    } catch {}
     
-    // Load conversation messages
-    this.messageService.loadConversationInitially(this.conversationId, () => undefined);
+    // Load conversation data
+    this.loadConversationData(this.conversationId);
 
-    this.loadingService.setDataSources(...this.dataSources);
-
-    // One-time finish function call after everything is loaded
     effect(() => {
-      this.loadingService.setDataSources(...this.dataSources);
-      const initialLoadingInProgress = this.initialLoading();
-      if (!initialLoadingInProgress) {
-        this.finishLoading();
-      }
+      const msgs = this.messageService.displayedMessages();
+      if (msgs.length == 0) return;
+      if (this.firstMessageTopDistance === undefined)  // first load
+        requestAnimationFrame(() => this.content.scrollToBottom(0));
+      else  // next loads
+        this.correctScrollOnMessageLoad.bind(this);
     });
   }
 
-  private finishLoading() {
-    this.conversation = this.conversationService.getConversationById(this.conversationId);
-    this.messageService.setOldestUnreadMessageId(this.conversation.newestMessageReadId || null);
-    this.participant = this.profileService.getProfile(this.conversation.participantId);
-    requestAnimationFrame(() => this.scrollToBottom(0));
+  private async loadConversationData(conversationId: number) {
+    this.messageService.loadConversationInitially(conversationId);
+    this.conversation.set(await firstValueFrom(
+      this.conversationService.getConversationById(conversationId))
+    );
+    this.participant.set(await firstValueFrom(
+      this.profileService.getProfileById(this.conversation()!.participantId)
+    ));
+    this.metadataLoaded.set(true);
   }
 
   ngAfterViewInit(): void {
@@ -149,7 +146,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.enteredMessage.set("");
     const replyingTo = this.replyingToId();
     this.messageService.sendMessage(messageText, replyingTo ?? undefined,
-      () => this.correctScrollOnMessageSend(this)
+      () => this.correctScrollOnMessageSend.bind(this)
     );
   }
 
@@ -169,11 +166,11 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
   onInfiniteScrollUp() {
     if (this.displayingOldestMessages()) return;
-    this.messageService.loadOlderMessages(() => this.correctScrollOnMessageLoad(this));
+    this.messageService.loadOlderMessages(() => this.saveScrollParams.bind(this));
   }
   onInfiniteScrollDown() {
     if (this.displayingNewestMessages()) return;
-    this.messageService.loadNewerMessages(() => this.correctScrollOnMessageLoad(this));
+    this.messageService.loadNewerMessages(() => this.saveScrollParams.bind(this));
   }
 
   onMessageRepliedClick(messageId: number) {
@@ -181,11 +178,15 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
+    console.log("Scrolling to bottom. Initial loading: ", this.initialLoading());
     if (this.initialLoading()) return;
-    if (loadFirstMessages && !this.displayingNewestMessages())
-      this.messageService.loadConversationInitially(this.conversationId, () => requestAnimationFrame(() => this.scrollToBottom(1000, false)));
-    else
+    if (loadFirstMessages && !this.displayingNewestMessages()) {
+      this.messageService.loadConversationInitially(this.conversationId,
+        () => requestAnimationFrame(() => this.scrollToBottom(1000, false)));
+    }
+    else {
       this.messageService.cancelMessageLoad();
+    }
     this.content.scrollToBottom(miliseconds);
   }
 
@@ -211,26 +212,32 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  // Corrects scroll so the screen doesn't jump on msg reload. Call just before message list update
-  correctScrollOnMessageLoad(page: ChatPage = this) {
-    if (page.loadingMessagesAreOlder()) page.firstMessageId = "msg-" + page.messages()[0].globalId!;
-    else page.firstMessageId = "msg-" + page.messages()[page.messages().length - 1].globalId!;
-    const elem = document.getElementById(page.firstMessageId)!;
-    page.firstMessageTopDistance = elem.getBoundingClientRect().top;
+  // Saves scroll params for correctScrollOnMessageLoad. Call just BEFORE message list updates
+  saveScrollParams() {
+    if (this.loadingMessagesAreOlder()) this.firstMessageId = "msg-" + this.messages()[0].globalId!;
+    else this.firstMessageId = "msg-" + this.messages()[this.messages().length - 1].globalId!;
+    const elem = document.getElementById(this.firstMessageId)!;
+    this.firstMessageTopDistance = elem.getBoundingClientRect().top;
+  }
+
+  // Corrects scroll so the screen doesn't jump on msg reload. Call just after message list updates.
+  // Make sure saveScroll params is called just before message list update / this function call
+  correctScrollOnMessageLoad() {
     requestAnimationFrame(() => {
-      const elem2 = document.getElementById(page.firstMessageId)!;
-      const diff = elem2.getBoundingClientRect().top - page.firstMessageTopDistance;
-      page.content.scrollByPoint(0, diff, 0);
+      if (this.firstMessageTopDistance === undefined) return;
+      const elem2 = document.getElementById(this.firstMessageId)!;
+      const diff = elem2.getBoundingClientRect().top - this.firstMessageTopDistance;
+      this.content.scrollByPoint(0, diff, 0);
     });
   }
 
   // After the message is sent, correct the scroll (if the user is at the bottom)
-  // Call just before message list update
-  correctScrollOnMessageSend(page: ChatPage = this) {
-    if (!page.displayingNewestMessages()) return;
-    if (page.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
+  // Call just before message list update.
+  correctScrollOnMessageSend() {
+    if (!this.displayingNewestMessages()) return;
+    if (this.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
     requestAnimationFrame(() => 
-      page.scrollToBottom(300)
+      this.scrollToBottom(300)
     );
   }
 
@@ -310,6 +317,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.conversationService.loadMessagePreviews();
     this.messageService.exitConversation();
   }
 }

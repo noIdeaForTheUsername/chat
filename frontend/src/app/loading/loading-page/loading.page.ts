@@ -15,7 +15,6 @@ import { Router } from "@angular/router";
 export class LoadingPage implements OnInit {
 
   private authService = inject(AuthService);
-  private router = inject(Router);
 
   // ON APP START
   ngOnInit() {

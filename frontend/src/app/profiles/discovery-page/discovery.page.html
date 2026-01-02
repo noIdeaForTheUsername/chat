@@ -20,7 +20,7 @@
   <!-- LOADING OR RESULTS -->
   @if (searchBarFilled() && searchLoading()) {
     <!-- loading -->
-    <div class="loadingContainer"><app-loading-indicator type="dots" [handleErrors]="true"></app-loading-indicator></div>
+    <div class="loadingContainer"><app-loading-indicator type="dots"></app-loading-indicator></div>
   }
   @else if (searchBarFilled() && searchResults().size > 0) { <!-- SEARCH RESULTS -->
     <h1 class="ion-margin">{{'page.discovery.found' | translate}}:</h1>

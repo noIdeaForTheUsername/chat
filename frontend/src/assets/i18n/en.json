@@ -145,7 +145,6 @@
       "email-phone-hint": "At least one is required (phone recommended):",
       "email-phone-settings": "Make other users able to find me by my",
       "bio-input": "Profile description (optional)",
-      "bio-placeholder": "A few sentences about yourself...",
       "login-hint": "Already have an account?"
     }
   },
@@ -157,6 +156,7 @@
     "name": "Name",
     "phone-number": "Phone number",
     "user-bio": "About me...",
+    "user-bio-placeholder": "A few sentences about yourself...",
     "group-bio": "About the group",
 
     "my": "My profile",
@@ -204,7 +204,7 @@
 
     "unknown": {
       "header": "Unknown error",
-      "description": "Code: {{code}}. Please note this code and contact the administrator if the issue persists."
+      "description": "Please contact the administrator if the issue persists."
     },
     "logout-failed": {
       "header": "Logout failed",

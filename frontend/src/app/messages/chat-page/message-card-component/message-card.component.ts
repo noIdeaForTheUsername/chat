@@ -9,6 +9,7 @@ import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { MessageView } from './message-view.interface';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-message-card',
@@ -35,9 +36,8 @@ export class MessageCardComponent  implements OnInit {
   // data
   private profileService = inject(ProfileService);
   // appearance
-  protected profile!: Profile;
-  protected color: string | undefined;
-  protected class = "";
+  protected profile = signal<Profile | undefined>(undefined);
+  protected color = signal<string | undefined>(undefined);
   protected spaceBefore = computed(() => this.previousMessage() && this.previousMessage()!.isOwn != this.message().isOwn && !this.unreadNoteAbove());
   // selection
   private clickLock = false;
@@ -51,16 +51,9 @@ export class MessageCardComponent  implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.profile = this.profileService.getProfile(this.message().senderId);
-    if (this.message().isOwn) {
-      this.color = "secondary";
-      this.class = "message-card ion-text-right ion-float-right";
-    }
-    else {
-      this.color = undefined;
-      this.class = "message-card ion-text-left ion-float-left";
-    }
+  async ngOnInit() {
+    this.profile.set(await firstValueFrom(this.profileService.getProfileById(this.message().senderId)));
+    this.color.set(this.message().isOwn ? "secondary" : undefined);
   }
 
   // Output actions

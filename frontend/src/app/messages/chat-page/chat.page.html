@@ -1,3 +1,6 @@
+@let conversation = this.conversation();
+@let participant = this.participant();
+
 <ion-header [translucent]="false">
 @if (selectionService.selectionMode()) {
   <app-selection-toolbar (leaveSelectionMode)="this.selectionService.toggleSelectionMode()" (openActionMenu)="this.openMultiselectActionSheet()"/>
@@ -7,7 +10,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/chats"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{this.participant | visibleName:false}}</ion-title>
+    <ion-title>{{(participant ?? undefined) | visibleName:false}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="this.cornerMenu.open($event)">
         <ion-icon name="ellipsis-horizontal" slot="icon-only"></ion-icon>
@@ -21,7 +24,7 @@
 <ion-content [fullscreen]="false" fixedSlotPlacement="before" [scrollEvents]="true" (ionScroll)="onScroll($any($event))">
   <!-- CONVERSATION PRELOADING SCREEN -->
   @if (initialLoading()) {
-    <app-loading-indicator [handleErrors]="true"></app-loading-indicator>
+    <app-loading-indicator [errorId]="errorId()"></app-loading-indicator>
   }
   <!-- NORMAL VIEW -->
   @else {
@@ -48,10 +51,8 @@
         (showActionMenu)="openMessageActionSheet($event)"
         [unreadNoteAbove]="oldestUnreadMessageId() == message.globalId"
         [previousMessage]="previousMessage"/>
-      <!-- [spaceBefore]="previousMessage && previousMessage.isOwn != message.isOwn"
-       -->
     }
-    <div style="display: block; height: 10px;">&nbsp;</div> <!--professional workaround when shit doesn't work to cooperate :P-->
+    <div style="display: block; height: 10px;">&nbsp;</div> <!--a professional workaround when shit doesn't work to cooperate :P-->
 
     <!-- BOTTOM MESSAGE LOADING INDICATOR -->
     @if (!displayingNewestMessages()) {
@@ -70,11 +71,14 @@
 
   <!-- CORNER OPTIONS MENU -->
   <app-corner-menu #corner_menu>
-    <app-item-button [text]="'page.chat.options' | translate" icon="settings" [routerLink]="'options'"/>
-    @if (this.conversationService.dataLoaded()) {
+    <app-item-button [text]="'page.chat.options' | translate" icon="settings" [routerLink]="'options'"/> <!--settings-->
+    <!--view profile btn-->
+    
+    @if (conversation) {
       <app-item-button [text]="'profile.view-profile' | translate" icon="person"
-      [routerLink]="['/', 'profiles', this.conversationService.getConversationById(this.conversationId).participantId]"/>
+      [routerLink]="['/', 'profiles', conversation.participantId]"/>
     }
+    <!--selection mode-->
     <app-item-button [text]="'common.selection-mode' | translate" icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
   </app-corner-menu>
 

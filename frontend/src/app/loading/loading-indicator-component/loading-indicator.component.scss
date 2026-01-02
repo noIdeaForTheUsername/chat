@@ -1,25 +1,57 @@
+
 div {
-  width: 100%;
-  height: 100%;
+  margin: auto;
+  padding: 10px 0;
+
+  &.full {
+    width: 100%;
+    height: 100%;
+
+    ion-icon {
+      font-size: 80px;
+    }
+  }
+
+  &.large {
+    width: 90px;
+    height: 90px;
+
+    ion-icon {
+      font-size: 60px;
+    }
+  }
+
+  &.medium {
+    width: 60px;
+    height: 60px;
+
+    ion-icon {
+      font-size: 40px;
+    }
+  }
+
+  ion-spinner {
+    display: block;
+    width: min(100%, 120px);
+    height: min(100%, 120px);
+  }
 }
 
-ion-spinner.large {
-  width: 100px;
-  height: 100px;
-}
+// ion-spinner.large {
+//   width: 100px;
+//   height: 100px;
+// }
 
-ion-spinner.medium {
-  width: 60px;
-  height: 60px;
-}
+// ion-spinner.medium {
+//   width: 60px;
+//   height: 60px;
+// }
 
-ion-icon.large {
-  font-size: 80px;
-}
+// ion-icon.large {
+  
+// }
 
-ion-icon.medium {
-  font-size: 40px;
-}
+// ion-icon.medium 
 
 h2, p {
   max-width: 90%;

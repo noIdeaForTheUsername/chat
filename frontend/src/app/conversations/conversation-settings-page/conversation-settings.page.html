@@ -44,6 +44,6 @@
     </ion-item-group>
   }
   @else {
-    <app-loading-indicator />
+    <app-loading-indicator size="large" [errorId]="loadError()" />
   }
 </ion-content>

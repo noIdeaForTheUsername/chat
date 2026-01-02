@@ -13,9 +13,14 @@ export class ConversationsService {
     private readonly contacts: ContactsDomainService,
   ) {}
 
-  getUserConversations(userId: number) {
-    return this.conversations.findUserConversations(userId);
+  async getUserConversations(userId: number) {
+    return await this.conversations.findUserConversations(userId);
   }
+
+  async getConversationById(callerId: number, conversationId: number) {
+    return await this.conversations.findUserConversation(callerId, conversationId, true);
+  }
+  
 
   async createConversation(callerId: number, type: ConversationType, participantId?: number) {
     if (type === ConversationType.Direct) {

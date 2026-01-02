@@ -85,6 +85,14 @@ export class AlertService {
     this.displayMessageAlert(AlertType.ERROR, message, confirmHandler, header);
   }
 
+  displayUnknownError(error?: any) {
+    const header = this.translate.instant(`error.unknown.header`);
+    const message = this.translate.instant(`error.unknown.description`);
+    this.displayMessageAlert(AlertType.ERROR,
+      message + (error ? `\n\n${JSON.stringify(error)}` : ""),
+      undefined, header);
+  }
+
   displayServerConnectionError() {
     this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.0.description'),
       () => {}, this.translate.instant("error.0.header"));

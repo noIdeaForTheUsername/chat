@@ -1,12 +1,9 @@
-<div class="ion-display-flex ion-align-items-center ion-flex-column ion-justify-content-center">
-  <!-- Loading spinner (progress, no error) -->
-  @if (displaySpinner()) {
-    <ion-spinner [class]="size()" [name]="type()" [color]="color()"></ion-spinner>
-  }
+<div [class]="`${size()} ion-display-flex ion-align-items-center ion-flex-column ion-justify-content-center`">
 
-  <!-- Load error -->
-  @else {
+  <!-- ERROR STATE -->
+  @if (this.errorId() !== null) {
 
+    <!-- icon -->
     <ion-icon [name]="errorIconName()" color="danger" [class]="size()"></ion-icon>
 
     <!-- Text + button -->
@@ -19,5 +16,11 @@
     @else {
       <p>{{`${errorMessageKey()}.header` | translate}}</p>
     }
+  } 
+
+  <!-- LOADING STATE -->
+  @else if (active()) {
+    <!-- spinner -->
+    <ion-spinner [class]="size()" [name]="type()" [color]="color()"></ion-spinner>
   }
 </div>

@@ -1,3 +1,5 @@
+@let userId = authService.getUserId();
+
 <app-standard-header [title]="'page.app-settings.title' | translate"/>
 
 <ion-content [fullscreen]="true" class="ion-padding">
@@ -7,7 +9,9 @@
   <ion-item-group>
     <ion-item-divider><ion-label>{{"profile.account" | translate}}</ion-label></ion-item-divider>
       <!-- profile -->
-      <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${this.authService.getUserIdOrError()}`"/>
+      @if (userId) {
+        <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${userId}`"/>
+      }
       <!-- lock -->
       <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
       <!-- auto-lock toggle -->

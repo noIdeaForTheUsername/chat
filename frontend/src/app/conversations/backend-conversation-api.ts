@@ -18,6 +18,14 @@ export class BackendConversationApi {
     return this.http.get<Conversation[]>("/conversations");
   }
 
+  getConversationById(conversationId: number) {
+    return this.http.get<Conversation>(`/conversations/${conversationId}`);
+  }
+
+  // getConversationByParticipantId(participantId: number, participantType: "user" | "group" = "user"): Observable<Conversation> {
+  //   return this.http.get<Conversation>(`/conversations/participant/${participantType}/${participantId}`);
+  // }
+
   getMessagePreviews(): Observable<Map<number, Message | null>> {
     return this.http.get<ServerMessage[]>("/message-previews").pipe(
       map((serverMessages: ServerMessage[]) => {
@@ -35,7 +43,7 @@ export class BackendConversationApi {
   }
 
   createDirectConversation(participantId: number) {
-    return this.http.post("/conversations", { type: "direct", participantId });
+    return this.http.post<Conversation>("/conversations", { type: "direct", participantId });
   }
 
   acceptConversation(conversationId: number) {

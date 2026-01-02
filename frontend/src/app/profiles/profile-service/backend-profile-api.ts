@@ -24,6 +24,12 @@ export class BackendProfileApi {
     );
   }
 
+  getProfileById(id: number) {
+    return this.http.get<ServerUserProfile>(`/profiles/${id}`).pipe(
+      map(mapUserProfile)
+    );
+  }
+
   getSearchedProfiles(search: string) {
     return this.http.get<ServerUserProfile[]>(`/profiles/search?q=${encodeURIComponent(search)}`).pipe(
       map(mapProfileList)

@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, On
 import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { IonSpinner, IonButton } from '@ionic/angular/standalone';
 import { IonIcon } from '@ionic/angular/standalone';
-import { LoadingService } from '../loading-service/loading.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { errorIconMap } from './error-icon-map';
 
 
 @Component({
@@ -15,25 +15,25 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 })
 export class LoadingIndicator {
 
-  // Services
-  private loadingService = inject(LoadingService);
+  // Dependencies
   private translateService = inject(TranslateService);
 
   // Appearance
   type = input<string>('crescent');
   color = input<string>('medium');
-  size = input<'large' | 'medium'>('large');
+  size = input<'large' | 'medium' | 'full'>('full');  // full will fill the entire parent container
 
-  // Error handling options
-  public handleErrors = input<boolean>(true);
+  // State
+  active = input<boolean>(true);
+  errorId = input<string | null>(null);
 
-  // Error signals
-  protected errorId = this.loadingService.errorId;  // this also enables handling of the no connection error
-  // errorMessage = this.loadingService.errorMessage;
-  protected errorIconName = this.loadingService.errorIconName;
-
-  // Internal
-  protected displaySpinner = computed(() => (this.errorId() === null)/*still loading*/  || !this.handleErrors()/*not handling errors at all*/);
+  protected errorIconName = computed(() => {
+    if (this.errorId() !== null) {
+      let iconName = errorIconMap.get(this.errorId()!);
+      if (iconName !== undefined) return iconName;
+    }
+    return "alert-circle-outline";
+  });
 
   
   protected errorMessageKey = computed(() => {  // Set the proper error message key
@@ -41,7 +41,7 @@ export class LoadingIndicator {
       let key = `error.${this.errorId()}.header`;
       if (this.checkTranslationKeyExists(key)) return `error.${this.errorId()}`;
     }
-    return "error.unknown";  // Unknown error (translation key not found)
+    return "";
   });
 
   private checkTranslationKeyExists(key: string | null): boolean {

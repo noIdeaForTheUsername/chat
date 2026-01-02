@@ -1,13 +1,10 @@
-import { inject, Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { TranslateService } from "@ngx-translate/core";
+import { inject, Injectable, signal } from "@angular/core";
+import { Router } from "@angular/router";
 import { AlertService } from "@app/alerts/alert-service/alert.service";
 import { AlertType } from "@app/alerts/alert-type.enum";
-import { UserProfile } from "@app/profiles/profile.interface";
+import { TranslateService } from "@ngx-translate/core";
 import { AuthBackendApi, RegisterBody } from "./auth-api";
-import { Router } from "@angular/router";
-import { LoadingService } from "@app/loading/loading-service/loading.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +13,6 @@ export class AuthService {
 
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);
-  private loadingService = inject(LoadingService);
   private http = inject(HttpClient);
   private api = new AuthBackendApi(this.http);
   private router = inject(Router);
@@ -62,6 +58,9 @@ export class AuthService {
         this.router.navigate(['/chats']);
       },
       error: (e) => {
+        this.processing.set(false);
+        console.log("loadAuth error: ", e);
+        console.log("stored userId: ", this.userId);
         // Don't block the start of the app if the user was logged in before (session expired, server down, etc)
         if (e.status === 0 && this.userId !== null) {
           this.router.navigate(['/chats']);
@@ -78,13 +77,13 @@ export class AuthService {
         }
         // when user wasn't logged in before:
         else if (e.status === 0) {
-          this.loadingService.reportError("0");  // server connection err
+          this.alertService.displayServerConnectionError();
         }
-        else if (e.status === 401) {  // unauthorized, go to login
+        else if (e.status === 401 && this.router.url != '/login') {  // unauthorized, go to login
           this.router.navigate(['/login']);
         }
         else {
-          this.alertService.displayErrorById('unknown');
+          this.alertService.displayUnknownError(e);
         }
       }
     });

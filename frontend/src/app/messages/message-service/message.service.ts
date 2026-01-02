@@ -6,13 +6,14 @@ import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { MessageView } from '../chat-page/message-card-component/message-view.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
-import { call } from 'ionicons/icons';
 
+// DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
+// The chatPage manages the UI only, while being directly connected to this service's variables/signals.
 
 @Injectable({
   providedIn: 'root'
 })
-export class MessageService implements LoadingStatus {
+export class MessageService {
 
   // DEPENDENCIES
   private authService = inject(AuthService);
@@ -43,7 +44,7 @@ export class MessageService implements LoadingStatus {
   public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
   public readonly additionalMessagesLoading = signal(true);  // informs if new messages (during infinite scroll) are just being loaded
   public readonly loadingMessagesAreOlder = signal(true);
-  public readonly loadErrorCode = signal<number | null>(null);
+  // public readonly loadErrorCode = signal<number | null>(null);
   private loadsCount: number = 0;  // number of additional loads since initial conversation load
   private convMessagesSub?: Subscription;
 
@@ -118,14 +119,16 @@ export class MessageService implements LoadingStatus {
         // update control variables
         this.lowestDisplayedId = newArr.length > 0 ? newArr[0].globalId : 0;
         this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
-        this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
+        this.displayingNewestMessages.set(!older && val.length < messageAmount);
         this.displayingOldestMessages.set(older && val.length < messageAmount);
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
       },
       error: (err) => {
-        this.loadErrorCode.set(err.status);
+        this.dataLoaded.set(true);
+        this.additionalMessagesLoading.set(false);
+        // this.loadErrorCode.set(err.status);
       }
     });
   }

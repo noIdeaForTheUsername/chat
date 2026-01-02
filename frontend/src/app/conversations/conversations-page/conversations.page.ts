@@ -9,7 +9,6 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Message } from '@app/messages/message.interface';
 import { ConversationView } from "./conversation-view.interface";
 import { ConversationItemComponent } from './conversation-item/conversation-item.component';
-import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { Router, RouterLink } from '@angular/router';
 import type { OverlayEventDetail } from '@ionic/core';
 import { profileMatchesSearch } from '@app/profiles/profile-utils';
@@ -35,48 +34,37 @@ export class ConversationsPage {
   // Services
   private conversationService = inject(ConversationService);
   protected profileService = inject(ProfileService);
-  private loadingService = inject(LoadingService);
   private translate = inject(TranslateService);
   protected authService = inject(AuthService);
   private router = inject(Router);
   protected selectionService = inject(SelectionService);
 
   // Data
-  protected conversations = computed(() => this.convertConversations(this.conversationService.conversations(), this.lastMessages()));
-  protected displayedConversations = computed(() => {
-    console.log("recomputing displayed conversations");
-    let conversationList = this.conversationService.conversations();
-    let searchFilter = this.searchFilter();
-    let convertedConversations = this.convertConversations(conversationList, this.lastMessages());
-    console.log("conversation list:", conversationList);
-    console.log("converted conversations:", convertedConversations);
-    
-    let filered = convertedConversations.filter((conv) => {  // filtered by search
-      return profileMatchesSearch(this.profiles().get(conv.participantId), searchFilter);
-    });
-    console.log("filtered conversations:", filered);
-    return filered;
-  });
+  protected conversations = computed(() =>
+    this.getConvertedConversations(this.conversationService.conversations(), this.lastMessages())
+  );
+  protected displayedConversations = computed(() => this.getFilteredConversations(this.conversations()));
   
-  protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsLastMessages;
+  protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsMessagePreviews;
   protected profiles: Signal<Map<number, Profile>> = this.profileService.profiles;
 
   // Control variables, HTML elements
+  protected conversationsLoaded = this.conversationService.conversationsLoaded;
   protected searchFilter = signal("");
   protected multiselectActionSheetOpen = signal(false);
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
-  
-  // Loading
-  protected dataLoaded: Signal<boolean> = this.loadingService.dataLoaded;
 
-  // INIT + LOADING
-  ionViewWillEnter() {
-    this.loadingService.setDataSources(this.conversationService, this.profileService);
+
+
+  private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
+    return conversations.filter((conv) => {
+      return profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter());
+    });
   }
-
-  convertConversations(conversations: Conversation[], lastMessages: Map<number, Message | null>) : ConversationView[] {
+  
+  private getConvertedConversations(conversations: Conversation[], lastMessages: Map<number, Message | null>) : ConversationView[] {
     return conversations.map((conv) => {
       let lastMessageId = lastMessages.get(conv.id)?.globalId;
       let lastMessageText: string = lastMessages.get(conv.id)?.text || "";

@@ -44,8 +44,11 @@ export class ProfilesController {
   // By ID (contact, or contact + profile)
 
   @Get(':id')
-  async getProfileById(@Param('id', ParseIntPipe) id: number) {
-    return await this.profilesService.findFullPublicProfile(id, true);
+  async getProfileById(@UserId() callerId: number, @Param('id', ParseIntPipe) id: number) {
+    if (callerId === id) {  // when user asks for their own profile using this endpoint instead of "me"
+      return await this.profilesService.findRawProfile(id, true);
+    }
+    return await this.profilesService.findUserKnownProfile(callerId, id, true);
   }
 
   @Patch(':id/nick')

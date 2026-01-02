@@ -10,64 +10,60 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConversationService implements LoadingStatus {
+export class ConversationService {
   private authService = inject(AuthService);
   private alertService = inject(AlertService);
   private router = inject(Router);
   private translate = inject(TranslateService);
 
   public readonly conversations = signal<Conversation[]>([]);
-  public readonly dataLoaded = signal(false);
-  public readonly loadErrorCode = signal<number | null>(null);
+  public readonly conversationsLoaded = signal(false);
+  // public readonly loadErrorCode = signal<number | null>(null);
 
   // not included in dataLoaded boolean, because it's non-critical
-  public readonly conversationsLastMessages = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
+  public readonly conversationsMessagePreviews = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
     
   private api = new BackendConversationApi(this.authService.getUserIdOrError());
 
   constructor(private profileService: ProfileService) {
     this.loadData();
     effect(() => {
-      let conv = this.conversations();
+      const _ = this.conversations();
+      const __ = this.conversationsMessagePreviews();
       this.sortConversations();
     });
   }
 
   loadData() {
     // Load conversations
-    console.log("load data called");
     this.api.getUserConversations().subscribe({
       next: (val) => {
-        console.log("conversation srv load data success");
-        console.log("result:", val);
         this.conversations.set(val);
-        this.dataLoaded.set(true); 
-        console.log("signal in srv changed");
-      },
-      error: (e) => {
-        this.loadErrorCode.set(e.status);
-        console.log("conversation srv load data error");
+        this.conversationsLoaded.set(true);
       }
     });
-    
-    // Load message previews
+
+    this.loadMessagePreviews();
+  }
+
+  loadMessagePreviews() {
     this.api.getMessagePreviews().subscribe({
       next: (previewsMap) => {
-        this.conversationsLastMessages.set(previewsMap);
-      },
-      // non-critical data, no error handling
+        this.conversationsMessagePreviews.set(previewsMap);
+      }
     });
   }
 
   protected sortConversations() {
     this.conversations.set(
       this.conversations().sort((conv, conv2) => {
-        let msg = this.conversationsLastMessages().get(conv.id);
-        let msg2 = this.conversationsLastMessages().get(conv2.id);
+        let msg = this.conversationsMessagePreviews().get(conv.id);
+        let msg2 = this.conversationsMessagePreviews().get(conv2.id);
         let noMsg1 = (msg === undefined || msg === null);
         let noMsg2 = (msg2 === undefined || msg2 === null);
         if (noMsg1 && noMsg2) return 0;
@@ -78,28 +74,25 @@ export class ConversationService implements LoadingStatus {
     );
   }
 
-  getConversationById(id: number): Conversation {
+  getConversationById(id: number): Observable<Conversation> {
     let found = this.conversations().find((c) => c.id === id);
-    if (found === undefined) throw new Error("getConversationById: ID not found");
+    if (found !== undefined) return of(found);
+
+    // If not found, loading from backend:
+    return this.api.getConversationById(id).pipe(
+      tap((conv) => {
+        this.conversations.set([conv, ...this.conversations()]);
+      })
+    );
+  }
+
+  // Unlike getConversationById, this only checks existing conversations in memory
+  getConversationByParticipantId(id: number, participantType: "user" | "group" = "user"): Conversation | undefined {
+    let found = this.conversations().find((c) => c.participantId === id && this.profileService.profiles().get(id)?.type == "user");
     return found;
   }
 
-  getConversationIfExists(id: number): Conversation | undefined {
-    return this.conversations().find((c) => c.id === id);
-  }
-
-  getConversationByParticipantId(id: number, participantType: "user" | "group" = "user"): Conversation {
-    let found = this.conversations().find((c) => c.participantId === id && this.profileService.getProfiles().get(id)?.type == "user");
-    if (found === undefined) throw new Error("getConversationByUserId: ID not found");
-    return found;
-  }
-
-  getConversations(): readonly Conversation[] {
-    if (!this.dataLoaded()) throw new Error("Conversations not yet loaded - service users should check that first!");
-    return this.conversations();
-  }
-
-  createDirectConversation(participantId: number) {
+  createDirectConversation(participantId: number, redirectAfterCreation = false) {
     const sameConversation = this.conversations().find(c => c.participantId === participantId);
     if (sameConversation) {
       this.displayExistingDirectConversationError(sameConversation.id);
@@ -107,13 +100,14 @@ export class ConversationService implements LoadingStatus {
     }
 
     return this.api.createDirectConversation(participantId).subscribe({
-      next: (val) => {
-        this.loadData();  // reload conversations
-        this.profileService.loadData();
+      next: (conv) => {
+        if (redirectAfterCreation) {
+          this.router.navigate(['/chats', conv.id]);
+        }
       },
       error: (e) => {
-        this.alertService.displayErrorById("unknown");
-      }
+        this.alertService.displayUnknownError(e);
+      },
     });
   }
   

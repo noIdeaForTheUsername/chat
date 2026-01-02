@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, ViewChild } from '@angular/core';
 import { LoadingIndicator } from "@app/loading/loading-indicator-component/loading-indicator.component";
-import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { UserProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
@@ -29,7 +28,6 @@ export class DiscoveryPage implements OnDestroy {
   // Services
   private profileService = inject(ProfileService);
   private conversationService = inject(ConversationService);
-  private loadingService = inject(LoadingService);
   private alertService = inject(AlertService);
   private translate = inject(TranslateService);
 
@@ -43,9 +41,6 @@ export class DiscoveryPage implements OnDestroy {
   @ViewChild('searchBar') public searchBar!: IonSearchbar;
   protected getVisibleName = getVisibleName;  // for template use
 
-  IonViewWillEnter() {
-    this.loadingService.setDataSources(this.profileService);
-  }
 
   displaySearchResults() {
     const input = this.searchBar.value;
@@ -63,7 +58,7 @@ export class DiscoveryPage implements OnDestroy {
         this.searchLoading.set(false);
       },
       error: (err) => {
-        this.loadingService.reportError(err.status);
+        this.alertService.displayErrorById("0");  // server conn
       }
     });
   }
@@ -72,7 +67,9 @@ export class DiscoveryPage implements OnDestroy {
     this.alertService.displayPromptAlert(
       AlertType.PROMPT,
       this.translate.instant("prompt.start-conversation"),
-      () => setTimeout(() => this.conversationService.createDirectConversation(participantId), 250),
+      () => setTimeout(() => 
+        this.conversationService.createDirectConversation(participantId, true),
+        250),
       undefined,
       participantName
     );

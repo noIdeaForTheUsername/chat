@@ -2,7 +2,7 @@ import { GroupProfile, Profile, UserProfile } from "@app/profiles/profile.interf
 
 
 export function getVisibleName(value: Profile | undefined, alwaysIncludeUserLogin: boolean = false): string {
-  if (value === undefined) return "???";
+  if (value === undefined) return "○ ○ ○";
 
   if (value.type == 'user') {
     let toReturn = "";

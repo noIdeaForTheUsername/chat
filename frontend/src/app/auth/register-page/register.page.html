@@ -62,13 +62,14 @@
     <p>{{ 'page.register.email-phone-settings' | translate }}:</p>
     <ion-toggle alignment="center" formControlName="emailPublic">{{'profile.email' | translate }}</ion-toggle><br/>
     <ion-toggle alignment="center" formControlName="phoneNumberPublic">{{'profile.phone-number' | translate }}</ion-toggle><br/>
+    
     <hr>
     <!-- bio -->
 
     <div class="floating-input">
       <label>
         <p>{{ 'page.register.bio-input' | translate }}:</p>
-        <textarea formControlName="bio" placeholder="{{ 'page.register.bio-placeholder' | translate }}"></textarea>
+        <textarea formControlName="bio" placeholder="{{ 'profile.user-bio-placeholder' | translate }}"></textarea>
       </label>
     </div>
 

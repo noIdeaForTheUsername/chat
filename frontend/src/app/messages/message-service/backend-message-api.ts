@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Message } from "../message.interface";
-import { map } from "rxjs";
+import { firstValueFrom, map } from "rxjs";
 import { AuthService } from "@app/auth/auth.service";
 import { ServerMessage, serverMessageToMessage } from "../message-utils";
 

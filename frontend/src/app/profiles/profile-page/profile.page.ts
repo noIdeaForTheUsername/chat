@@ -9,11 +9,11 @@ import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ProfileInfoItemComponent } from './profile-info-item/profile-info-item.component';
 import { ConversationService } from '@app/conversations/conversation.service';
-import { LoadingService } from '@app/loading/loading-service/loading.service';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { AuthService } from '@app/auth/auth.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile-page',
@@ -34,60 +34,53 @@ export class ProfilePage {
   private authService = inject(AuthService);
   private profileService = inject(ProfileService)
   private conversationService = inject(ConversationService)
-  private loadingService = inject(LoadingService);
   protected alertService = inject(AlertService);
 
   // Data
-  profile = signal<Profile | undefined>(undefined);
-  conversationId = signal<number>(1);
-  own = signal(false);
-  editMode = signal(false);
-  profileSaving = signal(false);
+  protected profile = signal<Profile | undefined>(undefined);
+  protected conversationId = signal<number | undefined>(undefined);
+  protected own = signal(false);
+  protected editMode = signal(false);
+  protected profileSaving = signal(false);
 
-  dataLoaded = this.loadingService.dataLoaded;
+  // Loading
+  protected dataLoaded = signal(false);
+  protected loadingError = signal<string | null>(null);
 
   // ---------------------------------------------- LOADING / INIT ----------------------------------------------
 
   constructor() { 
     let idStr = this.route.snapshot.paramMap.get('id');
     if (idStr === null || isNaN(parseInt(idStr))) {
-      this.loadingService.reportError("not-found");
+      this.loadingError.set("not-found");
       return;
     }
 
-    if (this.dataLoaded()) this.finishLoading(idStr);
-    else {
-      effect(() => {
-        if (this.dataLoaded() && this.profile() === undefined) this.finishLoading(idStr);
-      });
-    }
-  }
-
-  IonViewWillEnter() {
-    this.loadingService.setDataSources(this.conversationService, this.profileService);
+    this.finishLoading(idStr);
   }
 
   private finishLoading(idStr: string) {
-    let profile = this.profileService.getProfileIfExists(parseInt(idStr));
-    if (profile === undefined) {
-      this.loadingService.reportError("not-found");
-      return;
-    }
-
-    this.profile.set(profile);
-    if (profile.id == this.authService.getUserId()) {
-      this.own.set(true);
-    }
-    else {
-      let conv = this.conversationService.getConversationByParticipantId(parseInt(idStr), this.profile()?.type);
-      this.conversationId.set(conv.id);
-    }
+    this.profileService.getProfileById(parseInt(idStr)).subscribe({
+      next: (profile) => {
+        this.profile.set(profile);
+        if (profile.id === this.authService.getUserId()) {
+          this.own.set(true);
+        }
+        else {
+          this.conversationId.set(this.conversationService.getConversationByParticipantId(
+            parseInt(idStr), this.profile()?.type)?.id
+          );
+        }
+        this.dataLoaded.set(true)
+      },
+    });
   }
 
   // ---------------------------------------------- UI ACTIONS ----------------------------------------------
 
   goToConversationSettingsPage() {
-    if (this.conversationId()) this.router.navigate(["chats", this.conversationId().toString(), "options"]);
+    if (this.conversationId() !== undefined)
+      this.router.navigate(["chats", this.conversationId()!.toString(), "options"]);
   }
   
   enterEditMode() {
