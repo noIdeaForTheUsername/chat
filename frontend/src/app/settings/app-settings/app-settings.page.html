@@ -27,7 +27,8 @@
   <ion-item-group>
     <ion-item-divider><ion-label>{{"common.app" | translate}}</ion-label></ion-item-divider>
       <!-- language -->
-      <app-item-select text="Language / Język" icon="language">
+      <app-item-select text="Language / Język" icon="language"
+        [value]="languageSelectValue" (selectionChange)="onLanguageSelect($event)">
         <ion-select-option value="polish">Polski</ion-select-option>
         <ion-select-option value="english">English</ion-select-option>
       </app-item-select>

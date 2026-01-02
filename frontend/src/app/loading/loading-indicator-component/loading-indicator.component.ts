@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
-import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { IonSpinner, IonButton } from '@ionic/angular/standalone';
 import { IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { errorIconMap } from './error-icon-map';
+import { getErrorMessageKey, httpCodeMap } from '@app/shared/errors/error-utils';
 
 
 @Component({
@@ -25,30 +25,18 @@ export class LoadingIndicator {
 
   // State
   active = input<boolean>(true);
-  errorId = input<string | null>(null);
+  errorId = input<string | null | number>(null);
+
+  protected errorMessageKey = computed(() => getErrorMessageKey(this.errorId(), this.translateService));
 
   protected errorIconName = computed(() => {
-    if (this.errorId() !== null) {
-      let iconName = errorIconMap.get(this.errorId()!);
+    const key = this.errorMessageKey().slice(6);  // Remove "error." prefix
+    if (key !== null) {
+      let iconName = errorIconMap.get(key);
       if (iconName !== undefined) return iconName;
     }
     return "alert-circle-outline";
   });
-
-  
-  protected errorMessageKey = computed(() => {  // Set the proper error message key
-    if (this.errorId() !== null) {
-      let key = `error.${this.errorId()}.header`;
-      if (this.checkTranslationKeyExists(key)) return `error.${this.errorId()}`;
-    }
-    return "";
-  });
-
-  private checkTranslationKeyExists(key: string | null): boolean {
-    if (key === null) return false;
-    let foundValue = this.translateService.instant(key);
-    return foundValue != key;
-  }
 
   protected reloadPage() {
     window.location.reload();

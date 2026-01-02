@@ -35,7 +35,7 @@ export class AuthService {
     if (!found || !(await bcrypt.compare(plainPassword, found.passwordHash))) {
       throw new UnauthorizedException('credentials-invalid');
     }
-    return { authJwt: await this.jwtService.signAsync({ sub: found.id }) };
+    return { sub: found.id, authJwt: await this.jwtService.signAsync({ sub: found.id }) };
   }
 
   async getFullProfile(userId: number) {

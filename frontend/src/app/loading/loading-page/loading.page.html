@@ -1,5 +1,12 @@
-<app-standard-header [title]="'common.loading' | translate" [backButton]="false"/>
+<app-standard-header [title]="'common.loading' | translate" [backButton]="false">
+  <ion-buttons slot="end">
+    <ion-button (click)="toggleLanguage()">
+      <ion-icon name="language"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</app-standard-header>
 
 <ion-content [fullscreen]="true">
-  <app-loading-indicator color="primary" size="full"/>
+  <app-loading-indicator color="primary" size="full"
+  [errorId]="serverUnavailableWhileLoggedOut() ? 'server-unavailable' : null"/>
 </ion-content>

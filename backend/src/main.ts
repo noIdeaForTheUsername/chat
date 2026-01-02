@@ -15,9 +15,9 @@ async function bootstrap() {
   }}));
   // CORS
   app.enableCors({
-    origin: ["http://localhost:8100", "http://192.168.1.2:8100"],
+    origin: ["http://localhost:8100", "http://192.168.1.2:8100", "http://chmuraim.dynv6.net:8100", "http://46.205.222.219:8100"],
     credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 2137);
 }
 bootstrap();

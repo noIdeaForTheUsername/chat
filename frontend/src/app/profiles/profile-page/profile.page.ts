@@ -45,7 +45,7 @@ export class ProfilePage {
 
   // Loading
   protected dataLoaded = signal(false);
-  protected loadingError = signal<string | null>(null);
+  protected loadingError = signal<string | number | null>(null);
 
   // ---------------------------------------------- LOADING / INIT ----------------------------------------------
 
@@ -73,10 +73,18 @@ export class ProfilePage {
         }
         this.dataLoaded.set(true)
       },
+      error: (err) => {
+        this.loadingError.set(err.status);
+      }
     });
   }
 
   // ---------------------------------------------- UI ACTIONS ----------------------------------------------
+
+  goToConversationPage() {
+    if (this.conversationId() !== undefined)
+      this.router.navigate(["chats", this.conversationId()!.toString()]);
+  }
 
   goToConversationSettingsPage() {
     if (this.conversationId() !== undefined)

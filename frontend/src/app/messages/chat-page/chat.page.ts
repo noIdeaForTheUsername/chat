@@ -66,7 +66,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // LOADING
   protected initialLoading = computed(() => (!this.metadataLoaded()) || !this.messageService.dataLoaded());
-  protected errorId = signal<string | null>(null);
+  protected loadError = signal<string | number | null>(null);
   protected metadataLoaded = signal(true);
   protected messageLoading = this.messageService.additionalMessagesLoading;
   protected loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
@@ -97,7 +97,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     // Get participant and conversation data
     let id = this.route.snapshot.paramMap.get('id');
     if (id === null || isNaN(parseInt(id))) {
-      this.errorId.set('bad-url');
+      this.loadError.set('bad-url');
       return;
     }
     this.conversationId = parseInt(id);
@@ -108,10 +108,11 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     effect(() => {
       const msgs = this.messageService.displayedMessages();
       if (msgs.length == 0) return;
+      console.log("first message top distance before scroll fix: ", this.firstMessageTopDistance);
       if (this.firstMessageTopDistance === undefined)  // first load
         requestAnimationFrame(() => this.content.scrollToBottom(0));
       else  // next loads
-        this.correctScrollOnMessageLoad.bind(this);
+        this.correctScrollOnMessageLoad();
     });
   }
 
@@ -127,7 +128,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
     catch (error) {}
     finally {
-      console.log("chat meta loaded");
       this.metadataLoaded.set(true);
     }
   }
@@ -151,9 +151,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.messageField.value = "";
     this.enteredMessage.set("");
     const replyingTo = this.replyingToId();
-    this.messageService.sendMessage(messageText, replyingTo ?? undefined,
-      () => this.correctScrollOnMessageSend.bind(this)
-    );
+    this.messageService.sendMessage(messageText, replyingTo ?? undefined, this.correctScrollOnMessageSend.bind(this));
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
@@ -172,11 +170,11 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
   onInfiniteScrollUp() {
     if (this.displayingOldestMessages()) return;
-    this.messageService.loadOlderMessages(() => this.saveScrollParams.bind(this));
+    this.messageService.loadOlderMessages(this.saveScrollParams.bind(this));
   }
   onInfiniteScrollDown() {
     if (this.displayingNewestMessages()) return;
-    this.messageService.loadNewerMessages(() => this.saveScrollParams.bind(this));
+    this.messageService.loadNewerMessages(this.saveScrollParams.bind(this));
   }
 
   onMessageRepliedClick(messageId: number) {
@@ -220,10 +218,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // Saves scroll params for correctScrollOnMessageLoad. Call just BEFORE message list updates
   saveScrollParams() {
+    console.log("saving scroll params");
     if (this.loadingMessagesAreOlder()) this.firstMessageId = "msg-" + this.messages()[0].globalId!;
     else this.firstMessageId = "msg-" + this.messages()[this.messages().length - 1].globalId!;
     const elem = document.getElementById(this.firstMessageId)!;
+    console.log("elem: ", elem, " id: ", this.firstMessageId);
     this.firstMessageTopDistance = elem.getBoundingClientRect().top;
+    console.log("recorded top distance: ", this.firstMessageTopDistance);
   }
 
   // Corrects scroll so the screen doesn't jump on msg reload. Call just after message list updates.

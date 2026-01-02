@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { UserId } from 'src/shared/auth/user-id.decorator';
 import { PatchProfileDto } from './dto/patch-profile.dto';

@@ -32,9 +32,11 @@ export class DiscoveryPage implements OnDestroy {
   private translate = inject(TranslateService);
 
   // Signals
-  searchBarFilled = signal<boolean>(false);
-  searchResults = signal(new Map<number, UserProfile>);
-  readonly searchLoading = signal<boolean>(false);
+  protected searchBarFilled = signal<boolean>(false);
+  protected searchResults = signal(new Map<number, UserProfile>);
+  protected searchLoading = signal<boolean>(false);
+  protected loadError = signal<string | number | null>(null);
+
 
   // Other
   private searchSubscription?: Subscription;
@@ -52,13 +54,16 @@ export class DiscoveryPage implements OnDestroy {
 
     this.searchBarFilled.set(true);
     this.searchLoading.set(true);
+    this.loadError.set(null);
     this.searchSubscription = this.profileService.getPublicUserProfiles(input).subscribe({
       next: (val) => {
         this.searchResults.set(val);
         this.searchLoading.set(false);
       },
       error: (err) => {
-        this.alertService.displayErrorById("0");  // server conn
+        console.log("err.status", err.status);
+        this.loadError.set(err.status);
+        // this.searchLoading.set(false);
       }
     });
   }

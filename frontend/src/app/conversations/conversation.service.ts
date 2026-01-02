@@ -1,7 +1,6 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { Conversation } from './conversation.interface';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { Message } from '@app/messages/message.interface';
 import { BackendConversationApi } from './backend-conversation-api';
 import { Profile } from '@app/profiles/profile.interface';
@@ -108,7 +107,7 @@ export class ConversationService {
         }
       },
       error: (e) => {
-        this.alertService.displayUnknownError(e);
+        this.alertService.displayErrorById(e.status);
       },
     });
   }

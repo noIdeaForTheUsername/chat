@@ -67,7 +67,7 @@
         </ion-item-divider>
 
         <!-- display conversation button -->
-        <app-item-button (click)="goToConversationSettingsPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
+        <app-item-button (click)="goToConversationPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
 
         <!-- verify chat security button -->
         <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
@@ -95,6 +95,6 @@
 
   }
   @else {
-    <app-loading-indicator [errorId]="loadingError()"/>
+    <app-loading-indicator [errorId]="loadingError()" size="full"/>
   }
 </ion-content>

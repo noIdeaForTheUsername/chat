@@ -8,17 +8,20 @@ import { provideTranslateService } from "@ngx-translate/core";
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { urlInterceptor } from '@app/common/http/url.interceptor';
-import { credentialsInterceptor } from '@app/common/http/credentials.interceptor';
-import { loggingInterceptor } from '@app/common/http/logging.interceptor';
-import { connectionErrorInterceptor } from '@app/common/http/connection-error.interceptor';
+import { urlInterceptor } from '@app/http/url.interceptor';
+import { credentialsInterceptor } from '@app/http/credentials.interceptor';
+import { loggingInterceptor } from '@app/http/logging.interceptor';
+import { connectionErrorInterceptor } from '@app/http/connection-error.interceptor';
+import { authInterceptor } from '@app/http/auth.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([urlInterceptor, credentialsInterceptor, loggingInterceptor, connectionErrorInterceptor])),
+    provideHttpClient(withInterceptors(
+      [urlInterceptor, credentialsInterceptor, connectionErrorInterceptor, authInterceptor]
+    )),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideTranslateService({
       fallbackLang: 'en',

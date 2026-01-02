@@ -1,9 +1,21 @@
-<app-standard-header [title]="'profile.register' | translate" [backButton]="false"></app-standard-header>
+<app-standard-header [title]="'profile.register' | translate" [backButton]="false">
+  <ion-buttons slot="end">
+    <ion-button (click)="toggleLanguage()">
+      <ion-icon name="language"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</app-standard-header>
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="form">
   <div class="container">
     <h1>{{ 'page.register.header' | translate }}</h1>
+
+    <a routerLink="/login">{{ "page.register.login-hint" | translate }}</a>
+
+    <hr>
+
+    <p class="hint" [innerHTML]="'page.register.encouragement' | translate"></p>
 
     <!-- name and login -->
 
@@ -40,7 +52,7 @@
     <hr>
     <!-- email and phone -->
 
-    <p class="hint">{{ "page.register.email-phone-hint" | translate }}</p>
+    <p class="hint">{{ "page.register.email-phone-hint" | translate }}:</p>
 
     <div class="floating-input">
       <label>
@@ -77,10 +89,6 @@
 
     <ion-button fill="solid" (click)="register()" [disabled]="this.auth.processing()">
       {{ 'profile.register' | translate }}
-    </ion-button>
-    <p class="hint">{{ "page.register.login-hint" | translate }}</p>
-    <ion-button fill="outline" routerLink="/login">
-      {{ 'profile.log-in' | translate }}
     </ion-button>
   </div>
   </form>

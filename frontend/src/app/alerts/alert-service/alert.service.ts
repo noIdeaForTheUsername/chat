@@ -1,12 +1,15 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { AlertType } from '../alert-type.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { getErrorMessageKey } from '@app/shared/errors/error-utils';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertService {
   private translate = inject(TranslateService);
+  private router = inject(Router);
 
   private readonly _open = signal(false);
   public readonly open = this._open.asReadonly();
@@ -17,6 +20,10 @@ export class AlertService {
   message = signal<string | undefined>(undefined);
   confirmHandler = signal<Function>(() => {});  // note: OK button also uses the confirm handler
   cancelHandler = signal<Function>(() => {});
+
+  // internal (prevent spamming particular types of alerts)
+  private serverConnectionErrorDisplayed = false;
+  private loginPromptDisplayed = false;
 
   setAlertDismissed() {
     this._open.set(false);
@@ -80,8 +87,9 @@ export class AlertService {
   }
 
   displayErrorById(errorId: string, confirmHandler?: Function) {
-    const header = this.translate.instant(`error.${errorId}.header`);
-    const message = this.translate.instant(`error.${errorId}.description`);
+    const key = getErrorMessageKey(errorId, this.translate);
+    const header = this.translate.instant(`${key}.header`);
+    const message = this.translate.instant(`${key}.description`);
     this.displayMessageAlert(AlertType.ERROR, message, confirmHandler, header);
   }
 
@@ -93,8 +101,26 @@ export class AlertService {
       undefined, header);
   }
 
-  displayServerConnectionError() {
-    this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.0.description'),
-      () => {}, this.translate.instant("error.0.header"));
+  displayLoginPrompt() {
+    if (this.loginPromptDisplayed) return;
+    this.loginPromptDisplayed = true;
+
+    this.displayPromptAlert(AlertType.PROMPT,
+      this.translate.instant("error.session-expired.description"),
+      () => {
+        if (this.router.url !== '/login') this.router.navigate(['/login'])
+      } ,
+      undefined,
+      this.translate.instant("error.session-expired.header"),
+    );
+  }
+
+  displayServerConnectionError(always = false) {  // "always" ignores the limit (for directly user-initiated actions, e.g. login)
+    if (this.router.url === '/') return; // loading page has an entire screen for error message
+    if (this.serverConnectionErrorDisplayed && !always) return;
+    this.serverConnectionErrorDisplayed = true;
+
+    this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.server-unavailable.description'),
+      () => {}, this.translate.instant("error.server-unavailable.header"));
   }
 }

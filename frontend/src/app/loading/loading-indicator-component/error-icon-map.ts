@@ -1,7 +1,10 @@
 export var errorIconMap: Map<string, string> = new Map([
-  ['0', 'alert-circle-outline'],
+  ['server-unavailable', 'alert-circle-outline'],
+  ['server-error', 'flame'],
   ['no-internet', 'wifi-outline'],
-  ['404', 'help'],
   ['not-found', 'help'],
   ['bad-url', 'help'],
+  ['data-invalid', 'help'],
+  ['unauthorized', 'hand-left'],
+  ['data-unavailable', 'alert-circle-outline'],
 ]);

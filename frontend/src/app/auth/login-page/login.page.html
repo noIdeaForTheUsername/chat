@@ -1,9 +1,17 @@
-<app-standard-header [title]="'profile.login' | translate" [backButton]="false"></app-standard-header>
+<app-standard-header [title]="'profile.log-in' | translate" [backButton]="displayBackButton()">
+  <ion-buttons slot="end">
+    <ion-button (click)="toggleLanguage()">
+      <ion-icon name="language"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</app-standard-header>
 
 <ion-content [fullscreen]="true">
   <form [formGroup]="loginForm">
     <div class="container">
       <h1>{{ 'page.login.header' | translate }}</h1>
+
+      <a routerLink="/register">{{ "page.login.register-hint" | translate }}</a>
 
       <div class="floating-input">
         <label>
@@ -19,13 +27,8 @@
         </label>
       </div>
 
-      <ion-button fill="solid" (click)="login()" [disabled]="this.auth.processing()">
+      <ion-button fill="solid" (click)="login()" [disabled]="this.authService.processing()">
         {{ 'profile.log-in' | translate }}
-      </ion-button>
-      <hr>
-      <p class="hint">{{ "page.login.register-hint" | translate }}</p>
-      <ion-button fill="outline" routerLink="/register">
-        {{ 'profile.register' | translate }}
       </ion-button>
     </div>
   </form>

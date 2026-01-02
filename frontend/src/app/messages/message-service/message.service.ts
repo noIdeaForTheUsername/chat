@@ -2,10 +2,10 @@ import { effect, inject, Injectable, signal } from '@angular/core';
 import { Message } from '@app/messages/message.interface';
 import { BackendMessageApi } from './backend-message-api';
 import { Subscription } from 'rxjs';
-import { LoadingStatus } from '@app/loading/loading-status.interface';
 import { MessageView } from '../chat-page/message-card-component/message-view.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
+import { AlertService } from '@app/alerts/alert-service/alert.service';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -16,6 +16,7 @@ import { messageToMessageView } from '../message-utils';
 export class MessageService {
 
   // DEPENDENCIES
+  private alertService = inject(AlertService);
   private authService = inject(AuthService);
   private readonly api = new BackendMessageApi();
 
@@ -97,6 +98,8 @@ export class MessageService {
     this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, messageAmount, older, startMessageId).subscribe({
       next: (val: Message[]) => {
         // execute passed callback
+        console.log("loadConvMessages complete, executing callback");
+        console.log("callback: ", callBeforeComplete);
         callBeforeComplete();
 
         val = val.reverse();  // reverse to be from oldest to newest
@@ -112,6 +115,8 @@ export class MessageService {
           newArr.splice(0, overflow);
         }
 
+        console.log("eeeeeeeee");
+
         // Map Message -> MessageView
         this.displayedMessages.set(newArr.map(msg =>
           messageToMessageView(msg, this.authService.getUserIdOrError())));
@@ -119,16 +124,19 @@ export class MessageService {
         // update control variables
         this.lowestDisplayedId = newArr.length > 0 ? newArr[0].globalId : 0;
         this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
-        this.displayingNewestMessages.set(!older && val.length < messageAmount);
+        this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
         this.displayingOldestMessages.set(older && val.length < messageAmount);
+        console.log("oldest: ", this.displayingOldestMessages(), " newest: ", this.displayingNewestMessages());
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
       },
       error: (err) => {
+        // this.alertService.displayErrorById(err.status);
         this.dataLoaded.set(true);
         this.additionalMessagesLoading.set(false);
-        // this.loadErrorCode.set(err.status);
+        this.displayingNewestMessages.set(true);
+        this.displayingOldestMessages.set(true);
       }
     });
   }

@@ -38,6 +38,9 @@ export class SecurityVerificationPage {
       next: (profile) => {
         this.otherUserProfile = profile;
         this.dataLoaded.set(true);
+      },
+      error: (err) => {
+        this.loadingError.set(err.status);
       }
     });
 

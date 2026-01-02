@@ -36,7 +36,7 @@ export class ConversationSettingsPage {
   protected conversationId!: number;
   protected participant?: Profile;
   protected dataLoaded = signal(false);
-  protected loadError = signal<string | null>(null);
+  protected loadError = signal<string | number | null>(null);
 
   // IonViewWillEnter() {
   //   this.loadingService.setDataSources(this.conversationSerivce, this.profileService);
@@ -60,7 +60,7 @@ export class ConversationSettingsPage {
       this.dataLoaded.set(true);
     }
     catch (error) {
-      this.loadError.set("not-found");
+      this.loadError.set("data-unavailable");
     }
     
     // if (!conversation) {

@@ -25,22 +25,25 @@ ion-badge {
 *[color="primary"] ::selection, *[color="secondary"] ::selection, *[color="tertiary"] ::selection {
   color: var(--ion-text-color);
   background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
-  //background-color: var(--green-background-selection-color, white);
 }
 *[color="primary"] ::-moz-selection, [color="secondary"] ::-moz-selection, *[color="tertiary"] ::-moz-selection {
   color: var(--ion-text-color);
   background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
-  //background-color: var(--green-background-selection-color, white);;
 }
 
-// ::part(scroll) slot {
-//   overflow-anchor: none;
-// }
-
-// * {
-//   overflow-anchor: none;
-// }
-
-// ion-card ::-moz-selection {
-//   background-color: red;
-// }
+// Text colors modifications in some places, because "primary" is barely visible on light mode
+html {
+  .alert-button.sc-ion-alert-md {
+    color: var(--darker-text-color);
+    font-weight: 600;
+  }
+}
+ion-button[fill="outline"][color="primary"], ion-button[fill="outline"]:not([color]) {
+  --border-color: var(--darker-text-color);
+  --color: var(--darker-text-color);
+  font-weight: 600;
+}
+a {
+  color: rgb(56, 56, 246);
+  font-weight: 600;
+}

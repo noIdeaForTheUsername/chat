@@ -5,11 +5,9 @@ import { LoginDto } from './dto/login.dto';
 import type { Response } from 'express';
 import { PublicAccess } from 'src/shared/auth/public-access.decorator';
 import { UserId } from 'src/shared/auth/user-id.decorator';
-import { AccountResponseDto } from './dto/account-response.dto';
-import { plainToInstance } from 'class-transformer';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 
-@Controller()
+@Controller("auth")
 @PublicAccess(true)
 export class AuthController {
   constructor(
@@ -30,10 +28,10 @@ export class AuthController {
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
-    const { authJwt } = await this.authService.login(body.account, body.password);
+    const { sub, authJwt } = await this.authService.login(body.account, body.password);
     this.sendJwtCookie(res, authJwt);
+    return { id: sub };
   }
 
   @Post('logout')

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonItemGroup, IonItemDivider, IonLabel, IonSelectOption } from '@ionic/angular/standalone';
@@ -10,6 +10,7 @@ import { ItemToggleComponent } from "@app/shared/inputs/item-toggle-component/it
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
+import { LanguageService } from '@app/i18n/language.service';
 
 @Component({
   selector: 'app-settings',
@@ -23,5 +24,15 @@ export class AppSettingsPage {
 
   protected profileService = inject(ProfileService);
   protected authService = inject(AuthService);
+  protected languageService = inject(LanguageService);
+
+  get languageSelectValue(): string {
+    return this.languageService.getCurrent() === 'pl' ? 'polish' : 'english';
+  }
+
+  onLanguageSelect(value: string): void {
+    const lang = value === 'polish' ? 'pl' : 'en';
+    this.languageService.setLanguage(lang);
+  }
 
 }

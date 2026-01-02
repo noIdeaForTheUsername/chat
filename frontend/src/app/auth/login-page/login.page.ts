@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { IonContent, IonHeader, IonTitle, IonButton } from '@ionic/angular/standalone';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { IonContent, IonButton, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { FormControl, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
+import { LanguageService } from '@app/i18n/language.service';
 
 @Component({
   selector: 'app-login',
@@ -16,13 +17,16 @@ import { AuthService } from '@app/auth/auth.service';
     ReactiveFormsModule, TranslatePipe,
     IonContent, RouterLink,
     StandardHeaderComponent,
-    IonButton
+    IonButton, IonButtons, IonIcon
 ],
 })
 export class LoginPage {
 
-  protected auth = inject(AuthService);
+  protected authService = inject(AuthService);
   protected translate = inject(TranslateService);
+  private languageService = inject(LanguageService);
+
+  protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
   loginForm = new FormGroup({
     account: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -32,7 +36,11 @@ export class LoginPage {
 
   login() {
     const body = this.loginForm.getRawValue();
-    this.auth.login(body);
+    this.authService.login(body);
+  }
+
+  toggleLanguage(): void {
+    this.languageService.toggleLanguage();
   }
 
   ionViewWillLeave() {

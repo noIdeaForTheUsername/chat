@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonItem, IonSelect, IonIcon } from "@ionic/angular/standalone";
 
 @Component({
@@ -13,5 +13,9 @@ export class ItemSelectComponent {
 
   text = input<string>("Select");
   icon = input<string | undefined>();
+
+  value = input<string | null>(null);
+
+  selectionChange = output<string>();
 
 }

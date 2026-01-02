@@ -1,0 +1,243 @@
+{
+  "app": {
+    "title": "Czat"
+  },
+
+  "common": {
+    "ok": "OK",
+    "confirm": "Zatwierdź",
+    "cancel": "Anuluj",
+    "search": "Szukaj",
+    "settings": "Ustawienia",
+    "options": "Opcje",
+    "delete": "Usuń",
+    "actions": "Akcje",
+    "other": "Inne",
+    "copy-text": "Kopiuj tekst",
+    "retry": "Spróbuj ponownie",
+    "empty": "Puste",
+    "loading": "Ładowanie...",
+    "info": "Informacja",
+    "error": "Błąd",
+    "danger-zone": "Strefa zagrożenia",
+
+    "form-field-invalid": "Nieprawidłowa wartość pola formularza:",
+    "app": "Aplikacja",
+    "lock-app": "Zablokuj aplikację",
+
+    "are-you-sure": "Czy jesteś pewien?",
+    "step": "Krok {{number}}.",
+    "nothing-to-show": "Brak danych do wyświetlenia",
+    "search-filter-hint": "Wyniki wyszukiwania. Wyczyść pasek powyżej, aby zobaczyć wszystko.",
+
+    "selecting": "Zaznaczanie...",
+    "selection-mode": "Tryb zaznaczania",
+    "enter-selection": "Włącz tryb zaznaczania",
+    "exit-selection": "Wyłącz tryb zaznaczania"
+  },
+
+  "page": {
+    "conversations": {
+      "title": "Konwersacje",
+      "add-conversation-hint": "Użyj przycisku + w prawym dolnym rogu ekranu, aby rozpocząć pierwszą konwersację",
+      "plus-action": {
+        "header": "Nowa konwersacja...",
+        "conversation": "Znajdź użytkownika",
+        "group": "Utwórz nową grupę"
+      },
+      "conversation-action": {
+        "header": "Zaznaczone konwersacje...",
+        "delete": "Usuń trwale wszystkie zaznaczone wiadomości i kontakty",
+        "clear-messages": "Wyczyść wszystkie wiadomości, pozostawiając kontakty"
+      }
+    },
+
+    "discovery": {
+      "title": "Nowy czat...",
+      "header": "Znajdź użytkownika",
+      "info": "W pasku wyszukiwania powyżej wpisz: <ul><li>pełne imię i nazwisko lub</li><li>pełny login lub</li><li>pełny e-mail lub</li><li>pełny numer telefonu z kierunkowym (np. +48 123 123 123)</li></ul> i naciśnij \"Zatwierdź\"",
+      "searchbar-hint": "Imię i nazwisko, login, e-mail lub telefon...",
+      "found": "Znaleziono",
+      "not-found": "Nie znaleziono"
+    },
+
+    "chat": {
+      "no-more-messages": "To wszystkie zapisane wiadomości z tym użytkownikiem",
+      "new-messages": "Nowe wiadomości",
+      "message-input": "Wpisz wiadomość...",
+      "message-action": {
+        "header": "Akcje dla zaznaczonych wiadomości...",
+        "reply": "Odpowiedz",
+        "download-all": "Pobierz wszystkie zaznaczone pliki",
+        "delete-all": "Usuń wszystkie zaznaczone"
+      },
+      "options": "Opcje czatu",
+      "copy-failed": "Nie udało się skopiować tekstu do schowka"
+    },
+
+    "profile": {
+      "title": "Profil użytkownika",
+      "section": {
+        "basic-info": "Podstawowe informacje"
+      },
+      "nick-info": "Pseudonim, który możesz ustawić dla każdego użytkownika. Widoczny tylko dla Ciebie.",
+      "edit-btn": "Edytuj profil",
+      "save-btn": "Zapisz zmiany",
+
+      "unset": "Brak/ukryte",
+      "show-conversation": "Pokaż konwersację",
+      "not-found-hint": "Szukasz innych ustawień, np. powiadomień lub akcji czatu? Kliknij na ten tekst, aby przejść do ustawień konwersacji."
+    },
+
+    "conversation-options": {
+      "title": "Ustawienia konwersacji",
+      "general": {
+        "header": "Ogólne",
+        "search": "Szukaj w konwersacji",
+        "show-media": "Pokaż multimedia z konwersacji"
+      },
+      "settings": {
+        "header": "Ustawienia konwersacji",
+        "notifications": "Otrzymuj powiadomienia",
+        "auto-download": "Automatycznie pobieraj wszystkie pliki"
+      },
+      "danger-zone": {
+        "delete": "Usuń wszystkie wiadomości w tej konwersacji",
+        "delete-with-contact": "Usuń wszystkie wiadomości i ten kontakt"
+      }
+    },
+
+    "app-settings": {
+      "title": "Ustawienia aplikacji",
+      "auto-lock": "Automatycznie zablokuj przy zamknięciu",
+      "modify-account": "Modyfikuj dane konta",
+      "logout": "Wyloguj się",
+      "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach"
+    },
+
+    "security-verification": {
+      "title": "Weryfikacja bezpieczeństwa",
+      "header": "Weryfikacja szyfrowania: {{name}}",
+      "description": "Ta weryfikacja pomoże Ci upewnić się, że nikt nie manipulował parametrami szyfrowania między Tobą a tym użytkownikiem (klucze publiczne / kody bezpieczeństwa).",
+      "security-codes": "Kody bezpieczeństwa",
+      "my-code": "Mój kod (A)",
+      "other-code": "Kod użytkownika {{name}} (B)",
+      "instructions-header": "Instrukcja weryfikacji",
+      "step-1-description": "Wymień się tymi kodami przez bezpieczny kanał komunikacji (inny niż ta aplikacja) lub osobiście.<br/>Sprawdź, czy <b>oba</b> kody - Twój i użytkownika {{name}} - są dokładnie takie same na obu urządzeniach.<br/>(Kod <b>\"A\"</b> na Twoim urządzeniu musi zgadzać się z kodem <b>\"B\"</b> na urządzeniu drugiego użytkownika i w drugą stronę).",
+      "step-2-description": "Twoje konwersacje są <b>bezpieczne tylko wtedy</b>, gdy obie pary kodów się zgadzają. Niezgodność to poważne naruszenie. Po udanej weryfikacji nie ma potrzeby powtarzać jej w przyszłości."
+    },
+  
+    "login": {
+      "header": "Zaloguj się na swoje konto",
+      "account-input": "Login, e-mail lub numer telefonu",
+      "register-hint": "Nie mam jeszcze konta"
+    },
+
+    "register": {
+      "header": "Utwórz nowe konto",
+      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla użytkowników, którzy Cię znajdą - a to wymaga znajomości Twojego <b>dokładnego</b> loginu lub <b>pełnego</b> imienia i nazwiska.",
+      "name-input": "Imię i nazwisko (opcjonalne, ale zalecane)",
+      "login-input": "Unikalny login (tylko litery, cyfry i podkreślenia; bez spacji)",
+      "email-input": "Adres e-mail",
+      "phone-input": "Telefon z numerem kierunkowym",
+      "email-phone-hint": "Wymagane jest co najmniej jedno poniższe (zalecany telefon)",
+      "email-phone-settings": "Pozwól innym użytkownikom znaleźć mnie po następujących polach (pola te zawsze pozostaną publicznie ukryte, nawet, jeśli włączysz te opcje)",
+      "bio-input": "Opis profilu (opcjonalnie)",
+      "login-hint": "Mam już konto"
+    }
+  },
+
+  "profile": {
+    "id": "ID",
+    "nick": "Nick",
+    "login": "Login",
+    "name": "Imię i nazwisko",
+    "phone-number": "Numer telefonu",
+    "user-bio": "O mnie...",
+    "user-bio-placeholder": "Kilka zdań o sobie...",
+    "group-bio": "O grupie",
+
+    "my": "Mój profil",
+    "view-profile": "Zobacz profil",
+    "block": "Zablokuj",
+    "call": "Zadzwoń",
+    "verify-security": "Zweryfikuj bezpieczeństwo czatu",
+
+    "account": "Konto",
+    "log-in": "Zaloguj się",
+    "register": "Zarejestruj się",
+    "email": "E-mail",
+    "password": "Hasło",
+    "password-repeat": "Powtórz hasło"
+  },
+
+  "prompt": {
+    "block": {
+      "user": "Nie będziesz już otrzymywać powiadomień ani widzieć wiadomości tego użytkownika, także w czatach grupowych. Użytkownik zostanie usunięty z listy konwersacji.",
+      "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
+    },
+    "conversation-exists": "Konwersacja z tym użytkownikiem już istnieje. Czy chcesz ją otworzyć?",
+    "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?"
+  },
+
+  "error": {
+    "server-unavailable": {
+      "header": "Serwer nie odpowiada",
+      "description": "Warto sprawdzić połączenie z internetem, ale najprawdopodobniej serwer aplikacji jest obecnie niedostępny. Nie można wczytać żadnych danych. Skontaktuj się z administratorem, jeśli problem nie ustąpi."
+    },
+    "no-internet": {
+      "header": "Brak połączenia z internetem",
+      "description": "Nie można wczytać nowych danych, dopóki nie będziesz ponownie online."
+    },
+    "data-unavailable": {
+      "header": "Dane niedostępne",
+      "description": "Nie udało się wczytać danych - może to wynikać z nieprawidłowego adresu URL, braku uprawnień lub problemu z serwerem albo połączeniem z internetem."
+    },
+    "not-found": {
+      "header": "Nie znaleziono danych",
+      "description": "Dane, które chcesz zobaczyć, nie zostały znalezione. Prawdopodobnie wynika to z nieprawidłowego adresu URL lub problemu z połączeniem z internetem/serwerem. Spróbuj wrócić na stronę główną aplikacji."
+    },
+    "bad-url": {
+      "header": "Nieprawidłowy adres URL",
+      "description": "Spróbuj wrócić na stronę główną."
+    },
+    "unauthorized": {
+      "header": "Brak autoryzacji",
+      "description": "Serwer odmówił dostępu. Prawdopodobnie nie jesteś poprawnie zalogowany lub nie masz dostępu do tych danych."
+    },
+    "server-error": {
+      "header": "Błąd serwera",
+      "description": "Serwer zwrócił nieoczekiwany błąd. Skontaktuj się z administratorem, jeśli problem będzie się powtarzał."
+    },
+    "data-invalid": {
+      "header": "Nieprawidłowe dane",
+      "description": "Przekazane dane są nieprawidłowe. Sprawdź poprawność wprowadzonych informacji."
+    },
+
+    "unknown": {
+      "header": "Nieznany błąd",
+      "description": "Skontaktuj się z administratorem, jeśli problem będzie się powtarzał."
+    },
+    "logout-failed": {
+      "header": "Błąd wylogowania",
+      "description": "Wystąpił błąd podczas wylogowywania (prawdopodobnie brak połączenia z serwerem). W razie potrzeby konieczności wylogowania offline spróbuj wyczyścić dane przeglądarki."
+    },
+    "session-expired": {
+      "header": "Sesja wygasła",
+      "description": "Zaloguj się ponownie. W przeciwnym razie będziesz mógł przeglądać tylko stare dane."
+    },
+
+    "credentials-invalid": {
+      "header": "Nieprawidłowe dane logowania",
+      "description": "Nieprawidłowy login lub hasło."
+    },
+    "email-or-phone-required": {
+      "header": "Błąd",
+      "description": "Wymagany jest e-mail lub numer telefonu."
+    },
+    "exists": {
+      "header": "Konflikt",
+      "description": "Użytkownik z takim {{field}} już istnieje"
+    }
+  }
+}

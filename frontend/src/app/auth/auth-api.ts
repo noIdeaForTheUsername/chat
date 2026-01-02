@@ -24,21 +24,21 @@ export class AuthBackendApi {
   }
 
   getMe(): Observable<UserProfile> {
-    return this.http.get<ServerUserProfile>('/me').pipe(
+    return this.http.get<ServerUserProfile>('/auth/me').pipe(
       map(res => mapUserProfile(res))
     );
   }
 
   login(body: { account: string; password: string }): Observable<null> {
-    return this.http.post<null>('/login', body);
+    return this.http.post<null>('/auth/login', body);
   }
 
   register(body: RegisterBody): Observable<null> {
-    return this.http.post<null>('/register', body);
+    return this.http.post<null>('/auth/register', body);
   }
 
   logout(): Observable<null> {
-    return this.http.post<null>('/logout', {});
+    return this.http.post<null>('/auth/logout', {});
   }
 
 }

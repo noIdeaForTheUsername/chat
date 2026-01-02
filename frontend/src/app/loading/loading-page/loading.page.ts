@@ -1,23 +1,27 @@
-import { Component, inject, OnInit } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { TranslatePipe } from "@ngx-translate/core";
-import { IonContent } from "@ionic/angular/standalone";
+import { IonButton, IonButtons, IonContent, IonIcon } from "@ionic/angular/standalone";
 import { LoadingIndicator } from "../loading-indicator-component/loading-indicator.component";
 import { AuthService } from "@app/auth/auth.service";
 import { Router } from "@angular/router";
+import { LanguageService } from "@app/i18n/language.service";
 
 @Component({
   selector: 'app-loading-page',
   templateUrl: './loading.page.html',
   standalone: true,
-  imports: [StandardHeaderComponent, TranslatePipe, IonContent, LoadingIndicator],
+  imports: [StandardHeaderComponent, TranslatePipe, IonContent, LoadingIndicator, IonButtons, IonButton, IonIcon],
 })
-export class LoadingPage implements OnInit {
+export class LoadingPage {
+
+  // NOTE: AUTH SERVICE IS THE FILE THAT NAVIGATES THE USER FURTHER FROM THIS LOADING PAGE
 
   private authService = inject(AuthService);
+  private languageService = inject(LanguageService);
+  protected serverUnavailableWhileLoggedOut = this.authService.serverUnavailableWhileLoggedOut;
 
-  // ON APP START
-  ngOnInit() {
-    this.authService.loadAuth();
+  toggleLanguage(): void {
+    this.languageService.toggleLanguage();
   }
 }

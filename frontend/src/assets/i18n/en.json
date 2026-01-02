@@ -21,7 +21,6 @@
     "error": "Error",
     "danger-zone": "Danger zone",
 
-    "form-invalid": "Provided data is invalid. Please check all the form fields.",
     "form-field-invalid": "Invalid form field value:",
     "app": "App",
     "lock-app": "Lock the app",
@@ -59,7 +58,7 @@
       "title": "New Chat...",
       "header": "Find a user",
       "info": "In the search bar above, enter: <ul><li>a full name or</li><li>a full login or</li><li>a full email or</li><li>a full phone number with country code (e.g., +48 123 123 123)</li></ul> and press confirm",
-      "searchbar-hint": "Name, login, email or phone...",
+      "searchbar-hint": "Full name, login, email or phone...",
       "found": "Found",
       "not-found": "Not found"
     },
@@ -89,7 +88,7 @@
       
       "unset": "Unset/private",
       "show-conversation": "Show conversation",
-      "not-found-hint": "Were you looking for other settings such as notifications or chat actions? Check out the <a>conversation settings page</a> instead."
+      "not-found-hint": "Were you looking for other settings such as notifications or chat actions? Click this text to go to the conversation settings page."
     },
 
     "conversation-options": {
@@ -133,19 +132,20 @@
     "login": {
       "header": "Log in to your account",
       "account-input": "Login, email or phone number",
-      "register-hint": "Don't have an account?"
+      "register-hint": "I don't have an account yet"
     },
 
     "register": {
       "header": "Create a new account",
+      "encouragement": "Your name and login will only be visible to users you who discover you - and this requires knowing your <b>exact</b> login or full name.",
       "name-input": "Full name (optional, but recommended)",
       "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
-      "email-phone-hint": "At least one is required (phone recommended):",
-      "email-phone-settings": "Make other users able to find me by my",
+      "email-phone-hint": "At least one is required (phone recommended)",
+      "email-phone-settings": "Make other users able to find me by my (this data will always remain publically hidden, even if you enable these options)",
       "bio-input": "Profile description (optional)",
-      "login-hint": "Already have an account?"
+      "login-hint": "I already have an account"
     }
   },
 
@@ -185,21 +185,37 @@
 
 
   "error": {
-    "0": {
+    "server-unavailable": {
       "header": "Server not responding",
-      "description": "It's worth checking your internet connection, but most likely the app server is currently down. Only the old data will be displayed. Contact the administrator if the issue persists."
+      "description": "It's worth checking your internet connection, but most likely the app server is currently down. No data can be loaded. Contact the administrator if the issue persists."
     },
     "no-internet": {
       "header": "No internet connection",
       "description": "This data can't be loaded until you're online again"
     },
+    "data-unavailable": {
+      "header": "Data unavailable",
+      "description": "Couldn't load data - this might due to a bad URL, missing permissions, or a problem with the server or internet connection."
+    },
     "not-found": {
       "header": "Data not found",
-      "description": "The data you wanted to view hasn't been found. This is likely due to a bad URL or a problem with internet connection. Try going back to the app home page."
+      "description": "The data you wanted to view hasn't been found. This is likely due to a bad URL or a problem with internet/server connection. Try going back to the app home page."
     },
     "bad-url": {
       "header": "Bad URL",
       "description": "Try going back to the home page"
+    },
+    "unauthorized": {
+      "header": "Unauthorized",
+      "description": "The server has denied access. Try logging in again."
+    },
+    "server-error": {
+      "header": "Server error",
+      "description": "The server has returned an unknown error. Contact the administrator if the issue persists."
+    },
+    "data-invalid": {
+      "header": "Invalid data",
+      "description": "Provided data is invalid. Check the if the input is correct."
     },
 
     "unknown": {
