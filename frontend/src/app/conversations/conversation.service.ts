@@ -45,7 +45,8 @@ export class ConversationService {
       next: (val) => {
         this.conversations.set(val);
         this.conversationsLoaded.set(true);
-      }
+      },
+      error: (e) => this.conversationsLoaded.set(true)
     });
 
     this.loadMessagePreviews();
@@ -55,7 +56,8 @@ export class ConversationService {
     this.api.getMessagePreviews().subscribe({
       next: (previewsMap) => {
         this.conversationsMessagePreviews.set(previewsMap);
-      }
+      },
+      error: (e) => this.conversationsLoaded.set(true)
     });
   }
 

@@ -117,13 +117,19 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   private async loadConversationData(conversationId: number) {
     this.messageService.loadConversationInitially(conversationId);
-    this.conversation.set(await firstValueFrom(
-      this.conversationService.getConversationById(conversationId))
-    );
-    this.participant.set(await firstValueFrom(
-      this.profileService.getProfileById(this.conversation()!.participantId)
-    ));
-    this.metadataLoaded.set(true);
+    try {
+      this.conversation.set(await firstValueFrom(
+        this.conversationService.getConversationById(conversationId))
+      );
+      this.participant.set(await firstValueFrom(
+        this.profileService.getProfileById(this.conversation()!.participantId)
+      ));
+    }
+    catch (error) {}
+    finally {
+      console.log("chat meta loaded");
+      this.metadataLoaded.set(true);
+    }
   }
 
   ngAfterViewInit(): void {

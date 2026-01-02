@@ -11,13 +11,14 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { urlInterceptor } from '@app/common/http/url.interceptor';
 import { credentialsInterceptor } from '@app/common/http/credentials.interceptor';
 import { loggingInterceptor } from '@app/common/http/logging.interceptor';
+import { connectionErrorInterceptor } from '@app/common/http/connection-error.interceptor';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([urlInterceptor, credentialsInterceptor, loggingInterceptor])),
+    provideHttpClient(withInterceptors([urlInterceptor, credentialsInterceptor, loggingInterceptor, connectionErrorInterceptor])),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideTranslateService({
       fallbackLang: 'en',

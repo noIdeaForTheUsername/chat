@@ -187,7 +187,7 @@
   "error": {
     "0": {
       "header": "Server not responding",
-      "description": "It's worth checking your internet connection, but most likely the app server is currently down. Contact the administrator if the issue persists."
+      "description": "It's worth checking your internet connection, but most likely the app server is currently down. Only the old data will be displayed. Contact the administrator if the issue persists."
     },
     "no-internet": {
       "header": "No internet connection",
