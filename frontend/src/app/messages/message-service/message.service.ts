@@ -6,6 +6,7 @@ import { MessageView } from '../chat-page/message-card-component/message-view.in
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
+import { MessagePreviewManager } from './message-previews';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -19,6 +20,7 @@ export class MessageService {
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
   private readonly api = new BackendMessageApi();
+  private readonly messagePreviewManager = new MessagePreviewManager(this, this.api);
 
   // SETTINGS
   private readonly MAX_MESSAGES_DISPLAYED = 200;
@@ -28,6 +30,7 @@ export class MessageService {
 
   // DISPLAYED DATA
   public readonly displayedMessages = signal<readonly MessageView[]>([]);  // expected to be sorted from oldest (first) to newest!
+  public readonly repliedTexts = signal<Map<number, string>>(new Map());  // map of replied message ID -> text preview
   private currentConvId: number = -1;
 
   // MESSAGE STATE (ADDITIONAL METADATA)
@@ -130,6 +133,7 @@ export class MessageService {
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
+        this.messagePreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
       },
       error: (err) => {
         // this.alertService.displayErrorById(err.status);
@@ -183,7 +187,7 @@ export class MessageService {
     this.loadConvMessages(loadAmount, false, callBeforeComplete, this.highestDisplayedId);
   }
 
-  sendMessage(text: string, repliedId?: number, callBeforeComplete?: Function) {
+  sendMessage(text: string, callBeforeComplete?: Function, repliedId?: number, repliedText?: string) {
     const timestamp = new Date();
     this.api.sendMessage(this.currentConvId, text, timestamp, repliedId).subscribe({
       next: (res: any) => {
@@ -199,6 +203,7 @@ export class MessageService {
             timestamp,
             isOwn: true,
             repliedId,
+            repliedText
           }];
         });
       }

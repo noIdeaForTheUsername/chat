@@ -1,0 +1,43 @@
+import { MessageView } from "../chat-page/message-card-component/message-view.interface";
+import { Message } from "../message.interface";
+import { BackendMessageApi } from "./backend-message-api";
+import { MessageService } from "./message.service";
+
+export class MessagePreviewManager {
+
+  constructor(private s: MessageService, private api: BackendMessageApi) {}
+
+  // modifies "displayedMessages" in the service directly
+  public loadMessagePreviews(currentConvId: number, highestDisplayedId: number, lowestDisplayedId: number) {  
+    const repliedIds = this.s.displayedMessages().filter(msg => msg.repliedId).map(msg => msg.repliedId!);
+    repliedIds.forEach(id => {
+      if (id > highestDisplayedId || id < lowestDisplayedId) {
+        // Load message from the backend
+        this.api.getMessageById(id, currentConvId).subscribe({
+          next: (msg: Message) => {
+            this.addPreview(msg);
+          }
+        });
+      }
+      else {
+        // Get message from the currently displayed list
+        // (and if it's not there, it was probably deleted - do nothing then)
+        const found = this.s.displayedMessages().find(msg => msg.globalId == id);
+        if (found) this.addPreview(found);
+      }
+    });
+  }
+
+  // modifies "displayedMessages" in the service directly
+  public addPreview(messageWithRepliedText: Message) {
+    this.s.displayedMessages.update((msgs) => {
+      msgs.forEach(m => {
+        if (m.repliedId == messageWithRepliedText.globalId) {
+          m.repliedText = messageWithRepliedText.text;
+        }
+      });
+      return msgs;
+    });
+}
+}
+

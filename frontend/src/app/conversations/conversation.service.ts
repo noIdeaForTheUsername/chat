@@ -82,6 +82,8 @@ export class ConversationService {
     // If not found, loading from backend:
     return this.api.getConversationById(id).pipe(
       tap((conv) => {
+        const existing = this.conversations().find(c => c.id === conv.id);
+        if (existing) return; // already in list; this may actually happen if that conv loads already!
         this.conversations.set([conv, ...this.conversations()]);
       })
     );

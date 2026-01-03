@@ -20,7 +20,7 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
     class="message-card"
     [class.own]="message().isOwn"
     [color]="color()">
-      @if (repliedId !== undefined && repliedText !== undefined) {
+      @if (repliedId) {
         <!-- response card -->
         <ion-card class="replied-preview" (click)="repliedClickInternal(repliedId)">
           <ion-card-content><ion-icon name="arrow-redo"></ion-icon>&nbsp;<span [innerHTML]="repliedText"></span></ion-card-content>

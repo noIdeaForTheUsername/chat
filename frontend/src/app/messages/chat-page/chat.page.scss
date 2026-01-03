@@ -55,3 +55,22 @@ ion-popover ion-content {
 //     background-color: var(--ion-text-color-step-450);
 //   }
 // }
+
+div.reply-container {
+  display: flex;
+  padding: 4px 20% 0;
+}
+
+ion-chip.reply {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  p {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

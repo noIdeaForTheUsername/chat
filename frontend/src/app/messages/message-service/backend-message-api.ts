@@ -26,6 +26,12 @@ export class BackendMessageApi {
     );
   }
 
+  getMessageById(messageId: number, conversationId: number) {
+    return this.http.get<ServerMessage>(`/conversations/${conversationId}/messages/${messageId}`).pipe(
+      map(serverMessageToMessage)
+    );
+  }
+
   sendMessage(conversationId: number, text: string, timestamp: Date, repliedId?: number) {
     return this.http.post(`/conversations/${conversationId}/messages`, {
       conversationId,

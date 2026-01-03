@@ -5,6 +5,6 @@ export interface Message {
   senderId: number,
   timestamp: Date,
   repliedId?: number,
-  text?: string,
+  text: string,
   file?: string, // implement in future
 }

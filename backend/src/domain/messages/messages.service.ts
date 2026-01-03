@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
 import { LessThan, MoreThan, Repository } from 'typeorm';
@@ -37,6 +37,16 @@ export class MessagesDomainService {
       where: { userId: userId },
     });
     return msgs;
+  }
+
+  async findMessage(conversationId: number, messageId: number, exceptionOnNotFound = false) {
+    const message = await this.messageRepository.findOneBy({
+      conversationId: conversationId,
+      globalId: messageId
+    });
+    if (!message && exceptionOnNotFound)
+      throw new NotFoundException('not-found.message');
+    return message;
   }
 
   async findMessages(conversationId: number, limit: number,

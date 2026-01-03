@@ -30,6 +30,15 @@ export class MessagesController {
       callerId, conversationId, query.limit, query.globalIdStart, query.older);
   }
 
+  @Get("conversations/:id/messages/:messageId")
+  async getMessageById(
+    @UserId() callerId: number,
+    @Param('id') conversationId: number,
+    @Param('messageId') messageId: number
+  ) {
+    return await this.messagesService.getMessageById(callerId, conversationId, messageId);
+  }
+
   @Post("conversations/:id/messages")
   async sendMessage(
     @UserId() callerId: number,

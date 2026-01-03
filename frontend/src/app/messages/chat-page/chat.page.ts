@@ -11,9 +11,7 @@ import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/c
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab,
-  IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail,
-} from '@ionic/angular/standalone';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip } from '@ionic/angular/standalone';
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
@@ -34,7 +32,7 @@ import { firstValueFrom } from 'rxjs';
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, ChatNoteComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
-    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent],
+    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -63,6 +61,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   public participant = signal<Profile | undefined>(undefined);
     
   public messages = this.messageService.displayedMessages;
+  public repliedTexts = this.messageService.repliedTexts;
 
   // LOADING
   protected initialLoading = computed(() => (!this.metadataLoaded()) || !this.messageService.dataLoaded());
@@ -74,6 +73,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // MESSAGE INPUT
   protected enteredMessage = signal<string>("");
   protected replyingToId = signal<null | number>(null);
+  protected replyingToText = signal<string>("");
 
   // DISPLAYED MESSAGES STATE
   protected oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
@@ -151,7 +151,14 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.messageField.value = "";
     this.enteredMessage.set("");
     const replyingTo = this.replyingToId();
-    this.messageService.sendMessage(messageText, replyingTo ?? undefined, this.correctScrollOnMessageSend.bind(this));
+    const replyingToText = this.replyingToText();
+    this.messageService.sendMessage(messageText, this.afterMessageSent.bind(this),
+      replyingTo ?? undefined, replyingToText ?? undefined);
+  }
+
+  afterMessageSent() {
+    this.cancelReply();
+    this.correctScrollOnMessageSend();
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
@@ -260,7 +267,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     elem.classList.add("highlight-pulse");
   }
 
-  // ------------------------------------------- MESSAGE SELECTION + OPENABLE MENUS (popover, action sheet) -------------------------------------------
+  // ------------------------------------------- MESSAGE SELECTION, MESSAGE ACTIONS + OPENABLE MENUS (popover, action sheet) -------------------------------------------
 
   private actionButtons = new MessageActionButtons(this.translate); 
   protected displayedMessageActionButtons = signal<any>(this.actionButtons.notOwnMessage);
@@ -291,11 +298,19 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (event.detail.role == "cancel" || event.detail.role == 'backdrop') { this.actionMessageId.set(null); return; }
 
     if (action == "selection-mode") this.selectionService.toggleSelectionMode(this.actionMessageId());
-    else if (action == "reply" && this.actionMessageId()) this.replyingToId.set(this.actionMessageId());
+    else if (action == "reply" && this.actionMessageId()) this.replyToMessage(this.actionMessageId()!);
     else if (action == "copy") this.copySelectedMessageToClipboard(this.actionMessageId()!);
     else if (action == "delete") {} // TODO: IMPLEMENT MESSAGE DELETION
     else if (action == "download") {} // TODO: IMPLEMENT
     this.actionMessageId.set(null);
+  }
+
+  replyToMessage(id: number) {
+    this.replyingToId.set(this.actionMessageId());
+    this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "");
+  }
+  cancelReply() {
+    this.replyingToId.set(null);
   }
 
   // ------------------------------------------- OTHER FUNCTIONS -------------------------------------------

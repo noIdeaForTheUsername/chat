@@ -88,10 +88,17 @@
   </ion-action-sheet>
 </ion-content>
 
-
 <ion-footer>
   <div class="toolbar-container">
     <ion-toolbar>
+      @if (replyingToId() !== null) {
+        <div class="reply-container">
+          <ion-chip class="reply" (click)="cancelReply()">
+            <p><ion-icon name="close-circle" slot="start"/>
+              {{ replyingToText() }}</p>
+          </ion-chip>
+        </div>
+      }
       <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
         <!-- ATTACH BUTTON -->
         <ion-button shape="round" class="round-button" id="open-modal">

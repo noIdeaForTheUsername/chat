@@ -27,6 +27,13 @@ export class MessagesService {
       conversationId, limit, olderThanStart, globalIdStart);
   }
 
+  async getMessageById(callerId: number, conversationId: number, messageId: number) {
+    // assert this conv exists and the caller is a member of it
+    await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
+    
+    return await this.messagesDomainService.findMessage(conversationId, messageId, true);
+  }
+
   async getRecentMessagePreviews(callerId: number) {
     return await this.messagesDomainService.findMostRecentUserMessagePerConversation(callerId);
   }

@@ -80,7 +80,7 @@ export class AuthService {
           this.loadAuth();
 
         this.processing.set(false);
-        this.router.navigate(['/chats']);
+        window.location.replace("chats");
       },
       error: (err) => this.handleRegisterError(err)
     });
