@@ -79,12 +79,14 @@
 
     "profile": {
       "title": "User profile",
+      "edit-hint": "You can't edit your login. If you want to change the password, email address, or phone number, click this text to go to the account settings.",
       "section": {
         "basic-info": "Basic information"
       },
       "nick-info": "A nickname you can set for each user. Only visible to you.",
-      "edit-btn": "Edit profile",
-      "save-btn": "Save changes",
+      "edit": "Edit profile",
+      "save": "Save changes",
+      "discard": "Discard changes",
       
       "unset": "Unset/private",
       "show-conversation": "Show conversation",

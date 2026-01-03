@@ -2,13 +2,23 @@ ion-content {
   text-align: center;
 }
 
+
 .profile-header-container {
   profile-preview {
     padding-bottom: 0;
   }
-  ion-button {
-    margin-bottom: 20px;
+  .btn-container {
+    margin: 0 auto;
+    padding: 0;
+    max-width: 400px;
+    gap: 10px;
+    display: flex;
+    justify-content: stretch;
+
+    align-items: stretch;
+    flex-direction: column;
   }
+  margin-bottom: 20px;
 }
 
 ion-item-group {

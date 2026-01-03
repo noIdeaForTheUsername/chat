@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonItemGroup, IonItemDivider, IonLabel, IonIcon, IonTextarea, IonNote, IonCard, IonCardSubtitle } from "@ionic/angular/standalone";
+import { IonButton, IonContent, IonItemGroup, IonItemDivider, IonLabel, IonIcon, IonTextarea, IonNote, IonCard, IonCardSubtitle, IonButtons } from "@ionic/angular/standalone";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
 import { Profile } from '@app/profiles/profile.interface';
@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   imports: [IonContent, IonItemGroup, IonItemDivider, IonLabel, IonTextarea, IonIcon, IonNote, IonButton,
-    TranslatePipe, ProfilePreviewComponent, LoadingIndicator, ProfileInfoItemComponent, RouterLink, IonCard, IonCardSubtitle, ItemButtonComponent, StandardHeaderComponent],
+    TranslatePipe, ProfilePreviewComponent, LoadingIndicator, ProfileInfoItemComponent, RouterLink, IonCard, IonCardSubtitle, ItemButtonComponent, StandardHeaderComponent, IonButtons],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfilePage {
@@ -40,8 +40,14 @@ export class ProfilePage {
   protected profile = signal<Profile | undefined>(undefined);
   protected conversationId = signal<number | undefined>(undefined);
   protected own = signal(false);
+
+  // UI state
   protected editMode = signal(false);
   protected profileSaving = signal(false);
+
+  // Input
+  protected editedName = signal<string>("");
+  protected editedBio = signal<string>("");
 
   // Loading
   protected dataLoaded = signal(false);
@@ -63,6 +69,8 @@ export class ProfilePage {
     this.profileService.getProfileById(parseInt(idStr)).subscribe({
       next: (profile) => {
         this.profile.set(profile);
+        this.editedName.set(profile.name ?? "");
+        this.editedBio.set(profile.bio ?? "");
         if (profile.id === this.authService.getUserId()) {
           this.own.set(true);
         }
@@ -81,6 +89,19 @@ export class ProfilePage {
 
   // ---------------------------------------------- UI ACTIONS ----------------------------------------------
 
+  onFieldInput(fieldName: string, value: string | null | undefined) {
+    console.log(`Field ${fieldName} changed: `, value);
+    if (!value) value = "";
+    switch (fieldName) {
+      case "name":
+        this.editedName.set(value);
+        break;
+      case "bio":
+        this.editedBio.set(value);
+        break;
+    }
+  }
+
   goToConversationPage() {
     if (this.conversationId() !== undefined)
       this.router.navigate(["chats", this.conversationId()!.toString()]);
@@ -96,9 +117,22 @@ export class ProfilePage {
   }
 
   saveOwnProfileChanges() {
-    console.log("Saving changes!");  // TODO: implement 
-    this.profileSaving.set(true);
-    setTimeout(() => this.profileSaving.set(false), 1500);
+    console.log("Saving changes!");
     this.editMode.set(false);
+    this.profileSaving.set(true);
+    this.profileService.editOwnProfile({
+      name: this.editedName(),
+      bio: this.editedBio()
+    }).subscribe({
+      next: (updatedProfile) => {
+        this.profile.update(profile => {
+          profile!.name = updatedProfile.name;
+          profile!.bio = updatedProfile.bio;
+          return profile;
+        });
+        this.profileSaving.set(false);
+      },
+      error: (error) => this.alertService.displayErrorById(error.status.toString())
+    });
   }
 }

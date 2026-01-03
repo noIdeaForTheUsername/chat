@@ -2,13 +2,19 @@ export interface ProfileBase {
   type: 'user' | 'group',
   id: number,
   profilePicture?: string, // change in the future
-  nick?: string,
   bio?: string
 }
 
-export interface UserProfile extends ProfileBase {
+export interface OwnProfile extends ProfileBase {
   type: 'user',
   login: string,
+  name?: string,  // may include surname
+}
+
+export interface UserProfile extends ProfileBase {  // only not-own
+  type: 'user',
+  login: string,
+  nick?: string,
   name?: string,  // may include surname
 }
 
@@ -18,3 +24,5 @@ export interface GroupProfile extends ProfileBase {
 }
 
 export type Profile = UserProfile | GroupProfile;
+
+export type ServerUserProfile = Omit<UserProfile, "type">;

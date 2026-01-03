@@ -1,5 +1,5 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { Profile } from '@app/profiles/profile.interface';
+import { Profile, ServerUserProfile, UserProfile } from '@app/profiles/profile.interface';
 import { forkJoin, Observable, of, tap } from 'rxjs';
 import { BackendProfileApi } from './backend-profile-api';
 
@@ -56,4 +56,16 @@ export class ProfileService {
   public getPublicUserProfiles(search: string) {
     return this.api.getSearchedProfiles(search);
   }
+
+  public editOwnProfile(profileChanges: Partial<ServerUserProfile>) {
+    return this.api.editOwnProfile(profileChanges).pipe(
+      tap(updatedProfile => {
+        this.profiles.update(profiles => {
+          profiles.set(updatedProfile.id, updatedProfile);
+          return profiles;
+        });
+      })
+    );
+  }
+
 }

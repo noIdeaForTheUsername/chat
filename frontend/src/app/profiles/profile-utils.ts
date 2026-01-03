@@ -1,4 +1,4 @@
-import { GroupProfile, Profile, UserProfile } from "@app/profiles/profile.interface";
+import { GroupProfile, Profile, ServerUserProfile, UserProfile } from "@app/profiles/profile.interface";
 
 
 export function getVisibleName(value: Profile | undefined, alwaysIncludeUserLogin: boolean = false): string {
@@ -16,13 +16,12 @@ export function getVisibleName(value: Profile | undefined, alwaysIncludeUserLogi
     else return '@' + value.login;
   }
   else {
-    if (value.nick) return value.nick;
-    else return value.name;
+    return value.name;
   }
 }
 
 
-export type ServerUserProfile = Omit<UserProfile, "type">;
+
 
 export function mapUserProfile(profile: ServerUserProfile): UserProfile {
   return {

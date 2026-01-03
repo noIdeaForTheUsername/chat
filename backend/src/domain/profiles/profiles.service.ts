@@ -86,7 +86,11 @@ export class ProfilesDomainService {
   async updateProfile(id: number, updatedFieldsObject: Partial<Profile>) {
     updatedFieldsObject.id = undefined;  // Prevent changing the ID
     // execute
-    const result = await this.profiles.update({ id }, updatedFieldsObject);
-    if (result.affected === 0) throw new NotFoundException('not-found.profile');
+    await this.profiles.update({ id }, updatedFieldsObject);
+
+    const edited = await this.profiles.findOneBy({ id });
+    if (!edited) throw new NotFoundException('not-found.profile');
+    // console.log('Edited profile:', edited);
+    return edited;
   }
 }

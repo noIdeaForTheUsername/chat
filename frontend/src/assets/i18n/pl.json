@@ -77,12 +77,14 @@
 
     "profile": {
       "title": "Profil użytkownika",
+      "edit-hint": "Loginu nie możesz edytować. Jeśli chcesz zmienić hasło, adres e-mail lub telefon, to kliknij ten tekst, aby przejść do ustawień konta",
       "section": {
         "basic-info": "Podstawowe informacje"
       },
       "nick-info": "Pseudonim, który możesz ustawić dla każdego użytkownika. Widoczny tylko dla Ciebie.",
-      "edit-btn": "Edytuj profil",
-      "save-btn": "Zapisz zmiany",
+      "edit": "Edytuj profil",
+      "save": "Zapisz zmiany",
+      "discard": "Anuluj zmiany",
 
       "unset": "Brak/ukryte",
       "show-conversation": "Pokaż konwersację",

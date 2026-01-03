@@ -1,21 +1,39 @@
-<app-standard-header [title]="'page.profile.title' | translate"></app-standard-header>
+<app-standard-header [title]="'page.profile.title' | translate" [backButton]="!editMode()">
+</app-standard-header>
 
 <ion-content class="ion-padding" [fullscreen]="true">
   @if (dataLoaded()) {
-    <div class="profile-header-container">
+
+    @let p = profile()!;
+
+    <div class="profile-header-container"> 
       <!-- PROFILE PREVIEW -->
       <app-profile-preview [viewProfileButton]="false" [profile]="profile()!"/>
-      <!-- EDIT/SAVE BUTTON -->
+
+      <!-- BUTTONS/INDICATORS -->
       @if (profileSaving()) {
         <app-loading-indicator size="medium" type="dots"/>
-      } 
-      @else if (own() && editMode()) {
-        <ion-button color="primary" fill="solid" shape="round" (click)="saveOwnProfileChanges()">{{"page.profile.save-btn" | translate}}</ion-button>
       }
+      <!-- save/discard changes buttons -->
+      @else if (own() && editMode()) {
+        <div class="btn-container">
+          <ion-button color="primary" fill="solid" shape="round" (click)="saveOwnProfileChanges()">{{"page.profile.save" | translate}}</ion-button>
+          <ion-button color="danger" fill="outline" shape="round" (click)="this.editMode.set(false)">{{"page.profile.discard" | translate}}</ion-button>
+        </div>
+      }
+      <!-- edit button -->
       @else if (own()) {
-        <ion-button color="primary" fill="solid" shape="round" (click)="enterEditMode()">{{"page.profile.edit-btn" | translate}}</ion-button>
+        <ion-button color="primary" fill="solid" shape="round" (click)="enterEditMode()">{{"page.profile.edit" | translate}}</ion-button>
       }
     </div>
+
+
+    <!-- EDITING HINT -->
+    @if (editMode()) {
+      <hr>
+      <!-- TODO: change the routerLink to the correct route of ACCOUNT settings -->
+      <ion-note routerLink="/settings">{{'page.profile.edit-hint' | translate}}</ion-note>
+    }
 
     <!-- BASIC INFO SECTION -->
     <ion-item-group>
@@ -23,19 +41,20 @@
         <ion-label>{{"page.profile.section.basic-info" | translate}}</ion-label>
       </ion-item-divider>
 
-      @let p = profile()!;
-
-      <!-- SHARED PROPERTIES (USER + GROUP) -->
-      @if (!own()) {
-        <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick" [editable]="true"
+      @if (!own() && p.type == 'user') {
+        <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick"
+        [editable]="true" (valueChange)="this.onFieldInput('nick', $event)"
         [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
       }
+      
 
-      <!-- USER-ONLY PROPERTIES -->
+      <!-- USER-ONLY PROPERTIES (no group) -->
       @if (p.type == 'user') {
+
         <profile-info-item [title]="'profile.login' | translate" [value]="p.login"/>
 
-        <profile-info-item [title]="'profile.name' | translate" [value]="p.name" [editable]="editMode()"/>
+        <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
+        [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
       }
     </ion-item-group>
 
@@ -45,14 +64,15 @@
       <ion-card>
         <ion-card-subtitle>{{`profile.${p.type}-bio` | translate}}</ion-card-subtitle>
         <hr>
-        @if (editMode()) {
+        @if (editMode()) {  <!-- edit mode -->
           <ion-textarea [autoGrow]="true"
+          (ionChange)="onFieldInput('bio', $event.target.value)" [value]="p.bio"
           [placeholder]="`profile.${p.type}-bio-placeholder` | translate">
             <ion-icon name="pencil" slot="start"></ion-icon>
           </ion-textarea>
         }
-        @else {
-          <p>{{p.bio || '(empty)'}}</p>
+        @else {  <!-- view mode -->
+          <p [innerHTML]="p.bio || `<i>(${('common.empty' | translate)})</i>`"></p>
         }
       </ion-card>
     </ion-item-group>

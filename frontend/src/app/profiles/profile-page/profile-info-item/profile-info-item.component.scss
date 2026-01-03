@@ -7,16 +7,6 @@ ion-item.editable {
   --inner-padding-end: 0;
 }
 
-// ion-label {
-//   text-wrap-mode: nowrap;
-//   flex: 0;
-//   min-width: 30%;
-// }
-
-// ion-label[slot="end"] {
-//   flex: 1;
-//   text-align: right;
-// }
 
 ion-input.editable {
   text-align: right;
@@ -43,6 +33,6 @@ ion-icon {
   display: block;
 }
 
-// div.label-text-wrapper div.label-text {
-//   text-align: left;
-// }
+.edit-icon {
+  padding-inline-end: 8px;
+}

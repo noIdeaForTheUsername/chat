@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { IonItem, IonLabel, IonInput, IonIcon } from "@ionic/angular/standalone";
@@ -17,6 +17,8 @@ export class ProfileInfoItemComponent {
   editable = input<boolean>(false);
   type = input<string>("")
 
+  valueChange = output<string>();
+
   infoBox = input(false);
   infoBoxContent = input("");
 
@@ -24,6 +26,13 @@ export class ProfileInfoItemComponent {
 
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);
+
+  protected onValueChange(newValue: string | number | null | undefined) {
+    console.log("New value: ", newValue);
+    if (typeof newValue === "number")
+      newValue = newValue.toString();
+    this.valueChange.emit(newValue || "");
+  }
 
   protected displayInfoBox() {
     console.log("click!");

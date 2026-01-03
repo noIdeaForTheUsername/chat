@@ -23,7 +23,7 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
       @if (repliedId) {
         <!-- response card -->
         <ion-card class="replied-preview" (click)="repliedClickInternal(repliedId)">
-          <ion-card-content><ion-icon name="arrow-redo"></ion-icon>&nbsp;<span [innerHTML]="repliedText"></span></ion-card-content>
+          <ion-card-content><ion-icon name="arrow-redo"></ion-icon>&nbsp;<span [innerHTML]="repliedText || '○ ○ ○'"></span></ion-card-content>
         </ion-card>
       }
       <!-- message text -->

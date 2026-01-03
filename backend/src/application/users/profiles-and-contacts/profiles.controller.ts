@@ -32,11 +32,10 @@ export class ProfilesController {
 
   @Get('me')
   async getMyProfile(@UserId() userId: number) {
-    return await this.profilesService.findRawProfile(userId, true);
+    return await this.profilesService.findFullPublicProfile(userId, true);
   }
 
   @Patch('me')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateMyProfile(@UserId() userId: number, @Body() dto: Partial<PatchProfileDto>) {
     return await this.profilesService.updateProfile(userId, dto);
   }
@@ -46,7 +45,7 @@ export class ProfilesController {
   @Get(':id')
   async getProfileById(@UserId() callerId: number, @Param('id', ParseIntPipe) id: number) {
     if (callerId === id) {  // when user asks for their own profile using this endpoint instead of "me"
-      return await this.profilesService.findRawProfile(id, true);
+      return await this.profilesService.findFullPublicProfile(id, true);
     }
     return await this.profilesService.findUserKnownProfile(callerId, id, true);
   }
