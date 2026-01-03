@@ -40,4 +40,16 @@ export class BackendMessageApi {
       repliedId,
     });
   }
+
+  deleteMessage(messageId: number, conversationId: number) {
+    return this.http.delete(`/conversations/${conversationId}/messages/${messageId}`);
+  }
+
+  deleteMultipleMessages(messageIds: number[], conversationId: number) {
+    return this.http.delete(`/conversations/${conversationId}/messages`, {
+      body: {
+        ids: messageIds
+      }
+    });
+  }
 }

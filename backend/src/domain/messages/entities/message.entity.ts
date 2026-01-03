@@ -20,6 +20,6 @@ export class Message {
   @Column()
   timestamp: Date;
 
-  @Column({ name: "replied_id", nullable: true })
-  repliedId?: number;
+  @Column({ name: "replied_id", type: "int", nullable: true })
+  repliedId: number | null;
 }

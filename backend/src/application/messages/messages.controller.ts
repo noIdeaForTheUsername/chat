@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseArrayOptions, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { UserId } from 'src/shared/auth/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
@@ -47,5 +47,25 @@ export class MessagesController {
     const id = await this.messagesService.sendMessage(
       callerId, body.conversationId, body.text, body.timestamp, body.repliedId);
     return { id };
+  }
+
+  @Delete("conversations/:id/messages/:messageId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteMessageById(
+    @UserId() callerId: number,
+    @Param('id', ParseIntPipe) conversationId: number,
+    @Param('messageId', ParseIntPipe) messageId: number
+  ) {
+    await this.messagesService.deleteMessageById(callerId, conversationId, messageId);
+  }
+
+  @Delete("conversations/:id/messages")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteMultipleMessages(
+    @UserId() callerId: number,
+    @Param('id', ParseIntPipe) conversationId: number,
+    @Body('ids', new ParseArrayPipe({ items: Number })) messageIds: number[]
+  ) {
+    await this.messagesService.deleteMultipleMessages(callerId, conversationId, messageIds);
   }
 }

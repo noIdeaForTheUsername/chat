@@ -1,7 +1,7 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { In, LessThan, MoreThan, Repository } from 'typeorm';
 import { UserMessage } from './entities/user-message.entity';
 import { LatestUserMessage } from './entities/latest-user-message.entity';
 
@@ -65,5 +65,21 @@ export class MessagesDomainService {
       order: { globalId: orderDirection },
       take: limit,
     });
+  }
+
+  async clearMessageById(conversationId: number, messageId: number) {
+    await this.messageRepository.update({
+      conversationId: conversationId,
+      globalId: messageId
+    }, {
+      text: '',
+      repliedId: null,
+    });
+  }
+
+  async clearMultipleMessages(conversationId: number, messageIds: number[], senderId: number) {
+    this.messageRepository.delete(
+      { conversationId: conversationId, globalId: In(messageIds), senderId: senderId }
+    )
   }
 }

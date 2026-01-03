@@ -67,14 +67,16 @@
       "no-more-messages": "These are all the stored messages with this user",
       "new-messages": "New messages",
       "message-input": "Input message...",
+      "message-deleted": "Message deleted",
       "message-action": {
         "header": "Selected message actions...",
         "reply": "Reply",
         "download-all": "Download all selected files",
-        "delete-all": "Delete all selected"
+        "delete-all": "Delete selected (yours)"
       },
       "options": "Chat options",
-      "copy-failed": "Failed to copy text to clipboard"
+      "copy-failed": "Failed to copy text to clipboard",
+      "failed-to-delete": "Failed to delete message(s)"
     },
 
     "profile": {

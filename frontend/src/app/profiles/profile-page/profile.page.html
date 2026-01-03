@@ -72,7 +72,12 @@
           </ion-textarea>
         }
         @else {  <!-- view mode -->
-          <p [innerHTML]="p.bio || `<i>(${('common.empty' | translate)})</i>`"></p>
+          @if (p.bio) {
+            <p>{{p.bio}}</p>
+          }
+          @else {
+            <p><i>{{'common.empty' | translate}}</i></p>
+          }
         }
       </ion-card>
     </ion-item-group>

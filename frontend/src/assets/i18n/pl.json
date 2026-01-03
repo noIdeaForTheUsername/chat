@@ -65,14 +65,16 @@
       "no-more-messages": "To wszystkie zapisane wiadomości z tym użytkownikiem",
       "new-messages": "Nowe wiadomości",
       "message-input": "Wpisz wiadomość...",
+      "message-deleted": "Wiadomość usunięta",
       "message-action": {
         "header": "Akcje dla zaznaczonych wiadomości...",
         "reply": "Odpowiedz",
         "download-all": "Pobierz wszystkie zaznaczone pliki",
-        "delete-all": "Usuń wszystkie zaznaczone"
+        "delete-all": "Usuń zaznaczone (swoje)"
       },
       "options": "Opcje czatu",
-      "copy-failed": "Nie udało się skopiować tekstu do schowka"
+      "copy-failed": "Nie udało się skopiować tekstu do schowka",
+      "failed-to-delete": "Nie udało się usunąć wiadomości"
     },
 
     "profile": {

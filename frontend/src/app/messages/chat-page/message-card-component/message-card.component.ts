@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, On
 import { IonCard, IonCardContent, IonIcon, IonNote } from "@ionic/angular/standalone"
 import { ChatNoteComponent } from '../info-note/chat-note.component';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Message } from '@app/messages/message.interface';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
@@ -19,8 +18,9 @@ import { firstValueFrom } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
-  static dateFormatter = Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
-  static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
+
+  // Dependencies
+  private profileService = inject(ProfileService);
 
   // INPUTS
   message = input.required<MessageView>();
@@ -33,8 +33,6 @@ export class MessageCardComponent  implements OnInit {
 
   // INTERNAL
 
-  // data
-  private profileService = inject(ProfileService);
   // appearance
   protected profile = signal<Profile | undefined>(undefined);
   protected color = signal<string | undefined>(undefined);
@@ -42,8 +40,13 @@ export class MessageCardComponent  implements OnInit {
   // selection
   private clickLock = false;
   // metadata
+  protected deleted = computed(() => !this.message().text && !this.message().file);
   protected displayMetadata = signal(false);
   protected displayedDate = signal("");
+
+  // dates formatting
+  static dateFormatter = Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
+  static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
 
   constructor() {
     effect(() => {
@@ -58,10 +61,12 @@ export class MessageCardComponent  implements OnInit {
 
   // Output actions
   protected showActionMenuInternal(id: number, eventPreventDefault?: Event) {
+    if (this.deleted()) return;  // don't allow selecting/actions on deleted messages
     if (eventPreventDefault) eventPreventDefault.preventDefault();
     this.showActionMenu.emit(id);
   }
   protected toggleItemSelectionInternal(id: number) {
+    if (this.deleted()) return;  // don't allow selecting/actions on deleted messages
     if (!this.clickLock) this.selectionService().toggleItemSelection(id);
   }
   protected repliedClickInternal(messageId: number) {

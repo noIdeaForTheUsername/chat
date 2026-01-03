@@ -124,6 +124,21 @@ ion-card.message-card {
   }
 }
 
+
+// Deleted message styling
+.deleted ion-card.message-card {
+  border: 1px solid var(--ion-text-color-step-300);
+  background-color: transparent;
+  font-style: italic;
+  font-weight: lighter;
+
+  ion-card-content {
+    color: var(--ion-text-color-step-150, #262626);
+  }
+}
+
+
+
 // Highlight-pulse animation
 
 :host .highlight-pulse {

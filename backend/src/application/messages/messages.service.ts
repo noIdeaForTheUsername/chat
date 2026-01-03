@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { Transactional } from 'typeorm-transactional';
@@ -54,5 +54,26 @@ export class MessagesService {
     const sent = await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
     return sent.globalId;
+  }
+
+  async deleteMessageById(callerId: number, conversationId: number, messageId: number) {
+    // assert this conv exists and the caller is a member of it
+    await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
+
+    const message = await this.messagesDomainService.findMessage(conversationId, messageId, true);
+    if (!message)
+      throw new NotFoundException('not-found.message');
+
+    if (message.senderId !== callerId)
+      throw new ForbiddenException("cannot-delete-not-own-message");
+    
+    await this.messagesDomainService.clearMessageById(conversationId, messageId);
+  }
+
+  async deleteMultipleMessages(callerId: number, conversationId: number, messageIds: number[]) {
+    // assert this conv exists and the caller is a member of it
+    await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
+
+    await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
   }
 }

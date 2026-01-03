@@ -5,6 +5,6 @@ export interface Message {
   senderId: number,
   timestamp: Date,
   repliedId?: number,
-  text: string,
+  text?: string,  // no text + no file means "deleted"
   file?: string, // implement in future
 }

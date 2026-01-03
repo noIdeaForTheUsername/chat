@@ -7,6 +7,8 @@ import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { MessagePreviewManager } from './message-previews';
+import { AlertType } from '@app/alerts/alert-type.enum';
+import { TranslateService } from '@ngx-translate/core';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -17,6 +19,7 @@ import { MessagePreviewManager } from './message-previews';
 export class MessageService {
 
   // DEPENDENCIES
+  private translate = inject(TranslateService);
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
   private readonly api = new BackendMessageApi();
@@ -207,6 +210,48 @@ export class MessageService {
           }];
         });
       }
+    });
+  }
+
+  deleteMessage(messageId: number) {
+    this.api.deleteMessage(messageId, this.currentConvId).subscribe({
+      next: (res) => {
+        this.deleteOwnMessageLocally(messageId);
+      },
+      error: (e) => {
+        if (e.error.message == "cannot-delete-not-own-message") return;  // silently ignore
+        this.alertService.displayMessageAlert(
+          AlertType.ERROR, this.translate.instant("page.chat.failed-to-delete"));
+      }
+    });
+  }
+
+  deleteMultipleMessages(messageIds: number[]) {
+    // const id = messageIds.shift();
+    // if (id === undefined) return;  // all done
+    // this.deleteMessage(id);
+    // setTimeout(() => this.deleteMultipleMessages(messageIds), 100);
+    this.api.deleteMultipleMessages(messageIds, this.currentConvId).subscribe({
+      next: (res) => {
+        for (const msgId of messageIds)
+          this.deleteOwnMessageLocally(msgId);
+      },
+      error: (e) => this.alertService.displayMessageAlert(
+        AlertType.ERROR, this.translate.instant("page.chat.failed-to-delete")),
+    });
+  }
+
+  private deleteOwnMessageLocally(messageId: number) {
+    const toDelete = this.displayedMessages().find(m => m.globalId === messageId);
+    if (!toDelete || !toDelete.isOwn) return;  // message not displayed or not own - don't proceed
+
+    const updatedMsg: MessageView = {
+      ...toDelete,
+      text: undefined,
+      repliedId: undefined,
+    };
+    this.displayedMessages.update((msgs) => {
+      return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
   }
 

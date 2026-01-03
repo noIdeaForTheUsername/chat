@@ -22,6 +22,7 @@ import { MessageLoadingIndicatorComponent } from './message-loading-indicator/me
 import { Conversation } from '@app/conversations/conversation.interface';
 import { Profile } from '@app/profiles/profile.interface';
 import { firstValueFrom } from 'rxjs';
+import { thumbsDownSharp } from 'ionicons/icons';
 
 
 @Component({
@@ -139,7 +140,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.scrollElement = await this.content.getScrollElement();
   }
 
-  // ------------------------------------------- MESSAGE SENDING FUNCTIONS -------------------------------------------
+  // ------------------------------------------- MESSAGE SENDING / UPDATING / FUNCTIONS -------------------------------------------
 
   onMessageFieldInput($event: Event) {
     this.enteredMessage.set(($event.target as HTMLIonTextareaElement).value ?? "");
@@ -159,6 +160,10 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   afterMessageSent() {
     this.cancelReply();
     this.correctScrollOnMessageSend();
+  }
+
+  deleteMessage(id: number) {
+    this.messageService.deleteMessage(id);
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
@@ -267,7 +272,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     elem.classList.add("highlight-pulse");
   }
 
-  // ------------------------------------------- MESSAGE SELECTION, MESSAGE ACTIONS + OPENABLE MENUS (popover, action sheet) -------------------------------------------
+  // ------------------------------------------- MESSAGE SELECTION + OPENABLE MENUS (popover, action sheet) -------------------------------------------
 
   private actionButtons = new MessageActionButtons(this.translate); 
   protected displayedMessageActionButtons = signal<any>(this.actionButtons.notOwnMessage);
@@ -292,6 +297,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.messageActionSheetOpen.set(true);
   }
 
+  // -------------------------------------------------------------------------------------- MESSAGE ACTIONS -------------------------------------------
   onMessageActionSheetDismiss(event: CustomEvent<OverlayEventDetail>) {
     this.messageActionSheetOpen.set(false);
     const action = event.detail.data;
@@ -300,7 +306,14 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (action == "selection-mode") this.selectionService.toggleSelectionMode(this.actionMessageId());
     else if (action == "reply" && this.actionMessageId()) this.replyToMessage(this.actionMessageId()!);
     else if (action == "copy") this.copySelectedMessageToClipboard(this.actionMessageId()!);
-    else if (action == "delete") {} // TODO: IMPLEMENT MESSAGE DELETION
+    else if (action == "delete") {
+      if (this.selectionService.selectionMode()) {
+        this.messageService.deleteMultipleMessages(this.selectionService.selectedIds());
+        this.selectionService.clearSelection();
+        return;
+      }
+      else this.messageService.deleteMessage(this.actionMessageId()!);
+    }
     else if (action == "download") {} // TODO: IMPLEMENT
     this.actionMessageId.set(null);
   }
