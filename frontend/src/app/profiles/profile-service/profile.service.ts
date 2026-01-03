@@ -44,15 +44,6 @@ export class ProfileService {
     );
   }
 
-  // public getProfileIfExists(id: number): Profile | undefined {
-  //   return this.profiles().get(id);
-  // }
-
-  // public getProfiles(): Map<number, Profile> {
-  //   if (!this.profilesLoaded()) throw new Error("Profiles not loaded - service users should check that first");
-  //   return this.profiles();
-  // }
-
   public getPublicUserProfiles(search: string) {
     return this.api.getSearchedProfiles(search);
   }
@@ -68,4 +59,17 @@ export class ProfileService {
     );
   }
 
+  public updateNick(profileId: number, newNick: string) {
+    return this.api.updateNick(profileId, newNick).pipe(
+      tap(() => {
+        this.profiles.update(profiles => {
+          let profile = profiles.get(profileId);
+          if (profile && profile.type == "user") {
+            profile.nick = newNick;
+          }
+          return profiles;
+        });
+      }),
+    );
+  }
 }

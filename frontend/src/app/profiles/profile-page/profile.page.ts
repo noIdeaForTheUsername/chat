@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonItemGroup, IonItemDivider, IonLabel, IonIcon, IonTextarea, IonNote, IonCard, IonCardSubtitle, IonButtons } from "@ionic/angular/standalone";
+import { IonButton, IonContent, IonItemGroup, IonItemDivider, IonLabel, IonIcon, IonTextarea, IonNote, IonCard, IonCardSubtitle } from "@ionic/angular/standalone";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
 import { Profile } from '@app/profiles/profile.interface';
@@ -21,7 +21,7 @@ import { firstValueFrom } from 'rxjs';
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   imports: [IonContent, IonItemGroup, IonItemDivider, IonLabel, IonTextarea, IonIcon, IonNote, IonButton,
-    TranslatePipe, ProfilePreviewComponent, LoadingIndicator, ProfileInfoItemComponent, RouterLink, IonCard, IonCardSubtitle, ItemButtonComponent, StandardHeaderComponent, IonButtons],
+    TranslatePipe, ProfilePreviewComponent, LoadingIndicator, ProfileInfoItemComponent, RouterLink, IonCard, IonCardSubtitle, ItemButtonComponent, StandardHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfilePage {
@@ -47,6 +47,7 @@ export class ProfilePage {
 
   // Input
   protected editedName = signal<string>("");
+  protected editedNick = signal<string>("");
   protected editedBio = signal<string>("");
 
   // Loading
@@ -69,6 +70,7 @@ export class ProfilePage {
     this.profileService.getProfileById(parseInt(idStr)).subscribe({
       next: (profile) => {
         this.profile.set(profile);
+        this.editedNick.set((profile.type === "user") ? (profile.nick ?? "") : "");
         this.editedName.set(profile.name ?? "");
         this.editedBio.set(profile.bio ?? "");
         if (profile.id === this.authService.getUserId()) {
@@ -98,6 +100,9 @@ export class ProfilePage {
         break;
       case "bio":
         this.editedBio.set(value);
+        break;
+      case "nick":
+        this.editedNick.set(value);
         break;
     }
   }
@@ -135,4 +140,15 @@ export class ProfilePage {
       error: (error) => this.alertService.displayErrorById(error.status.toString())
     });
   }
+
+  ionViewWillLeave() {
+    const profile = this.profile();
+    if (this.own() || !profile || profile.type !== "user")
+      return;
+
+    if (profile.nick !== this.editedNick()) {
+      this.profileService.updateNick(this.profile()!.id, this.editedNick()).subscribe();
+    }
+  }
+
 }

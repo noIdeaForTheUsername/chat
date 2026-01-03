@@ -41,12 +41,12 @@
         <ion-label>{{"page.profile.section.basic-info" | translate}}</ion-label>
       </ion-item-divider>
 
+      <!-- NICK -->
       @if (!own() && p.type == 'user') {
         <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick"
         [editable]="true" (valueChange)="this.onFieldInput('nick', $event)"
         [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
       }
-      
 
       <!-- USER-ONLY PROPERTIES (no group) -->
       @if (p.type == 'user') {

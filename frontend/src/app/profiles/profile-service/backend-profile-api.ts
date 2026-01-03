@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { Profile, ServerUserProfile, UserProfile } from "../profile.interface";
 import { mapUserProfile, mapProfileList } from "../profile-utils";
-import { map } from "rxjs";
+import { map, tap } from "rxjs";
 
 
 
@@ -39,5 +39,9 @@ export class BackendProfileApi {
     return this.http.patch<ServerUserProfile>("/profiles/me", profileChanges).pipe(
       map(mapUserProfile)
     );
+  }
+
+  updateNick(profileId: number, newNick: string) {
+    return this.http.patch(`/profiles/${profileId}/nick`, { nick: newNick });
   }
 }

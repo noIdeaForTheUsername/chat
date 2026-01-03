@@ -51,6 +51,7 @@ export class ProfilesController {
   }
 
   @Patch(':id/nick')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async setContactNick(
     @UserId() callerId: number,
     @Param('id', ParseIntPipe) userId: number,
