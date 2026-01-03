@@ -1,7 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { map, Observable } from "rxjs";
-import { ServerUserProfile, UserProfile } from "@app/profiles/profile.interface";
+import { OwnProfile, ServerUserProfile, UserProfile } from "@app/profiles/profile.interface";
 import { mapUserProfile } from "@app/profiles/profile-utils";
+import { UserAccount } from "./account.interface";
 
 export interface RegisterBody {
 	name?: string | null;
@@ -23,10 +24,8 @@ export class AuthBackendApi {
     this.http = http;
   }
 
-  getMe(): Observable<UserProfile> {
-    return this.http.get<ServerUserProfile>('/auth/me').pipe(
-      map(res => mapUserProfile(res))
-    );
+  getMe(): Observable<UserAccount> {
+    return this.http.get<UserAccount>('/auth/me');
   }
 
   login(body: { account: string; password: string }): Observable<null> {
@@ -41,6 +40,9 @@ export class AuthBackendApi {
     return this.http.post<null>('/auth/logout', {});
   }
 
+  editAccount(updatedFieldsObject: Partial<UserAccount>) {
+    return this.http.patch<UserAccount>("/auth/me", updatedFieldsObject);
+  }
 }
 
 

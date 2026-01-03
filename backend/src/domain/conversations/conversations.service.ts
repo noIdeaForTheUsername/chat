@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConversationType } from './entities/conversation-type.enum';
 import { Conversation } from './entities/conversation.entity';
@@ -55,8 +55,8 @@ export class ConversationsDomainService {
     return await this.participations.save(participationObj);
   }
 
-  public async createGroupConversation() {  // TODO: implement after Groups are ready on DB 
-
+  public async createGroupConversation() {  //TODO:
+    throw new BadRequestException('Not implemented yet');
   }
 
   // UPDATING
@@ -70,9 +70,4 @@ export class ConversationsDomainService {
       throw new NotFoundException('not-found.conversation');
   }
 
-  // DELETING
-
-  public async deleteConversation(conversationId: number) {
-    await this.conversations.delete({ id: conversationId });
-  }
 }

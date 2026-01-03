@@ -13,11 +13,11 @@
         <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${userId}`"/>
       }
       <!-- lock -->
-      <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
+      <!-- <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/> -->
       <!-- auto-lock toggle -->
-      <app-item-toggle [text]="'page.app-settings.auto-lock' | translate" icon="lock-closed"/>
+      <!-- <app-item-toggle [text]="'page.app-settings.auto-lock' | translate" icon="lock-closed"/> -->
       <!-- change account information -->
-      <app-item-button [text]="'page.app-settings.modify-account' | translate" icon="build"/>
+      <app-item-button routerLink="account" [text]="'page.app-settings.modify-account' | translate" icon="build"/>
       <!-- log out -->
       <app-item-button [text]="'page.app-settings.logout' | translate"
       icon="log-out" iconColor="danger" (click)="authService.logout()"/>
@@ -35,9 +35,9 @@
   </ion-item-group>
 
   <!-- DANGER ZONE -->
-  <ion-item-group>
-    <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider>
+  <!-- <ion-item-group>
+    <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider> -->
     <!-- delete all messages -->
-    <app-item-button [text]="'page.app-settings.delete-messages' | translate" icon="trash" iconColor="danger"/>
-  </ion-item-group>
+    <!-- <app-item-button [text]="'page.app-settings.delete-messages' | translate" icon="trash" iconColor="danger"/>
+  </ion-item-group> -->
 </ion-content>

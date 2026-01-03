@@ -17,7 +17,7 @@
 
 <ion-content [fullscreen]="true">
   <!-- SEARCHBAR -->
-  <ion-searchbar [debounce]="400" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
+  <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 
   @if (this.conversationsLoaded()) {
     <!-- HEADER -->

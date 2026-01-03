@@ -18,6 +18,8 @@ import { Profile } from '@app/profiles/profile.interface';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { AuthService } from '@app/auth/auth.service';
+import { AlertService } from '@app/alerts/alert-service/alert.service';
+import { AlertType } from '@app/alerts/alert-type.enum';
 
 @Component({
   selector: 'app-conversations-page',
@@ -36,6 +38,7 @@ export class ConversationsPage {
   protected profileService = inject(ProfileService);
   private translate = inject(TranslateService);
   protected authService = inject(AuthService);
+  private alertService = inject(AlertService);
   private router = inject(Router);
   protected selectionService = inject(SelectionService);
 
@@ -95,11 +98,22 @@ export class ConversationsPage {
 
   performMultiselectAction(event: CustomEvent<OverlayEventDetail>) {
     this.multiselectActionSheetOpen.set(false);
-    let action = event.detail.data;
     if (event.detail.role == "cancel" || event.detail.role == 'backdrop') return;
-    console.log("performing action: ", event.detail.data);  // TODO: implement
+    let action = event.detail.data;
 
-    if (action == "selection-mode") this.selectionService.toggleSelectionMode();
+    if (action == "selection-mode") { 
+      this.selectionService.toggleSelectionMode();
+      return;
+    }
+
+    switch (action) {
+      case "clear":  // Clear conversations
+        this.alertService.displayPromptAlert(
+          AlertType.DANGER_PROMPT,
+          this.translate.instant("prompt.clear-conversation"),
+          () => this.conversationService.clearMultipleConversationMessages(this.selectedIds()));
+        break;
+    }
   }
 
 

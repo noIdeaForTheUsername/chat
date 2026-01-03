@@ -57,6 +57,20 @@ export class AccountsDomainService {
 
   // MODIFYING/DELETING DATA
 
+  async updateAccount(id: number, updatedFields: Partial<Account>) {
+    updatedFields.id = undefined;  // prevent id change
+    updatedFields.login = undefined;  // prevent login change
+
+    await this.accounts.update(
+      { id },
+      updatedFields
+    );
+    
+    const acc = await this.accounts.findOneBy({ id });
+    if (!acc) throw new NotFoundException("not-found.account");
+    return acc;
+  }
+
   async deleteAccount(id: number) {
     await this.accounts.delete({ id });
   }

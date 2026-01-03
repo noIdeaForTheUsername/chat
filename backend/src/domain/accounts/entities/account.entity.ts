@@ -11,9 +11,9 @@ export class Account {
   @Column({ name: 'password_hash' })
   passwordHash: string;
 
-  @Column({ nullable: true })
-  email: string;
+  @Column({ nullable: true, type: "text" })
+  email: string | null;
 
-  @Column({ nullable: true, name: 'phone_number' })
-  phoneNumber: string;
+  @Column({ nullable: true, type: "varchar", name: 'phone_number' })
+  phoneNumber: string | null;
 }

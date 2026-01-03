@@ -76,4 +76,11 @@ export class MessagesService {
 
     await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
   }
+
+  async deleteAllConversationMessages(callerId: number, conversationId: number) {
+    // assert this conv exists and the caller is a member of it
+    await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
+
+    await this.messagesDomainService.clearAllConversationMessages(conversationId, callerId);
+  }
 }

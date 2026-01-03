@@ -41,4 +41,8 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./auth/register-page/register.page').then( m => m.RegisterPage)
   },
+  {
+    path: 'settings/account',
+    loadComponent: () => import('./settings/account-settings/account-settings.page').then( m => m.AccountSettingsPage)
+  },
 ];

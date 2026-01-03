@@ -35,10 +35,4 @@ export class ConversationsController {
   async acceptConversation(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
     return await this.conversationsService.acceptConversation(callerId, conversationId);
   }
-
-  @Delete(':id')
-  async deleteConversation(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
-    throw new BadRequestException('Not implemented yet');
-    return await this.conversationsService.deleteConversation(callerId, conversationId);
-  }
 }

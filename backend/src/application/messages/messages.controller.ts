@@ -49,6 +49,15 @@ export class MessagesController {
     return { id };
   }
 
+  @Delete("conversations/:id/messages/all")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteAllConversationMessages(
+    @UserId() callerId: number,
+    @Param('id', ParseIntPipe) conversationId: number
+  ) {
+    await this.messagesService.deleteAllConversationMessages(callerId, conversationId);
+  }
+
   @Delete("conversations/:id/messages/:messageId")
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMessageById(

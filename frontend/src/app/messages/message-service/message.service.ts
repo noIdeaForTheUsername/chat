@@ -221,23 +221,19 @@ export class MessageService {
       error: (e) => {
         if (e.error.message == "cannot-delete-not-own-message") return;  // silently ignore
         this.alertService.displayMessageAlert(
-          AlertType.ERROR, this.translate.instant("page.chat.failed-to-delete"));
+          AlertType.ERROR, this.translate.instant("error.failed-to-delete"));
       }
     });
   }
 
   deleteMultipleMessages(messageIds: number[]) {
-    // const id = messageIds.shift();
-    // if (id === undefined) return;  // all done
-    // this.deleteMessage(id);
-    // setTimeout(() => this.deleteMultipleMessages(messageIds), 100);
     this.api.deleteMultipleMessages(messageIds, this.currentConvId).subscribe({
       next: (res) => {
         for (const msgId of messageIds)
           this.deleteOwnMessageLocally(msgId);
       },
       error: (e) => this.alertService.displayMessageAlert(
-        AlertType.ERROR, this.translate.instant("page.chat.failed-to-delete")),
+        AlertType.ERROR, this.translate.instant("error.failed-to-delete")),
     });
   }
 

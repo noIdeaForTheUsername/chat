@@ -38,6 +38,8 @@ export class ConversationService {
     });
   }
 
+  // -------------------------------------------------- INTERNAL LOGIC ---------------------------------------------
+
   loadData() {
     // Load conversations
     this.api.getUserConversations().subscribe({
@@ -49,15 +51,6 @@ export class ConversationService {
     });
 
     this.loadMessagePreviews();
-  }
-
-  loadMessagePreviews() {
-    this.api.getMessagePreviews().subscribe({
-      next: (previewsMap) => {
-        this.conversationsMessagePreviews.set(previewsMap);
-      },
-      error: (e) => this.conversationsLoaded.set(true)
-    });
   }
 
   protected sortConversations() {
@@ -73,6 +66,26 @@ export class ConversationService {
         return msg2!.timestamp.getTime() - msg!.timestamp.getTime();
       })
     );
+  }
+
+  private displayExistingDirectConversationError(conversationId: number) {
+    this.alertService.displayPromptAlert(AlertType.PROMPT,
+      this.translate.instant("prompt.conversation-exists"),
+      () => this.router.navigate(['/chats', conversationId]),
+      undefined,
+      this.translate.instant("common.error")
+    )
+  }
+
+  // -------------------------------------------------- PUBLIC API ---------------------------------------------
+
+  loadMessagePreviews() {
+    this.api.getMessagePreviews().subscribe({
+      next: (previewsMap) => {
+        this.conversationsMessagePreviews.set(previewsMap);
+      },
+      error: (e) => this.conversationsLoaded.set(true)
+    });
   }
 
   getConversationById(id: number): Observable<Conversation> {
@@ -113,13 +126,23 @@ export class ConversationService {
       },
     });
   }
-  
-  private displayExistingDirectConversationError(conversationId: number) {
-    this.alertService.displayPromptAlert(AlertType.PROMPT,
-      this.translate.instant("prompt.conversation-exists"),
-      () => this.router.navigate(['/chats', conversationId]),
-      undefined,
-      this.translate.instant("common.error")
-    )
+
+  clearConversationMessages(conversationId: number) {
+    this.api.clearConversationMessages(conversationId).subscribe({
+      next: (res) => {
+        this.alertService.displayMessageAlert(
+          AlertType.INFO, this.translate.instant("prompt.conversation-cleared"));
+      },
+      error: (e) => this.alertService.displayMessageAlert(
+        AlertType.ERROR, this.translate.instant("error.failed-to-delete"))
+    });
+  }
+
+  clearMultipleConversationMessages(conversationIds: number[]) {  // recursive
+    const convId = conversationIds.shift();
+    console.log("Now clearing: " + convId);
+    if (convId === undefined) return;  // all done
+    this.clearConversationMessages(convId);
+    setTimeout(() => this.clearMultipleConversationMessages(conversationIds), 150);
   }
 }

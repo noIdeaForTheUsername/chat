@@ -73,8 +73,7 @@
         "delete-all": "Usuń zaznaczone (swoje)"
       },
       "options": "Opcje czatu",
-      "copy-failed": "Nie udało się skopiować tekstu do schowka",
-      "failed-to-delete": "Nie udało się usunąć wiadomości"
+      "copy-failed": "Nie udało się skopiować tekstu do schowka"
     },
 
     "profile": {
@@ -117,6 +116,12 @@
       "modify-account": "Modyfikuj dane konta",
       "logout": "Wyloguj się",
       "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach"
+    },
+
+    "account-settings": {
+      "title": "Ustawienia konta",
+      "hint": "Wpisz obecne hasło, a następnie edytuj tylko te pola, które chcesz zmienić",
+      "change-password": "Zmień hasło"
     },
 
     "security-verification": {
@@ -180,6 +185,9 @@
       "user": "Nie będziesz już otrzymywać powiadomień ani widzieć wiadomości tego użytkownika, także w czatach grupowych. Użytkownik zostanie usunięty z listy konwersacji.",
       "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
     },
+    "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
+    "conversation-cleared": "Twoje wiadomości zostały usunięte.",
+
     "conversation-exists": "Konwersacja z tym użytkownikiem już istnieje. Czy chcesz ją otworzyć?",
     "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?"
   },
@@ -242,6 +250,8 @@
     "exists": {
       "header": "Konflikt",
       "description": "Użytkownik z takim {{field}} już istnieje"
-    }
+    },
+
+    "failed-to-delete": "Nie udało się usunąć"
   }
 }

@@ -38,7 +38,7 @@
       <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider>
 
       <app-item-button [text]="'page.conversation-options.danger-zone.delete' | translate"
-        icon="trash" iconColor="danger" />
+        icon="trash" iconColor="danger" (click)="promptClearConversation()" />
       <app-item-button [text]="'page.conversation-options.danger-zone.delete-with-contact' | translate"
         icon="person-remove" iconColor="danger" />
     </ion-item-group>

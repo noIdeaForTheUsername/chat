@@ -5,6 +5,9 @@ import { AlertService } from "@app/alerts/alert-service/alert.service";
 import { AlertType } from "@app/alerts/alert-type.enum";
 import { TranslateService } from "@ngx-translate/core";
 import { AuthBackendApi, RegisterBody } from "./auth-api";
+import { OwnProfile } from "../profiles/profile.interface";
+import { catchError, tap, throwError } from "rxjs";
+import { UserAccount } from "./account.interface";
 
 
 // Manages the user authenthication state, handles redirects and errors.
@@ -24,13 +27,14 @@ export class AuthService {
   private router = inject(Router);
 
   private userId: number | null = null;
+  public readonly userAccount = signal<UserAccount | null>(null);
   public readonly processing = signal(false);
 
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
   constructor() {
     this.userId = Number(localStorage.getItem("userId")) || null;
-    this.loadAuth();
+    this.loadAuth().subscribe();
   }
 
   private setUserId(id: number | null) {
@@ -53,19 +57,24 @@ export class AuthService {
 
   // check if the user is logged in and redirect / handle error accordingly
   loadAuth() {
-    this.api.getMe().subscribe({
-      next: (res) => {
+    return this.api.getMe().pipe(
+      tap((res) => {
         this.processing.set(false);
         if (!res.id) {  // hopefully never happens
           this.alertService.displayErrorById('unknown');
           throw new Error("Successful response but server didn't return the user ID.");
         }
 
+        this.userAccount.set(res);
+        console.log(this.userAccount());
         this.setUserId(res.id);
         this.navigateIfOnOutsidePage('/chats');
-      },
-      error: (e) => this.handleGetAuthError(e)
-    });
+      }),
+      catchError((e) => {
+        this.handleGetAuthError(e);
+        return throwError(() => e);
+      })
+    );
   }
   
   // LOGIN & REGISTER
@@ -126,7 +135,13 @@ export class AuthService {
     });
   }
 
-
+  updateAccount(updatedFieldsObject: Partial<UserAccount>) {
+    return this.api.editAccount(updatedFieldsObject).pipe(
+      tap((updatedAccount) => {
+        this.userAccount.set(updatedAccount);
+      })
+    );
+  }
 
   // ERROR HANDLING
 

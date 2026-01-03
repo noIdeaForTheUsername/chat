@@ -49,4 +49,8 @@ export class BackendConversationApi {
   acceptConversation(conversationId: number) {
     return this.http.post(`/conversations/${conversationId}/accept`, {});
   }
+
+  clearConversationMessages(conversationId: number) {
+    return this.http.delete(`/conversations/${conversationId}/messages/all`);
+  }
 }

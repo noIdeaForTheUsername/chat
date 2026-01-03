@@ -5,9 +5,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Transactional } from 'typeorm-transactional';
 import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { QueryFailedError } from 'typeorm';
+import { ModifyAccountDto } from './dto/modify-account.dto';
+import { Account } from 'src/domain/accounts/entities/account.entity';
 
 @Injectable()
 export class AuthService {
+
+  private readonly bcryptSaltRounds = 12;
 
   constructor(
     private accountsService: AccountsDomainService,
@@ -21,8 +25,7 @@ export class AuthService {
     email?: string, phoneNumber?: string,
     name?: string, bio?: string
   ) {
-    const saltRounds = 12;
-    const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+    const hashedPassword = await bcrypt.hash(plainPassword, this.bcryptSaltRounds);
 
     const id = await this.createUser(login, hashedPassword, email, phoneNumber,
       emailPublic, phoneNumberPublic, name, bio);
@@ -72,5 +75,32 @@ export class AuthService {
       }
       throw err;
     }
+  }
+
+  async getAccount(callerId: number) {
+    return await this.accountsService.findAccountById(callerId, true);
+  }
+
+  @Transactional()
+  async modifyAccount(callerId: number, dto: ModifyAccountDto) {
+    const found = await this.accountsService.findAccountById(callerId);
+    if (!found || !(await bcrypt.compare(dto.currentPassword, found.passwordHash))) {
+      throw new UnauthorizedException('credentials-invalid');
+    }
+
+    let body: Partial<Account> = {
+      email: dto.email,
+      phoneNumber: dto.phoneNumber,
+      passwordHash: undefined
+    }
+
+    if (dto.password) {
+      let newPasswordHash = await bcrypt.hash(dto.password, this.bcryptSaltRounds);
+      body.passwordHash = newPasswordHash;
+    }
+
+    const updated = await this.accountsService.updateAccount(callerId, body);
+    if (!updated.email && !updated.phoneNumber)
+      throw new BadRequestException("email-or-phone-required");
   }
 }

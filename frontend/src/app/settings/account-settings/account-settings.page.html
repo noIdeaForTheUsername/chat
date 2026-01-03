@@ -1,0 +1,65 @@
+<app-standard-header [title]="'page.account-settings.title' | translate"></app-standard-header>
+
+<ion-content [fullscreen]="true">
+  @if (loading()) {
+    <app-loading-indicator size="full" [errorId]="loadErr()"/>
+  }
+  @else {
+    <form [formGroup]="form">
+    <div class="container">
+      <h1>{{ 'page.account-settings.title' | translate }}</h1>
+
+      <hr>
+      <p class="hint">{{ 'page.account-settings.hint' | translate }}</p>
+
+      <div class="floating-input">
+        <label>
+          <p>{{ 'profile.password' | translate }}:</p>
+          <input formControlName="currentPassword" type="password">
+        </label>
+      </div>
+
+      <hr>
+
+      <!-- email -->
+      <div class="floating-input">
+        <label>
+          <p>{{ 'page.register.email-input' | translate }}:</p>
+          <input formControlName="email" type="email" placeholder="example@mail.com">
+        </label>
+      </div>
+
+      <!-- phone number -->
+      <div class="floating-input">
+        <label>
+          <p>{{ 'page.register.phone-input' | translate }}:</p>
+          <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000">
+        </label>
+      </div>
+
+      <hr>
+
+      <!-- password -->
+      <div class="floating-input">
+        <label>
+          <p>{{ 'page.account-settings.change-password' | translate }}:</p>
+          <input formControlName="password" type="password">
+        </label>
+      </div>
+
+      <div class="floating-input">
+        <label>
+          <p>{{ 'profile.password-repeat' | translate }}:</p>
+          <input formControlName="passwordRepeat" type="password">
+        </label>
+      </div>
+
+      <hr>
+
+      <ion-button fill="solid" (click)="editAccount()">
+        {{ 'common.confirm' | translate }}
+      </ion-button>
+    </div>
+  </form>
+  }
+</ion-content>

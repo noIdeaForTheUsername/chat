@@ -75,8 +75,7 @@
         "delete-all": "Delete selected (yours)"
       },
       "options": "Chat options",
-      "copy-failed": "Failed to copy text to clipboard",
-      "failed-to-delete": "Failed to delete message(s)"
+      "copy-failed": "Failed to copy text to clipboard"
     },
 
     "profile": {
@@ -119,6 +118,12 @@
       "modify-account": "Modify account data",
       "logout": "Log out",
       "delete-messages": "Delete all messages in all conversations"
+    },
+
+    "account-settings": {
+      "title": "Account settings",
+      "hint": "Enter the current password, and then edit only the fields you want to change",
+      "change-password": "Change password"
     },
 
     "security-verification": {
@@ -183,6 +188,9 @@
       "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
     },
+    "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
+    "conversation-cleared": "Your messages have been cleared.",
+
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
     "start-conversation": "Start a new conversation with this user?"
   },
@@ -246,6 +254,8 @@
     "exists": {
       "header": "Conflict",
       "description": "User with this {{field}} already exists"
-    }
+    },
+
+    "failed-to-delete": "Failed to delete"
   }
 }

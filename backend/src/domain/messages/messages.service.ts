@@ -8,6 +8,8 @@ import { LatestUserMessage } from './entities/latest-user-message.entity';
 @Injectable()
 export class MessagesDomainService {
 
+  private readonly deletedMessageFields: Partial<Message> = { text: '', repliedId: null };
+
   constructor(
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
@@ -68,18 +70,23 @@ export class MessagesDomainService {
   }
 
   async clearMessageById(conversationId: number, messageId: number) {
-    await this.messageRepository.update({
-      conversationId: conversationId,
-      globalId: messageId
-    }, {
-      text: '',
-      repliedId: null,
-    });
+    await this.messageRepository.update(
+      { conversationId: conversationId, globalId: messageId},
+      this.deletedMessageFields
+    );
   }
 
   async clearMultipleMessages(conversationId: number, messageIds: number[], senderId: number) {
-    this.messageRepository.delete(
-      { conversationId: conversationId, globalId: In(messageIds), senderId: senderId }
-    )
+    await this.messageRepository.update(
+      { conversationId: conversationId, globalId: In(messageIds), senderId: senderId },
+      this.deletedMessageFields
+    );
+  }
+
+  async clearAllConversationMessages(conversationId: number, senderId: number) {
+    await this.messageRepository.update(
+      { conversationId: conversationId, senderId: senderId },
+      this.deletedMessageFields
+    );
   }
 }

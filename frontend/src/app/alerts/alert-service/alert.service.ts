@@ -39,8 +39,8 @@ export class AlertService {
     this.cancelHandler.set(() => {});
   }
 
-  private getDefaultHeader(): string {
-    switch (this.type()) {
+  private getDefaultHeader(type: AlertType): string {
+    switch (type) {
       case AlertType.INFO:
         return this.translate.instant("common.info");
       case AlertType.PROMPT: 
@@ -59,7 +59,7 @@ export class AlertService {
   displayMessageAlert(type: AlertType.INFO | AlertType.ERROR, message: string,
     handler?: Function, header?: string, subheader?: string) {
     this.type.set(type);
-    this.header.set(header || this.getDefaultHeader());
+    this.header.set(header || this.getDefaultHeader(type));
     this.subheader.set(subheader);
     this.message.set(message);
     if (handler) this.confirmHandler.set(handler);
@@ -70,7 +70,7 @@ export class AlertService {
   displayPromptAlert(type: AlertType.PROMPT | AlertType.DANGER_PROMPT, message?: string,
     confimHandler?: Function, cancelHandler?: Function, header?: string, subheader?: string) {
     this.type.set(type);
-    this.header.set(header || "Alert");
+    this.header.set(header || this.getDefaultHeader(type));
     this.subheader.set(subheader);
     this.message.set(message);
     if (confimHandler) this.confirmHandler.set(confimHandler);

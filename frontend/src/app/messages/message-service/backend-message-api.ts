@@ -52,4 +52,6 @@ export class BackendMessageApi {
       }
     });
   }
+  
+  // MASS MESSAGE DELETION IN CONVERSATION SERVICE
 }

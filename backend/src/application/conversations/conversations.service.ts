@@ -41,10 +41,10 @@ export class ConversationsService {
 
   @Transactional()
   private async createDirectConversation(callerId: number, participantId: number) {
-    // assert conversation does not already exist
+    // check if the conversation already exists
     const existing = await this.conversations.findDirectConversationBetweenUsers(callerId, participantId);
     if (existing !== null) 
-      throw new ConflictException('conversation-exists');
+      return existing;
 
     // create conversation
     const conversation = await this.conversations.createConversation(ConversationType.Direct);
@@ -62,11 +62,5 @@ export class ConversationsService {
 
   async acceptConversation(callerId: number, conversationId: number) {
     return await this.conversations.acceptConversation(callerId, conversationId);
-  }
-
-  async deleteConversation(callerId: number, conversationId: number) {
-    // assert conversation exists and user is a participant
-    const conversation = await this.conversations.findUserConversation(callerId, conversationId, true);
-    return await this.conversations.deleteConversation(conversationId);
   }
 }

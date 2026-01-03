@@ -2,18 +2,19 @@ import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } fr
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonItemGroup, IonLabel, IonItemDivider, IonItem, IonToggle, IonIcon } from '@ionic/angular/standalone';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProfilePreviewComponent } from "@app/profiles/profile-preview-component/profile-preview.component";
 import { ConversationService } from '../conversation.service';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { ItemToggleComponent } from "@app/shared/inputs/item-toggle-component/item-toggle.component";
 import { firstValueFrom } from 'rxjs';
+import { AlertType } from '@app/alerts/alert-type.enum';
 
 @Component({
   selector: 'app-conversation-settings',
@@ -27,10 +28,12 @@ import { firstValueFrom } from 'rxjs';
 })
 export class ConversationSettingsPage {
 
+  private translate = inject(TranslateService);
   private route = inject(ActivatedRoute);
   private conversationSerivce = inject(ConversationService);
   private profileService = inject(ProfileService);
   protected alertService = inject(AlertService);
+  private router = inject(Router);
 
   // protected dataLoaded = this.loadingService.dataLoaded;
   protected conversationId!: number;
@@ -62,14 +65,18 @@ export class ConversationSettingsPage {
     catch (error) {
       this.loadError.set("data-unavailable");
     }
-    
-    // if (!conversation) {
-    //   this.loadingService.reportError("not-found");
-    //   return;
-    // }
+  }
 
-    
-    // if (!this.participant) this.loadingService.reportError("not-found");
-    
+  protected promptClearConversation() {
+    this.alertService.displayPromptAlert(
+      AlertType.DANGER_PROMPT,
+      this.translate.instant('prompt.clear-conversation'),
+      () => this.clearConversation()
+    )
+  };
+
+  private clearConversation() {
+    this.conversationSerivce.clearConversationMessages(this.conversationId);
+    this.router.navigate(['/chats']);
   }
 }
