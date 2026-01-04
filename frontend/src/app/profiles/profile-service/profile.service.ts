@@ -62,13 +62,17 @@ export class ProfileService {
   public updateNick(profileId: number, newNick: string) {
     return this.api.updateNick(profileId, newNick).pipe(
       tap(() => {
-        this.profiles.update(profiles => {
-          let profile = profiles.get(profileId);
-          if (profile && profile.type == "user") {
-            profile.nick = newNick;
-          }
-          return profiles;
-        });
+        const existing = this.profiles().get(profileId);
+        if (!existing || existing.type !== 'user') return;
+
+        const newProfile: UserProfile = {
+          ...existing as UserProfile,
+          nick: newNick,
+        };
+
+        const copy = new Map(this.profiles());
+        copy.set(profileId, newProfile);
+        this.profiles.set(copy);
       }),
     );
   }

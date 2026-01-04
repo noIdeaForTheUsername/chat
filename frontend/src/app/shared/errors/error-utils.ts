@@ -13,7 +13,6 @@ export var httpCodeMap: Map<number, string> = new Map([
 
 export function getErrorMessageKey(errorCode: number | string | null, translate: TranslateService): string {
   if (errorCode !== null) {
-    console.log("parseInt('string'): ", parseInt('string'));
 
     // Numeric ID: try to map HTTP Code to error key
     let intId = typeof errorCode === 'number' ? errorCode : parseInt(errorCode);

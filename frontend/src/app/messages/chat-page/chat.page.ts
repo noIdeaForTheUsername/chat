@@ -21,7 +21,7 @@ import { MessageCardComponent } from './message-card-component/message-card.comp
 import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 import { Conversation } from '@app/conversations/conversation.interface';
 import { Profile } from '@app/profiles/profile.interface';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { thumbsDownSharp } from 'ionicons/icons';
 
 
@@ -109,12 +109,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     effect(() => {
       const msgs = this.messageService.displayedMessages();
       if (msgs.length == 0) return;
-      console.log("first message top distance before scroll fix: ", this.firstMessageTopDistance);
       if (this.firstMessageTopDistance === undefined)  // first load
         requestAnimationFrame(() => this.content.scrollToBottom(0));
       else  // next loads
         this.correctScrollOnMessageLoad();
     });
+
+    effect(() => {
+      const _ = this.profileService.profiles();
+      if (this.conversation())
+        this.loadParticipant(this.conversation()!.participantId);
+    })
   }
 
   private async loadConversationData(conversationId: number) {
@@ -123,14 +128,18 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       this.conversation.set(await firstValueFrom(
         this.conversationService.getConversationById(conversationId))
       );
-      this.participant.set(await firstValueFrom(
-        this.profileService.getProfileById(this.conversation()!.participantId)
-      ));
+      await this.loadParticipant(this.conversation()!.participantId);
     }
     catch (error) {}
     finally {
       this.metadataLoaded.set(true);
     }
+  }
+
+  private async loadParticipant(participantId: number) {
+    this.participant.set(await lastValueFrom(
+      this.profileService.getProfileById(participantId)
+    ));
   }
 
   ngAfterViewInit(): void {
@@ -194,7 +203,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
-    console.log("Scrolling to bottom. Initial loading: ", this.initialLoading());
     if (this.initialLoading()) return;
     if (loadFirstMessages && !this.displayingNewestMessages()) {
       this.messageService.loadConversationInitially(this.conversationId,
@@ -230,13 +238,10 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // Saves scroll params for correctScrollOnMessageLoad. Call just BEFORE message list updates
   saveScrollParams() {
-    console.log("saving scroll params");
     if (this.loadingMessagesAreOlder()) this.firstMessageId = "msg-" + this.messages()[0].globalId!;
     else this.firstMessageId = "msg-" + this.messages()[this.messages().length - 1].globalId!;
     const elem = document.getElementById(this.firstMessageId)!;
-    console.log("elem: ", elem, " id: ", this.firstMessageId);
     this.firstMessageTopDistance = elem.getBoundingClientRect().top;
-    console.log("recorded top distance: ", this.firstMessageTopDistance);
   }
 
   // Corrects scroll so the screen doesn't jump on msg reload. Call just after message list updates.

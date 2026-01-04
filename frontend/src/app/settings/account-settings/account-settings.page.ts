@@ -91,8 +91,8 @@ export class AccountSettingsPage implements OnInit {
         phoneNumber: account.phoneNumber
       })
     }
-    catch (e) {
-      this.loadErr.set("data-unavailable");
+    catch (e: any) {
+      this.loadErr.set(e.error?.message ?? e.status ?? 'data-unavailable');
     }
   }
 

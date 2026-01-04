@@ -37,7 +37,8 @@ export class ConversationSettingsPage {
 
   // protected dataLoaded = this.loadingService.dataLoaded;
   protected conversationId!: number;
-  protected participant?: Profile;
+  protected participantId!: number;
+  protected participant = signal<Profile | undefined>(undefined);
   protected dataLoaded = signal(false);
   protected loadError = signal<string | number | null>(null);
 
@@ -54,17 +55,26 @@ export class ConversationSettingsPage {
     }
 
     this.loadData(this.conversationId);
+    effect(() => {
+      const _ = this.profileService.profiles();
+      if (this.conversationId)
+        this.loadParticipant(this.participantId);
+    });
   }
 
   private async loadData(conversationId: number) {
     try {
       const conversation = await firstValueFrom(this.conversationSerivce.getConversationById(conversationId));
-      this.participant = await firstValueFrom(this.profileService.getProfileById(conversation?.participantId));
+      this.participantId = conversation.participantId;
+      await this.loadParticipant(this.participantId);
       this.dataLoaded.set(true);
     }
     catch (error) {
       this.loadError.set("data-unavailable");
     }
+  }
+  private async loadParticipant(participantId: number) {
+    this.participant.set(await firstValueFrom(this.profileService.getProfileById(participantId)));
   }
 
   protected promptClearConversation() {

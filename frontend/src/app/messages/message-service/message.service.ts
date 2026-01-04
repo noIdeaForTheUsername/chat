@@ -104,8 +104,6 @@ export class MessageService {
     this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, messageAmount, older, startMessageId).subscribe({
       next: (val: Message[]) => {
         // execute passed callback
-        console.log("loadConvMessages complete, executing callback");
-        console.log("callback: ", callBeforeComplete);
         callBeforeComplete();
 
         val = val.reverse();  // reverse to be from oldest to newest
@@ -121,8 +119,6 @@ export class MessageService {
           newArr.splice(0, overflow);
         }
 
-        console.log("eeeeeeeee");
-
         // Map Message -> MessageView
         this.displayedMessages.set(newArr.map(msg =>
           messageToMessageView(msg, this.authService.getUserIdOrError())));
@@ -132,7 +128,6 @@ export class MessageService {
         this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
         this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
         this.displayingOldestMessages.set(older && val.length < messageAmount);
-        console.log("oldest: ", this.displayingOldestMessages(), " newest: ", this.displayingNewestMessages());
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);

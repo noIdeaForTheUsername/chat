@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
   imports: [IonAlert],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AlertWindowComponent implements OnInit {
+export class AlertWindowComponent {
 
   protected alertService = inject(AlertService);
   private translate = inject(TranslateService);
@@ -21,10 +21,6 @@ export class AlertWindowComponent implements OnInit {
   protected buttons = computed(() => this.getButtons(this.type()));
 
   constructor() { }
-
-  ngOnInit() {
-    console.log(this.type());
-  }
 
   onDismiss() {
     this.alertService.setAlertDismissed();

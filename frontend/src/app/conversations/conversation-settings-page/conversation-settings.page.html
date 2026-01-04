@@ -2,7 +2,7 @@
 
 <ion-content [fullscreen]="true" class="ion-padding">
   @if (dataLoaded()) {
-    <app-profile-preview [profile]="participant!" [viewProfileButton]="true" />
+    <app-profile-preview [profile]="participant()" [viewProfileButton]="true" />
     <!-- GENERAL SETTINGS -->
     <ion-item-group>
       <ion-item-divider><ion-label>{{"page.conversation-options.general.header" | translate}}</ion-label></ion-item-divider>
@@ -18,7 +18,7 @@
       <ion-item-divider><ion-label>{{"common.actions" | translate}}</ion-label></ion-item-divider> 
 
       <!-- verify security -->
-      <app-item-button [text]="'profile.verify-security' | translate" [routerLink]="['/profiles', participant!.id, 'security-verification']"
+      <app-item-button [text]="'profile.verify-security' | translate" [routerLink]="['/profiles', participant()!.id, 'security-verification']"
         icon="lock-closed" />
       <!-- block -->
       <app-item-button (click)="alertService.displayBlockConfirm(conversationId)" [text]="'profile.block' | translate"
@@ -39,8 +39,8 @@
 
       <app-item-button [text]="'page.conversation-options.danger-zone.delete' | translate"
         icon="trash" iconColor="danger" (click)="promptClearConversation()" />
-      <app-item-button [text]="'page.conversation-options.danger-zone.delete-with-contact' | translate"
-        icon="person-remove" iconColor="danger" />
+      <!-- <app-item-button [text]="'page.conversation-options.danger-zone.delete-with-contact' | translate"
+        icon="person-remove" iconColor="danger" /> -->
     </ion-item-group>
   }
   @else {

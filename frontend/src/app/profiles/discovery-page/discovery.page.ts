@@ -61,7 +61,6 @@ export class DiscoveryPage implements OnDestroy {
         this.searchLoading.set(false);
       },
       error: (err) => {
-        console.log("err.status", err.status);
         this.loadError.set(err.status);
         // this.searchLoading.set(false);
       }

@@ -12,8 +12,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const alertService = inject(AlertService);
 
   // don't mess with auth service's job
-  console.log("authUrl: ", authUrl);
-  console.log("req.url: ", req.url);
   if (req.url.startsWith(authUrl)) return next(req);
 
 

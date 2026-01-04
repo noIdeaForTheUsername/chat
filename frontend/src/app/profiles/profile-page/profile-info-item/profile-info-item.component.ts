@@ -28,14 +28,12 @@ export class ProfileInfoItemComponent {
   private alertService = inject(AlertService);
 
   protected onValueChange(newValue: string | number | null | undefined) {
-    console.log("New value: ", newValue);
     if (typeof newValue === "number")
       newValue = newValue.toString();
     this.valueChange.emit(newValue || "");
   }
 
   protected displayInfoBox() {
-    console.log("click!");
     this.alertService.displayMessageAlert(AlertType.INFO, this.infoBoxContent(), undefined, this.title(), undefined);
   }
 }

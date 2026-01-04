@@ -140,7 +140,6 @@ export class ConversationService {
 
   clearMultipleConversationMessages(conversationIds: number[]) {  // recursive
     const convId = conversationIds.shift();
-    console.log("Now clearing: " + convId);
     if (convId === undefined) return;  // all done
     this.clearConversationMessages(convId);
     setTimeout(() => this.clearMultipleConversationMessages(conversationIds), 150);

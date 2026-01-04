@@ -34,7 +34,7 @@ export class AuthController {
     this.sendJwtCookie(res, authJwt);
     return { id: sub };
   }
-
+ 
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Res({ passthrough: true }) res: Response) {

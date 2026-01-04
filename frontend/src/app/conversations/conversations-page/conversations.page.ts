@@ -137,13 +137,13 @@ export class ConversationsPage {
   ];
 
   public multiselectActionButtons = [
-    {
-      text: this.translate.instant("page.conversations.conversation-action.delete"),
-      icon: "person-remove",
-      role: "destructive",
-      cssClass: "danger-text",
-      data: "delete"
-    },
+    // {
+    //   text: this.translate.instant("page.conversations.conversation-action.delete"),
+    //   icon: "person-remove",
+    //   role: "destructive",
+    //   cssClass: "danger-text",
+    //   data: "delete"
+    // },
     {
       text: this.translate.instant("page.conversations.conversation-action.clear-messages"),
       icon: "trash-bin",

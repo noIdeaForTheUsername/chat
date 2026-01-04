@@ -34,6 +34,11 @@ export class AuthService {
 
   constructor() {
     this.userId = Number(localStorage.getItem("userId")) || null;
+    // If the user was logged in before, don't even wait for auth check 
+    // (server down, session expired, etc - this will be handled later with alerts)
+    if (this.userId && this.router.url === '/') {  
+      this.navigateIfOnOutsidePage('/chats');
+    }
     this.loadAuth().subscribe();
   }
 
@@ -66,7 +71,6 @@ export class AuthService {
         }
 
         this.userAccount.set(res);
-        console.log(this.userAccount());
         this.setUserId(res.id);
         this.navigateIfOnOutsidePage('/chats');
       }),

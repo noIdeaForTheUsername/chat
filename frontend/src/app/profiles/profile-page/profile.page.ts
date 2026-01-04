@@ -92,7 +92,6 @@ export class ProfilePage {
   // ---------------------------------------------- UI ACTIONS ----------------------------------------------
 
   onFieldInput(fieldName: string, value: string | null | undefined) {
-    console.log(`Field ${fieldName} changed: `, value);
     if (!value) value = "";
     switch (fieldName) {
       case "name":
@@ -122,7 +121,6 @@ export class ProfilePage {
   }
 
   saveOwnProfileChanges() {
-    console.log("Saving changes!");
     this.editMode.set(false);
     this.profileSaving.set(true);
     this.profileService.editOwnProfile({
@@ -141,7 +139,7 @@ export class ProfilePage {
     });
   }
 
-  ionViewWillLeave() {
+  private updateNick() {
     const profile = this.profile();
     if (this.own() || !profile || profile.type !== "user")
       return;
@@ -151,4 +149,7 @@ export class ProfilePage {
     }
   }
 
+  ionViewWillLeave() {
+    this.updateNick();
+  }
 }

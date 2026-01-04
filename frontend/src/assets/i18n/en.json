@@ -49,8 +49,7 @@
       },
       "conversation-action": {
         "header": "Selected conversations...",
-        "delete": "Delete all selected messages and contacts permanently",
-        "clear-messages": "Clear all messages while keeping contacts"
+        "clear-messages": "Clear my messages in selected"
       }
     },
 

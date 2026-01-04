@@ -47,8 +47,7 @@
       },
       "conversation-action": {
         "header": "Zaznaczone konwersacje...",
-        "delete": "Usuń trwale wszystkie zaznaczone wiadomości i kontakty",
-        "clear-messages": "Wyczyść wszystkie wiadomości, pozostawiając kontakty"
+        "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"
       }
     },
 
