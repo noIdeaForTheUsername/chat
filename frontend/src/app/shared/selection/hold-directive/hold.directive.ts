@@ -50,16 +50,4 @@ export class HoldDirective {
       + Math.abs(touch.clientY - this.touchStartY) > this.touchMoveTolerancePx)
       this.cancelHoldDetection(); 
   }
-
-  // @HostListener("click", ['$event'])
-  // onClick(event: MouseEvent) {
-  //   console.log("onclick!")
-  //   if (this.held) {
-  //     console.log("onclick: held, cancelling!");
-  //     event.stopImmediatePropagation();
-  //     event.preventDefault();
-  //     this.held = false;
-  //   }
-  //   return false;
-  // }
 }

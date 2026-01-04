@@ -122,10 +122,9 @@ export class ProfileService {
   }
 
   private updateProfileInMemory(updatedProfile: Profile) {
-    const copy = {...updatedProfile};
-    this.profiles.update(profiles => {
-      profiles.set(updatedProfile.id, copy);
-      return profiles;
-    });
+    const itemCopy = {...updatedProfile};
+    this.profiles().set(updatedProfile.id, itemCopy);
+    let arrayCopy = [...this.profiles()];
+    this.profiles.set(new Map(arrayCopy));
   }
 }

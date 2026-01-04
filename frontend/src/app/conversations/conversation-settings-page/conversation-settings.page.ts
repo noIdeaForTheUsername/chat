@@ -13,7 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { ItemToggleComponent } from "@app/shared/inputs/item-toggle-component/item-toggle.component";
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertType } from '@app/alerts/alert-type.enum';
 
 @Component({
@@ -35,16 +35,12 @@ export class ConversationSettingsPage {
   protected alertService = inject(AlertService);
   private router = inject(Router);
 
-  // protected dataLoaded = this.loadingService.dataLoaded;
   protected conversationId!: number;
   protected participantId!: number;
   protected participant = signal<Profile | undefined>(undefined);
   protected dataLoaded = signal(false);
   protected loadError = signal<string | number | null>(null);
 
-  // IonViewWillEnter() {
-  //   this.loadingService.setDataSources(this.conversationSerivce, this.profileService);
-  // }
 
   constructor() {
     let idStr = this.route.snapshot.paramMap.get('id');
@@ -57,14 +53,14 @@ export class ConversationSettingsPage {
     this.loadData(this.conversationId);
     effect(() => {
       const _ = this.profileService.profiles();
-      if (this.conversationId)
+      if (this.participantId)
         this.loadParticipant(this.participantId);
     });
   }
 
   private async loadData(conversationId: number) {
     try {
-      const conversation = await firstValueFrom(this.conversationSerivce.getConversationById(conversationId));
+      const conversation = await lastValueFrom(this.conversationSerivce.getConversationById(conversationId));
       this.participantId = conversation.participantId;
       await this.loadParticipant(this.participantId);
       this.dataLoaded.set(true);
@@ -74,7 +70,7 @@ export class ConversationSettingsPage {
     }
   }
   private async loadParticipant(participantId: number) {
-    this.participant.set(await firstValueFrom(this.profileService.getProfileById(participantId)));
+    this.participant.set(await lastValueFrom(this.profileService.getProfileById(participantId)));
   }
 
   protected promptClearConversation() {

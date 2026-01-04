@@ -31,11 +31,6 @@ export class ConversationService {
 
   constructor(private profileService: ProfileService) {
     this.loadData();
-    effect(() => {
-      // const _ = this.conversations();
-      // const __ = this.conversationsMessagePreviews();
-      // this.sortConversations();
-    });
   }
 
   // -------------------------------------------------- INTERNAL LOGIC ---------------------------------------------
@@ -44,7 +39,6 @@ export class ConversationService {
     // Load conversations
     this.api.getUserConversations().subscribe({
       next: (val) => {
-        console.log(val);
         this.conversations.set(val);
         this.conversationsLoaded.set(true);
       },

@@ -206,6 +206,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   onMessageRepliedClick(messageId: number) {
+    // Angular logs warnings (NG0953) without this "setTimeout" so I guess I'll keep it here
     setTimeout(() => this.scrollToMessage(messageId), 0);
   }
 
@@ -222,7 +223,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   scrollToMessage(messageId: number, alwaysScroll = false) {
-    console.log("scrollToMessage called for messageId:", messageId);
     if (messageId <= this.messages()[this.messages().length - 1].globalId && messageId >= this.messages()[0].globalId) {
       const elem = document.getElementById("msg-" + messageId);
       if (elem === null) return;
@@ -244,7 +244,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       this.messageService.loadMessagesByStartId(messageId, false,
         () => requestAnimationFrame(
           () => requestAnimationFrame(
-            () => this.scrollToMessage(messageId, true))));  // if somebody reads this: works. don't complain.
+            () => this.scrollToMessage(messageId, true))));  // if somebody reads this: it works. don't complain.
     }
   }
 
@@ -286,9 +286,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // ------------------------------------------- APPEARANCE FUNCTIONS -------------------------------------------
 
   highlightElement(elem: HTMLElement) {
-    elem.classList.remove("highlight-pulse");
-    void elem.offsetWidth;
+    if (elem.classList.contains("highlight-pulse")) return;
     elem.classList.add("highlight-pulse");
+    setTimeout(() => elem.classList.remove("highlight-pulse"), 1000);
   }
 
   // ------------------------------------------- MESSAGE SELECTION + OPENABLE MENUS (popover, action sheet) -------------------------------------------

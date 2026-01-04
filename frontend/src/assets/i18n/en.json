@@ -51,7 +51,8 @@
         "header": "Selected conversations...",
         "clear-messages": "Clear my messages in selected"
       },
-      "toggle-blocked-conversations": "Show/hide blocked conversations"
+      "toggle-blocked-conversations": "Show/hide blocked conversations",
+      "unblock-hint": "Blocked - click to unblock the user"
     },
 
     "discovery": {

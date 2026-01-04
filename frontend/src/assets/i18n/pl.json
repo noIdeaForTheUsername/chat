@@ -49,7 +49,8 @@
         "header": "Zaznaczone konwersacje...",
         "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"
       },
-      "toggle-blocked-conversations": "Pokaż/ukryj zablokowane konwersacje"
+      "toggle-blocked-conversations": "Pokaż/ukryj zablokowane konwersacje",
+      "unblock-hint": "Zablokowany/a - kliknij by odblokować"
     },
 
     "discovery": {
@@ -185,6 +186,7 @@
       "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Możesz go odblokować później z listy konwersacji. Jeśli chcesz również wyczyścić swoje wiadomości, zrób to przed zablokowaniem.",
       "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
     },
+    "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
     "conversation-cleared": "Twoje wiadomości zostały usunięte.",
 

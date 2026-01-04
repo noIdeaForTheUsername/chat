@@ -7,12 +7,13 @@ import { SelectionService } from '@app/shared/selection/selection-service/select
 import { IonAvatar, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
 import { ConversationView } from '../conversation-view.interface';
 import { ProfileService } from '@src/app/profiles/profile-service/profile.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-conversation-item',
   templateUrl: './conversation-item.component.html',
   styleUrls: ['./conversation-item.component.scss'],
-  imports: [IonAvatar, IonItem, IonIcon, IonLabel, VisibleNamePipe, HoldDirective],
+  imports: [IonAvatar, IonItem, IonIcon, IonLabel, VisibleNamePipe, HoldDirective, TranslatePipe],
 })
 export class ConversationItemComponent {
   private router = inject(Router);

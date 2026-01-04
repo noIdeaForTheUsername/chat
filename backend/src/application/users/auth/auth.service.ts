@@ -7,6 +7,7 @@ import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { QueryFailedError } from 'typeorm';
 import { ModifyAccountDto } from './dto/modify-account.dto';
 import { Account } from 'src/domain/accounts/entities/account.entity';
+import { jwtSecret } from './jwt-constants';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,11 @@ export class AuthService {
     private accountsService: AccountsDomainService,
     private profilesService: ProfilesDomainService,
     private jwtService: JwtService
-  ) {}
+  ) {
+    if (jwtSecret === undefined) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+  }
 
 
   async register(login: string, plainPassword: string,

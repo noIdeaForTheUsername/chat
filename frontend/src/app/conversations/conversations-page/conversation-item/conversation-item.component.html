@@ -15,7 +15,7 @@
     
     <!-- Bottom text (message preview) -->
     @if (blocked()) {
-      <p><i>Blocked - click to unblock the user</i></p>
+      <p><i>{{ "page.conversations.unblock-hint" | translate }}</i></p>
     } @else {
       <p>{{conversationView().lastMessageText || "─"}}</p>  <!--the dots look nice and prevent the list elements from suddenly changing their heights after loading-->
     }
