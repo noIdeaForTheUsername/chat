@@ -6,14 +6,13 @@ import { tap } from "rxjs";
 
 // Detects Unauthorized HTTP responses (401), only from the backend API, and redirects to login page
 
-const authUrl = `${environment.apiUrl}/auth`.replace("//auth", "/auth");
+const authUrl = `${environment.apiUrl}/auth`.replace("//api", "/api").replace("//auth", "/auth");
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const alertService = inject(AlertService);
 
   // don't mess with auth service's job
   if (req.url.startsWith(authUrl)) return next(req);
-
 
   return next(req).pipe(
     tap({

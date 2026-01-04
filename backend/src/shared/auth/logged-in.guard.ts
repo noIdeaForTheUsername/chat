@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { jwtSecret } from './jwt-constants';
 import { Reflector } from '@nestjs/core';
+import { jwtSecret } from 'src/application/users/auth/jwt-constants';
 
 @Injectable()
 export class LoggedInGuard implements CanActivate {
@@ -30,8 +30,11 @@ export class LoggedInGuard implements CanActivate {
 
   private extractTokenFromRequest(req: Request, exceptionOnFail = true): string {
     const jwt = req.cookies?.['authJwt'];
-    if (!jwt && exceptionOnFail)
+    if (!jwt && exceptionOnFail) {
+      console.log("Token missing");
       throw new UnauthorizedException('token-invalid');
+    }
+      
     return jwt;
   }
 }
