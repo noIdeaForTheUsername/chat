@@ -23,12 +23,11 @@
 
 <ion-content [fullscreen]="false" fixedSlotPlacement="before" [scrollEvents]="true" (ionScroll)="onScroll($any($event))">
   <!-- CONVERSATION PRELOADING SCREEN -->
-  @if (initialLoading()) {
-    <app-loading-indicator [errorId]="loadError()" size="full"></app-loading-indicator>
+  @if (initialLoading() || (messageLoadError() !== null && messages().length === 0)) {
+    <app-loading-indicator [errorId]="loadError() ?? messageLoadError()" size="full"></app-loading-indicator>
   }
   <!-- NORMAL VIEW -->
   @else {
-
     <!-- TOP PROFILE PREVIEW (if scrolled to the very begin of the chat) -->
     @if (displayingOldestMessages() && !messageLoading()) {
       <app-profile-preview [profile]="participant" [viewProfileButton]="true"></app-profile-preview>
@@ -108,6 +107,7 @@
         <ion-textarea #msg_field
           fill="solid" [autoGrow]="true"
           (ionInput)="onMessageFieldInput($event)"
+          (keydown)="onMessageFieldKeydown($event)"
           [placeholder]="'page.chat.message-input' | translate"
           maxlength="700"
           rows="1"

@@ -1,7 +1,7 @@
 export interface ProfileBase {
   type: 'user' | 'group',
   id: number,
-  profilePicture?: string, // change in the future
+  profilePicture?: string, // not implemented; probably to be removed
   bio?: string
 }
 
@@ -16,6 +16,7 @@ export interface UserProfile extends ProfileBase {  // only not-own
   login: string,
   nick?: string,
   name?: string,  // may include surname
+  blocked: boolean,
 }
 
 export interface GroupProfile extends ProfileBase {

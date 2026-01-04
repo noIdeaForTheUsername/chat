@@ -14,6 +14,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { AuthService } from '@app/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
+import { AlertType } from '@src/app/alerts/alert-type.enum';
 
 @Component({
   selector: 'app-profile-page',
@@ -137,6 +138,12 @@ export class ProfilePage {
       },
       error: (error) => this.alertService.displayErrorById(error.status.toString())
     });
+  }
+
+  promptBlockUser() {
+    const profile = this.profile();
+    if (!profile || this.own() || profile.type !== "user") return;
+    this.profileService.promptBlockUser(profile.id);
   }
 
   private updateNick() {

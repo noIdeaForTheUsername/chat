@@ -5,7 +5,6 @@ import { AlertService } from "@app/alerts/alert-service/alert.service";
 import { AlertType } from "@app/alerts/alert-type.enum";
 import { TranslateService } from "@ngx-translate/core";
 import { AuthBackendApi, RegisterBody } from "./auth-api";
-import { OwnProfile } from "../profiles/profile.interface";
 import { catchError, tap, throwError } from "rxjs";
 import { UserAccount } from "./account.interface";
 
@@ -19,17 +18,23 @@ import { UserAccount } from "./account.interface";
   providedIn: 'root'
 })
 export class AuthService {
-
+  // Dependencies
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
   private api = new AuthBackendApi(this.http);
   private router = inject(Router);
 
+  // Settings
+  // Pages that are publically accessible and considered "outside" of the main app
+  private readonly outsidePages = ['/', '/login', '/register'];
+
+  // User data
   private userId: number | null = null;
   public readonly userAccount = signal<UserAccount | null>(null);
-  public readonly processing = signal(false);
 
+  // State
+  public readonly processing = signal(false);
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
   constructor() {
@@ -41,6 +46,8 @@ export class AuthService {
     }
     this.loadAuth().subscribe();
   }
+
+  // USER ID MANAGEMENT
 
   private setUserId(id: number | null) {
     this.userId = id;
@@ -81,7 +88,7 @@ export class AuthService {
     );
   }
   
-  // LOGIN & REGISTER
+  // LOGIN & REGISTER & LOGOUT
 
   login(body: { account: string; password: string }) {
     this.processing.set(true);
@@ -126,7 +133,6 @@ export class AuthService {
   }
 
 
-  // LOGOUT
   logout() {
     this.api.logout().subscribe({
       next: () => {
@@ -139,6 +145,9 @@ export class AuthService {
     });
   }
 
+
+  // ACCOUNT DATA MODIFICATIONS
+
   updateAccount(updatedFieldsObject: Partial<UserAccount>) {
     return this.api.editAccount(updatedFieldsObject).pipe(
       tap((updatedAccount) => {
@@ -146,6 +155,7 @@ export class AuthService {
       })
     );
   }
+
 
   // ERROR HANDLING
 
@@ -219,8 +229,8 @@ export class AuthService {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
   }
 
-  private navigateIfOnOutsidePage(destination: string) {  // loading, login, register
-    if (this.router.url === '/' || this.router.url === '/login' || this.router.url === '/register') {
+  private navigateIfOnOutsidePage(destination: string) {
+    if (this.outsidePages.includes(this.router.url)) {
       this.router.navigate([destination]);
     }
   }

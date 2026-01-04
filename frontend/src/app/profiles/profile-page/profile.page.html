@@ -97,7 +97,7 @@
         <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
       
         <!-- block button -->
-        <app-item-button (click)="alertService.displayBlockConfirm(this.profile()!.id)" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
+        <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
 
       </ion-item-group>
     }

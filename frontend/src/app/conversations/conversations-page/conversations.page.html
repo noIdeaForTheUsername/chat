@@ -66,13 +66,16 @@
     [header]="'page.conversations.conversation-action.header' | translate">
   </ion-action-sheet>
 
-  <!-- CORNER MENU (we can show it even if conversations are not loaded) -->
+  <!-- CORNER MENU -->
   <app-corner-menu #corner_menu>
     <app-item-button [text]="'common.settings' | translate" icon="settings" [routerLink]="'/settings'"/>
     @if (authService.getUserId()) {
       <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${authService.getUserId()}`"/>
     }
-    <app-item-button [text]="'common.selection-mode' | translate" icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
+    <app-item-button [text]="'page.conversations.toggle-blocked-conversations' | translate"
+      icon="ban" (click)="toggleBlockedConversations()"/>
+    <app-item-button [text]="'common.selection-mode' | translate"
+      icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
     <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
   </app-corner-menu>
 

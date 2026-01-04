@@ -53,6 +53,7 @@ export class MessagesService {
 
     const sent = await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
+    await this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, sent.globalId);
     return sent.globalId;
   }
 

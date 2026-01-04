@@ -1,6 +1,7 @@
 <ion-item [button]="true" class="rounded" (click)="navigate()" (setClickLock)="setClickLock($event)"
-  [class.unread]="conversationView().unreadMessages"
+  [class.unread]="conversationView().unreadMessages && !blocked()"
   [class.selected]="selectionService().selectedIds().includes(conversationView().id)"
+  [class.blocked]="blocked()"
   holdDirective (hold)="onConversationHold(conversationView().id)"
   (click)="onConversationClick(conversationView().id)">
   <ion-avatar aria-hidden="true" slot="start"> 
@@ -9,8 +10,15 @@
 
   <!-- CONVERSATION INFO -->
   <ion-label class="ion-text-nowrap">
+    <!-- Title (username) -->
     <h2>{{ this.profile() | visibleName: true }}</h2>
-    <p>{{conversationView().lastMessageText || "─"}}</p>  <!--the dots look nice and prevent the list elements from suddenly changing their heights after loading-->
+    
+    <!-- Bottom text (message preview) -->
+    @if (blocked()) {
+      <p><i>Blocked - click to unblock the user</i></p>
+    } @else {
+      <p>{{conversationView().lastMessageText || "─"}}</p>  <!--the dots look nice and prevent the list elements from suddenly changing their heights after loading-->
+    }
   </ion-label>
   @if (conversationView().unreadMessages) { <ion-icon name="ellipse" slot="end" color="primary"></ion-icon> }
 </ion-item>

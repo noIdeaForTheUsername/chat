@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { ConversationType } from 'src/domain/conversations/entities/conversation-type.enum';
+import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { Transactional } from 'typeorm-transactional';
 
@@ -9,6 +10,7 @@ import { Transactional } from 'typeorm-transactional';
 export class ConversationsService {
   constructor(
     private readonly conversations: ConversationsDomainService,
+    private readonly messages: MessagesDomainService,
     private readonly profiles: ProfilesDomainService,
     private readonly contacts: ContactsDomainService,
   ) {}
@@ -62,5 +64,13 @@ export class ConversationsService {
 
   async acceptConversation(callerId: number, conversationId: number) {
     return await this.conversations.acceptConversation(callerId, conversationId);
+  }
+
+  async acknowledgeConversationMessages(callerId: number, conversationId: number) {
+    const maxIdMsg = await this.messages.findMostRecentMessageInConversation(conversationId);
+    if (maxIdMsg === null) return;  // no messages in conv, ignore and return success
+
+    // No need to verify participation manually - setNewestReadMessage only modifies the Participation record
+    return await this.conversations.setNewestReadMessage(callerId, conversationId, maxIdMsg.globalId);
   }
 }

@@ -44,4 +44,12 @@ export class BackendProfileApi {
   updateNick(profileId: number, newNick: string) {
     return this.http.patch(`/profiles/${profileId}/nick`, { nick: newNick });
   }
+
+  blockUser(profileId: number) {
+    return this.http.post(`/profiles/${profileId}/block`, {});
+  }
+
+  unblockUser(profileId: number) {
+    return this.http.post(`/profiles/${profileId}/unblock`, {});
+  }
 }

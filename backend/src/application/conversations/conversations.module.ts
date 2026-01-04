@@ -4,9 +4,10 @@ import { ConversationsService } from './conversations.service';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
 import { ProfilesDomainModule } from 'src/domain/profiles/profiles.module';
 import { ContactsDomainModule } from 'src/domain/contacts/contacts.module';
+import { MessagesDomainModule } from 'src/domain/messages/messages.module';
 
 @Module({
-  imports: [ConversationsDomainModule, ProfilesDomainModule, ContactsDomainModule],
+  imports: [ConversationsDomainModule, ProfilesDomainModule, ContactsDomainModule, MessagesDomainModule],
   controllers: [ConversationsController],
   providers: [ConversationsService],
 })

@@ -116,9 +116,11 @@ ion-card.message-card {
     }
   }
 
+  // Message text
   ion-card-content.message-text {
     width: 100%;
     display: block;
+    white-space: pre-wrap;
 
     padding: 6px 10px;
   }

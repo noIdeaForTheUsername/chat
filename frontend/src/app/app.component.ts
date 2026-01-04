@@ -9,7 +9,7 @@ import { add, alertCircleOutline, arrowDown, arrowRedo, attach, ban, build, call
   ellipsisHorizontalCircle,
   flame,
   handLeft,
-  help, images, informationCircle, key, language, lockClosed, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove, search, settings, trash, trashBin, wifiOutline } from 'ionicons/icons';
+  help, helpCircle, images, key, language, lockClosed, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove, search, settings, trash, trashBin, wifiOutline } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
 import { LanguageService } from './i18n/language.service';
 
@@ -20,7 +20,7 @@ import { LanguageService } from './i18n/language.service';
 })
 export class AppComponent {
   constructor(private translate: TranslateService, private languageService: LanguageService) {
-    addIcons({ add, paperPlane, attach, arrowDown, alertCircleOutline, wifiOutline, informationCircle, ban,
+    addIcons({ add, paperPlane, attach, arrowDown, alertCircleOutline, wifiOutline, helpCircle, ban,
       lockClosed, chatbubbleEllipses, pencil, key, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
       call, search, images, people, notifications, download, person, personAdd, personRemove,

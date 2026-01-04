@@ -46,7 +46,9 @@ export function serverToClientUserProfile(profile: UserProfile): UserProfile {
     type: profile.type,
     login: profile.login,
     name: profile.name,
-    bio: profile.bio
+    bio: profile.bio,
+    blocked: profile.blocked,
+    nick: profile.nick
   };
 }
 

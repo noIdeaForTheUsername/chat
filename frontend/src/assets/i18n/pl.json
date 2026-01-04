@@ -48,7 +48,8 @@
       "conversation-action": {
         "header": "Zaznaczone konwersacje...",
         "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"
-      }
+      },
+      "toggle-blocked-conversations": "Pokaż/ukryj zablokowane konwersacje"
     },
 
     "discovery": {
@@ -119,8 +120,8 @@
 
     "account-settings": {
       "title": "Ustawienia konta",
-      "hint": "Wpisz obecne hasło, a następnie edytuj tylko te pola, które chcesz zmienić",
-      "change-password": "Zmień hasło"
+      "hint": "Wpisz obecne hasło, po czym edytuj tylko te pola, które chcesz zmienić. Następnie potwierdź przyciskiem na dole strony.",
+      "new-password": "Nowe hasło (jeśli chcesz je zmienić)"
     },
 
     "security-verification": {
@@ -181,7 +182,7 @@
 
   "prompt": {
     "block": {
-      "user": "Nie będziesz już otrzymywać powiadomień ani widzieć wiadomości tego użytkownika, także w czatach grupowych. Użytkownik zostanie usunięty z listy konwersacji.",
+      "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Możesz go odblokować później z listy konwersacji. Jeśli chcesz również wyczyścić swoje wiadomości, zrób to przed zablokowaniem.",
       "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
     },
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",

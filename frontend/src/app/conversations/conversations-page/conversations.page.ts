@@ -51,33 +51,63 @@ export class ConversationsPage {
   protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsMessagePreviews;
   protected profiles: Signal<Map<number, Profile>> = this.profileService.profiles;
 
-  // Control variables, HTML elements
+  // State
   protected conversationsLoaded = this.conversationService.conversationsLoaded;
   protected searchFilter = signal("");
   protected multiselectActionSheetOpen = signal(false);
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
+  protected showBlockedConversations = signal(false);
+
+  // HTML elements
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
 
 
-
+  // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
-    return conversations.filter((conv) => {
-      return profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter());
-    });
+    return conversations
+      .filter((conv) =>
+        profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter()))
+      .filter((conv) => 
+        this.showBlockedConversations() || (!this.getConversationBlocked(conv)))
+      .sort((a, b) => {
+        // Put blocked conversations first, then sort by last message time (desc)
+        const aBlocked = this.getConversationBlocked(a);
+        const bBlocked = this.getConversationBlocked(b);
+        if (aBlocked && !bBlocked) return -1;
+        if (!aBlocked && bBlocked) return 1;
+
+        // Both blocked or both not blocked -> sort by last message time, descending
+        let aLastMessage = this.lastMessages().get(a.id);
+        let bLastMessage = this.lastMessages().get(b.id);
+        let aTime = aLastMessage ? new Date(aLastMessage.timestamp).getTime() : 0;
+        let bTime = bLastMessage ? new Date(bLastMessage.timestamp).getTime() : 0;
+        return bTime - aTime;
+      });
   }
   
   private getConvertedConversations(conversations: Conversation[], lastMessages: Map<number, Message | null>) : ConversationView[] {
     return conversations.map((conv) => {
-      let lastMessageId = lastMessages.get(conv.id)?.globalId;
-      let lastMessageText: string = lastMessages.get(conv.id)?.text || "";
-      let unreadMessages: boolean = (lastMessageId !== undefined && conv.newestMessageReadId !== undefined) ? lastMessageId > conv.newestMessageReadId : false;
+      const lastMessage = lastMessages.get(conv.id);
+      let lastMessageId = lastMessage?.globalId;
+      let lastMesageSenderId = lastMessage?.senderId;
+      let lastMessageText: string = lastMessage?.text || "";
+      let unreadMessages: boolean = false;
+      if (lastMessageId !== undefined && conv.newestReadMessageId !== undefined) {
+        unreadMessages = (lastMessageId > conv.newestReadMessageId
+          && lastMesageSenderId !== this.authService.getUserIdOrError());
+      }
+
       return {
         ...conv,
         lastMessageText: lastMessageText,
         unreadMessages: unreadMessages
       }
     });
+  }
+
+  toggleBlockedConversations() {
+    this.showBlockedConversations.set(!this.showBlockedConversations());
   }
 
   // UI FUNCTIONS
@@ -94,6 +124,16 @@ export class ConversationsPage {
 
   openMultiselectActionSheet() {
     this.multiselectActionSheetOpen.set(true);
+  }
+
+  getConversationBlocked(conversation: ConversationView): boolean {
+    const profile = this.profileService.profiles().get(conversation.participantId);
+    if (!profile) {
+      this.profileService.getProfileById(conversation.participantId);  // force loading the missing profile but don't delay the return
+      return true;  // consider blocked until loaded
+    }
+    if (profile.type === 'group') return false;
+    return profile.blocked;
   }
 
   performMultiselectAction(event: CustomEvent<OverlayEventDetail>) {

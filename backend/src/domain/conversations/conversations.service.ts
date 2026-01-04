@@ -19,7 +19,7 @@ export class ConversationsDomainService {
 
   public async findUserConversations(userId: number) {
     return await this.userConversations.find({
-      select: { id: true, type: true, participantId: true, accepted: true, notifications: true },
+      select: { id: true, type: true, participantId: true, accepted: true, notifications: true, newestReadMessageId: true },
       where: { ownerId: userId }
     });
   }
@@ -70,4 +70,12 @@ export class ConversationsDomainService {
       throw new NotFoundException('not-found.conversation');
   }
 
+  public async setNewestReadMessage(userId: number, conversationId: number, messageId: number) {
+    const result = await this.participations.update(
+      { userId: userId, conversationId: conversationId },
+      { newestReadMessageId: messageId }
+    );
+    if (result.affected === 0)
+      throw new NotFoundException('not-found.conversation');
+  }
 }

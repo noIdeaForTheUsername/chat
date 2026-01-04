@@ -18,4 +18,7 @@ export class Participation {
 
   @Column()
   notifications: boolean;
+
+  @Column({ name: 'newest_read_message_id', nullable: true, type: "bigint" })
+  newestReadMessageId: number | null;
 }

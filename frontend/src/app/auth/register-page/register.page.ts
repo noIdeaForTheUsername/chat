@@ -1,14 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { IonContent, IonButton, IonToggle, IonButtons, IonIcon } from '@ionic/angular/standalone';
-import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Component, inject } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
-import { LanguageService } from '@app/i18n/language.service';
+import { AuthService } from '@app/auth/auth.service';
+import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { IonButton, IonButtons, IonContent, IonToggle } from '@ionic/angular/standalone';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
 
 
 function loginValidator(control: AbstractControl): ValidationErrors | null {
@@ -48,14 +47,13 @@ function passwordsMatchValidator(group: AbstractControl): ValidationErrors | nul
   styleUrls: ['./register.page.scss'],
   standalone: true,
   imports: [IonContent, IonToggle, RouterLink, ReactiveFormsModule,
-    TranslatePipe, IonButton, StandardHeaderComponent, IonButtons, IonIcon]
+    TranslatePipe, IonButton, StandardHeaderComponent, IonButtons, LanguageButtonComponent]
 })
 export class RegisterPage {
 
   protected auth = inject(AuthService);
   private alertService = inject(AlertService);
   protected translate = inject(TranslateService);
-  private languageService = inject(LanguageService);
 
   form = new FormGroup({
     name: new FormControl(''),
@@ -108,10 +106,6 @@ export class RegisterPage {
       body.phoneNumber = '';
     }
     this.auth.register(body);
-  }
-
-  toggleLanguage(): void {
-    this.languageService.toggleLanguage();
   }
 
   ionViewWillLeave() {

@@ -51,7 +51,7 @@ export class MessageService {
   public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
   public readonly additionalMessagesLoading = signal(true);  // informs if new messages (during infinite scroll) are just being loaded
   public readonly loadingMessagesAreOlder = signal(true);
-  // public readonly loadErrorCode = signal<number | null>(null);
+  public readonly loadError = signal<string | number | null>(null);
   private loadsCount: number = 0;  // number of additional loads since initial conversation load
   private convMessagesSub?: Subscription;
 
@@ -134,11 +134,14 @@ export class MessageService {
         this.messagePreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
       },
       error: (err) => {
-        // this.alertService.displayErrorById(err.status);
+        // this.alertService.displayErrorById(err.error.message ?? err.status ?? "data-unavailable");
+        this.loadError.set(err.error.message ?? err.status ?? "data-unavailable");
         this.dataLoaded.set(true);
         this.additionalMessagesLoading.set(false);
-        this.displayingNewestMessages.set(true);
-        this.displayingOldestMessages.set(true);
+        if (this.displayedMessages().length === 0) {
+          this.displayingNewestMessages.set(true);
+          this.displayingOldestMessages.set(true);
+        }
       }
     });
   }

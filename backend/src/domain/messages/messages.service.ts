@@ -41,6 +41,13 @@ export class MessagesDomainService {
     return msgs;
   }
 
+  async findMostRecentMessageInConversation(conversationId: number) {
+    return await this.messageRepository.findOne({
+      where: { conversationId: conversationId },
+      order: { globalId: 'DESC' },
+    });
+  }
+
   async findMessage(conversationId: number, messageId: number, exceptionOnNotFound = false) {
     const message = await this.messageRepository.findOneBy({
       conversationId: conversationId,

@@ -1,8 +1,6 @@
 <app-standard-header [title]="'profile.log-in' | translate" [backButton]="displayBackButton()">
   <ion-buttons slot="end">
-    <ion-button (click)="toggleLanguage()">
-      <ion-icon name="language"></ion-icon>
-    </ion-button>
+    <app-language-button/>
   </ion-buttons>
 </app-standard-header>
 

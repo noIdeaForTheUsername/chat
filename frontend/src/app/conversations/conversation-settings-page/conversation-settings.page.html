@@ -21,7 +21,7 @@
       <app-item-button [text]="'profile.verify-security' | translate" [routerLink]="['/profiles', participant()!.id, 'security-verification']"
         icon="lock-closed" />
       <!-- block -->
-      <app-item-button (click)="alertService.displayBlockConfirm(conversationId)" [text]="'profile.block' | translate"
+      <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate"
         icon="ban" iconColor="danger" />
     </ion-item-group>
 

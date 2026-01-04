@@ -4,7 +4,7 @@ import { UserId } from 'src/shared/auth/user-id.decorator';
 import { PatchProfileDto } from './dto/patch-profile.dto';
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
 
-// This controller doesn't have a helper service and calls the domain service directly
+// This controller doesn't have a helper service and calls the domain services directly
 
 @Controller('profiles')
 export class ProfilesController {

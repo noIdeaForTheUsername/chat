@@ -22,9 +22,6 @@ export class BackendConversationApi {
     return this.http.get<Conversation>(`/conversations/${conversationId}`);
   }
 
-  // getConversationByParticipantId(participantId: number, participantType: "user" | "group" = "user"): Observable<Conversation> {
-  //   return this.http.get<Conversation>(`/conversations/participant/${participantType}/${participantId}`);
-  // }
 
   getMessagePreviews(): Observable<Map<number, Message | null>> {
     return this.http.get<ServerMessage[]>("/message-previews").pipe(
@@ -52,5 +49,9 @@ export class BackendConversationApi {
 
   clearConversationMessages(conversationId: number) {
     return this.http.delete(`/conversations/${conversationId}/messages/all`);
+  }
+
+  ackowledgeMessages(conversationId: number) {
+    return this.http.post<void>(`/conversations/${conversationId}/acknowledge`, {});
   }
 }

@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { Component, computed, inject, input, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
 import { Profile } from '@app/profiles/profile.interface';
@@ -6,6 +6,7 @@ import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pi
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { IonAvatar, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone';
 import { ConversationView } from '../conversation-view.interface';
+import { ProfileService } from '@src/app/profiles/profile-service/profile.service';
 
 @Component({
   selector: 'app-conversation-item',
@@ -15,6 +16,7 @@ import { ConversationView } from '../conversation-view.interface';
 })
 export class ConversationItemComponent {
   private router = inject(Router);
+  private profileService = inject(ProfileService);
 
   conversationView = input.required<ConversationView>();
   profile = input.required<Profile | undefined>();
@@ -23,9 +25,18 @@ export class ConversationItemComponent {
   openMultiselectActions = output<void>();
 
   private clickLock = false;
+  protected blocked = computed(() => {
+    const p = this.profile();
+    return p?.type === 'user' ? p!.blocked : false;
+  });
 
   navigate() {
     if (this.clickLock) return;
+    if (this.blocked()) {
+      const p = this.profile();
+      if (p?.type === 'user') this.profileService.promptUnblockUser(p.id, p.login);
+      return;
+    }
     if (!this.selectionService().selectionMode()) this.router.navigateByUrl("chats/" + this.conversationView().id.toString());
   }
 

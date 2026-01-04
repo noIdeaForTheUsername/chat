@@ -56,6 +56,14 @@ ion-popover ion-content {
 //   }
 // }
 
+
+// limited height of message input
+.message-input label div.native-wrapper {
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+
 div.reply-container {
   display: flex;
   padding: 4px 20% 0;

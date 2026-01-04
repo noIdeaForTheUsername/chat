@@ -80,12 +80,7 @@ export class AlertService {
   }
 
   // ------------------------- ALERT UTIL FUNCTIONS -------------------------
-  displayBlockConfirm(userId: number) {
-    this.displayPromptAlert(AlertType.DANGER_PROMPT, this.translate.instant("prompt.block.user"),
-    () => console.log(`The user ID=${userId} will be blocked!`), undefined,
-    this.translate.instant("profile.block"), this.translate.instant("common.are-you-sure"));
-  }
-
+  
   displayErrorById(errorId: string, confirmHandler?: Function) {
     const key = getErrorMessageKey(errorId, this.translate);
     const header = this.translate.instant(`${key}.header`);

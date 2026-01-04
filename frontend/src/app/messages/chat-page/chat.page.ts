@@ -22,7 +22,6 @@ import { MessageLoadingIndicatorComponent } from './message-loading-indicator/me
 import { Conversation } from '@app/conversations/conversation.interface';
 import { Profile } from '@app/profiles/profile.interface';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { thumbsDownSharp } from 'ionicons/icons';
 
 
 @Component({
@@ -65,9 +64,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   public repliedTexts = this.messageService.repliedTexts;
 
   // LOADING
-  protected initialLoading = computed(() => (!this.metadataLoaded()) || !this.messageService.dataLoaded());
+  protected initialLoading = computed(() => !this.messageService.dataLoaded());
   protected loadError = signal<string | number | null>(null);
-  protected metadataLoaded = signal(true);
+  protected messageLoadError = this.messageService.loadError;
   protected messageLoading = this.messageService.additionalMessagesLoading;
   protected loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
 
@@ -107,15 +106,19 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.loadConversationData(this.conversationId);
 
     effect(() => {
+      // React to message list changes for scroll management and message acknowledgement
       const msgs = this.messageService.displayedMessages();
       if (msgs.length == 0) return;
-      if (this.firstMessageTopDistance === undefined)  // first load
+      if (this.firstMessageTopDistance === undefined) { // first load
+        this.conversationService.ackowledgeConversationMessages(this.conversationId);
         requestAnimationFrame(() => this.content.scrollToBottom(0));
-      else  // next loads
+      } else {  // next loads
         this.correctScrollOnMessageLoad();
+      }
     });
 
     effect(() => {
+      // Always display updated participant profile data
       const _ = this.profileService.profiles();
       if (this.conversation())
         this.loadParticipant(this.conversation()!.participantId);
@@ -131,9 +134,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       await this.loadParticipant(this.conversation()!.participantId);
     }
     catch (error) {}
-    finally {
-      this.metadataLoaded.set(true);
-    }
   }
 
   private async loadParticipant(participantId: number) {
@@ -153,6 +153,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   onMessageFieldInput($event: Event) {
     this.enteredMessage.set(($event.target as HTMLIonTextareaElement).value ?? "");
+  }
+
+  onMessageFieldKeydown(event: KeyboardEvent) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
   }
 
   sendMessage() {
@@ -240,16 +247,18 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   saveScrollParams() {
     if (this.loadingMessagesAreOlder()) this.firstMessageId = "msg-" + this.messages()[0].globalId!;
     else this.firstMessageId = "msg-" + this.messages()[this.messages().length - 1].globalId!;
-    const elem = document.getElementById(this.firstMessageId)!;
+    const elem = document.getElementById(this.firstMessageId);
+    if (!elem) return;
     this.firstMessageTopDistance = elem.getBoundingClientRect().top;
   }
 
-  // Corrects scroll so the screen doesn't jump on msg reload. Call just after message list updates.
+  // Corrects scroll so the screen doesn't jump on msg reload. Call just AFTER message list updates.
   // Make sure saveScroll params is called just before message list update / this function call
   correctScrollOnMessageLoad() {
     requestAnimationFrame(() => {
       if (this.firstMessageTopDistance === undefined) return;
-      const elem2 = document.getElementById(this.firstMessageId)!;
+      const elem2 = document.getElementById(this.firstMessageId);
+      if (!elem2) return;
       const diff = elem2.getBoundingClientRect().top - this.firstMessageTopDistance;
       this.content.scrollByPoint(0, diff, 0);
     });

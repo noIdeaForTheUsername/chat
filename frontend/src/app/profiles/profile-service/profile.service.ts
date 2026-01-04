@@ -1,7 +1,11 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { Profile, ServerUserProfile, UserProfile } from '@app/profiles/profile.interface';
 import { forkJoin, Observable, of, tap } from 'rxjs';
 import { BackendProfileApi } from './backend-profile-api';
+import { AlertType } from '@src/app/alerts/alert-type.enum';
+import { AlertService } from '@src/app/alerts/alert-service/alert.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +14,9 @@ export class ProfileService {
 
   // Dependencies
   private readonly api = new BackendProfileApi();
+  private readonly alertService = inject(AlertService);
+  private readonly translate = inject(TranslateService);
+  private readonly router = inject(Router);
 
   public readonly profiles = signal(new Map<number, Profile>());
   public readonly profilesLoaded = signal<boolean>(false);
@@ -62,18 +69,63 @@ export class ProfileService {
   public updateNick(profileId: number, newNick: string) {
     return this.api.updateNick(profileId, newNick).pipe(
       tap(() => {
-        const existing = this.profiles().get(profileId);
+        let existing = this.profiles().get(profileId);
         if (!existing || existing.type !== 'user') return;
 
-        const newProfile: UserProfile = {
-          ...existing as UserProfile,
-          nick: newNick,
-        };
+        existing.nick = newNick;
 
-        const copy = new Map(this.profiles());
-        copy.set(profileId, newProfile);
-        this.profiles.set(copy);
+        this.updateProfileInMemory(existing);
       }),
     );
+  }
+
+  public promptBlockUser(profileId: number) {
+    this.alertService.displayPromptAlert(
+      AlertType.DANGER_PROMPT,
+      this.translate.instant("prompt.block.user"),
+      () => {
+        this.setUserBlocked(profileId, true);
+        if (this.router.url.startsWith("/chats/") || this.router.url.startsWith("/profiles/"))
+          this.router.navigateByUrl("/chats");
+      },
+      undefined,
+      this.translate.instant("profile.block"),
+      this.translate.instant("common.are-you-sure")
+    );
+  }
+
+  public promptUnblockUser(profileId: number, login?: string) {
+    this.alertService.displayPromptAlert(
+      AlertType.PROMPT,
+      this.translate.instant("prompt.unblock"),
+      () => this.setUserBlocked(profileId, false),
+      undefined,
+      login ?? undefined
+    );
+  }
+
+  private setUserBlocked(profileId: number, blocked: boolean) {
+    const existing = this.profiles().get(profileId);
+    if (!existing || existing.type !== 'user') return;
+
+    const endpoint = blocked ? this.api.blockUser(profileId) : this.api.unblockUser(profileId);
+
+    endpoint.subscribe({
+      next: () => {
+        let p = this.profiles().get(profileId);
+        if (!p || p.type !== 'user') return;
+        p.blocked = blocked;
+        this.updateProfileInMemory(p);
+      },
+      error: (err) => this.alertService.displayErrorById(err.error.message ?? err.status ?? "unknown")
+    });
+  }
+
+  private updateProfileInMemory(updatedProfile: Profile) {
+    const copy = {...updatedProfile};
+    this.profiles.update(profiles => {
+      profiles.set(updatedProfile.id, copy);
+      return profiles;
+    });
   }
 }

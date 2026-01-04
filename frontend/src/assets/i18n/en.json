@@ -50,7 +50,8 @@
       "conversation-action": {
         "header": "Selected conversations...",
         "clear-messages": "Clear my messages in selected"
-      }
+      },
+      "toggle-blocked-conversations": "Show/hide blocked conversations"
     },
 
     "discovery": {
@@ -121,8 +122,8 @@
 
     "account-settings": {
       "title": "Account settings",
-      "hint": "Enter the current password, and then edit only the fields you want to change",
-      "change-password": "Change password"
+      "hint": "Enter the current password, and then only edit the fields you want to change. Finally, confirm with the button at the bottom of the page.",
+      "new-password": "New password (if you want to change it)"
     },
 
     "security-verification": {
@@ -184,9 +185,10 @@
 
   "prompt": {
     "block": {
-      "user": "You will no longer receive notifications or see this user's messages, even in the group chats. The user will be removed from your Conversation list.",
+      "user": "The user will be hidden for you, you won't receive notifications, and their messages in the group chats will no longer be visible to you. You can unblock them later from your Conversation list. If you want to clear your messages as well, do it before blocking.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
     },
+    "unblock": "Are you sure you want to unblock this user/group?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
 

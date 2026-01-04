@@ -20,4 +20,7 @@ export class UserConversation {
 
   @ViewColumn()
   notifications: boolean;
+
+  @ViewColumn({ name: 'newest_read_message_id' })
+  newestReadMessageId: number | null;
 }

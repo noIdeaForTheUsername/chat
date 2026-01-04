@@ -9,7 +9,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, of, tap } from 'rxjs';
+import { finalize, Observable, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -32,9 +32,9 @@ export class ConversationService {
   constructor(private profileService: ProfileService) {
     this.loadData();
     effect(() => {
-      const _ = this.conversations();
-      const __ = this.conversationsMessagePreviews();
-      this.sortConversations();
+      // const _ = this.conversations();
+      // const __ = this.conversationsMessagePreviews();
+      // this.sortConversations();
     });
   }
 
@@ -44,6 +44,7 @@ export class ConversationService {
     // Load conversations
     this.api.getUserConversations().subscribe({
       next: (val) => {
+        console.log(val);
         this.conversations.set(val);
         this.conversationsLoaded.set(true);
       },
@@ -51,21 +52,6 @@ export class ConversationService {
     });
 
     this.loadMessagePreviews();
-  }
-
-  protected sortConversations() {
-    this.conversations.set(
-      this.conversations().sort((conv, conv2) => {
-        let msg = this.conversationsMessagePreviews().get(conv.id);
-        let msg2 = this.conversationsMessagePreviews().get(conv2.id);
-        let noMsg1 = (msg === undefined || msg === null);
-        let noMsg2 = (msg2 === undefined || msg2 === null);
-        if (noMsg1 && noMsg2) return 0;
-        if (noMsg1) return 1;
-        if (noMsg2) return -1;
-        return msg2!.timestamp.getTime() - msg!.timestamp.getTime();
-      })
-    );
   }
 
   private displayExistingDirectConversationError(conversationId: number) {
@@ -108,6 +94,20 @@ export class ConversationService {
     return found;
   }
 
+  ackowledgeConversationMessages(conversationId: number) {
+    // call API
+    this.api.ackowledgeMessages(conversationId).pipe(
+      // mark locally as ackowledged regardless of API call result
+      finalize(() => {
+        let conv = this.conversations().find(c => c.id === conversationId);
+        if (!conv) return;
+        conv.newestReadMessageId = this.conversationsMessagePreviews().get(conversationId)?.globalId;
+        this.updateLocalConversation(conv);
+      })
+    ).subscribe();
+  }
+
+
   createDirectConversation(participantId: number, redirectAfterCreation = false) {
     const sameConversation = this.conversations().find(c => c.participantId === participantId);
     if (sameConversation) {
@@ -143,5 +143,15 @@ export class ConversationService {
     if (convId === undefined) return;  // all done
     this.clearConversationMessages(convId);
     setTimeout(() => this.clearMultipleConversationMessages(conversationIds), 150);
+  }
+
+  private updateLocalConversation(conversation: Conversation) {
+    const index = this.conversations().findIndex(c => c.id === conversation.id);
+    let updatedConversations = [...this.conversations()];
+    if (index === -1)
+      updatedConversations.unshift(conversation);
+    else
+      updatedConversations[index] = conversation;
+    this.conversations.set(updatedConversations);
   }
 }

@@ -57,6 +57,7 @@ export class MessageCardComponent  implements OnInit {
   async ngOnInit() {
     this.profile.set(await firstValueFrom(this.profileService.getProfileById(this.message().senderId)));
     this.color.set(this.message().isOwn ? "secondary" : undefined);
+    console.log("Message ", this.message());
   }
 
   // Output actions

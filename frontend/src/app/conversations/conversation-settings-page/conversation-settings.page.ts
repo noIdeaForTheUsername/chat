@@ -85,6 +85,12 @@ export class ConversationSettingsPage {
     )
   };
 
+  protected promptBlockUser() {
+    const participant = this.participant();
+    if (!participant || participant.type !== "user") return;
+    this.profileService.promptBlockUser(participant.id);
+  }
+
   private clearConversation() {
     this.conversationSerivce.clearConversationMessages(this.conversationId);
     this.router.navigate(['/chats']);

@@ -6,7 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { TranslateService } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
-import { LanguageService } from '@app/i18n/language.service';
+import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
 
 @Component({
   selector: 'app-login',
@@ -17,14 +17,15 @@ import { LanguageService } from '@app/i18n/language.service';
     ReactiveFormsModule, TranslatePipe,
     IonContent, RouterLink,
     StandardHeaderComponent,
-    IonButton, IonButtons, IonIcon
+    IonButton, IonButtons,
+    LanguageButtonComponent
 ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {
 
   protected authService = inject(AuthService);
   protected translate = inject(TranslateService);
-  private languageService = inject(LanguageService);
 
   protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
@@ -37,10 +38,6 @@ export class LoginPage {
   login() {
     const body = this.loginForm.getRawValue();
     this.authService.login(body);
-  }
-
-  toggleLanguage(): void {
-    this.languageService.toggleLanguage();
   }
 
   ionViewWillLeave() {

@@ -14,3 +14,7 @@ ion-item.unread {
 ion-item.selected {
   --background: rgba(0, 255, 255, 0.484) !important;
 }
+
+ion-item.blocked {
+  color: red;
+}
