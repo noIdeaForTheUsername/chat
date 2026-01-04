@@ -31,11 +31,15 @@ export class MessagePreviewManager {
   // modifies "displayedMessages" in the service directly
   public addPreview(messageWithRepliedText: Message) {
     this.s.displayedMessages.update((msgs) => {
-      msgs.forEach(m => {
-        if (m.repliedId == messageWithRepliedText.globalId) {
-          m.repliedText = messageWithRepliedText.text;
+      for (let i = 0; i < msgs.length; i++) {
+        if (msgs[i].repliedId == messageWithRepliedText.globalId) {
+          msgs[i] = {
+            ...msgs[i],
+            repliedText: messageWithRepliedText.text
+          };
+          return msgs;
         }
-      });
+      }
       return msgs;
     });
 }

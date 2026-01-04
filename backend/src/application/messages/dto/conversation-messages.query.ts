@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsBoolean, IsInt, IsOptional } from "class-validator";
+import { IsBoolean, IsBooleanString, IsInt, IsOptional } from "class-validator";
 
 export class ConversationMessagesQuery {
   // @Type(() => Number)
@@ -12,9 +12,8 @@ export class ConversationMessagesQuery {
   globalIdStart?: number;
 
   @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
-  older?: boolean;
+  @IsBooleanString()
+  older?: string;
 
   @IsOptional()
   @Type(() => Number)

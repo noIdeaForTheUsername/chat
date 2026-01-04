@@ -23,7 +23,7 @@ export class UserMessage {
   timestamp: Date;
 
   @ViewColumn({ name: "replied_id", transformer: { to: _ => _, from: (value) => Number(value) } })
-  repliedId?: number;
+  repliedId: number | null;
 
   @ViewColumn({ name: "user_id" })
   userId: number;  // Refers to a user who HAS ACCESS to the specified message

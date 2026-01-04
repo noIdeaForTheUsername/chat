@@ -26,8 +26,11 @@ export class MessagesController {
       query.globalIdStart = undefined;
     if (query.limit <= 0 || query.limit > this.maxMessagesLoadLimit)
       throw new BadRequestException(`Limit must be between 1 and ${this.maxMessagesLoadLimit}`);
+
+    console.log("query.older: ", query.older);
+
     return await this.messagesService.getConversationMessages(
-      callerId, conversationId, query.limit, query.globalIdStart, query.older);
+      callerId, conversationId, query.limit, query.globalIdStart, query.older === 'true');
   }
 
   @Get("conversations/:id/messages/:messageId")

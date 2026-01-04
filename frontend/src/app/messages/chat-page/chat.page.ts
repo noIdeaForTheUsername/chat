@@ -206,7 +206,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   onMessageRepliedClick(messageId: number) {
-    this.scrollToMessage(messageId);
+    setTimeout(() => this.scrollToMessage(messageId), 0);
   }
 
   scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
@@ -222,6 +222,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   scrollToMessage(messageId: number, alwaysScroll = false) {
+    console.log("scrollToMessage called for messageId:", messageId);
     if (messageId <= this.messages()[this.messages().length - 1].globalId && messageId >= this.messages()[0].globalId) {
       const elem = document.getElementById("msg-" + messageId);
       if (elem === null) return;
@@ -233,13 +234,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
         this.highlightElement(elem);
       }
       else {
-        this.content.scrollToPoint(null, elemY - 25, 500);
+        requestAnimationFrame(() => {
+           this.content.scrollToPoint(null, elemY - 25, 500);
+        });
         setTimeout(() => this.highlightElement(elem), 500);
       }
     }
     else {
       this.messageService.loadMessagesByStartId(messageId, false,
-        () => requestAnimationFrame(() => this.scrollToMessage(messageId, true)));
+        () => requestAnimationFrame(
+          () => requestAnimationFrame(
+            () => this.scrollToMessage(messageId, true))));  // if somebody reads this: works. don't complain.
     }
   }
 

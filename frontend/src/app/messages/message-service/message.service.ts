@@ -32,7 +32,7 @@ export class MessageService {
   private readonly LOADS_BEFORE_INCREASING_LOADED_MESSAGES_AMOUNT = 4; // after this amount of loads (scrolls), the amount will change to the INCREASED_ one
 
   // DISPLAYED DATA
-  public readonly displayedMessages = signal<readonly MessageView[]>([]);  // expected to be sorted from oldest (first) to newest!
+  public readonly displayedMessages = signal<MessageView[]>([]);  // expected to be sorted from oldest (first) to newest!
   public readonly repliedTexts = signal<Map<number, string>>(new Map());  // map of replied message ID -> text preview
   private currentConvId: number = -1;
 
@@ -106,8 +106,6 @@ export class MessageService {
         // execute passed callback
         callBeforeComplete();
 
-        val = val.reverse();  // reverse to be from oldest to newest
-
         // create new displayed messages array
         const newArr = older ? [...val, ...this.displayedMessages()] : [...this.displayedMessages(), ...val];
         // delete excessive messages
@@ -134,14 +132,14 @@ export class MessageService {
         this.messagePreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
       },
       error: (err) => {
-        // this.alertService.displayErrorById(err.error.message ?? err.status ?? "data-unavailable");
-        this.loadError.set(err.error.message ?? err.status ?? "data-unavailable");
         this.dataLoaded.set(true);
         this.additionalMessagesLoading.set(false);
         if (this.displayedMessages().length === 0) {
+          this.loadError.set(err.error.message ?? err.status ?? "data-unavailable");
           this.displayingNewestMessages.set(true);
           this.displayingOldestMessages.set(true);
         }
+        else this.alertService.displayErrorById(err.error.message ?? err.status ?? "data-unavailable");
       }
     });
   }
@@ -194,6 +192,7 @@ export class MessageService {
       next: (res: any) => {
         if (res.id === undefined) return;
         if (callBeforeComplete) callBeforeComplete();
+        if (!this.displayingNewestMessages()) return;
         this.displayedMessages.update((msgs) => {
           return [...msgs, {
             globalId: res.id,
