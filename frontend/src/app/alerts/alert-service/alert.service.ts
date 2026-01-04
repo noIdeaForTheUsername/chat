@@ -115,7 +115,13 @@ export class AlertService {
     if (this.serverConnectionErrorDisplayed && !always) return;
     this.serverConnectionErrorDisplayed = true;
 
-    this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.server-unavailable.description'),
+    if (navigator.onLine) {
+      this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.server-unavailable.description'),
       () => {}, this.translate.instant("error.server-unavailable.header"));
+    }
+    else {
+      this.displayMessageAlert(AlertType.ERROR, this.translate.instant('error.no-internet.description'),
+      () => {}, this.translate.instant("error.no-internet.header"));
+    }
   }
 }

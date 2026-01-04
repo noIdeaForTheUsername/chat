@@ -5,7 +5,7 @@ import { AlertService } from "@app/alerts/alert-service/alert.service";
 import { AlertType } from "@app/alerts/alert-type.enum";
 import { TranslateService } from "@ngx-translate/core";
 import { AuthBackendApi, RegisterBody } from "./auth-api";
-import { catchError, tap, throwError } from "rxjs";
+import { catchError, tap, throwError, timeout } from "rxjs";
 import { UserAccount } from "./account.interface";
 
 
@@ -70,6 +70,7 @@ export class AuthService {
   // check if the user is logged in and redirect / handle error accordingly
   loadAuth() {
     return this.api.getMe().pipe(
+      timeout(6000),
       tap((res) => {
         this.processing.set(false);
         if (!res.id) {  // hopefully never happens

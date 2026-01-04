@@ -201,7 +201,7 @@
   "error": {
     "server-unavailable": {
       "header": "Server not responding",
-      "description": "It's worth checking your internet connection, but most likely the app server is currently down. No data can be loaded. Contact the administrator if the issue persists."
+      "description": "It's either due to your internet connection or the app server being down. No data can be loaded. Contact the administrator if the issue persists despite internet connectivity."
     },
     "no-internet": {
       "header": "No internet connection",

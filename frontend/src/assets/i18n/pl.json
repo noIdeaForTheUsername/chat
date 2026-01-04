@@ -197,7 +197,7 @@
   "error": {
     "server-unavailable": {
       "header": "Serwer nie odpowiada",
-      "description": "Warto sprawdzić połączenie z internetem, ale najprawdopodobniej serwer aplikacji jest obecnie niedostępny. Nie można wczytać żadnych danych. Skontaktuj się z administratorem, jeśli problem nie ustąpi."
+      "description": "To może być spowodowane Twoim połączeniem z internetem lub problemem z serwerem aplikacji. Nie można wczytać żadnych danych. Skontaktuj się z administratorem, jeśli problem nie ustąpi mimo połączenia z internetem."
     },
     "no-internet": {
       "header": "Brak połączenia z internetem",
