@@ -29,6 +29,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() body: LoginDto, @Res({ passthrough: true }) res: Response) {
     const { sub, authJwt } = await this.authService.login(body.account, body.password);
     this.sendJwtCookie(res, authJwt);
@@ -49,7 +50,7 @@ export class AuthController {
   }
 
   @Patch("me")
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async modifyAccount(@UserId() userId: number, @Body() body: ModifyAccountDto): Promise<AccountResponseDto> {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException("passwords-different");

@@ -145,9 +145,9 @@
 
     "register": {
       "header": "Utwórz nowe konto",
-      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla użytkowników, którzy Cię znajdą - a to wymaga znajomości Twojego <b>dokładnego</b> loginu lub <b>pełnego</b> imienia i nazwiska.",
-      "name-input": "Imię i nazwisko (opcjonalne, ale zalecane)",
-      "login-input": "Unikalny login (tylko litery, cyfry i podkreślenia; bez spacji)",
+      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla użytkowników, którzy Cię znajdą - a to wymaga znajomości Twojego <b>pełnego</b> loginu lub imienia i nazwiska.",
+      "name-input": "Imię i nazwisko (opcjonalne)",
+      "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
       "email-input": "Adres e-mail",
       "phone-input": "Telefon z numerem kierunkowym",
       "email-phone-hint": "Wymagane jest co najmniej jedno poniższe (zalecany telefon)",

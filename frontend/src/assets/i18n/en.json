@@ -148,7 +148,7 @@
     "register": {
       "header": "Create a new account",
       "encouragement": "Your name and login will only be visible to users you who discover you - and this requires knowing your <b>exact</b> login or full name.",
-      "name-input": "Full name (optional, but recommended)",
+      "name-input": "Full name (optional)",
       "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
