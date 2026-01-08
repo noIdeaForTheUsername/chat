@@ -53,7 +53,7 @@
 
   <!-- "ADD" BUTTON (discovery) -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-    <ion-fab-button color="primary" id="plus-button">
+    <ion-fab-button id="plus-button" [class.pulsing]="conversationsLoaded() && conversations().length === 0">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

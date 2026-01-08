@@ -127,7 +127,7 @@ export class AuthService {
         } catch {
           // ignore storage errors
         }
-        this.loadAuth();
+        this.loadAuth().subscribe();
       },
       error: (err) => this.handleRegisterError(err)
     });

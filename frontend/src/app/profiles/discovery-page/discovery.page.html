@@ -1,45 +1,46 @@
 <app-standard-header [title]="'page.discovery.title' | translate"></app-standard-header>
 
 <ion-content [fullscreen]="true">
-  <!-- searchbar -->
-  <ion-searchbar #searchBar
-    class="glow-on-focus"
-    [placeholder]="'page.discovery.searchbar-hint' | translate"/>
-    
-  <!-- instructions -->
-  <h1 class="ion-margin">{{'page.discovery.header' | translate}}</h1>
-  <p class="ion-margin" [innerHTML]="'page.discovery.info' | translate"></p>
+  <div class="container">
+    <!-- searchbar -->
+    <ion-searchbar #searchBar
+      class="glow-on-focus"
+      [placeholder]="'page.discovery.searchbar-hint' | translate"/>
+      
+    <!-- instructions -->
+    <h1 class="ion-margin">{{'page.discovery.header' | translate}}</h1>
+    <p class="ion-margin" [innerHTML]="'page.discovery.info' | translate"></p>
 
-  <!-- confirm button -->
-  <ion-button class="ion-padding search-button"
-    [disabled]="searchBar.value?.trim()?.length === 0"
-    (click)="displaySearchResults()">
-    {{"common.confirm" | translate}}
-  </ion-button>
+    <!-- confirm button -->
+    <ion-button class="ion-padding search-button"
+      [disabled]="searchBar.value?.trim()?.length === 0"
+      (click)="displaySearchResults()">
+      {{"common.confirm" | translate}}
+    </ion-button>
 
-  <!-- LOADING OR RESULTS -->
-  @if (searchBarFilled() && searchLoading()) {
-    <!-- loading -->
-    <div class="loading-container"><app-loading-indicator type="dots" size="large" [errorId]="loadError()" /></div>
-  }
-  @else if (searchBarFilled() && searchResults().size > 0) { <!-- SEARCH RESULTS -->
-    <h1 class="ion-margin">{{'page.discovery.found' | translate}}:</h1>
-
-    @for (entry of this.searchResults().entries(); track entry[0]) {
-      <!-- CONVERSATION LIST ITEMS -->
-      @let visibleName = entry[1] | visibleName:true;
-      <ion-item [button]="true" lines="full" (click)="initiateConversation(entry[0], visibleName)">
-        <ion-avatar aria-hidden="true" slot="start">
-          <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
-        </ion-avatar>
-        <ion-label class="ion-text-nowrap">
-          <h2>{{visibleName}}</h2>
-        </ion-label>
-      </ion-item>
+    <!-- LOADING OR RESULTS -->
+    @if (searchBarFilled() && searchLoading()) {
+      <!-- loading -->
+      <div class="loading-container"><app-loading-indicator type="dots" size="large" [errorId]="loadError()" /></div>
     }
-  }
-  @else if (searchBarFilled() && !searchLoading()) {  <!-- NO RESULTS FOUND -->
-    <h1 class="ion-margin">{{'page.discovery.not-found' | translate}}</h1>
-  }
-  
+    @else if (searchBarFilled() && searchResults().size > 0) { <!-- SEARCH RESULTS -->
+      <h1 class="ion-margin">{{'page.discovery.found' | translate}}:</h1>
+
+      @for (entry of this.searchResults().entries(); track entry[0]) {
+        <!-- CONVERSATION LIST ITEMS -->
+        @let visibleName = entry[1] | visibleName:true;
+        <ion-item [button]="true" lines="full" (click)="initiateConversation(entry[0], visibleName)">
+          <ion-avatar aria-hidden="true" slot="start">
+            <img src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+          </ion-avatar>
+          <ion-label class="ion-text-nowrap">
+            <h2>{{visibleName}}</h2>
+          </ion-label>
+        </ion-item>
+      }
+    }
+    @else if (searchBarFilled() && !searchLoading()) {  <!-- NO RESULTS FOUND -->
+      <h1 class="ion-margin">{{'page.discovery.not-found' | translate}}</h1>
+    }
+  </div>
 </ion-content>
