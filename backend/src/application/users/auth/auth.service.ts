@@ -19,9 +19,9 @@ export class AuthService {
     private profilesService: ProfilesDomainService,
     private jwtService: JwtService
   ) {
-    if (jwtSecret === undefined) {
-      throw new Error("JWT_SECRET is not defined in environment variables");
-    }
+    // if (jwtSecret === undefined) {
+    //   throw new Error("JWT_SECRET is not defined in environment variables");
+    // }
   }
 
 

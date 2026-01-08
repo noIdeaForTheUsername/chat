@@ -8,12 +8,14 @@ import { UserId } from 'src/shared/auth/user-id.decorator';
 import { plainToInstance } from 'class-transformer';
 import { AccountResponseDto } from './dto/account-response.dto';
 import { ModifyAccountDto } from './dto/modify-account.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller("auth")
 @PublicAccess(true)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly config: ConfigService
   ) {}
 
   @Post('register')
@@ -65,6 +67,10 @@ export class AuthController {
   }
 
   private sendJwtCookie(res: Response, jwt: string) {
-    res.cookie('authJwt', jwt, { httpOnly: true, sameSite: 'strict' });
+    res.cookie('authJwt', jwt, {
+      httpOnly: this.config.get('cookies.httpOnly'),
+      sameSite: this.config.get('cookies.sameSite'),
+      secure: this.config.get('cookies.secure')
+    });
   }
 }

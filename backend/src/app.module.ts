@@ -22,30 +22,31 @@ import { MessagesModule } from './application/messages/messages.module';
 import { UserMessage } from './domain/messages/entities/user-message.entity';
 import { LatestUserMessage } from './domain/messages/entities/latest-user-message.entity';
 import { ContactsDomainModule } from './domain/contacts/contacts.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import config from './config';
 
 @Module({
-  imports: [
+    imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.dev', load: [config] }),
+
     TypeOrmModule.forRootAsync({
-      useFactory() {
-        return {
-          type: "postgres",
-          host: "localhost",
-          port: 5432,
-          username: "chat",
-          password: "chat",
-          database: "chat",
-          schema: "public",
-          entities: [
-            Account, Profile, FullProfile, Contact, UserKnownProfile,  // accounts and profiles
-            Conversation, Participation, UserConversation, // conversations
-            Message, UserMessage, LatestUserMessage // messages
-          ],
-        };
-      },
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        type: "postgres",
+        host: cfg.get<string>('database.host'),
+        port: cfg.get<number>('database.port'),
+        username: cfg.get<string>('database.username'),
+        password: cfg.get<string>('database.password'),
+        database: cfg.get<string>('database.database'),
+        schema: "public",
+        entities: [
+          Account, Profile, FullProfile, Contact, UserKnownProfile,
+          Conversation, Participation, UserConversation,
+          Message, UserMessage, LatestUserMessage
+        ],
+      }),
       async dataSourceFactory(options: any) {
-        if (!options) {
-          throw new Error('Invalid options passed');
-        }
+        if (!options) throw new Error('Invalid options passed');
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
@@ -65,5 +66,5 @@ import { ContactsDomainModule } from './domain/contacts/contacts.module';
   ],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {} 
+  constructor(private dataSource: DataSource, private config: ConfigService) {} 
 }

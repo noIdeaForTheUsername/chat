@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import cookieParser from 'cookie-parser';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -13,11 +14,15 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
     throw new BadRequestException(`invalid.${errors[0].property}`);
   }}));
+
+  const config = app.get(ConfigService);
+  const port = config.get<number>('app.port') ?? 3000;
+
   // CORS
   app.enableCors({
-    origin: ["http://localhost:8100", "http://192.168.1.2:8100", "http://chmuraim.dynv6.net:8100", "http://46.205.222.219:8100"],
+    origin: config.get<string[]>('cors.origins'),
     credentials: true,
   });
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(port);
 }
 bootstrap();

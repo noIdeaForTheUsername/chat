@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://chmuraim.dynv6.net:8100/api"
+  apiUrl: "http://192.168.1.2:3000"
 };
 
 /*
