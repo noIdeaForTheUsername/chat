@@ -24,7 +24,7 @@
 <ion-content [fullscreen]="false" fixedSlotPlacement="before" [scrollEvents]="true" (ionScroll)="onScroll($any($event))">
   <!-- CONVERSATION PRELOADING SCREEN -->
   @if (initialLoading() || (messageLoadError() !== null && messages().length === 0)) {
-    <app-loading-indicator [errorId]="loadError() ?? messageLoadError()" size="full"></app-loading-indicator>
+    <app-loading-indicator [errorId]="messageLoadError() ?? metadataLoadError()" size="full"></app-loading-indicator>
   }
   <!-- NORMAL VIEW -->
   @else {

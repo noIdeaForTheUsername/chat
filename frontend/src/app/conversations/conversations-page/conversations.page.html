@@ -16,6 +16,11 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- REFRESH -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <!-- SEARCHBAR -->
   <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 
@@ -34,7 +39,7 @@
   
 
   <!-- CONVERSATIONS LIST -->
-  @if (displayedConversations().length) {
+  @if (displayedConversations().length > 0) {
     <ion-list lines="full">
       @for (conv of displayedConversations(); track conv.id) {
         <!-- CONVERSATION ITEM -->

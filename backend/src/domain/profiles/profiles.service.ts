@@ -56,14 +56,25 @@ export class ProfilesDomainService {
     const emailSearch = normalizeEmail(search);
     const nameSearch = normalizeName(search);
     const phoneNumberSearch = normalizePhone(search);
-    return await this.fullProfiles.find({
-      where: [
-        { login: loginSearch },
-        { name: nameSearch },
-        { email: emailSearch },
-        { phoneNumber: phoneNumberSearch },
-      ]
-    });
+
+    const where = [];
+    // Make sure only non-empty searches are added - discovery requires knowledge of the exact value
+    // (and we really do NOT want to return anyone with some field empty as "known and discoverable" - that's a security flaw)
+    if (loginSearch.trim().length > 0)
+      where.push({ login: loginSearch });
+    if (emailSearch.trim().length > 0)
+      where.push({ email: emailSearch });
+    if (nameSearch.trim().length > 0)
+      where.push({ name: nameSearch });
+    if (phoneNumberSearch.trim().length > 0)
+      where.push({ phoneNumber: phoneNumberSearch });
+
+    if (where.length === 0) {
+      // nothing valid to search for
+      return [];
+    }
+
+    return await this.fullProfiles.find({ where });
   }
 
   // CREATING DATA

@@ -9,7 +9,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { finalize, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -30,22 +30,23 @@ export class ConversationService {
   private api = new BackendConversationApi(this.authService.getUserIdOrError());
 
   constructor(private profileService: ProfileService) {
-    this.loadData();
+    this.loadConversations().subscribe();
   }
 
   // -------------------------------------------------- INTERNAL LOGIC ---------------------------------------------
 
-  loadData() {
+  loadConversations() {
     // Load conversations
-    this.api.getUserConversations().subscribe({
-      next: (val) => {
+    return this.api.getUserConversations().pipe(
+      tap((val) => {
         this.conversations.set(val);
         this.conversationsLoaded.set(true);
-      },
-      error: (e) => this.conversationsLoaded.set(true)
-    });
-
-    this.loadMessagePreviews();
+      }),
+      catchError((e) => {
+        this.conversationsLoaded.set(true);
+        return throwError(() => e);
+      })
+    );
   }
 
   private displayExistingDirectConversationError(conversationId: number) {
@@ -60,12 +61,11 @@ export class ConversationService {
   // -------------------------------------------------- PUBLIC API ---------------------------------------------
 
   loadMessagePreviews() {
-    this.api.getMessagePreviews().subscribe({
-      next: (previewsMap) => {
+    return this.api.getMessagePreviews().pipe(
+      tap((previewsMap) => {
         this.conversationsMessagePreviews.set(previewsMap);
-      },
-      error: (e) => this.conversationsLoaded.set(true)
-    });
+      })
+    );
   }
 
   getConversationById(id: number): Observable<Conversation> {

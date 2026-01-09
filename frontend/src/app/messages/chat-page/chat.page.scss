@@ -20,6 +20,12 @@ div.toolbar-container {
   margin: auto;
 }
 
+@media (min-width: 1000px) {
+  ::part(scroll) {
+    padding: 10px;
+  }
+}
+
 .danger-text {
   color: var(--ion-color-danger);
 }

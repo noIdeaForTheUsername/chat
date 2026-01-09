@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton, IonIcon, IonButtons, IonButton, IonActionSheet, IonNote } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton,
+  IonRefresher, IonRefresherContent, IonIcon, IonButtons, IonButton, IonActionSheet, IonNote } from '@ionic/angular/standalone';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ConversationService } from '@app/conversations/conversation.service';
 import { Conversation } from '@app/conversations/conversation.interface';
@@ -20,14 +21,17 @@ import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/it
 import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-conversations-page',
   templateUrl: './conversations.page.html',
   styleUrls: ['./conversations.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton, IonIcon, IonNote, IonButtons, IonButton, IonActionSheet,
-    LoadingIndicator, ConversationItemComponent, CommonModule, TranslatePipe, SelectionToolbarComponent, CornerMenuComponent, RouterLink, ItemButtonComponent],
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton,
+    IonIcon, IonNote, IonButtons, IonButton, IonActionSheet, IonRefresher, IonRefresherContent,
+    LoadingIndicator, ConversationItemComponent, CommonModule, TranslatePipe,
+    SelectionToolbarComponent, CornerMenuComponent, RouterLink, ItemButtonComponent],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -62,6 +66,13 @@ export class ConversationsPage {
   // HTML elements
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
 
+
+  ionViewWillEnter() {  // reload msg previews every time user re-enters the page
+    this.conversationService.loadMessagePreviews().subscribe();
+  }
+
+  // -------------------------------------------------------- PRIVATE FUNCTIONS
+  
 
   // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
@@ -106,11 +117,38 @@ export class ConversationsPage {
     });
   }
 
+  private getConversationBlocked(conversation: ConversationView): boolean {
+    const profile = this.profileService.profiles().get(conversation.participantId);
+    if (!profile) {
+      this.profileService.getProfileById(conversation.participantId);  // force loading the missing profile but don't delay the return
+      return true;  // consider blocked until loaded
+    }
+    if (profile.type === 'group') return false;
+    return profile.blocked;
+  }
+  
+
+  // -------------------------------------------------------- UI FUNCTIONS
+
+  async refreshConversations(event: any) {
+    setTimeout(() => event.target.complete(), 8000);  // max waiting time
+    Promise.all([
+      lastValueFrom(this.conversationService.loadMessagePreviews()),
+      lastValueFrom(this.conversationService.loadConversations()),
+      lastValueFrom(this.profileService.loadData())
+    ])
+    .then(() => {
+      event.target.complete();
+    })
+    .catch(() => {
+      this.alertService.displayErrorById("data-unavailable");
+      event.target.complete();
+    });
+  }
+
   toggleBlockedConversations() {
     this.showBlockedConversations.set(!this.showBlockedConversations());
   }
-
-  // UI FUNCTIONS
 
   onSearchBarInput(event: Event) {
     const input = (event.target as HTMLIonSearchbarElement).value;
@@ -124,16 +162,6 @@ export class ConversationsPage {
 
   openMultiselectActionSheet() {
     this.multiselectActionSheetOpen.set(true);
-  }
-
-  getConversationBlocked(conversation: ConversationView): boolean {
-    const profile = this.profileService.profiles().get(conversation.participantId);
-    if (!profile) {
-      this.profileService.getProfileById(conversation.participantId);  // force loading the missing profile but don't delay the return
-      return true;  // consider blocked until loaded
-    }
-    if (profile.type === 'group') return false;
-    return profile.blocked;
   }
 
   performMultiselectAction(event: CustomEvent<OverlayEventDetail>) {
@@ -177,13 +205,6 @@ export class ConversationsPage {
   ];
 
   public multiselectActionButtons = [
-    // {
-    //   text: this.translate.instant("page.conversations.conversation-action.delete"),
-    //   icon: "person-remove",
-    //   role: "destructive",
-    //   cssClass: "danger-text",
-    //   data: "delete"
-    // },
     {
       text: this.translate.instant("page.conversations.conversation-action.clear-messages"),
       icon: "trash-bin",

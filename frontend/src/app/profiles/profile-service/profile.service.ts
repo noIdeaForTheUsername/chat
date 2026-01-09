@@ -23,20 +23,20 @@ export class ProfileService {
   // public readonly loadErrorCode: WritableSignal<number | null> = signal(null);
 
   constructor() {
-    this.loadData();
+    this.loadData().subscribe();
   }
 
   loadData() {
-    forkJoin({
+    return forkJoin({
       profiles: this.api.getUserKnownProfiles(),
       currentProfile: this.api.getCurrentProfile()
-    }).subscribe({
-      next: ({ profiles, currentProfile }) => {
+    }).pipe(
+      tap(({ profiles, currentProfile }) => {
         this.profiles.set(profiles);
         this.profiles().set(currentProfile.id, currentProfile);
         this.profilesLoaded.set(true);
-      }
-    });
+      })
+    );
   }
 
   public getProfileById(id: number): Observable<Profile> {

@@ -8,7 +8,7 @@ import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { MessageView } from './message-view.interface';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-message-card',
@@ -54,7 +54,7 @@ export class MessageCardComponent  implements OnInit {
   }
 
   async ngOnInit() {
-    this.profile.set(await firstValueFrom(this.profileService.getProfileById(this.message().senderId)));
+    this.profile.set(await lastValueFrom(this.profileService.getProfileById(this.message().senderId)));
   }
 
   // Output actions

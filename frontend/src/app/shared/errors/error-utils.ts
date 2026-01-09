@@ -11,6 +11,11 @@ export var httpCodeMap: Map<number, string> = new Map([
   [500, 'server-error']
 ]);
 
+export var extraErrorsMap: Map<string, string> = new Map([
+  ["token-invalid", 'session-expired'],
+]);
+
+
 export function getErrorMessageKey(errorCode: number | string | null, translate: TranslateService): string {
   if (errorCode !== null) {
 
@@ -19,6 +24,11 @@ export function getErrorMessageKey(errorCode: number | string | null, translate:
     if (!isNaN(intId)) { 
       let mappedId = httpCodeMap.get(intId);
       errorCode = mappedId || "data-unavailable";  // HTTP codes fallback to "data-unavailable"
+    }
+    // String ID: try to map extra known error codes to error keys
+    else if (typeof errorCode === 'string') {
+      let mappedId = extraErrorsMap.get(errorCode);
+      if (mappedId) errorCode = mappedId;
     }
 
     let key = `error.${errorCode}.header`;

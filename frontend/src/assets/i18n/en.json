@@ -192,6 +192,7 @@
     "unblock": "Are you sure you want to unblock this user/group?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
+    "delete-message": "Are you sure you want to delete the selected own message(s)? (they will be gone for other users as well, however, they might still have temporary access if they don't have internet connection)",
 
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
     "start-conversation": "Start a new conversation with this user?"

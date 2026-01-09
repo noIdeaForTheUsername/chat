@@ -189,6 +189,7 @@
     "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
     "conversation-cleared": "Twoje wiadomości zostały usunięte.",
+    "delete-message": "Czy na pewno chcesz usunąć wybraną wiadomość / wiadomości? (zostaną one usunięte również dla innych użytkowników, jednak dalej mogą oni mieć do nich tymczasowy dostęp, jeśli nie mają połączenia z internetem)",
 
     "conversation-exists": "Konwersacja z tym użytkownikiem już istnieje. Czy chcesz ją otworzyć?",
     "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?"

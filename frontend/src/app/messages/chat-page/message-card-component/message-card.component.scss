@@ -1,6 +1,3 @@
-// Text aligns, float, etc. are set in the component's .ts file in ngOnInit (ionic util classes)
-
-
 div.message-container {
   // All messages
   display: flex;
@@ -29,7 +26,7 @@ div.message-container {
   background-color: rgba(var(--ion-text-color-rgb), 0.3);
 }
 
-div.message-container.selected message-card {
+div.message-container.selected .message-card {
   background-color: rgba(0, 255, 255, 0.484);
 }
 
@@ -109,8 +106,9 @@ ion-note {
   ion-card-content.message-text {
     width: 100%;
     display: block;
-    white-space: pre-wrap;
-
+    white-space: pre-wrap; // preserve user newlines
+    overflow-wrap: anywhere; // allow long words to break
+    word-break: break-word;  // fallback for older engines
     padding: 6px 10px;
   }
 }
@@ -122,6 +120,7 @@ ion-note {
   background-color: transparent;
   font-style: italic;
   font-weight: lighter;
+  --message-color: transparent;
 
   ion-card-content {
     color: var(--ion-text-color-step-150, #262626);

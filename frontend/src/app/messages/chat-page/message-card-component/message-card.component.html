@@ -9,10 +9,10 @@
 <!-- Message -->
 @else {
   <div class="message-container"
+  [class.deleted]="deleted()"
   [class.own]="message().isOwn"
   [class.space-before]="spaceBefore()"
   [class.selected]="selectionService().selectedIds().includes(message().globalId)"
-  [class.deleted]="deleted()"
   holdDirective (hold)="showActionMenuInternal(message().globalId)"
   (setClickLock)="setClickLock($event)"
   (click)="toggleItemSelectionInternal(message().globalId)"
@@ -38,9 +38,7 @@
           </ion-card>
         }
         <!-- message text -->
-        <ion-card-content class="message-text">
-          {{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}
-        </ion-card-content>
+          <ion-card-content class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}</ion-card-content>
       </div>
   </div>
 }

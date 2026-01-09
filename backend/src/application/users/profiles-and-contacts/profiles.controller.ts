@@ -23,8 +23,15 @@ export class ProfilesController {
 
   @Get('search')
   async searchProfiles(@Query('q') search: string) {
-    if (typeof search !== 'string' || search.length === 0)
+    if (typeof search !== 'string')
       throw new BadRequestException('search-empty');
+
+    // make sure no one tried to perform an empty search like " " to find all users with any field empty (security flaw)
+    search = search.trim();
+    if (!search || search.length === 0) {
+      throw new BadRequestException('search-empty');
+    }
+
     return await this.profilesService.findSearchedProfiles(search);
   }
 

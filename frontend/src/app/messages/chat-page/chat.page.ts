@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, NgZone, OnDestroy, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ConversationService } from '@app/conversations/conversation.service';
@@ -22,6 +22,8 @@ import { MessageLoadingIndicatorComponent } from './message-loading-indicator/me
 import { Conversation } from '@app/conversations/conversation.interface';
 import { Profile } from '@app/profiles/profile.interface';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { AlertService } from '@src/app/alerts/alert-service/alert.service';
+import { AlertType } from '@src/app/alerts/alert-type.enum';
 
 
 @Component({
@@ -43,6 +45,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected profileService = inject(ProfileService);
   private messageService = inject(MessageService);
   public selectionService = inject(SelectionService);
+  private alertService = inject(AlertService);
 
   // SETTINGS
   private readonly SCROLL_TO_BOTTOM_BUTTON_PX = 1500;
@@ -65,7 +68,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // LOADING
   protected initialLoading = computed(() => !this.messageService.dataLoaded());
-  protected loadError = signal<string | number | null>(null);
+  protected metadataLoadError = signal<string | number | null>(null);
   protected messageLoadError = this.messageService.loadError;
   protected messageLoading = this.messageService.additionalMessagesLoading;
   protected loadingMessagesAreOlder = this.messageService.loadingMessagesAreOlder;
@@ -76,6 +79,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected replyingToText = signal<string>("");
 
   // DISPLAYED MESSAGES STATE
+  protected firstMessageLoad = true;
   protected oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
   protected displayingNewestMessages = this.messageService.displayingNewestMessages;
   protected displayingOldestMessages = this.messageService.displayingOldestMessages;
@@ -87,17 +91,18 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected cornerMenuOpen = signal(false);
 
   // SCROLL MANAGEMENT
+  private performScrollCorrection = false;
   private firstMessageId: string = "";
   private firstMessageTopDistance: number | undefined = undefined;  // for infinite scroll correction
 
   // ------------------------------------------- INIT/LOAD FUNCTIONS -------------------------------------------
 
-  constructor(private route: ActivatedRoute)
+  constructor(private route: ActivatedRoute, private ngZone: NgZone)
   {
     // Get participant and conversation data
     let id = this.route.snapshot.paramMap.get('id');
     if (id === null || isNaN(parseInt(id))) {
-      this.loadError.set('bad-url');
+      this.metadataLoadError.set('bad-url');
       return;
     }
     this.conversationId = parseInt(id);
@@ -109,11 +114,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       // React to message list changes for scroll management and message acknowledgement
       const msgs = this.messageService.displayedMessages();
       if (msgs.length == 0) return;
-      if (this.firstMessageTopDistance === undefined) { // first load
+      if (this.firstMessageLoad) { // first load (saveScrollParams never called before)
+        this.firstMessageLoad = false;
         this.conversationService.ackowledgeConversationMessages(this.conversationId);
         requestAnimationFrame(() => this.content.scrollToBottom(0));
-      } else {  // next loads
+      } else if (this.performScrollCorrection) {  // next loads
         this.correctScrollOnMessageLoad();
+        this.performScrollCorrection = false;
       }
     });
 
@@ -149,6 +156,10 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.scrollElement = await this.content.getScrollElement();
   }
 
+  private waitForDomStable(): Promise<void> {
+    return firstValueFrom(this.ngZone.onStable);
+  }
+
   // ------------------------------------------- MESSAGE SENDING / UPDATING / FUNCTIONS -------------------------------------------
 
   onMessageFieldInput($event: Event) {
@@ -178,11 +189,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.correctScrollOnMessageSend();
   }
 
-  deleteMessage(id: number) {
-    this.messageService.deleteMessage(id);
-  }
-
-  // ------------------------------------------- SCROLL-RELATED FUNCTIONS -------------------------------------------
+  // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------
 
   onScroll(event: CustomEvent<ScrollDetail>) {
     // Handle message loading
@@ -212,17 +219,21 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
     if (this.initialLoading()) return;
-    if (loadFirstMessages && !this.displayingNewestMessages()) {
+    if (loadFirstMessages && !this.displayingNewestMessages()) {  // Reload newest messages
+      this.firstMessageLoad = true;  // there's an effect() code that will auto-scroll based on this variable
       this.messageService.loadConversationInitially(this.conversationId,
-        () => requestAnimationFrame(() => this.scrollToBottom(1000, false)));
+        async () => {
+          await this.waitForDomStable();
+          this.scrollToBottom(1000, false)
+        });
     }
-    else {
+    else {  // Just scroll to bottom
       this.messageService.cancelMessageLoad();
     }
     this.content.scrollToBottom(miliseconds);
   }
 
-  scrollToMessage(messageId: number, alwaysScroll = false) {
+  async scrollToMessage(messageId: number, alwaysScroll = false) {
     if (messageId <= this.messages()[this.messages().length - 1].globalId && messageId >= this.messages()[0].globalId) {
       const elem = document.getElementById("msg-" + messageId);
       if (elem === null) return;
@@ -234,22 +245,23 @@ export class ChatPage implements AfterViewInit, OnDestroy {
         this.highlightElement(elem);
       }
       else {
-        requestAnimationFrame(() => {
-           this.content.scrollToPoint(null, elemY - 25, 500);
-        });
+        await this.waitForDomStable();
+        this.content.scrollToPoint(null, elemY - 25, 500);
         setTimeout(() => this.highlightElement(elem), 500);
       }
     }
     else {
       this.messageService.loadMessagesByStartId(messageId, false,
-        () => requestAnimationFrame(
-          () => requestAnimationFrame(
-            () => this.scrollToMessage(messageId, true))));  // if somebody reads this: it works. don't complain.
+        async () => {
+          await this.waitForDomStable();
+          this.scrollToMessage(messageId, true);
+        });
     }
   }
 
   // Saves scroll params for correctScrollOnMessageLoad. Call just BEFORE message list updates
   saveScrollParams() {
+    this.performScrollCorrection = true;
     if (this.loadingMessagesAreOlder()) this.firstMessageId = "msg-" + this.messages()[0].globalId!;
     else this.firstMessageId = "msg-" + this.messages()[this.messages().length - 1].globalId!;
     const elem = document.getElementById(this.firstMessageId);
@@ -259,24 +271,22 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // Corrects scroll so the screen doesn't jump on msg reload. Call just AFTER message list updates.
   // Make sure saveScroll params is called just before message list update / this function call
-  correctScrollOnMessageLoad() {
-    requestAnimationFrame(() => {
-      if (this.firstMessageTopDistance === undefined) return;
-      const elem2 = document.getElementById(this.firstMessageId);
-      if (!elem2) return;
-      const diff = elem2.getBoundingClientRect().top - this.firstMessageTopDistance;
-      this.content.scrollByPoint(0, diff, 0);
-    });
+  async correctScrollOnMessageLoad() {
+    await this.waitForDomStable();
+    if (this.firstMessageTopDistance === undefined) return;
+    const elem2 = document.getElementById(this.firstMessageId);
+    if (!elem2) return;
+    const diff = elem2.getBoundingClientRect().top - this.firstMessageTopDistance;
+    this.content.scrollByPoint(0, diff, 0);
   }
 
   // After the message is sent, correct the scroll (if the user is at the bottom)
   // Call just before message list update.
-  correctScrollOnMessageSend() {
+  async correctScrollOnMessageSend() {
     if (!this.displayingNewestMessages()) return;
     if (this.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
-    requestAnimationFrame(() => 
-      this.scrollToBottom(300)
-    );
+    await this.waitForDomStable();
+    this.scrollToBottom(300);
   }
 
   getScrollPxAwayFromBottom() {
@@ -326,15 +336,33 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     else if (action == "reply" && this.actionMessageId()) this.replyToMessage(this.actionMessageId()!);
     else if (action == "copy") this.copySelectedMessageToClipboard(this.actionMessageId()!);
     else if (action == "delete") {
-      if (this.selectionService.selectionMode()) {
-        this.messageService.deleteMultipleMessages(this.selectionService.selectedIds());
-        this.selectionService.clearSelection();
-        return;
-      }
-      else this.messageService.deleteMessage(this.actionMessageId()!);
+      this.deleteMessage();
     }
     else if (action == "download") {} // TODO: IMPLEMENT
     this.actionMessageId.set(null);
+  }
+
+  private deleteMessage() {
+    if (this.selectionService.selectionMode()) {  // multiselect delete
+      this.promptMessageDeletion(() => {
+        this.messageService.deleteMultipleMessages(this.selectionService.selectedIds());
+        this.selectionService.clearSelection();
+      });
+    }
+    else {  // single delete
+      const id = this.actionMessageId();
+      this.promptMessageDeletion(() =>  {
+        this.messageService.deleteMessage(id!);
+        this.actionMessageId.set(null);
+      });
+    };
+  }
+
+  private promptMessageDeletion(confirmCallback: () => void) {
+    this.alertService.displayPromptAlert(
+      AlertType.DANGER_PROMPT,
+      this.translate.instant("prompt.delete-message"),
+      confirmCallback);
   }
 
   replyToMessage(id: number) {
@@ -371,7 +399,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.conversationService.loadMessagePreviews();
     this.messageService.exitConversation();
   }
 }
