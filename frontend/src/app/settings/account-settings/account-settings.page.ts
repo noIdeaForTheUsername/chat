@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
@@ -10,48 +10,6 @@ import { AuthService } from '@src/app/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { LoadingIndicator } from "@src/app/loading/loading-indicator-component/loading-indicator.component";
 import { Router } from '@angular/router';
-
-
-function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const passwordCtrl = group.get('password');
-  const repeatCtrl = group.get('passwordRepeat');
-  if (!passwordCtrl || !repeatCtrl) return null;
-
-  const password = (passwordCtrl.value ?? '').toString().trim();
-  const repeat = (repeatCtrl.value ?? '').toString().trim();
-
-  // Case A: both empty -> OK (clear password-related errors)
-  if (password === '' && repeat === '') {
-    const pwErr = { ...((passwordCtrl.errors as Record<string, any>) || {}) };
-    delete pwErr['required'];
-    delete pwErr['passwordMismatch'];
-    passwordCtrl.setErrors(Object.keys(pwErr).length ? pwErr : null);
-
-    const repErr = { ...((repeatCtrl.errors as Record<string, any>) || {}) };
-    delete repErr['required'];
-    delete repErr['passwordMismatch'];
-    repeatCtrl.setErrors(Object.keys(repErr).length ? repErr : null);
-    return null;
-  }
-
-  // Case B: at least one non-empty -> both must be non-empty and equal
-  const pwErrors = { ...((passwordCtrl.errors as Record<string, any>) || {}) };
-  const repErrors = { ...((repeatCtrl.errors as Record<string, any>) || {}) };
-
-  // required if empty
-  if (password === '') pwErrors['required'] = true; else delete pwErrors['required'];
-  if (repeat === '') repErrors['required'] = true; else delete repErrors['required'];
-
-  // mismatch if both non-empty and different
-  if (password !== '' && repeat !== '' && password !== repeat) repErrors['passwordMismatch'] = true;
-  else delete repErrors['passwordMismatch'];
-
-  passwordCtrl.setErrors(Object.keys(pwErrors).length ? pwErrors : null);
-  repeatCtrl.setErrors(Object.keys(repErrors).length ? repErrors : null);
-
-  return null;
-}
-
 
 @Component({
   selector: 'app-account-settings',
@@ -77,6 +35,11 @@ export class AccountSettingsPage implements OnInit {
 
   protected loading = signal(true);
   protected loadErr = signal<number | string | null>(null);
+
+  protected currentPasswordNonEmpty = computed(() => {
+    const val = this.form.get('currentPassword')?.value;
+    return val !== null && val !== undefined;
+  });
 
   ngOnInit(): void {
     this.loadAccount();
@@ -146,4 +109,45 @@ export class AccountSettingsPage implements OnInit {
       }
     });
   }
+}
+
+
+function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
+  const passwordCtrl = group.get('password');
+  const repeatCtrl = group.get('passwordRepeat');
+  if (!passwordCtrl || !repeatCtrl) return null;
+
+  const password = (passwordCtrl.value ?? '').toString().trim();
+  const repeat = (repeatCtrl.value ?? '').toString().trim();
+
+  // Case A: both empty -> OK (clear password-related errors)
+  if (password === '' && repeat === '') {
+    const pwErr = { ...((passwordCtrl.errors as Record<string, any>) || {}) };
+    delete pwErr['required'];
+    delete pwErr['passwordMismatch'];
+    passwordCtrl.setErrors(Object.keys(pwErr).length ? pwErr : null);
+
+    const repErr = { ...((repeatCtrl.errors as Record<string, any>) || {}) };
+    delete repErr['required'];
+    delete repErr['passwordMismatch'];
+    repeatCtrl.setErrors(Object.keys(repErr).length ? repErr : null);
+    return null;
+  }
+
+  // Case B: at least one non-empty -> both must be non-empty and equal
+  const pwErrors = { ...((passwordCtrl.errors as Record<string, any>) || {}) };
+  const repErrors = { ...((repeatCtrl.errors as Record<string, any>) || {}) };
+
+  // required if empty
+  if (password === '') pwErrors['required'] = true; else delete pwErrors['required'];
+  if (repeat === '') repErrors['required'] = true; else delete repErrors['required'];
+
+  // mismatch if both non-empty and different
+  if (password !== '' && repeat !== '' && password !== repeat) repErrors['passwordMismatch'] = true;
+  else delete repErrors['passwordMismatch'];
+
+  passwordCtrl.setErrors(Object.keys(pwErrors).length ? pwErrors : null);
+  repeatCtrl.setErrors(Object.keys(repErrors).length ? repErrors : null);
+
+  return null;
 }

@@ -5,11 +5,11 @@ export class Profile {
   @PrimaryColumn({ update: false })
   id: number;
 
-  @Column()
-  name: string;
+  @Column({ type: 'varchar', nullable: true })
+  name: string | null;
 
-  @Column()
-  bio: string;
+  @Column({ type: 'text', nullable: true })
+  bio: string | null;
 
   @Column({ default: false, name: 'phone_number_public' })
   phoneNumberPublic: boolean;

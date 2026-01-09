@@ -121,7 +121,7 @@
 
     "account-settings": {
       "title": "Ustawienia konta",
-      "hint": "Wpisz obecne hasło, po czym edytuj tylko te pola, które chcesz zmienić. Następnie potwierdź przyciskiem na dole strony.",
+      "hint": "Wpisz <b>obecne hasło</b>, po czym edytuj <b>tylko te pola, które chcesz zmienić</b>. Następnie potwierdź przyciskiem na dole strony.",
       "new-password": "Nowe hasło (jeśli chcesz je zmienić)"
     },
 
@@ -150,8 +150,8 @@
       "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
       "email-input": "Adres e-mail",
       "phone-input": "Telefon z numerem kierunkowym",
-      "email-phone-hint": "Wymagane jest co najmniej jedno poniższe (zalecany telefon)",
-      "email-phone-settings": "Pozwól innym użytkownikom znaleźć mnie po następujących polach (pola te zawsze pozostaną publicznie ukryte, nawet, jeśli włączysz te opcje)",
+      "email-phone-hint": "Wymagane jest co najmniej jedno poniższe (zalecany telefon). Tymi danymi będziesz mógł się zalogować",
+      "email-phone-settings": "Pozwól innym użytkownikom znaleźć mnie po następujących polach (pola te zawsze pozostaną publicznie ukryte nawet, jeśli włączysz te opcje)",
       "bio-input": "Opis profilu (opcjonalnie)",
       "login-hint": "Mam już konto"
     }
@@ -251,7 +251,7 @@
     },
     "exists": {
       "header": "Konflikt",
-      "description": "Użytkownik z takim {{field}} już istnieje"
+      "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
     },
 
     "failed-to-delete": "Nie udało się usunąć"

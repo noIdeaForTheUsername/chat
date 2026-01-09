@@ -36,7 +36,7 @@ export class ProfilesController {
   }
 
   @Patch('me')
-  async updateMyProfile(@UserId() userId: number, @Body() dto: Partial<PatchProfileDto>) {
+  async updateMyProfile(@UserId() userId: number, @Body() dto: PatchProfileDto) {
     return await this.profilesService.updateProfile(userId, dto);
   }
 

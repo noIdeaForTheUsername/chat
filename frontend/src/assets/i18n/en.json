@@ -123,7 +123,7 @@
 
     "account-settings": {
       "title": "Account settings",
-      "hint": "Enter the current password, and then only edit the fields you want to change. Finally, confirm with the button at the bottom of the page.",
+      "hint": "Enter the <b>current password</b>, and then only edit the <b>fields you want to change</b>. Finally, confirm with the button at the bottom of the page.",
       "new-password": "New password (if you want to change it)"
     },
 
@@ -152,7 +152,7 @@
       "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
-      "email-phone-hint": "At least one is required (phone recommended)",
+      "email-phone-hint": "At least one is required (phone recommended). You'll be able to log in using these fields",
       "email-phone-settings": "Make other users able to find me by my (this data will always remain publically hidden, even if you enable these options)",
       "bio-input": "Profile description (optional)",
       "login-hint": "I already have an account"

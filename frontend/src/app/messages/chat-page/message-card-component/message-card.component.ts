@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
-import { IonCard, IonCardContent, IonIcon, IonNote } from "@ionic/angular/standalone"
 import { ChatNoteComponent } from '../info-note/chat-note.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
@@ -14,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonCard, IonCardContent, IonIcon, ChatNoteComponent, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
+  imports: [ChatNoteComponent, TranslatePipe, HoldDirective, VisibleNamePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
@@ -35,7 +34,6 @@ export class MessageCardComponent  implements OnInit {
 
   // appearance
   protected profile = signal<Profile | undefined>(undefined);
-  protected color = signal<string | undefined>(undefined);
   protected spaceBefore = computed(() => this.previousMessage() && this.previousMessage()!.isOwn != this.message().isOwn && !this.unreadNoteAbove());
   // selection
   private clickLock = false;
@@ -56,7 +54,6 @@ export class MessageCardComponent  implements OnInit {
 
   async ngOnInit() {
     this.profile.set(await firstValueFrom(this.profileService.getProfileById(this.message().senderId)));
-    this.color.set(this.message().isOwn ? "secondary" : undefined);
   }
 
   // Output actions

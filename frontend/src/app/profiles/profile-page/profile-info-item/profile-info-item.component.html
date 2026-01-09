@@ -1,15 +1,10 @@
-@if (value() !== undefined || editable()) {
+@if (!hidden()) {
   <ion-item lines="full" [class.unset]="false" [class.editable]="editable()">
 
     <ion-label class="title">
       <span>{{title()}}</span>
       @if (infoBox()) {
         <ion-icon name="help-circle" size="large" class="clickable" (click)="displayInfoBox()"></ion-icon>
-        <!-- <ion-popover [trigger]="`info-box-${title}`">
-          <ng-template>
-            <ion-content class="ion-padding ion-bords">{{infoBoxContent()}}</ion-content>
-          </ng-template>
-        </ion-popover> -->
       }
     </ion-label>
 

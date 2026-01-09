@@ -12,11 +12,13 @@
     <p class="ion-margin" [innerHTML]="'page.discovery.info' | translate"></p>
 
     <!-- confirm button -->
-    <ion-button class="ion-padding search-button"
-      [disabled]="searchBar.value?.trim()?.length === 0"
-      (click)="displaySearchResults()">
-      {{"common.confirm" | translate}}
-    </ion-button>
+    <div class="search-button-container">
+      <ion-button class="ion-padding search-button"
+        [disabled]="searchBar.value?.trim()?.length === 0"
+        (click)="displaySearchResults()">
+        {{"common.confirm" | translate}}
+      </ion-button>
+    </div>
 
     <!-- LOADING OR RESULTS -->
     @if (searchBarFilled() && searchLoading()) {

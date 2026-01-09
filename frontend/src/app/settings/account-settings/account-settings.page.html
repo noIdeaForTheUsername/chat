@@ -10,7 +10,7 @@
       <h1>{{ 'page.account-settings.title' | translate }}</h1>
 
       <hr>
-      <p class="hint">{{ 'page.account-settings.hint' | translate }}</p>
+      <p class="top-hint" [innerHTML]="'page.account-settings.hint' | translate"></p>
 
       <div class="floating-input">
         <label>
@@ -33,7 +33,7 @@
       <div class="floating-input">
         <label>
           <p>{{ 'page.register.phone-input' | translate }}:</p>
-          <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000">
+          <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000" [disabled]="!currentPasswordNonEmpty()">
         </label>
       </div>
 
@@ -43,14 +43,14 @@
       <div class="floating-input">
         <label>
           <p>{{ 'page.account-settings.new-password' | translate }}:</p>
-          <input formControlName="password" type="password">
+          <input formControlName="password" type="password" [disabled]="!currentPasswordNonEmpty()">
         </label>
       </div>
 
       <div class="floating-input">
         <label>
           <p>{{ 'profile.password-repeat' | translate }}:</p>
-          <input formControlName="passwordRepeat" type="password">
+          <input formControlName="passwordRepeat" type="password" [disabled]="!currentPasswordNonEmpty()">
         </label>
       </div>
 

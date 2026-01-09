@@ -22,7 +22,8 @@ export class ProfileInfoItemComponent {
   infoBox = input(false);
   infoBoxContent = input("");
 
-  valueDisplay = computed(() => this.value() === undefined ?  this.translate.instant("page.profile-details.unset") : this.value());
+  protected valueDisplay = computed(() => this.value() === undefined ? this.translate.instant("page.profile-details.unset") : this.value());
+  protected hidden = computed(() => (this.value() === undefined || this.value() === "") && !this.editable());
 
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);

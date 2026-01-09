@@ -13,7 +13,7 @@ export function getVisibleName(value: Profile | undefined, alwaysIncludeUserLogi
       if (alwaysIncludeUserLogin) toReturn += ` (@${value.login})`;
       return toReturn;
     }
-    else return '@' + value.login;
+    else return value.login;
   }
   else {
     return value.name;

@@ -70,7 +70,8 @@ export class AuthController {
     res.cookie('authJwt', jwt, {
       httpOnly: this.config.get('cookies.httpOnly'),
       sameSite: this.config.get('cookies.sameSite'),
-      secure: this.config.get('cookies.secure')
+      secure: this.config.get('cookies.secure'),
+      maxAge: this.config.get<number>('cookies.expire_ms'),
     });
   }
 }

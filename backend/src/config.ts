@@ -1,4 +1,5 @@
 const defaultJwtExpiration = '7d';
+const defaultCookieExpirationMs = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export default () => {
   const configObject = {
@@ -17,7 +18,8 @@ export default () => {
       // if not explicitly set to 'false', then true because it is safer
       sameSite: process.env.COOKIES_SAME_SITE?.toLowerCase() ?? 'lax',
       httpOnly: process.env.COOKIES_HTTP_ONLY?.toLowerCase() !== 'false',
-      secure: process.env.COOKIES_SECURE?.toLowerCase() !== 'false'
+      secure: process.env.COOKIES_SECURE?.toLowerCase() !== 'false',
+      expire_ms: process.env.COOKIES_EXPIRE_MS ? parseInt(process.env.COOKIES_EXPIRE_MS, 10) : defaultCookieExpirationMs,
     },
 
     cors: {
