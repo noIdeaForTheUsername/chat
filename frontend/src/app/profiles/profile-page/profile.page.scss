@@ -21,6 +21,10 @@ ion-content {
   margin-bottom: 20px;
 }
 
+.hint {
+  color: var(--ion-text-color-step-300);
+}
+
 ion-item-group {
   max-width: 700px;
   margin: auto;

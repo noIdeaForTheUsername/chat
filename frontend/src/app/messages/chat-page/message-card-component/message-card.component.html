@@ -17,13 +17,13 @@
        (contextmenu)="showActionMenuInternal(message().globalId, $event)">
 
     @if (displayMetadata()) { 
-      <small class="meta">{{profile() | visibleName}} | {{displayedDate()}}</small> 
+      <p class="meta">{{profile() | visibleName}} | {{displayedDate()}}</p> 
     }
 
     <div [id]="'msg-' + message().globalId" class="message-card" [class.own]="message().isOwn">
       @if (repliedId && !deleted()) {
         <div class="replied-preview" (click)="repliedClickInternal(repliedId)">
-          <span class="icon-arrow" aria-hidden="true">↩</span>
+          <ion-icon name="arrow-redo" class="icon-arrow"/>
           <span class="replied-text">{{repliedText || '○ ○ ○'}}</span>
         </div>
       }
