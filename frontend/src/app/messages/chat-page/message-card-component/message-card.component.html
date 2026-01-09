@@ -1,39 +1,46 @@
 @let repliedId = message().repliedId;
 @let repliedText = message().repliedText;
 
+<!-- "Unread messages" text -->
 @if (unreadNoteAbove()) {
   <app-chat-note [line]="true" class="red space-before" [text]="'page.chat.new-messages' | translate"/>
 }
 
+<!-- Message -->
 @else {
   <div class="message-container"
-       [class.own]="message().isOwn"
-       [class.space-before]="spaceBefore()"
-       [class.selected]="selectionService().selectedIds().includes(message().globalId)"
-       [class.deleted]="deleted()"
-       holdDirective (hold)="showActionMenuInternal(message().globalId)"
-       (setClickLock)="setClickLock($event)"
-       (click)="toggleItemSelectionInternal(message().globalId)"
-       (contextmenu)="showActionMenuInternal(message().globalId, $event)">
+  [class.own]="message().isOwn"
+  [class.space-before]="spaceBefore()"
+  [class.selected]="selectionService().selectedIds().includes(message().globalId)"
+  [class.deleted]="deleted()"
+  holdDirective (hold)="showActionMenuInternal(message().globalId)"
+  (setClickLock)="setClickLock($event)"
+  (click)="toggleItemSelectionInternal(message().globalId)"
+  (contextmenu)="showActionMenuInternal(message().globalId, $event)">
 
+    <!-- message metadata -->
     @if (displayMetadata()) { 
-      <p class="meta">{{profile() | visibleName}} | {{displayedDate()}}</p> 
+      <ion-note>{{profile() | visibleName}} | {{displayedDate()}}</ion-note> 
     }
 
-    <div [id]="'msg-' + message().globalId" class="message-card" [class.own]="message().isOwn">
-      @if (repliedId && !deleted()) {
-        <div class="replied-preview" (click)="repliedClickInternal(repliedId)">
-          <ion-icon name="arrow-redo" class="icon-arrow"/>
-          <span class="replied-text">{{repliedText || '○ ○ ○'}}</span>
-        </div>
-      }
-
-      <div class="message-text">
-        {{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}
+    <!-- message card -->
+    <div
+      [id]="'msg-' + message().globalId"
+      class="message-card"
+      [class.own]="message().isOwn">
+        @if (repliedId && !deleted()) {
+          <!-- response card -->
+          <ion-card class="replied-preview" (click)="repliedClickInternal(repliedId)">
+            <ion-card-content>
+              <ion-icon name="arrow-redo"></ion-icon>&nbsp;
+              <span>{{repliedText || '○ ○ ○'}}</span>
+            </ion-card-content>
+          </ion-card>
+        }
+        <!-- message text -->
+        <ion-card-content class="message-text">
+          {{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}
+        </ion-card-content>
       </div>
-    </div>
   </div>
 }
-
-
-
