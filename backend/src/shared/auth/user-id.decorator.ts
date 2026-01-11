@@ -3,7 +3,7 @@ import { createParamDecorator, ExecutionContext, HttpException, HttpStatus } fro
 export const UserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user.sub;
+    return request.userAuth.sub;
     // if (!userId)
     //   throw new HttpException(
     //     'Invalid authentication token',

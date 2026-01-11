@@ -44,13 +44,6 @@ export class ProfilesDomainService {
     return profile;
   }
 
-  async findRawProfile(id: number, exceptionOnNotFound = false) {
-    const profile = await this.profiles.findOneBy( { id } );
-    if (!profile && exceptionOnNotFound)
-      throw new NotFoundException('not-found.profile');
-    return profile;
-  }
-
   async findSearchedProfiles(search: string) {
     const loginSearch = normalizeLogin(search);
     const emailSearch = normalizeEmail(search);
@@ -101,7 +94,6 @@ export class ProfilesDomainService {
 
     const edited = await this.profiles.findOneBy({ id });
     if (!edited) throw new NotFoundException('not-found.profile');
-    // console.log('Edited profile:', edited);
     return edited;
   }
 }

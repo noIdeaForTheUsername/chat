@@ -14,21 +14,27 @@ export class AccountsDomainService {
 
   // GETTING DATA
 
-  async findAccountById(id: number, exceptionOnNotFound = false) {
-    const found = await this.accounts.findOneBy({ id });
-    if (!found && exceptionOnNotFound)
+  async findById(id: number) {
+    return await this.accounts.findOneBy({ id });
+  }
+  async findExistingById(id: number) {
+    const found = await this.findById(id);
+    if (!found)
       throw new NotFoundException('not-found.user');
     return found;
   }
 
-  async findAccountByLogin(login: string, exceptionOnNotFound = false) {
-    const found = await this.accounts.findOneBy({ login });
-    if (!found && exceptionOnNotFound)
+  async findByLogin(login: string, exceptionOnNotFound = false) {
+    return await this.accounts.findOneBy({ login });
+  }
+  async findExistingByLogin(login: string) {
+    const found = await this.findByLogin(login);
+    if (!found)
       throw new NotFoundException('not-found.user');
     return found;
   }
 
-  async findAccountByUniqueField(loginOrEmailOrPhone: string) {
+  async findByUniqueField(loginOrEmailOrPhone: string) {
     const loginCheck = normalizeLogin(loginOrEmailOrPhone);
     const emailCheck = normalizeEmail(loginOrEmailOrPhone);
     const phoneNumberCheck = normalizePhone(loginOrEmailOrPhone);
@@ -42,9 +48,13 @@ export class AccountsDomainService {
     });
   }
 
+  async findUnactivatedAccounts() {
+    return await this.accounts.findBy({ activated: false });
+  }
+
   // CREATING
 
-  async createAccount(login: string, passwordHash: string, email?: string, phoneNumber?: string) {
+  async create(login: string, passwordHash: string, email?: string, phoneNumber?: string) {
     const newAccount = this.accounts.create({
       login,
       passwordHash,
@@ -57,9 +67,12 @@ export class AccountsDomainService {
 
   // MODIFYING/DELETING DATA
 
-  async updateAccount(id: number, updatedFields: Partial<Account>) {
+  // Only for basic account data modifications and password changes, nothing regarding privileges
+  async update(id: number, updatedFields: Partial<Account>) {
     updatedFields.id = undefined;  // prevent id change
     updatedFields.login = undefined;  // prevent login change
+    updatedFields.activated = undefined;  // prevent activation change
+    updatedFields.admin = undefined;  // prevent privilege change
 
     await this.accounts.update(
       { id },
@@ -71,7 +84,24 @@ export class AccountsDomainService {
     return acc;
   }
 
-  async deleteAccount(id: number) {
+  // (de)activate account
+  async changeActivationStatus(id: number, activated: boolean) {
+    const result = await this.accounts.update(
+      { id },
+      { activated: activated }
+    );
+    if (result.affected === 0) throw new NotFoundException("not-found.account");
+  }
+  
+  async changeAdminStatus(id: number, isAdmin: boolean) {
+    const result = await this.accounts.update(
+      { id },
+      { admin: isAdmin }
+    );
+    if (result.affected === 0) throw new NotFoundException("not-found.account");
+  }
+
+  async delete(id: number) {
     await this.accounts.delete({ id });
   }
 }

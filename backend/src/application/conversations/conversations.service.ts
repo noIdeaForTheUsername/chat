@@ -1,4 +1,5 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { ConversationType } from 'src/domain/conversations/entities/conversation-type.enum';
@@ -13,6 +14,7 @@ export class ConversationsService {
     private readonly messages: MessagesDomainService,
     private readonly profiles: ProfilesDomainService,
     private readonly contacts: ContactsDomainService,
+    private readonly accounts: AccountsDomainService
   ) {}
 
   async getUserConversations(userId: number) {
@@ -26,13 +28,11 @@ export class ConversationsService {
 
   async createConversation(callerId: number, type: ConversationType, participantId?: number) {
     if (type === ConversationType.Direct) {
-      // validate participantId
+      // check for stupid inputs
       if (!participantId)
         throw new BadRequestException('participantId is required for direct conversations');
       if (participantId === callerId)
-        throw new BadRequestException('partcipantId cannot be your own user ID');
-      // assert participant exists
-      await this.profiles.findRawProfile(participantId, true);
+        throw new BadRequestException('participantId cannot be your own user ID');
 
       // execute
       return await this.createDirectConversation(callerId, participantId);
@@ -43,6 +43,11 @@ export class ConversationsService {
 
   @Transactional()
   private async createDirectConversation(callerId: number, participantId: number) {
+    // assert participant exists and their account is activated
+    const account = await this.accounts.findExistingById(participantId);
+    if (!account.activated)
+      throw new NotFoundException('not-found.user');  // treat deactivated accounts as non-existing
+
     // check if the conversation already exists
     const existing = await this.conversations.findDirectConversationBetweenUsers(callerId, participantId);
     if (existing !== null) 

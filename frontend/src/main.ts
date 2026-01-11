@@ -2,7 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 
-import { provideZoneChangeDetection } from "@angular/core";
+import { inject, provideAppInitializer, provideZoneChangeDetection, isDevMode } from "@angular/core";
 import { provideTranslateService } from "@ngx-translate/core";
 
 import { routes } from './app/app.routes';
@@ -13,8 +13,12 @@ import { credentialsInterceptor } from '@app/http/credentials.interceptor';
 import { loggingInterceptor } from '@app/http/logging.interceptor';
 import { connectionErrorInterceptor } from '@app/http/connection-error.interceptor';
 import { authInterceptor } from '@app/http/auth.interceptor';
+import { AuthService } from './app/auth/auth.service';
+import { provideServiceWorker } from '@angular/service-worker';
+
 
 bootstrapApplication(AppComponent, {
+
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
@@ -26,6 +30,13 @@ bootstrapApplication(AppComponent, {
     provideTranslateService({
       fallbackLang: 'en',
       lang: 'en'
-    })
+    }),
+    provideAppInitializer(() => {
+      const authService = inject(AuthService);
+      authService.init();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages
+    }), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          }),
   ],
 });

@@ -45,4 +45,12 @@ export const routes: Routes = [
     path: 'settings/account',
     loadComponent: () => import('./settings/account-settings/account-settings.page').then( m => m.AccountSettingsPage)
   },
+  {
+    path: 'welcome',
+    loadComponent: () => import('./welcoming/welcome/welcome.page').then( m => m.WelcomePage)
+  },
+  {
+    path: 'account-inactive',
+    loadComponent: () => import('./welcoming/account-inactive/account-inactive.page').then( m => m.AccountInactivePage)
+  },
 ];

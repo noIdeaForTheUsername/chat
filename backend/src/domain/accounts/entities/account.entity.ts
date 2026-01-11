@@ -16,4 +16,10 @@ export class Account {
 
   @Column({ nullable: true, type: "varchar", name: 'phone_number' })
   phoneNumber: string | null;
+
+  @Column({ default: false })
+  activated: boolean;
+
+  @Column({ default: false })
+  admin: boolean;
 }

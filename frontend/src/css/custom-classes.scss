@@ -131,6 +131,13 @@ button.alert-button.danger {
   animation: pulse-animation 2s infinite ease-in-out;
 }
 
+// Max width for centering content on large screens, mainly desktops
+.max-width-container {
+  max-width: 1000px;
+  height: 100%;
+  margin: auto;
+}
+
 @keyframes pulse-animation {
   0% {
     transform: scale(0.8);

@@ -65,10 +65,6 @@ export class MessagesDomainService {
       globalIdCondition = olderThanStart ? LessThan(globalIdStartExclusive) : MoreThan(globalIdStartExclusive);
     
     const orderDirection = olderThanStart ? 'DESC' : 'ASC';
-
-    console.log("entry params: ", {
-      conversationId, limit, olderThanStart, globalIdStartExclusive, orderDirection, globalIdCondition
-    });
     
     const result = await this.messageRepository.find({
       where: {
@@ -80,7 +76,7 @@ export class MessagesDomainService {
     });
     if (orderDirection === 'DESC')
       result.reverse();
-    console.log(result);
+    
     return result;
   }
 

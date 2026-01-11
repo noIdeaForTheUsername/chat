@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form action="/login" method="POST">
+    Login, email or phone number: <input type="text" name="account"/><br/>
+    Password: <input type="password" name="password"/><br/>
+    <input type="submit" value="Log in">
+  </form>
+  
+  <hr>
+
+  <h1>Activate a user account:</h1>
+  Input account ID (please be careful!): <input type="text" id="accountId"/><br/>
+  <button id="activateBtn">Activate account</button>
+
+  <script>
+    document.getElementById("activateBtn").addEventListener("click", () => {
+      let answer = confirm("Are you sure you want to activate this account?");
+      if (!answer) return;
+
+      const accountId = document.getElementById("accountId").value;
+      console.log("accountId", accountId);
+      fetch(`/accounts/${accountId}/activated/`, {
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify({ activated: true }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          alert("Account activated successfully");
+          window.location.reload();
+        } else if (res.status === 401) {
+          alert("Unauthorized - please log in using the admin account");
+        } else if (res.status === 403) {
+          alert("Forbidden - please log in using the admin account");
+        } else if (res.status === 404) {
+          alert("Account not found");
+        } else {
+          alert("Error activating account");
+        }
+      });
+    });
+  </script>
+
+  <hr>
+
+  <h1>Unactivated accounts list:</h1>
+  <ul id="list"></ul>
+
+
+  <script>
+    fetch("/accounts/unactivated", { credentials: "include" })
+      .then((res) => res.json())
+      .then((accounts) => {
+        const list = document.getElementById("list");
+        if (accounts.statusCode === 401) {
+          list.textContent = "Unauthorized - please log in using the admin account";
+          return;
+        }
+        if (accounts.statusCode === 403) {
+          list.textContent = "Forbidden - please log in using the admin account";
+          return;
+        }
+        accounts.forEach(a => {
+          const sublist = document.createElement("ul");
+          for (const key in a) {
+            const item = document.createElement("li");
+            item.textContent = `${key}: ${a[key]}`;
+            sublist.appendChild(item);
+          }
+          list.appendChild(sublist);
+          list.appendChild(document.createElement("hr"));
+        });
+      });
+  </script>
+</body>
+</html>

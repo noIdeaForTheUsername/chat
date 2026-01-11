@@ -27,7 +27,8 @@ export class LoginPage {
   protected authService = inject(AuthService);
   protected translate = inject(TranslateService);
 
-  protected displayBackButton = computed(() => this.authService.getUserId() !== null);
+  protected backButtonDefaultHref = computed(() => this.authService.getUserId() ? '/chats' : "/");
+  // protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
   loginForm = new FormGroup({
     account: new FormControl('', { nonNullable: true, validators: [Validators.required] }),

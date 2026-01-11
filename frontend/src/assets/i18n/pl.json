@@ -4,6 +4,8 @@
   },
 
   "common": {
+    "other-lang": "English",
+    "welcome": "Witamy",
     "ok": "OK",
     "confirm": "Zatwierdź",
     "cancel": "Anuluj",
@@ -37,6 +39,25 @@
   },
 
   "page": {
+    "welcome" : {
+      "header": "Witaj!",
+      "description": "Bezpieczna i prywatna aplikacja do przesyłania wiadomości.",
+      "hint": "Musisz się zarejestrować lub zalogować, aby korzystać z aplikacji.",
+      "create-account": "Chcę utworzyć nowe konto",
+      "have-account": "Mam już konto"
+    },
+    "account-inactive": {
+      "title": "Rejestracja udana",
+      "description": "Prośba o założenie konta została przyjęta. Zanim będziesz mógł używać aplikacji, poczekaj, aż administrator aktywuje Twoje konto. To nie powinno trwać dłużej niż dzień",
+      "different-account": "Chcę zalogować się na inne konto",
+      "meantime": "W międzyczasie",
+      "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego",
+      "install-button": "Zainstaluj",
+      "notifications-label": "Włącz powiadomienia, aby otrzymywać informacje o aktywacji konta lub nowych odebranych wiadomościach",
+      "notifications-button": "Włącz"
+    },
+
+
     "conversations": {
       "title": "Konwersacje",
       "add-conversation-hint": "Użyj przycisku + w prawym dolnym rogu ekranu, aby rozpocząć pierwszą konwersację",

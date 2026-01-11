@@ -1,0 +1,41 @@
+<app-standard-header [title]="'page.account-inactive.title' | translate" [backButton]="false">
+  <ion-buttons slot="end">
+    <app-language-button/>
+  </ion-buttons>
+</app-standard-header>
+
+<ion-content [fullscreen]="true" class="ion-padding ion-text-center">
+  <div class="max-width-container spacer">
+    <!-- Title and icon -->
+    <h1>{{ 'page.account-inactive.title' | translate }}</h1>
+    <ion-icon name="hourglass" color="primary"></ion-icon>
+    <p>{{ 'page.account-inactive.description' | translate }}</p>
+    <a routerLink="/login">{{ 'page.account-inactive.different-account' | translate }}</a>
+
+    <!-- "Meantime" actions -->
+    <hr/>
+    <h2>{{ 'page.account-inactive.meantime' | translate }}:</h2>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'page.account-inactive.install-label' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button (click)="ngOnInit()">
+          {{ 'page.account-inactive.install-button' | translate }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'page.account-inactive.notifications-label' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button (click)="ngOnInit()">
+          {{ 'page.account-inactive.notifications-button' | translate }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

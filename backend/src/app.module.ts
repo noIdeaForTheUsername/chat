@@ -15,15 +15,17 @@ import { FullProfile } from './domain/profiles/entities/full-profile.entity';
 import { Contact } from './domain/contacts/entities/contact.entity';
 import { ConversationsModule } from './application/conversations/conversations.module';
 import { addTransactionalDataSource } from 'typeorm-transactional';
-import { AuthModule } from './application/users/auth/auth.module';
+import { AccountsModule } from './application/users/accounts/accounts.module';
 import { ProfilesModule } from './application/users/profiles-and-contacts/profiles.module';
 import { Message } from './domain/messages/entities/message.entity';
 import { MessagesModule } from './application/messages/messages.module';
 import { UserMessage } from './domain/messages/entities/user-message.entity';
 import { LatestUserMessage } from './domain/messages/entities/latest-user-message.entity';
-import { ContactsDomainModule } from './domain/contacts/contacts.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
+import { AccountsDomainModule } from './domain/accounts/accounts.module';
+import { AuthModule } from './application/users/auth/auth.module';
+
 
 @Module({
     imports: [
@@ -52,9 +54,11 @@ import config from './config';
     }),
     
     AuthModule,
+    AccountsModule,
     ProfilesModule,
     ConversationsModule,
     MessagesModule,
+    AccountsDomainModule  // for LoggedInGuard
   ],
   controllers: [AppController],
   providers: [

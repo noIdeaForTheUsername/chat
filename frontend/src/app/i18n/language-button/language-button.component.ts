@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { IonButton, IonIcon } from "@ionic/angular/standalone";
 import { LanguageService } from '../language.service';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-language-button',
   templateUrl: './language-button.component.html',
-  imports: [IonButton, IonIcon],
+  imports: [IonButton, IonIcon, TranslatePipe],
 })
 export class LanguageButtonComponent {
 

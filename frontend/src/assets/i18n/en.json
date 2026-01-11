@@ -4,6 +4,7 @@
   },
 
   "common": {
+    "other-lang": "Polski",
     "ok": "OK",
     "confirm": "Confirm",
     "cancel": "Cancel",
@@ -38,6 +39,23 @@
 
 
   "page": {
+    "welcome" : {
+      "header": "Welcome!",
+      "description": "A secure and private messaging app.",
+      "hint": "You need to register or log in to use the app.",
+      "create-account": "I want to create a new account",
+      "have-account": "I already have an account"
+    },
+    "account-inactive": {
+      "title": "Registration Successful",
+      "description": "Your account creation request has been received. Before you can use the app, please wait for an administrator to activate your account. This should not take longer than a day.",
+      "different-account": "I want to log in to a different account",
+      "meantime": "In the meantime",
+      "install-label": "Install the app to have access from your phone's home screen",
+      "install-button": "Install",
+      "notifications-label": "Enable notifications to get informed about account activation or new received messages",
+      "notifications-button": "Enable"
+    },
 
     "conversations": {
       "title": "Conversations",

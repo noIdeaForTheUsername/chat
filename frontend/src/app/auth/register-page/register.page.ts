@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
@@ -55,6 +55,8 @@ export class RegisterPage {
   private alertService = inject(AlertService);
   protected translate = inject(TranslateService);
 
+  protected backButtonDefaultHref = computed(() => this.auth.getUserId() ? '/chats' : "/");
+
   form = new FormGroup({
     name: new FormControl(''),
     login: new FormControl('', { nonNullable: true, validators: [Validators.required, loginValidator] }),
@@ -105,7 +107,12 @@ export class RegisterPage {
     if (body.phoneNumber?.trim() === '+48') {  // erase if it was at the default prefix value
       body.phoneNumber = '';
     }
-    this.auth.register(body);
+    this.auth.register(body).subscribe({
+      next: () => {
+        this.form.reset();
+        localStorage.removeItem('registerFormDraft');
+      }
+    });
   }
 
   ionViewWillLeave() {

@@ -24,8 +24,8 @@ export class AuthBackendApi {
     this.http = http;
   }
 
-  getMe(): Observable<UserAccount> {
-    return this.http.get<UserAccount>('/auth/me');
+  getAccount(): Observable<UserAccount> {
+    return this.http.get<UserAccount>('/accounts/me');
   }
 
   login(body: { account: string; password: string }): Observable<null> {
@@ -41,7 +41,7 @@ export class AuthBackendApi {
   }
 
   editAccount(updatedFieldsObject: Partial<UserAccount>) {
-    return this.http.patch<UserAccount>("/auth/me", updatedFieldsObject);
+    return this.http.patch<UserAccount>("/accounts/me", updatedFieldsObject);
   }
 }
 
