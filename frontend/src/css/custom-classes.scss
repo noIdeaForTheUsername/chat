@@ -72,6 +72,10 @@ ion-button.round-button {
   cursor: pointer;
 }
 
+.selectable {
+  user-select: text;
+}
+
 button.alert-button.danger {
   font-weight: bolder;
   color: var(--ion-color-danger);

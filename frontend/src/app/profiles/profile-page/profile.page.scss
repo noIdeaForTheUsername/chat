@@ -23,6 +23,8 @@ ion-content {
 
 .hint {
   color: var(--ion-text-color-step-300);
+  max-width: 700px;
+  margin: auto;
 }
 
 ion-item-group {

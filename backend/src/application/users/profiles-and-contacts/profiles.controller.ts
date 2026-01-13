@@ -44,7 +44,8 @@ export class ProfilesController {
 
   @Patch('me')
   async updateMyProfile(@UserId() userId: number, @Body() dto: PatchProfileDto) {
-    return await this.profilesService.updateProfile(userId, dto);
+    await this.profilesService.updateProfile(userId, dto);
+    return await this.profilesService.findFullPublicProfile(userId, true);
   }
 
   // By ID (contact, or contact + profile)

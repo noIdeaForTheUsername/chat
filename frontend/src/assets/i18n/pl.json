@@ -239,7 +239,7 @@
     },
     "unauthorized": {
       "header": "Brak autoryzacji",
-      "description": "Session expired - please log in again or you won't be able to load any data"
+      "description": "Sesja wygasła - zaloguj się ponownie (Lista konwersacji > Opcje > Ustawienia aplikacji > Wyloguj się). W przeciwnym razie nie będziesz mógł załadować żadnych danych"
     },
     "server-error": {
       "header": "Błąd serwera",

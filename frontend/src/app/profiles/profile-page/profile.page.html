@@ -31,7 +31,7 @@
     <!-- EDITING HINT -->
     @if (editMode()) {
       <hr>
-      <p class="hint" routerLink="/settings/account">{{'page.profile.edit-hint' | translate}}</p>
+      <p class="hint clickable" routerLink="/settings/account">{{'page.profile.edit-hint' | translate}}</p>
     }
 
     <!-- BASIC INFO SECTION -->
@@ -49,7 +49,6 @@
 
       <!-- USER-ONLY PROPERTIES (no group) -->
       @if (p.type == 'user') {
-
         <profile-info-item [title]="'profile.login' | translate" [value]="p.login"/>
 
         <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
@@ -64,15 +63,17 @@
         <ion-card-subtitle>{{`profile.${p.type}-bio` | translate}}</ion-card-subtitle>
         <hr>
         @if (editMode()) {  <!-- edit mode -->
-          <ion-textarea [autoGrow]="true"
-          (ionChange)="onFieldInput('bio', $event.target.value)" [value]="p.bio"
+          <ion-textarea
+          [autoGrow]="true"
+          (ionChange)="onFieldInput('bio', $event.target.value)"
+          [value]="p.bio"
           [placeholder]="`profile.${p.type}-bio-placeholder` | translate">
             <ion-icon name="pencil" slot="start"></ion-icon>
           </ion-textarea>
         }
         @else {  <!-- view mode -->
           @if (p.bio) {
-            <p>{{p.bio}}</p>
+            <p class="selectable">{{p.bio}}</p>
           }
           @else {
             <p><i>{{'common.empty' | translate}}</i></p>

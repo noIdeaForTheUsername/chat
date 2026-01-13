@@ -101,12 +101,12 @@ export class AlertService {
     this.loginPromptDisplayed = true;
 
     this.displayPromptAlert(AlertType.PROMPT,
-      this.translate.instant("error.session-expired.description"),
+      this.translate.instant("error.unauthorized.description"),
       () => {
         if (this.router.url !== '/login') this.router.navigate(['/login'])
       } ,
       undefined,
-      this.translate.instant("error.session-expired.header"),
+      this.translate.instant("error.unauthorized.header"),
     );
   }
 

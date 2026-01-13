@@ -125,8 +125,8 @@ export class ProfilePage {
     this.editMode.set(false);
     this.profileSaving.set(true);
     this.profileService.editOwnProfile({
-      name: this.editedName() || undefined,
-      bio: this.editedBio() || undefined
+      name: this.editedName(),
+      bio: this.editedBio()
     }).subscribe({
       next: (updatedProfile) => {
         this.profile.update(profile => {

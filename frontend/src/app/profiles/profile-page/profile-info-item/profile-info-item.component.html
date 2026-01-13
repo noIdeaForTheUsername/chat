@@ -1,6 +1,7 @@
 @if (!hidden()) {
   <ion-item lines="full" [class.unset]="false" [class.editable]="editable()">
 
+    <!-- TITLE -->
     <ion-label class="title">
       <span>{{title()}}</span>
       @if (infoBox()) {
@@ -8,6 +9,7 @@
       }
     </ion-label>
 
+    <!-- VALUE -->
     @if (editable()) {
       <ion-input
         [type]="type()"
@@ -19,7 +21,7 @@
       </ion-input>
     }
     @else {
-      <ion-label slot="end">{{valueDisplay()}}</ion-label>
+      <ion-label slot="end" class="selectable">{{valueDisplay()}}</ion-label>
     }
   </ion-item>
 }

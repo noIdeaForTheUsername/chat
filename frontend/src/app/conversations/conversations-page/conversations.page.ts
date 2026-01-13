@@ -132,18 +132,19 @@ export class ConversationsPage {
 
   async refreshConversations(event: any) {
     setTimeout(() => event.target.complete(), 8000);  // max waiting time
-    Promise.all([
-      lastValueFrom(this.conversationService.loadMessagePreviews()),
-      lastValueFrom(this.conversationService.loadConversations()),
-      lastValueFrom(this.profileService.loadData())
-    ])
-    .then(() => {
+    try {
+      await Promise.all([
+        lastValueFrom(this.conversationService.loadMessagePreviews()),
+        lastValueFrom(this.conversationService.loadConversations()),
+        lastValueFrom(this.profileService.loadData()),
+      ]);
+    }
+    catch (e: any) {
+      this.alertService.displayError(e.error.message ?? e.status ?? "data-unavailable");
+    }
+    finally {
       event.target.complete();
-    })
-    .catch(() => {
-      this.alertService.displayError("data-unavailable");
-      event.target.complete();
-    });
+    }
   }
 
   toggleBlockedConversations() {

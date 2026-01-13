@@ -12,6 +12,7 @@ export function emptyToNull(value: any) {
 
 export function EmptyToNull() {
   return Transform(({ value }) => {
+    console.log("Transforming value:", value);
     return emptyToNull(value);
   });
 }

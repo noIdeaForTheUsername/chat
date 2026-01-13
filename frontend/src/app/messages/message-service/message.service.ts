@@ -211,7 +211,7 @@ export class MessageService {
         this.alertService.displayError(
           e.error.message ?? e.status ?? "unknown",
           undefined,
-          this.translate.instant("failed-to-send-msg"));
+          this.translate.instant("error.failed-to-send-msg"));
       }
     });
   }

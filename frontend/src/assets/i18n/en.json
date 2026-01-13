@@ -240,7 +240,7 @@
     },
     "unauthorized": {
       "header": "Unauthorized",
-      "description": "Session expired - please log in again or you won't be able to load any data"
+      "description": "Session expired - please log in again (Conversations list > Options > App settings > Log out). Otherwise, you won't be able to load any data."
     },
     "server-error": {
       "header": "Server error",
