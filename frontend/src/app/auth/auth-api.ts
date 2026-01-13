@@ -25,7 +25,7 @@ export class AuthBackendApi {
   }
 
   getAccount(): Observable<UserAccount> {
-    return this.http.get<UserAccount>('/accounts/me');
+    return this.http.get<UserAccount>('/auth/me');
   }
 
   login(body: { account: string; password: string }): Observable<null> {

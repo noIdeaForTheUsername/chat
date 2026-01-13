@@ -34,9 +34,10 @@ bootstrapApplication(AppComponent, {
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       authService.init();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages
-    }), provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
-          }),
+    }),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
 });

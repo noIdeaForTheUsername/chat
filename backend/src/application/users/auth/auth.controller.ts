@@ -1,10 +1,13 @@
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 import { PublicAccess } from 'src/shared/auth/public-access.decorator';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { plainToInstance } from 'class-transformer';
+import { AccountResponseDto } from '../accounts/dto/account-response.dto';
+import { UserId } from 'src/shared/auth/user-id.decorator';
 
 
 @Controller("auth")
@@ -14,6 +17,13 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly config: ConfigService
   ) {}
+
+  @Get('me')
+  @PublicAccess(false)
+  async getCurrentUser(@UserId() userId: number) {
+    const unsafe = await this.authService.getCurrentUser(userId);
+    return plainToInstance(AccountResponseDto, unsafe);
+  }
 
   // AUTHENTICATION OPERATIONS
 

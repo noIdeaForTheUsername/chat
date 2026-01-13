@@ -116,7 +116,7 @@ export class ConversationService {
         }
       },
       error: (e) => {
-        this.alertService.displayErrorById(e.status);
+        this.alertService.displayError(e.status);
       },
     });
   }

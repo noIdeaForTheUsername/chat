@@ -17,12 +17,6 @@ export class AccountsController {
 
   constructor(private readonly accountsService: AccountsService) {}
 
-  @Get('me')
-  async getCurrentUser(@UserId() userId: number) {
-    const unsafe = await this.accountsService.getAccount(userId);
-    return plainToInstance(AccountResponseDto, unsafe)
-  }
-
   // ACCOUNT BASIC MODIFICATIONS
 
   @Patch("me")

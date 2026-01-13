@@ -136,7 +136,7 @@ export class ProfilePage {
         });
         this.profileSaving.set(false);
       },
-      error: (error) => this.alertService.displayErrorById(error.status.toString())
+      error: (error) => this.alertService.displayError(error.status.toString())
     });
   }
 

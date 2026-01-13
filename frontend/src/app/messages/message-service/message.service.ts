@@ -139,7 +139,7 @@ export class MessageService {
           this.displayingNewestMessages.set(true);
           this.displayingOldestMessages.set(true);
         }
-        else this.alertService.displayErrorById(err.error.message ?? err.status ?? "data-unavailable");
+        else this.alertService.displayError(err.error.message ?? err.status ?? "data-unavailable");
       }
     });
   }
@@ -206,6 +206,12 @@ export class MessageService {
             repliedText
           }];
         });
+      },
+      error: (e) => {
+        this.alertService.displayError(
+          e.error.message ?? e.status ?? "unknown",
+          undefined,
+          this.translate.instant("failed-to-send-msg"));
       }
     });
   }

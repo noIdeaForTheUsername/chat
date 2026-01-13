@@ -141,7 +141,7 @@ export class ConversationsPage {
       event.target.complete();
     })
     .catch(() => {
-      this.alertService.displayErrorById("data-unavailable");
+      this.alertService.displayError("data-unavailable");
       event.target.complete();
     });
   }

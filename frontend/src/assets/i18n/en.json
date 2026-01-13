@@ -219,16 +219,16 @@
 
   "error": {
     "server-unavailable": {
-      "header": "Server not responding",
-      "description": "It's either due to your internet connection or the app server being down. No data can be loaded. Contact the administrator if the issue persists despite internet connectivity."
+      "header": "Server unavailable",
+      "description": "It's either due to your internet connection or the app server being down. No data can be loaded. Check your connection or try again later."
     },
     "no-internet": {
       "header": "No internet connection",
-      "description": "This data can't be loaded until you're online again"
+      "description": "Data can't be loaded until you're online again"
     },
     "data-unavailable": {
       "header": "Data unavailable",
-      "description": "Couldn't load data - this might due to a bad URL, missing permissions, or a problem with the server or internet connection."
+      "description": "Couldn't load data - this might be due to a problem with your connection, the app server, a bad URL, or missing permissions."
     },
     "not-found": {
       "header": "Data not found",
@@ -240,11 +240,11 @@
     },
     "unauthorized": {
       "header": "Unauthorized",
-      "description": "The server has denied access. Try logging in again."
+      "description": "Session expired - please log in again or you won't be able to load any data"
     },
     "server-error": {
       "header": "Server error",
-      "description": "The server has returned an unknown error. Contact the administrator if the issue persists."
+      "description": "The server has returned an unexpected internal error. Contact the administrator if the issue persists."
     },
     "data-invalid": {
       "header": "Invalid data",
@@ -259,10 +259,6 @@
       "header": "Logout failed",
       "description": "An error occurred while logging out. If necessary, try erasing the browser cookies and data."
     },
-    "session-expired": {
-      "header": "Session expired",
-      "description": "Please log in again. Otherwise, you will only be able to browse old data"
-    },
 
     "credentials-invalid": {
       "header": "Invalid credentials",
@@ -276,7 +272,12 @@
       "header": "Conflict",
       "description": "User with this {{field}} already exists"
     },
+    "bad-timestamp": {
+      "header": "Invalid time",
+      "description": "Check your device's date and time settings and set the correct time (yes, this is actually important)"
+    },
 
-    "failed-to-delete": "Failed to delete"
+    "failed-to-delete": "Failed to delete",
+    "failed-to-send-msg": "Failed to send message"
   }
 }

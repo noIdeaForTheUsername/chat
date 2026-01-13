@@ -80,7 +80,7 @@ export class AuthService {
       tap((res) => {
         this.processing.set(false);
         if (!res.id) {  // hopefully never happens
-          this.alertService.displayErrorById('unknown');
+          this.alertService.displayError('unknown');
           throw new Error("Successful response but server didn't return the user ID.");
         }
 
@@ -151,7 +151,7 @@ export class AuthService {
         window.location.replace("welcome");
       },
       error: () => {
-        this.alertService.displayErrorById('logout-failed');
+        this.alertService.displayError('logout-failed');
       }
     });
   }
@@ -185,7 +185,7 @@ export class AuthService {
     // Don't block the start of the app if the user was logged in before (session expired, server down, etc)
     // User was logged in before:
     const accountActive = this.userId !== null && this.userAccountActive;
-    if (accountActive && (err.status === 0 || err.name === 'TimeoutError')) {  // server down
+    if (accountActive && (err.status === 0 || err.status === 504 || err.name === 'TimeoutError')) {  // server down
       this.navigateIfOnOutsidePage('/chats');
       this.alertService.displayServerConnectionError();
     }
@@ -242,7 +242,7 @@ export class AuthService {
       }
       // other
       else {
-        this.alertService.displayErrorById(msg);
+        this.alertService.displayError(msg);
       }
     }
   }

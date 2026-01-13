@@ -218,16 +218,16 @@
 
   "error": {
     "server-unavailable": {
-      "header": "Serwer nie odpowiada",
-      "description": "To może być spowodowane Twoim połączeniem z internetem lub problemem z serwerem aplikacji. Nie można wczytać żadnych danych. Skontaktuj się z administratorem, jeśli problem nie ustąpi mimo połączenia z internetem."
+      "header": "Serwer niedostępny",
+      "description": "To może być spowodowane Twoim połączeniem z internetem lub problemem z serwerem aplikacji. Nie można wczytać żadnych danych. Sprawdź swoje połączenie lub spróbuj ponownie później."
     },
     "no-internet": {
       "header": "Brak połączenia z internetem",
-      "description": "Nie można wczytać nowych danych, dopóki nie będziesz ponownie online."
+      "description": "Nie można wczytać danych, dopóki nie będziesz ponownie online."
     },
     "data-unavailable": {
       "header": "Dane niedostępne",
-      "description": "Nie udało się wczytać danych - może to wynikać z nieprawidłowego adresu URL, braku uprawnień lub problemu z serwerem albo połączeniem z internetem."
+      "description": "Nie udało się wczytać danych - może to wynikać z problemu z Twoim połączeniem lub z serwerem aplikacji, a także ze złego adresu URL lub z braku uprawnień"
     },
     "not-found": {
       "header": "Nie znaleziono danych",
@@ -239,7 +239,7 @@
     },
     "unauthorized": {
       "header": "Brak autoryzacji",
-      "description": "Serwer odmówił dostępu. Prawdopodobnie nie jesteś poprawnie zalogowany lub nie masz dostępu do tych danych."
+      "description": "Session expired - please log in again or you won't be able to load any data"
     },
     "server-error": {
       "header": "Błąd serwera",
@@ -258,10 +258,6 @@
       "header": "Błąd wylogowania",
       "description": "Wystąpił błąd podczas wylogowywania (prawdopodobnie brak połączenia z serwerem). W razie potrzeby konieczności wylogowania offline spróbuj wyczyścić dane przeglądarki."
     },
-    "session-expired": {
-      "header": "Sesja wygasła",
-      "description": "Zaloguj się ponownie. W przeciwnym razie będziesz mógł przeglądać tylko stare dane."
-    },
 
     "credentials-invalid": {
       "header": "Nieprawidłowe dane logowania",
@@ -275,7 +271,12 @@
       "header": "Konflikt",
       "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
     },
+    "bad-timestamp": {
+      "header": "Nieprawidłowy czas",
+      "description": "Sprawdź ustawienia daty i godziny na swoim urządzeniu i ustaw poprawny czas (tak, to naprawdę jest ważne)"
+    },
 
-    "failed-to-delete": "Nie udało się usunąć"
+    "failed-to-delete": "Nie udało się usunąć",
+    "failed-to-send-msg": "Nie udało się wysłać wiadomości"
   }
 }

@@ -81,11 +81,11 @@ export class AlertService {
 
   // ------------------------- ALERT UTIL FUNCTIONS -------------------------
   
-  displayErrorById(errorId: string, confirmHandler?: Function) {
+  displayError(errorId: string, confirmHandler?: Function, customSubheader?: string) {
     const key = getErrorMessageKey(errorId, this.translate);
     const header = this.translate.instant(`${key}.header`);
     const message = this.translate.instant(`${key}.description`);
-    this.displayMessageAlert(AlertType.ERROR, message, confirmHandler, header);
+    this.displayMessageAlert(AlertType.ERROR, message, confirmHandler, header, customSubheader);
   }
 
   displayUnknownError(error?: any) {

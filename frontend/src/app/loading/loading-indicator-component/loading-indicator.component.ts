@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, On
 import { IonSpinner, IonButton } from '@ionic/angular/standalone';
 import { IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { errorIconMap } from './error-icon-map';
+import { errorIconMap } from '@app/shared/errors/error-utils';
 import { getErrorMessageKey, httpCodeMap } from '@app/shared/errors/error-utils';
 
 

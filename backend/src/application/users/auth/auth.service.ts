@@ -1,13 +1,8 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Transactional } from 'typeorm-transactional';
-import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
-import { QueryFailedError } from 'typeorm';
-import { ModifyAccountDto } from '../accounts/dto/modify-account.dto';
-import { Account } from 'src/domain/accounts/entities/account.entity';
-import { hashPassword, verifyPassword } from './auth-utils';
+import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { AccountsService } from '../accounts/accounts.service';
+import { hashPassword, verifyPassword } from './auth-utils';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +15,10 @@ export class AuthService {
   
 
   // LOGIN & REGISTER
+
+  async getCurrentUser(userId: number){
+    return await this.accountsDomainService.findById(userId);
+  }
 
   async login(account: string, plainPassword: string) {
     const found = await this.accountsDomainService.findByUniqueField(account);
