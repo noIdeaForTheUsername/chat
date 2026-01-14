@@ -9,9 +9,9 @@ export default () => {
       port: parseInt(process.env.APP_PORT ?? "3000", 10) || 3000,
     },
 
-    jwt: {
-      secret: process.env.JWT_SECRET ?? "test secret",
-      expiration: process.env.JWT_EXPIRATION ?? defaultJwtExpiration,
+    auth: {
+      secret: process.env.AUTH_SECRET ?? "test secret",
+      expiration: process.env.AUTH_EXPIRATION ?? defaultJwtExpiration,
     },
 
     cookies: {
@@ -51,11 +51,11 @@ export default () => {
 
   // Further validation only for production mode
 
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not defined in environment variables. Please generate a strong secret, set it in .ENV and keep it safe");
+  if (!process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET is not defined in environment variables. Please generate a strong secret, set it in .ENV and keep it safe");
   }
-  if (!process.env.JWT_EXPIRATION) {
-    console.warn(getErrorMsg("JWT_EXPIRATION", `a desired session expiration time like '12h' (currently falling back to '${defaultJwtExpiration}' by default)`));
+  if (!process.env.AUTH_EXPIRATION) {
+    console.warn(getErrorMsg("AUTH_EXPIRATION", `a desired session expiration time like '12h' (currently falling back to '${defaultJwtExpiration}' by default)`));
   }
   if (!process.env.COOKIES_SAME_SITE) {
     throw new Error(getErrorMsg("COOKIES_SAME_SITE", "'strict', 'lax' or 'none'"));

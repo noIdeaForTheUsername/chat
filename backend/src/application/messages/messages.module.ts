@@ -3,6 +3,7 @@ import { MessagesService } from './messages.service';
 import { MessagesController } from './messages.controller';
 import { MessagesDomainModule } from 'src/domain/messages/messages.module';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
+import { MessagesGateway } from './messages.gateway';
 
 @Module({
   controllers: [MessagesController],

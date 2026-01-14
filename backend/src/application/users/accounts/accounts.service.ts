@@ -41,7 +41,7 @@ export class AccountsService {
       const newAccount = await this.accounts.create(login, passwordHash, email, phoneNumber);
       await this.profiles.createProfile(newAccount.id, phoneNumberPublic,
         emailPublic, name, bio);
-      return newAccount.id;
+      return newAccount;
     } catch (err) {
       if (err instanceof QueryFailedError && err.driverError.code == "23505"){
         const constraint = err.driverError.constraint;

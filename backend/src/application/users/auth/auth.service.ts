@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { AccountsService } from '../accounts/accounts.service';
 import { hashPassword, verifyPassword } from './auth-utils';
@@ -10,7 +9,6 @@ export class AuthService {
   constructor(
     private accountsDomainService: AccountsDomainService,
     private accountsService: AccountsService,
-    private jwtService: JwtService
   ) { }
   
 
@@ -20,24 +18,43 @@ export class AuthService {
     return await this.accountsDomainService.findById(userId);
   }
 
-  async login(account: string, plainPassword: string) {
+  async login(req: any, account: string, plainPassword: string) {
     const found = await this.accountsDomainService.findByUniqueField(account);
     if (!found) throw new UnauthorizedException('credentials-invalid');
-    await verifyPassword(found, plainPassword);
+    await verifyPassword(found, plainPassword);  // throws exception if invalid
 
-    return { sub: found.id, authJwt: await this.jwtService.signAsync({ sub: found.id }) };
+
+    return await new Promise<number>((resolve, reject) => {
+      req.session.regenerate((err: any) => {
+        if (err) return reject(err);
+        req.session.userId = found.id;
+        req.session.save((saveErr: any) => {
+          if (saveErr) return reject(saveErr);
+          resolve(found.id);
+        });
+      });
+    });
   }
 
-  async register(login: string, plainPassword: string,
+  async register(req: any, login: string, plainPassword: string,
     emailPublic: boolean, phoneNumberPublic: boolean,
     email?: string, phoneNumber?: string,
     name?: string, bio?: string
   ) {
     const hashedPassword = await hashPassword(plainPassword);
 
-    const id = await this.accountsService.createUser(login, hashedPassword, email, phoneNumber,
+    const user = await this.accountsService.createUser(login, hashedPassword, email, phoneNumber,
       emailPublic, phoneNumberPublic, name, bio);
 
-    return { authJwt: await this.jwtService.signAsync({ sub: id }) }
+    await new Promise<void>((resolve, reject) => {
+      req.session.regenerate((err: any) => {
+        if (err) return reject(err);
+        req.session.userId = user.id;
+        req.session.save((saveErr: any) => {
+          if (saveErr) return reject(saveErr);
+          resolve();
+        });
+      });
+    });
   }
 }
