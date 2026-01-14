@@ -9,6 +9,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { MessagePreviewManager } from './message-previews';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { MsgSocketService } from '../socket-service/msg-socket-service';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -22,6 +23,7 @@ export class MessageService {
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
+  private socketService = inject(MsgSocketService);
   private readonly api = new BackendMessageApi();
   private readonly messagePreviewManager = new MessagePreviewManager(this, this.api);
 
@@ -47,6 +49,8 @@ export class MessageService {
   private highestDisplayedId: number = -1; public getHighestDisplayedId() { return this.highestDisplayedId };
   private currentConvNewestMessageId: number = 1;
 
+  public beforeNewMessageCallback: Function = () => undefined;
+
   // LOADING PROPERTIES
   public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
   public readonly additionalMessagesLoading = signal(true);  // informs if new messages (during infinite scroll) are just being loaded
@@ -57,6 +61,13 @@ export class MessageService {
 
 
   constructor() {
+    // Subscribe to incoming messages from the socket service
+    this.socketService.messages$.subscribe({
+      next: (msg: Message) => {
+        this.receiveMessage(msg);
+      }
+    });
+
     effect(() => {
       const dataLoaded = this.dataLoaded();
       const storedOldestUnreadMessageId = this.storedOldestUnreadMessageId();
@@ -237,6 +248,16 @@ export class MessageService {
       },
       error: (e) => this.alertService.displayMessageAlert(
         AlertType.ERROR, this.translate.instant("error.failed-to-delete")),
+    });
+  }
+
+  private receiveMessage(message: Message) {
+    if (message.conversationId != this.currentConvId) return;  // message for another conversation
+
+    this.beforeNewMessageCallback();
+    if (!this.displayingNewestMessages()) return;
+    this.displayedMessages.update((msgs) => {
+      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError())];
     });
   }
 

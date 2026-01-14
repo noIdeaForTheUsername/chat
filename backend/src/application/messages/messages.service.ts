@@ -61,6 +61,7 @@ export class MessagesService {
       this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, sent.globalId),
       this.conversationsDomainService.findConversationParticipantsIds(conversationId, callerId)
     ]);
+    console.log("participantIds for conv ", conversationId, ": ", participantIds);
     // send WebSocket message to participants
     for (const p of participantIds) {
       this.messagesGateway.sendMessageToUser(p, sent);

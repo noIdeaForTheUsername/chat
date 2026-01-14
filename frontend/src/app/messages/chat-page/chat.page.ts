@@ -151,6 +151,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initScrollElement();
+    this.messageService.beforeNewMessageCallback = this.correctScrollOnNewMessage.bind(this);
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
@@ -186,7 +187,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   afterMessageSent() {
     this.cancelReply();
-    this.correctScrollOnMessageSend();
+    this.correctScrollOnNewMessage();
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------
@@ -282,7 +283,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // After the message is sent, correct the scroll (if the user is at the bottom)
   // Call just before message list update.
-  async correctScrollOnMessageSend() {
+  async correctScrollOnNewMessage() {
     if (!this.displayingNewestMessages()) return;
     if (this.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
     await this.waitForDomStable();

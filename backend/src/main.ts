@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { static as expressStatic } from 'express';
 import session from 'express-session';
-import { getSessionMiddleware } from './shared/auth/session.middleware';
+import { getSessionMiddleware, initSessionMiddleware } from './shared/auth/session.middleware';
 
 async function bootstrap() {
   // TypeORM Transactional Context
@@ -25,9 +25,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Sessions
-  app.use(
-    getSessionMiddleware(config)
-  );
+  const sessionMiddleware = initSessionMiddleware(config);
+  app.use(sessionMiddleware);
 
   // admin web interface
   app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));
