@@ -3,7 +3,7 @@ import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 
-// This guard is used globally and endpoints that should be accessible without login should be marked with @PublicAccess()
+// This guard is used globally (and only for HTTP requests); endpoints that should be accessible without login should be marked with @PublicAccess()
 
 @Injectable()
 export class LoggedInGuard implements CanActivate {
@@ -11,10 +11,12 @@ export class LoggedInGuard implements CanActivate {
   constructor(private reflector: Reflector, private accounts: AccountsDomainService) {}
 
   async canActivate(context: ExecutionContext) {
+    if (context.getType() !== 'http') return true;
+    const req = context.switchToHttp().getRequest();
+
     const publicAccess = this.reflector.getAllAndOverride('publicAccess',
       [context.getHandler(), context.getClass()]) || false;
 
-    const req = context.switchToHttp().getRequest();
     if (!req.session.userId) {
       if (publicAccess)
         return true;

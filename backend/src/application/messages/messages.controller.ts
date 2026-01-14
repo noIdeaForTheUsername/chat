@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseArrayOptions, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { MessagesService } from './messages.service';
-import { UserId } from 'src/shared/auth/user-id.decorator';
+import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
 import { SendMessageDto } from './dto/send-message.dto';
 
@@ -45,9 +45,9 @@ export class MessagesController {
     @UserId() callerId: number,
     @Body() body: SendMessageDto
   ) {
-    const id = await this.messagesService.sendMessage(
+    const message = await this.messagesService.sendMessage(
       callerId, body.conversationId, body.text, body.timestamp, body.repliedId);
-    return { id };
+    return { id: message.globalId };
   }
 
   @Delete("conversations/:id/messages/all")

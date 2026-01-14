@@ -8,7 +8,7 @@ import { Participation } from './domain/conversations/entities/participation.ent
 import { UserConversation } from './domain/conversations/entities/user-conversation.entity';
 import { Account } from './domain/accounts/entities/account.entity';
 import { APP_GUARD } from '@nestjs/core';
-import { LoggedInGuard } from './shared/auth/logged-in.guard';
+import { LoggedInGuard } from './shared/auth/guards/logged-in.guard';
 import { UserKnownProfile } from './domain/profiles/entities/user-known-profile.entity';
 import { Profile } from './domain/profiles/entities/profile.entity';
 import { FullProfile } from './domain/profiles/entities/full-profile.entity';

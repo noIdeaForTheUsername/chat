@@ -1,14 +1,14 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, UseGuards } from "@nestjs/common";
-import { PublicAccess } from "src/shared/auth/public-access.decorator";
-import { UserId } from "src/shared/auth/user-id.decorator";
+import { PublicAccess } from "src/shared/auth/decorators/public-access.decorator";
+import { UserId } from "src/shared/auth/decorators/user-id.decorator";
 import { AccountResponseDto } from "./dto/account-response.dto";
 import { plainToInstance } from "class-transformer";
 import { ModifyAccountDto } from "./dto/modify-account.dto";
 import { AccountsService } from "./accounts.service";
-import { AdminGuard } from "src/shared/auth/admin.guard";
+import { AdminGuard } from "src/shared/auth/guards/admin.guard";
 import { Account } from "src/domain/accounts/entities/account.entity";
 import { SetAdminStatusDto } from "./dto/set-admin.dto";
-import { UserAccount } from "src/shared/auth/account.decorator";
+import { UserAccount } from "src/shared/auth/decorators/account.decorator";
 
 // User account creation in auth module
 

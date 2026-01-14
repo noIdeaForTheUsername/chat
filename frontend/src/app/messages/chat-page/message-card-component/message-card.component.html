@@ -30,7 +30,7 @@
       [class.own]="message().isOwn">
         @if (repliedId && !deleted()) {
           <!-- response card -->
-          <ion-card class="replied-preview" (click)="repliedClickInternal(repliedId)">
+          <ion-card class="replied-preview clickable" (click)="repliedClickInternal(repliedId)">
             <ion-card-content>
               <ion-icon name="arrow-redo"></ion-icon>&nbsp;
               <span>{{repliedText || '○ ○ ○'}}</span>

@@ -1,13 +1,13 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
-import { PublicAccess } from 'src/shared/auth/public-access.decorator';
+import { PublicAccess } from 'src/shared/auth/decorators/public-access.decorator';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { plainToInstance } from 'class-transformer';
 import { AccountResponseDto } from '../accounts/dto/account-response.dto';
-import { UserId } from 'src/shared/auth/user-id.decorator';
+import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 
 
 @Controller("auth")

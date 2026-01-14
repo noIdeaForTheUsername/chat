@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
-import { UserId } from 'src/shared/auth/user-id.decorator';
+import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { ConversationType } from 'src/domain/conversations/entities/conversation-type.enum';
 import { throttle } from 'rxjs';

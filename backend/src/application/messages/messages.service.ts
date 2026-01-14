@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { Transactional } from 'typeorm-transactional';
+import { MessagesGateway } from './messages.gateway';
 
 @Injectable()
 export class MessagesService {
@@ -16,6 +17,7 @@ export class MessagesService {
   constructor(
     private messagesDomainService: MessagesDomainService,
     private conversationsDomainService: ConversationsDomainService,
+    private messagesGateway: MessagesGateway,
   ){}
 
   async getConversationMessages(callerId: number, conversationId: number, limit: number,
@@ -51,10 +53,20 @@ export class MessagesService {
     if (messageLate || messageInTheFuture)
       throw new BadRequestException("bad-timestamp");  
 
+    // Sending
     const sent = await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
-    await this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, sent.globalId);
-    return sent.globalId;
+    // ACK and find participants for WS
+    const [_, participantIds] = await Promise.all([
+      this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, sent.globalId),
+      this.conversationsDomainService.findConversationParticipantsIds(conversationId, callerId)
+    ]);
+    // send WebSocket message to participants
+    for (const p of participantIds) {
+      this.messagesGateway.sendMessageToUser(p, sent);
+    }
+
+    return sent;
   }
 
   async deleteMessageById(callerId: number, conversationId: number, messageId: number) {

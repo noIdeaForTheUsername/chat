@@ -135,7 +135,7 @@ export class MessageService {
         this.dataLoaded.set(true);
         this.additionalMessagesLoading.set(false);
         if (this.displayedMessages().length === 0) {
-          this.loadError.set(err.error.message ?? err.status ?? "data-unavailable");
+          this.loadError.set(err.status ?? "data-unavailable");
           this.displayingNewestMessages.set(true);
           this.displayingOldestMessages.set(true);
         }

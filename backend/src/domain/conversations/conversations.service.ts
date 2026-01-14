@@ -4,7 +4,7 @@ import { ConversationType } from './entities/conversation-type.enum';
 import { Conversation } from './entities/conversation.entity';
 import { Participation } from './entities/participation.entity';
 import { UserConversation } from './entities/user-conversation.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ConversationsDomainService {
@@ -37,6 +37,17 @@ export class ConversationsDomainService {
     return await this.userConversations.findOne({
       where: { ownerId: user1Id, participantId: user2Id, type: ConversationType.Direct }
     });
+  }
+
+  public async findConversationParticipantsIds(conversationId: number, excludeParticipantId?: number) {
+    const participations = await this.participations.find({
+      select: { userId: true },
+      where: {
+        conversationId: conversationId,
+        userId: excludeParticipantId ? Not(excludeParticipantId) : undefined
+      }
+    });
+    return participations.map(p => p.userId);
   }
 
   // CREATING
