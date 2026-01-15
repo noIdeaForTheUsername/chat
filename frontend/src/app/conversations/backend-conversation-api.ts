@@ -23,6 +23,7 @@ export class BackendConversationApi {
   }
 
 
+  // this should be called only once after the app start as message previews should be updated live via websockets afterwards
   getMessagePreviews(): Observable<Map<number, Message | null>> {
     return this.http.get<ServerMessage[]>("/message-previews").pipe(
       map((serverMessages: ServerMessage[]) => {
@@ -51,7 +52,7 @@ export class BackendConversationApi {
     return this.http.delete(`/conversations/${conversationId}/messages/all`);
   }
 
-  ackowledgeMessages(conversationId: number) {
-    return this.http.post<void>(`/conversations/${conversationId}/acknowledge`, {});
-  }
+  // ackowledgeMessages(conversationId: number) {
+  //   return this.http.post<void>(`/conversations/${conversationId}/acknowledge`, {});
+  // }
 }

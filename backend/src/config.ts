@@ -23,12 +23,7 @@ export default () => {
     },
 
     cors: {
-      origins: parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
-        "http://localhost:8100",
-        "http://192.168.1.2:8100",
-        "http://chmuraim.dynv6.net:8100",
-        "http://46.205.222.219:8100"
-      ],
+      origins: getCorsOrigins(),
     },
 
     database: {
@@ -77,4 +72,13 @@ function getErrorMsg(variable_name: string, allowed_values_hint: string) {
 function parseList(val?: string): string[] | undefined {
   if (!val) return undefined;
   return val.split(',').map(s => s.trim()).filter(Boolean);
+}
+
+export function getCorsOrigins() {
+  return parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
+    "http://localhost:8100",
+    "http://192.168.1.2:8100",
+    "http://chmuraim.dynv6.net:8100",
+    "http://46.205.222.219:8100"
+  ];
 }

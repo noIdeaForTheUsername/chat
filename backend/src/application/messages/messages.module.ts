@@ -5,10 +5,11 @@ import { MessagesDomainModule } from 'src/domain/messages/messages.module';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
 import { MessagesGateway } from './messages.gateway';
 import { AccountsDomainModule } from 'src/domain/accounts/accounts.module';
+import { NotBlockingParticipantsModule } from '../shared/not-blocking-participants/not-blocking-participants.module';
 
 @Module({
   controllers: [MessagesController],
   providers: [MessagesService, MessagesGateway],
-  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule],
+  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule, NotBlockingParticipantsModule],
 })
 export class MessagesModule {}

@@ -70,12 +70,4 @@ export class ConversationsService {
   async acceptConversation(callerId: number, conversationId: number) {
     return await this.conversations.acceptConversation(callerId, conversationId);
   }
-
-  async acknowledgeConversationMessages(callerId: number, conversationId: number) {
-    const maxIdMsg = await this.messages.findMostRecentMessageInConversation(conversationId);
-    if (maxIdMsg === null) return;  // no messages in conv, ignore and return success
-
-    // No need to verify participation manually - setNewestReadMessage only modifies the Participation record
-    return await this.conversations.setNewestReadMessage(callerId, conversationId, maxIdMsg.globalId);
-  }
 }

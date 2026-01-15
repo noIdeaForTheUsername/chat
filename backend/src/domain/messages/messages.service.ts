@@ -81,23 +81,29 @@ export class MessagesDomainService {
   }
 
   async clearMessageById(conversationId: number, messageId: number) {
+    const where = { conversationId: conversationId, globalId: messageId };
     await this.messageRepository.update(
-      { conversationId: conversationId, globalId: messageId},
+      where,
       this.deletedMessageFields
     );
+    return await this.messageRepository.find({ where });
   }
 
   async clearMultipleMessages(conversationId: number, messageIds: number[], senderId: number) {
+    const where = { conversationId: conversationId, globalId: In(messageIds), senderId: senderId };
     await this.messageRepository.update(
-      { conversationId: conversationId, globalId: In(messageIds), senderId: senderId },
+      where,
       this.deletedMessageFields
     );
+    return await this.messageRepository.find({ where });
   }
 
   async clearAllConversationMessages(conversationId: number, senderId: number) {
+    const where = { conversationId: conversationId, senderId: senderId };
     await this.messageRepository.update(
-      { conversationId: conversationId, senderId: senderId },
+      where,
       this.deletedMessageFields
     );
+    // return await this.messageRepository.find({ where });
   }
 }

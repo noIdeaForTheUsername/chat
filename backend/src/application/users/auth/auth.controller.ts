@@ -55,10 +55,6 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req: Request, @Res({ passthrough: false }) res: Response) {
-    // this.sendJwtCookie(res, '');
-
-    req.session.destroy(() => {
-      res.clearCookie('session').send();
-    });
+    this.authService.logout(req, res);
   }
 }

@@ -10,6 +10,7 @@ import { AlertType } from '@app/alerts/alert-type.enum';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { catchError, finalize, Observable, of, tap, throwError } from 'rxjs';
+import { WebsocketService } from '../websockets/websocket-service';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class ConversationService {
   private alertService = inject(AlertService);
   private router = inject(Router);
   private translate = inject(TranslateService);
+  private websocket = inject(WebsocketService);
 
   public readonly conversations = signal<Conversation[]>([]);
   public readonly conversationsLoaded = signal(false);
@@ -31,6 +33,20 @@ export class ConversationService {
 
   constructor(private profileService: ProfileService) {
     this.loadConversations().subscribe();
+    this.loadMessagePreviews().subscribe();
+
+    this.websocket.messages$.subscribe((message) => {
+      this.processNewMessage(message, false);
+    });
+    this.websocket.messageUpdates$.subscribe((modifiedMessage) => {
+      this.updateModifiedMessagePreview(modifiedMessage);
+    });
+      
+    this.websocket.reloadConversation$.subscribe({
+      next: (convId: number) => {
+        this.loadMessagePreviews().subscribe();
+      }
+    });
   }
 
   // -------------------------------------------------- INTERNAL LOGIC ---------------------------------------------
@@ -58,15 +74,41 @@ export class ConversationService {
     )
   }
 
+  private updateLocalConversation(conversation: Conversation) {
+    const index = this.conversations().findIndex(c => c.id === conversation.id);
+    let updatedConversations = [...this.conversations()];
+    if (index === -1)
+      updatedConversations.unshift(conversation);
+    else
+      updatedConversations[index] = conversation;
+    this.conversations.set(updatedConversations);
+  }
+
+  public updateModifiedMessagePreview(modifiedMessage: Message) {
+      const currentPreviewGid = this.conversationsMessagePreviews().get(modifiedMessage.conversationId)?.globalId;
+      if (currentPreviewGid && modifiedMessage.globalId == currentPreviewGid) {
+        this.processNewMessage(modifiedMessage, false);
+      }
+    }
+
   // -------------------------------------------------- PUBLIC API ---------------------------------------------
 
-  loadMessagePreviews() {
+  // LOADING
+
+  // this should be called only for full refresh, as normally previews should be updated via websockets and processNewMessage()
+  loadMessagePreviews() {  
     return this.api.getMessagePreviews().pipe(
       tap((previewsMap) => {
         this.conversationsMessagePreviews.set(previewsMap);
       })
     );
   }
+
+  reconnectWebsocket() {
+    this.websocket.reconnect();
+  }
+
+  // GETTERS
 
   getConversationById(id: number): Observable<Conversation> {
     let found = this.conversations().find((c) => c.id === id);
@@ -88,19 +130,7 @@ export class ConversationService {
     return found;
   }
 
-  ackowledgeConversationMessages(conversationId: number) {
-    // call API
-    this.api.ackowledgeMessages(conversationId).pipe(
-      // mark locally as ackowledged regardless of API call result
-      finalize(() => {
-        let conv = this.conversations().find(c => c.id === conversationId);
-        if (!conv) return;
-        conv.newestReadMessageId = this.conversationsMessagePreviews().get(conversationId)?.globalId;
-        this.updateLocalConversation(conv);
-      })
-    ).subscribe();
-  }
-
+  // ACTIONS
 
   createDirectConversation(participantId: number, redirectAfterCreation = false) {
     const sameConversation = this.conversations().find(c => c.participantId === participantId);
@@ -139,13 +169,36 @@ export class ConversationService {
     setTimeout(() => this.clearMultipleConversationMessages(conversationIds), 150);
   }
 
-  private updateLocalConversation(conversation: Conversation) {
-    const index = this.conversations().findIndex(c => c.id === conversation.id);
-    let updatedConversations = [...this.conversations()];
-    if (index === -1)
-      updatedConversations.unshift(conversation);
-    else
-      updatedConversations[index] = conversation;
-    this.conversations.set(updatedConversations);
+  // MESSAGE PREVIEWS / ACK PROCESSING
+
+  processNewMessage(message: Message, immediateAcknowledge: boolean) {  // immediate acknowledge happens when the conversation is already open
+    // find conv
+    const conv = this.conversations().find(c => c.id === message.conversationId);
+    console.log("conv: ", conv);
+    if (!conv) return;
+    // update message preview
+    this.conversationsMessagePreviews.update((prev) => {
+      console.log("Updating message preview for conversation", message.conversationId, "with message", message);
+      const newMap = new Map(prev);
+      newMap.set(message.conversationId, message);
+      return newMap;
+    });
+    // acknowledge not own message (backend auto-acknowledges own messages)
+    if (immediateAcknowledge && message.senderId !== this.authService.getUserIdOrError()) {
+      this.acknowledgeConversationMessages(message.conversationId, message.globalId);
+    }
+  }
+
+  acknowledgeConversationMessages(conversationId: number, newestMessageId?: number) {
+    let conv = this.conversations().find(c => c.id === conversationId);  // find conv
+    if (!conv) return;
+
+    const newestId = newestMessageId  // find newest read ID
+      ?? this.conversationsMessagePreviews().get(conversationId)?.globalId;
+    if (newestId === undefined) return;
+
+    this.websocket.acknowledgeConversationMessages(conversationId); // update
+    conv.newestReadMessageId = newestId;
+    this.updateLocalConversation(conv);
   }
 }

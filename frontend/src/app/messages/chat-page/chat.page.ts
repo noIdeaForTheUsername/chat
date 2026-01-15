@@ -116,7 +116,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       if (msgs.length == 0) return;
       if (this.firstMessageLoad) { // first load (saveScrollParams never called before)
         this.firstMessageLoad = false;
-        this.conversationService.ackowledgeConversationMessages(this.conversationId);
         requestAnimationFrame(() => this.content.scrollToBottom(0));
       } else if (this.performScrollCorrection) {  // next loads
         this.correctScrollOnMessageLoad();

@@ -39,16 +39,14 @@ export class ConversationsDomainService {
     });
   }
 
-  public async findConversationParticipantsIds(conversationId: number, excludeParticipantId?: number) {
+  public async findConversationParticipantsIds(conversationId: number) {
     const participations = await this.participations.find({
       select: { userId: true },
-      where: {
-        conversationId: conversationId,
-        userId: excludeParticipantId ? Not(excludeParticipantId) : undefined
-      }
+      where: { conversationId: conversationId }
     });
     return participations.map(p => p.userId);
   }
+  
 
   // CREATING
 

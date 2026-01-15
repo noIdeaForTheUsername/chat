@@ -10,7 +10,7 @@ export function serverMessageToMessage(serverMessage: ServerMessage): Message {
   };
 }
 
-// TODO: do something about the "repliedId" field later
+// TODO: do something about the "repliedText" field later
 export function messageToMessageView(msg: Message, currentUserId: number): MessageView {
   return {
     ...msg,

@@ -3,6 +3,13 @@ import { ConversationsDomainService } from 'src/domain/conversations/conversatio
 import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { Transactional } from 'typeorm-transactional';
 import { MessagesGateway } from './messages.gateway';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { MessageSentEvent } from 'src/shared/events/message-sent.event';
+import { NotBlockingParticipantsService } from '../shared/not-blocking-participants/not-blocking-participants.service';
+import { Message } from 'src/domain/messages/entities/message.entity';
+import { Conversation } from 'src/domain/conversations/entities/conversation.entity';
+import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
+import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
 
 @Injectable()
 export class MessagesService {
@@ -17,7 +24,8 @@ export class MessagesService {
   constructor(
     private messagesDomainService: MessagesDomainService,
     private conversationsDomainService: ConversationsDomainService,
-    private messagesGateway: MessagesGateway,
+    private eventEmitter: EventEmitter2,
+    private notBlockingParticipantsService: NotBlockingParticipantsService,
   ){}
 
   async getConversationMessages(callerId: number, conversationId: number, limit: number,
@@ -56,18 +64,24 @@ export class MessagesService {
     // Sending
     const sent = await this.messagesDomainService.createMessage(
       conversationId, callerId, text, timestamp, repliedId);
-    // ACK and find participants for WS
+    // ack msg and find participants for websocket message sending
     const [_, participantIds] = await Promise.all([
       this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, sent.globalId),
-      this.conversationsDomainService.findConversationParticipantsIds(conversationId, callerId)
+      this.notBlockingParticipantsService.getNotBlockingParticipantsIds(conversationId, callerId)
     ]);
-    console.log("participantIds for conv ", conversationId, ": ", participantIds);
+
     // send WebSocket message to participants
-    for (const p of participantIds) {
-      this.messagesGateway.sendMessageToUser(p, sent);
-    }
+    this.eventEmitter.emit("messageSent", new MessageSentEvent(participantIds, sent));
 
     return sent;
+  }
+
+  async acknowledgeConversationMessages(callerId: number, conversationId: number) {
+    const maxIdMsg = await this.messagesDomainService.findMostRecentMessageInConversation(conversationId);
+    if (maxIdMsg === null) return;  // no messages in conv, ignore and return success
+
+    // No need to verify participation manually - setNewestReadMessage only modifies the Participation record
+    return await this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, maxIdMsg.globalId);
   }
 
   async deleteMessageById(callerId: number, conversationId: number, messageId: number) {
@@ -81,14 +95,16 @@ export class MessagesService {
     if (message.senderId !== callerId)
       throw new ForbiddenException("cannot-delete-not-own-message");
     
-    await this.messagesDomainService.clearMessageById(conversationId, messageId);
+    const deleted = await this.messagesDomainService.clearMessageById(conversationId, messageId);
+    await this.sendWebSocketDeletion(deleted);
   }
 
   async deleteMultipleMessages(callerId: number, conversationId: number, messageIds: number[]) {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
-    await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
+    const deleted = await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
+    await this.sendWebSocketDeletion(deleted);
   }
 
   async deleteAllConversationMessages(callerId: number, conversationId: number) {
@@ -96,5 +112,28 @@ export class MessagesService {
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
     await this.messagesDomainService.clearAllConversationMessages(conversationId, callerId);
+    this.eventEmitter.emit("conversationCleared", new ConversationClearedEvent(
+      await this.notBlockingParticipantsService.getNotBlockingParticipantsIds(conversationId, callerId),
+      conversationId));
+  }
+
+  // This function assumes that all deletes messages belong to the same user and conversation!
+  private async sendWebSocketDeletion(deleted: Message | Message[]) {
+    if (deleted instanceof Array) {
+      if (deleted.length === 0) return;
+      const first = deleted[0];
+
+      const participantIds = await this.notBlockingParticipantsService.getNotBlockingParticipantsIds(
+        first.conversationId, first.senderId);
+      
+      for (const message of deleted) {
+        this.eventEmitter.emit("messageDeleted", new MessageDeletedEvent(participantIds, message));
+      }
+    }
+    else {
+      const participantIds = await this.notBlockingParticipantsService.getNotBlockingParticipantsIds(
+        deleted.conversationId, deleted.senderId);
+      this.eventEmitter.emit("messageDeleted", new MessageDeletedEvent(participantIds, deleted));
+    }
   }
 }

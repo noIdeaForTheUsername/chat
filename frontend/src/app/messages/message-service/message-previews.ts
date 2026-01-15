@@ -28,6 +28,23 @@ export class MessagePreviewManager {
     });
   }
 
+  public loadSingleMessagePreview(message: Message, highestDisplayedId: number, lowestDisplayedId: number) {
+    if (!message.repliedId) return;
+    if (message.repliedId > highestDisplayedId || message.repliedId < lowestDisplayedId) {
+      // Load message from the backend
+      this.api.getMessageById(message.repliedId, message.conversationId).subscribe({
+        next: (msg: Message) => {
+          this.addPreview(msg);
+        }
+      });
+    }
+    else {
+      // Get message from the currently displayed list
+      const found = this.s.displayedMessages().find(msg => msg.globalId == message.repliedId);
+      if (found) this.addPreview(found);
+    }
+  }
+
   // modifies "displayedMessages" in the service directly
   public addPreview(messageWithRepliedText: Message) {
     this.s.displayedMessages.update((msgs) => {

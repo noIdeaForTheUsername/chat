@@ -2,6 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { AccountsService } from '../accounts/accounts.service';
 import { hashPassword, verifyPassword } from './auth-utils';
+import { Request, Response } from 'express';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 
 @Injectable()
 export class AuthService {
@@ -9,6 +12,7 @@ export class AuthService {
   constructor(
     private accountsDomainService: AccountsDomainService,
     private accountsService: AccountsService,
+    private eventEmitter: EventEmitter2,
   ) { }
   
 
@@ -55,6 +59,19 @@ export class AuthService {
           resolve();
         });
       });
+    });
+  }
+
+  async logout(req: Request, res: Response) {
+    const session: any = req.session;
+    if (!session || !session.userId) {
+      return res.clearCookie('session').send();
+    }
+
+    console.log("Logging out user ", (req.session as any).userId);
+    req.session.destroy(() => {
+      this.eventEmitter.emit('userLogout', new UserLogoutEvent(session.userId));
+      res.clearCookie('session').send();
     });
   }
 }

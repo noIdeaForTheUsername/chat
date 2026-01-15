@@ -9,7 +9,8 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { MessagePreviewManager } from './message-previews';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { TranslateService } from '@ngx-translate/core';
-import { MsgSocketService } from '../socket-service/msg-socket-service';
+import { WebsocketService } from '../../websockets/websocket-service';
+import { ConversationService } from '@src/app/conversations/conversation.service';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -23,7 +24,8 @@ export class MessageService {
   private translate = inject(TranslateService);
   private alertService = inject(AlertService);
   private authService = inject(AuthService);
-  private socketService = inject(MsgSocketService);
+  private websocket = inject(WebsocketService);
+  private conversationService = inject(ConversationService);
   private readonly api = new BackendMessageApi();
   private readonly messagePreviewManager = new MessagePreviewManager(this, this.api);
 
@@ -62,20 +64,26 @@ export class MessageService {
 
   constructor() {
     // Subscribe to incoming messages from the socket service
-    this.socketService.messages$.subscribe({
+    this.websocket.messages$.subscribe({
       next: (msg: Message) => {
         this.receiveMessage(msg);
+      }
+    });
+    this.websocket.messageUpdates$.subscribe({
+      next: (msg: Message) => {
+        this.receiveMessageUpdate(msg);
+      }
+    });
+    this.websocket.reloadConversation$.subscribe({
+      next: (convId: number) => {
+        if (convId == this.currentConvId) 
+          this.loadConversationInitially(convId);
       }
     });
 
     effect(() => {
       const dataLoaded = this.dataLoaded();
       const storedOldestUnreadMessageId = this.storedOldestUnreadMessageId();
-      if (dataLoaded && this.loadsCount == 0) {  // after initial load
-        // set the newest message ID for this conversation
-        this.currentConvNewestMessageId = this.highestDisplayedId;
-        this.displayingNewestMessages.set(true);
-      }
       if (dataLoaded && storedOldestUnreadMessageId !== null) {  // after initial load or when unread ID changes
         // setup the real oldest unread message ID (so we know where exactly to put the "New messages" note display)
         this.setupRealOldestUnreadMessageId();
@@ -135,6 +143,10 @@ export class MessageService {
         // update control variables
         this.lowestDisplayedId = newArr.length > 0 ? newArr[0].globalId : 0;
         this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
+        if (this.loadsCount == 0) {  // the first load of newest messages
+          this.currentConvNewestMessageId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 1;
+          this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
+        }
         this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
         this.displayingOldestMessages.set(older && val.length < messageAmount);
         // notify loading complete
@@ -150,7 +162,7 @@ export class MessageService {
           this.displayingNewestMessages.set(true);
           this.displayingOldestMessages.set(true);
         }
-        else this.alertService.displayError(err.error.message ?? err.status ?? "data-unavailable");
+        else this.alertService.displayError(err.status ?? "data-unavailable");
       }
     });
   }
@@ -204,8 +216,7 @@ export class MessageService {
         if (res.id === undefined) return;
         if (callBeforeComplete) callBeforeComplete();
         if (!this.displayingNewestMessages()) return;
-        this.displayedMessages.update((msgs) => {
-          return [...msgs, {
+        const newMsg = {
             globalId: res.id,
             numberInConversation: 0,  // todo in the future
             conversationId: this.currentConvId,
@@ -215,8 +226,11 @@ export class MessageService {
             isOwn: true,
             repliedId,
             repliedText
-          }];
+          }
+        this.displayedMessages.update((msgs) => {
+          return [...msgs, newMsg];
         });
+        this.conversationService.processNewMessage(newMsg, true);
       },
       error: (e) => {
         this.alertService.displayError(
@@ -252,13 +266,28 @@ export class MessageService {
   }
 
   private receiveMessage(message: Message) {
-    if (message.conversationId != this.currentConvId) return;  // message for another conversation
-
+    if (message.conversationId != this.currentConvId) return;
+    
     this.beforeNewMessageCallback();
     if (!this.displayingNewestMessages()) return;
     this.displayedMessages.update((msgs) => {
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError())];
     });
+    this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
+    this.messagePreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
+  }
+
+  private receiveMessageUpdate(message: Message) {
+    // find and update the message in displayedMessages
+    const toUpdate = this.displayedMessages().find(m => m.globalId === message.globalId);
+    if (!toUpdate) return;  // message not displayed so don't proceed
+
+    this.displayedMessages.update((msgs) => {
+      return msgs.map(m => m.globalId === message.globalId ? messageToMessageView(message, this.authService.getUserIdOrError()) : m);
+    });
+    if (message.repliedId) {
+      this.messagePreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
+    }
   }
 
   private deleteOwnMessageLocally(messageId: number) {
@@ -273,12 +302,14 @@ export class MessageService {
     this.displayedMessages.update((msgs) => {
       return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
+    this.conversationService.updateModifiedMessagePreview(updatedMsg);
   }
 
   exitConversation() {
     this.cancelMessageLoad();
     this.displayedMessages.set([]);
     this.dataLoaded.set(false);
+    this.currentConvId = -1;
     this.storedOldestUnreadMessageId.set(null);
     this.oldestUnreadMessageId.set(null);
     this.loadsCount = 0;

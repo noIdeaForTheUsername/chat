@@ -47,9 +47,11 @@ export class ConversationsPage {
   protected selectionService = inject(SelectionService);
 
   // Data
-  protected conversations = computed(() =>
-    this.getConvertedConversations(this.conversationService.conversations(), this.lastMessages())
-  );
+  protected conversations = computed(() => {
+    const lastMessages = this.conversationService.conversationsMessagePreviews();
+    console.log("CHANGE DETECTION! Recomputing conversations with last messages:", lastMessages);
+    return this.getConvertedConversations(this.conversationService.conversations(), lastMessages);
+  });
   protected displayedConversations = computed(() => this.getFilteredConversations(this.conversations()));
   
   protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsMessagePreviews;
@@ -66,10 +68,6 @@ export class ConversationsPage {
   // HTML elements
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
 
-
-  ionViewWillEnter() {  // reload msg previews every time user re-enters the page
-    this.conversationService.loadMessagePreviews().subscribe();
-  }
 
   // -------------------------------------------------------- PRIVATE FUNCTIONS
   
@@ -132,6 +130,7 @@ export class ConversationsPage {
 
   async refreshConversations(event: any) {
     setTimeout(() => event.target.complete(), 8000);  // max waiting time
+    this.conversationService.reconnectWebsocket();
     try {
       await Promise.all([
         lastValueFrom(this.conversationService.loadMessagePreviews()),

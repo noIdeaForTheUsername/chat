@@ -25,11 +25,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
 import { AccountsDomainModule } from './domain/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 
 @Module({
-    imports: [
+  imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.dev', load: [config] }),
+    EventEmitterModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -58,7 +60,7 @@ import { AuthModule } from './application/users/auth/auth.module';
     ProfilesModule,
     ConversationsModule,
     MessagesModule,
-    AccountsDomainModule  // for LoggedInGuard
+    AccountsDomainModule, // for LoggedInGuard
   ],
   controllers: [AppController],
   providers: [

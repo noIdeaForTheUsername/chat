@@ -1,31 +1,27 @@
 import { ConfigService } from '@nestjs/config';
-import { OnGatewayConnection, OnGatewayInit, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { OnEvent } from '@nestjs/event-emitter';
+import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import config from 'src/config';
+import { getCorsOrigins } from 'src/config';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { Message } from 'src/domain/messages/entities/message.entity';
 import { getSessionMiddleware } from 'src/shared/auth/session.middleware';
+import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
+import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { MessagesService } from './messages.service';
+import { MessageSentEvent } from 'src/shared/events/message-sent.event';
+import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
+import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
 
 
-// TODO: file a lawsuit for damaging my mental health by not providing any god damn docs for neither auth, cookies, or sessions in websockets
+// TODO: file a lawsuit for damaging my mental health by not providing any docs for neither auth, cookies, or sessions in websockets
 // TODO: write a thankful letter to OpenAI
 
-// function getCorsOrigins(config: ConfigService) {
-//   return config.get<string[]>('cors.origins');
-// }
-
-// useFactory: (config: ConfigService) => ({
-//     cors: {
-//       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-//       credentials: true,
-//       allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-//       origin: config.get<string[]>('cors.origins'),
-//     }
-//   })
-
+@UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
 @WebSocketGateway({
   cors: {
-    origin: "http://192.168.1.2:8100",
+    origin: getCorsOrigins(),  // config service refuses to work no matter what I do
     credentials: true,
   }
 })
@@ -35,23 +31,22 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   private server: Server;
 
   constructor(
-    private config: ConfigService,
+    private messagesService: MessagesService,
     private accounts: AccountsDomainService
   ) {}
+
+
+  // AUTHENTHICATION
 
   afterInit(server: any) {
     // Session middleware
     const sessionMiddleware = getSessionMiddleware();
     server.use((socket: any, next: any) => {
-      console.log('WS cookies:', socket.request.headers.cookie);
-
       sessionMiddleware(socket.request, {} as any, async () => {
+        // Check if session exists
         if (!((socket.request as any).session?.userId)) {
-          console.log("no session - rejecting WS!");
           return next(new Error("unauthorized"));
         }
-
-        console.log("passed ws auth phase 1");
 
         // Get account
         const userId = (socket.request as any).session.userId;
@@ -63,27 +58,52 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
         if (!account.activated)
           return next(new Error('account-inactive'));
 
-        console.log("passed ws auth phase 2");
-
         // success
         socket.data.userId = userId;
         next();
       });
     });
-
-    // Authentication middleware
-    // server.use(async (socket: any, next: any) => {
-      
-    // });
   }
 
+  // LIFECYCLE
+
   async handleConnection(socket: Socket) {
-    console.log("handle connection: starting for userId ", socket.data.userId);
     socket.join(`user-${socket.data.userId}`);
   }
 
-  public sendMessageToUser(userId: number, message: Message) {
-    console.log("Sending WS message to user ", userId, "with object: ", message);
-    this.server.to(`user-${userId}`).emit('message', message);
+  @OnEvent("userLogout")
+  handleUserLogoutEvent(payload: UserLogoutEvent) {
+    const room = `user-${payload.userId}`;
+    this.server.in(room).disconnectSockets(true);
+  }
+
+  // FEATURES
+
+  @OnEvent("messageSent")
+  public sendMessageToUsers(payload: MessageSentEvent) {
+    for (const receiverId of payload.receiverIds) {
+      if (payload.message.senderId === receiverId) continue;  // skip sender
+      this.server.to(`user-${receiverId}`).emit('message', payload.message);
+    }
+  }
+
+  @OnEvent("messageDeleted")
+  public sendMessageDeletionToUsers(payload: MessageDeletedEvent) {
+    for (const receiverId of payload.receiverIds) {
+      this.server.to(`user-${receiverId}`).emit('messageDeleted', payload.message);
+    }
+  }
+
+  @OnEvent("conversationCleared")
+  public sendConversationClearedToUsers(payload: ConversationClearedEvent) {
+    for (const userId of payload.userIds) {
+      this.server.to(`user-${userId}`).emit('reloadConversation', payload.conversationId);
+    }
+  }
+
+  @SubscribeMessage('acknowledgeConversation')
+  async handleAcknowledge(socket: Socket, data: MessageAcknowledgeDto) {
+    const userId = socket.data.userId;
+    return await this.messagesService.acknowledgeConversationMessages(userId, data.conversationId);
   }
 }

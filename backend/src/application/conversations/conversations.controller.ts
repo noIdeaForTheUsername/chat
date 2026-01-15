@@ -37,9 +37,9 @@ export class ConversationsController {
   }
 
   // Ackowledge means "Mark existing messages as read"
-  @Post(":id/acknowledge")
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async acknowledgeConversationMessages(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
-    return await this.conversationsService.acknowledgeConversationMessages(callerId, conversationId);
-  }
+  // @Post(":id/acknowledge")
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async acknowledgeConversationMessages(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
+  //   return await this.conversationsService.acknowledgeConversationMessages(callerId, conversationId);
+  // }
 }
