@@ -25,7 +25,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Sessions
-  const sessionMiddleware = initSessionMiddleware(config);
+  const sessionMiddleware = await initSessionMiddleware(config);
   app.use(sessionMiddleware);
 
   // admin web interface

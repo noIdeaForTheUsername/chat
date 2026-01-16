@@ -19,7 +19,7 @@ export default () => {
       sameSite: process.env.COOKIES_SAME_SITE?.toLowerCase() ?? 'lax',
       httpOnly: process.env.COOKIES_HTTP_ONLY?.toLowerCase() !== 'false',
       secure: process.env.COOKIES_SECURE?.toLowerCase() !== 'false',
-      expire_ms: process.env.COOKIES_EXPIRE_MS ? parseInt(process.env.COOKIES_EXPIRE_MS, 10) : defaultCookieExpirationMs,
+      expireMs: process.env.COOKIES_EXPIRE_MS ? parseInt(process.env.COOKIES_EXPIRE_MS, 10) : defaultCookieExpirationMs,
     },
 
     cors: {
@@ -33,6 +33,12 @@ export default () => {
       password: process.env.DB_PASSWORD ?? 'chat',
       database: process.env.DB_DATABASE ?? 'chat',
     },
+
+    push_notifications: {
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? null,
+      vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? null,
+      vapidContact: process.env.VAPID_CONTACT ?? '',
+    }
   }
 
   if (process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "production") {
@@ -62,11 +68,19 @@ export default () => {
     throw new Error(getErrorMsg("COOKIES_SECURE", "'true' (recommended) or 'false'"));
   }
 
+  if (
+    !configObject.push_notifications.vapidPublicKey
+    || !configObject.push_notifications.vapidPrivateKey
+    || !configObject.push_notifications.vapidContact
+  ) {
+    console.warn("VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_CONTACT are not all set in environment variables. The push notifications will be disabled.");
+  }
+
   return configObject;
 }
 
 function getErrorMsg(variable_name: string, allowed_values_hint: string) {
-  return `${variable_name} is not defined in environment variables. Set it to ${allowed_values_hint} for production environments (important for security).`;
+  return `${variable_name} is not defined in environment variables. Set it to ${allowed_values_hint} for production environments.`;
 }
 
 function parseList(val?: string): string[] | undefined {

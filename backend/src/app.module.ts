@@ -26,6 +26,7 @@ import config from './config';
 import { AccountsDomainModule } from './domain/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { DeviceSessionEntity } from './domain/session/entity/device-session.entity';
 
 
 @Module({
@@ -46,7 +47,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         entities: [
           Account, Profile, FullProfile, Contact, UserKnownProfile,
           Conversation, Participation, UserConversation,
-          Message, UserMessage, LatestUserMessage
+          Message, UserMessage, LatestUserMessage, DeviceSessionEntity
         ],
       }),
       async dataSourceFactory(options: any) {

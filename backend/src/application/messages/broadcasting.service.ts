@@ -5,6 +5,8 @@ import { MessageDeletedEvent } from "src/shared/events/message-deleted.event";
 import { MessageSentEvent } from "src/shared/events/message-sent.event";
 import { MessagesGateway } from "./messages.gateway";
 
+// This service is responsible for sending real-time updates to users via WebSockets, or Push Notifications when they are offline.
+
 @Injectable()
 export class BroadcastingService {
 
