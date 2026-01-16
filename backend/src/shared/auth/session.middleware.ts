@@ -1,13 +1,30 @@
 import { ConfigService } from "@nestjs/config";
 import { RequestHandler } from "express";
 import session from "express-session";
+import pgSession from 'connect-pg-simple';
 import config from "src/config";
+import { Pool } from "pg";
 
 let sessionMiddleware: RequestHandler | null = null;
+
+const PgStore = pgSession(session);
 
 export function initSessionMiddleware(config: ConfigService): RequestHandler {
   if (!sessionMiddleware) {
     sessionMiddleware = session({
+      store: new PgStore({
+        pool: new Pool({
+          host: config.get('database.host'),
+          port: config.get('database.port'),
+          user: config.get('database.username'),
+          password: config.get('database.password'),
+          database: config.get('database.database'),
+          max: 5,
+        }),
+        tableName: "device_sessions",
+        createTableIfMissing: true,
+        ttl: config.get<number>('cookies.expire_ms')
+      }),
       secret: config.get<string>('auth.secret') as any,
       resave: false,
       saveUninitialized: false,
