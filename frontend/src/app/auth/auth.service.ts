@@ -174,7 +174,7 @@ export class AuthService {
     this.processing.set(false);
 
     // Account inactive error
-    if (err.error.message == "account-inactive") {
+    if (err.error?.message == "account-inactive") {
       localStorage.setItem("userAccountActive", "false");
       this.router.navigate(['/account-inactive']);
       return;

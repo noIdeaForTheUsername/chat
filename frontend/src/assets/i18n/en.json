@@ -276,6 +276,10 @@
       "header": "Invalid time",
       "description": "Check your device's date and time settings and set the correct time (yes, this is actually important)"
     },
+    "notifications-blocked": {
+      "header": "Notifications blocked in browser",
+      "description": "You won't receive notifications about new messages. If you want to enable them again, you need to change this manually in the browser settings for this site"
+    },
 
     "failed-to-delete": "Failed to delete",
     "failed-to-send-msg": "Failed to send message"

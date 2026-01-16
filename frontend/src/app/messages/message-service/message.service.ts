@@ -50,6 +50,7 @@ export class MessageService {
   private lowestDisplayedId: number = -1; public getLowestDisplayedId() { return this.lowestDisplayedId };
   private highestDisplayedId: number = -1; public getHighestDisplayedId() { return this.highestDisplayedId };
   private currentConvNewestMessageId: number = 1;
+  private currentConvOldestMessageId: number = 1;
 
   public beforeNewMessageCallback: Function = () => undefined;
 
@@ -140,15 +141,17 @@ export class MessageService {
         this.displayedMessages.set(newArr.map(msg =>
           messageToMessageView(msg, this.authService.getUserIdOrError())));
 
-        // update control variables
-        this.lowestDisplayedId = newArr.length > 0 ? newArr[0].globalId : 0;
-        this.highestDisplayedId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 0;
-        if (this.loadsCount == 0) {  // the first load of newest messages
-          this.currentConvNewestMessageId = newArr.length > 0 ? newArr[newArr.length - 1].globalId : 1;
+        
+        if (this.loadsCount == 0) {
+          // metadata setup after the first load
+          this.currentConvNewestMessageId = newArr[newArr.length - 1].globalId;
+          // acknowledge msgs after the first load of newest messages
           this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
         }
-        this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
-        this.displayingOldestMessages.set(older && val.length < messageAmount);
+
+        // update metadata
+        this.updateDisplayedMessagesMetadata(newArr, !older && val.length < messageAmount, older && val.length < messageAmount);
+        
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
@@ -174,6 +177,33 @@ export class MessageService {
       return this.INCREASED_LOADED_MESSAGES_AMOUNT;
   }
 
+  private updateDisplayedMessagesMetadata(messages: Message[],
+    updateConvNewestMessageId = false, updateConvOldestMessageId = false
+  ) {
+    console.log("Updating displayed messages metadata:", messages);
+    // update control variables
+    if (messages.length > 0) {
+      this.lowestDisplayedId = messages[0].globalId;
+      this.highestDisplayedId = messages[messages.length - 1].globalId;
+      if (updateConvNewestMessageId)
+        this.currentConvNewestMessageId = this.highestDisplayedId;
+      if (updateConvOldestMessageId)
+        this.currentConvOldestMessageId = this.lowestDisplayedId;
+      this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
+      this.displayingOldestMessages.set(this.lowestDisplayedId == this.currentConvOldestMessageId);
+    }
+    else {
+      this.lowestDisplayedId = -1;
+      this.highestDisplayedId = -1;
+      this.displayingNewestMessages.set(true);
+      this.displayingOldestMessages.set(true);
+      this.currentConvNewestMessageId = -1;
+      this.currentConvOldestMessageId = -1;
+    }
+    console.log("displayingNewestMessages:", this.displayingNewestMessages());
+    console.log("displayingOldestMessages:", this.displayingOldestMessages());
+  }
+
   // PUBLIC FUNCTIONS
 
   loadData() {
@@ -184,6 +214,7 @@ export class MessageService {
   loadConversationInitially(convId: number, callBeforeComplete: Function = () => undefined) {
     this.exitConversation();
     this.currentConvId = convId;
+    this.loadsCount = 0;
     this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, true, callBeforeComplete);
   }
 
@@ -270,6 +301,7 @@ export class MessageService {
     
     this.beforeNewMessageCallback();
     if (!this.displayingNewestMessages()) return;
+    
     this.displayedMessages.update((msgs) => {
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError())];
     });

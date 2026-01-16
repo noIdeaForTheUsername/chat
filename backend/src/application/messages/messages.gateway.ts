@@ -79,23 +79,20 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
 
   // FEATURES
 
-  @OnEvent("messageSent")
-  public sendMessageToUsers(payload: MessageSentEvent) {
+  public sendMessage(payload: MessageSentEvent) {
     for (const receiverId of payload.receiverIds) {
       if (payload.message.senderId === receiverId) continue;  // skip sender
       this.server.to(`user-${receiverId}`).emit('message', payload.message);
     }
   }
 
-  @OnEvent("messageDeleted")
-  public sendMessageDeletionToUsers(payload: MessageDeletedEvent) {
+  public sendMessageDeletion(payload: MessageDeletedEvent) {
     for (const receiverId of payload.receiverIds) {
       this.server.to(`user-${receiverId}`).emit('messageDeleted', payload.message);
     }
   }
 
-  @OnEvent("conversationCleared")
-  public sendConversationClearedToUsers(payload: ConversationClearedEvent) {
+  public sendConversationCleared(payload: ConversationClearedEvent) {
     for (const userId of payload.userIds) {
       this.server.to(`user-${userId}`).emit('reloadConversation', payload.conversationId);
     }
@@ -105,5 +102,12 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   async handleAcknowledge(socket: Socket, data: MessageAcknowledgeDto) {
     const userId = socket.data.userId;
     return await this.messagesService.acknowledgeConversationMessages(userId, data.conversationId);
+  }
+
+  // HELPERS
+
+  public async getUserConnected(userId: number) {
+    const sockets = await this.server.in(`user-${userId}`).fetchSockets();
+    return sockets.length > 0;
   }
 }

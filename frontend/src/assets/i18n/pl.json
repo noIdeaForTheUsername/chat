@@ -275,6 +275,10 @@
       "header": "Nieprawidłowy czas",
       "description": "Sprawdź ustawienia daty i godziny na swoim urządzeniu i ustaw poprawny czas (tak, to naprawdę jest ważne)"
     },
+    "notifications-blocked": {
+      "header": "Zablokowano powiadomienia w przeglądarce",
+      "description": "Nie będziesz otrzymywał powiadomień o nowych wiadomościach. Jeśli chcesz je ponownie włączyć, musisz to zmienić ręcznie w ustawieniach przeglądarki dla tej strony"
+    },
 
     "failed-to-delete": "Nie udało się usunąć",
     "failed-to-send-msg": "Nie udało się wysłać wiadomości"
