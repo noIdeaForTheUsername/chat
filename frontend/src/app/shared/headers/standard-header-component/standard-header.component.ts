@@ -12,9 +12,4 @@ export class StandardHeaderComponent {
   title = input.required<string>();
   backButton = input<boolean>(true);
   backButtonDefaultHref = input<string | undefined>('/chats');
-
-  ngOnInit() {
-    console.log("backButton:", this.backButton());
-    console.log("backButtonDefaultHref:", this.backButtonDefaultHref());
-  }
 }

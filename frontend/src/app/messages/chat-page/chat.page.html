@@ -41,15 +41,13 @@
 
     <!-- MESSAGE LIST -->
     @for (message of this.messages(); track message.globalId) {
-      @let previousMessage = $index > 0 ? this.messages()[$index - 1] : undefined;
       <app-message-card
         [message]="message"
         [selectionService]="selectionService"
         [class.action-select]="this.actionMessageId() == message.globalId"
         (repliedClick)="onMessageRepliedClick($event)"
         (showActionMenu)="openMessageActionSheet($event)"
-        [unreadNoteAbove]="oldestUnreadMessageId() == message.globalId"
-        [previousMessage]="previousMessage"/>
+        [unreadNoteAbove]="oldestUnreadMessageId() == message.globalId"/>
     }
     <div style="display: block; height: 10px;">&nbsp;</div> <!--a professional workaround when shit doesn't work to cooperate :P-->
 

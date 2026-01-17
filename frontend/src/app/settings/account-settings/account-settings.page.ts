@@ -47,7 +47,7 @@ export class AccountSettingsPage implements OnInit {
 
   private async loadAccount() {
     try {
-      const account = await firstValueFrom(this.authService.loadAuth());
+      const account = await firstValueFrom(this.authService.loadServerAuth());
       this.loading.set(false);
       this.fillWithExistingData({
         email: account.email,

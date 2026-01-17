@@ -6,7 +6,7 @@ import { MessageView } from '../chat-page/message-card-component/message-view.in
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
-import { MessagePreviewManager } from './message-previews';
+import { ReplyPreviewManager } from './reply-previews';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { TranslateService } from '@ngx-translate/core';
 import { WebsocketService } from '../../websockets/websocket-service';
@@ -27,7 +27,7 @@ export class MessageService {
   private websocket = inject(WebsocketService);
   private conversationService = inject(ConversationService);
   private readonly api = new BackendMessageApi();
-  private readonly messagePreviewManager = new MessagePreviewManager(this, this.api);
+  private readonly replyPreviewManager = new ReplyPreviewManager(this, this.api);
 
   // SETTINGS
   private readonly MAX_MESSAGES_DISPLAYED = 200;
@@ -138,24 +138,31 @@ export class MessageService {
         }
 
         // Map Message -> MessageView
-        this.displayedMessages.set(newArr.map(msg =>
-          messageToMessageView(msg, this.authService.getUserIdOrError())));
+        const msgViews: MessageView[] = [];
+        for (let i = 0; i < newArr.length; i++) {
+          msgViews[i] = messageToMessageView(
+            newArr[i],
+            this.authService.getUserIdOrError(),
+            i > 0 ? msgViews[i - 1] : undefined
+          );
+        }
+        // UPDATE THE ARRAY
+        this.displayedMessages.set(msgViews);
 
-        
+        // update metadata
+        const updateHighestDispalyedId = (!older && val.length < messageAmount) || this.loadsCount == 0;
+        this.updateDisplayedMessagesMetadata(newArr, updateHighestDispalyedId, older && val.length < messageAmount);
+
         if (this.loadsCount == 0) {
-          // metadata setup after the first load
-          this.currentConvNewestMessageId = newArr[newArr.length - 1].globalId;
           // acknowledge msgs after the first load of newest messages
           this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
         }
-
-        // update metadata
-        this.updateDisplayedMessagesMetadata(newArr, !older && val.length < messageAmount, older && val.length < messageAmount);
         
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
-        this.messagePreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
+        this.replyPreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
+        console.log("load conversation messages complete");
       },
       error: (err) => {
         this.dataLoaded.set(true);
@@ -180,7 +187,6 @@ export class MessageService {
   private updateDisplayedMessagesMetadata(messages: Message[],
     updateConvNewestMessageId = false, updateConvOldestMessageId = false
   ) {
-    console.log("Updating displayed messages metadata:", messages);
     // update control variables
     if (messages.length > 0) {
       this.lowestDisplayedId = messages[0].globalId;
@@ -192,7 +198,7 @@ export class MessageService {
       this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
       this.displayingOldestMessages.set(this.lowestDisplayedId == this.currentConvOldestMessageId);
     }
-    else {
+    else {  // empty conv
       this.lowestDisplayedId = -1;
       this.highestDisplayedId = -1;
       this.displayingNewestMessages.set(true);
@@ -200,8 +206,6 @@ export class MessageService {
       this.currentConvNewestMessageId = -1;
       this.currentConvOldestMessageId = -1;
     }
-    console.log("displayingNewestMessages:", this.displayingNewestMessages());
-    console.log("displayingOldestMessages:", this.displayingOldestMessages());
   }
 
   // PUBLIC FUNCTIONS
@@ -248,18 +252,21 @@ export class MessageService {
         if (callBeforeComplete) callBeforeComplete();
         if (!this.displayingNewestMessages()) return;
         const newMsg = {
-            globalId: res.id,
-            numberInConversation: 0,  // todo in the future
-            conversationId: this.currentConvId,
-            senderId: this.authService.getUserIdOrError(),
-            text: text,
-            timestamp,
-            isOwn: true,
-            repliedId,
-            repliedText
-          }
+          globalId: res.id,
+          numberInConversation: 0,  // todo in the future
+          conversationId: this.currentConvId,
+          senderId: this.authService.getUserIdOrError(),
+          text: text,
+          timestamp,
+          isOwn: true,
+          repliedId,
+          repliedText
+        }
         this.displayedMessages.update((msgs) => {
-          return [...msgs, newMsg];
+          return [...msgs, {
+            ...newMsg,
+            prevMessage: msgs.length > 0 ? msgs[msgs.length - 1] : undefined
+          }];
         });
         this.conversationService.processNewMessage(newMsg, true);
       },
@@ -306,7 +313,7 @@ export class MessageService {
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError())];
     });
     this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
-    this.messagePreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
+    this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
   }
 
   private receiveMessageUpdate(message: Message) {
@@ -318,7 +325,7 @@ export class MessageService {
       return msgs.map(m => m.globalId === message.globalId ? messageToMessageView(message, this.authService.getUserIdOrError()) : m);
     });
     if (message.repliedId) {
-      this.messagePreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
+      this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
     }
   }
 

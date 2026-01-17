@@ -36,12 +36,10 @@ export class WebsocketService implements OnDestroy {
     });
 
     this.socket.on("messageDeleted", (value: ServerMessage) => {
-      console.log("msg delete WS received:", value);
       this.messageUpdatesSubject.next(value);
     });
 
     this.socket.on("reloadConversation", (value: number) => {
-      console.log("Received reloadConversation for conversation", value);
       this.reloadConversationSubject.next(value);
     });
   }
@@ -52,7 +50,6 @@ export class WebsocketService implements OnDestroy {
   }
 
   acknowledgeConversationMessages(conversationId: number) {
-    console.log("calling WS ACK for conversation", conversationId);
     this.socket.emit("acknowledgeConversation", { conversationId });
   }
 

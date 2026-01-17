@@ -10,8 +10,8 @@ export class BackendConversationApi {
   private readonly http = inject(HttpClient);
   private readonly userId: number;
   
-  constructor(userId: number) {
-    this.userId = userId;
+  constructor(userId: number | null) {
+    this.userId = userId ?? 1;
   }
 
   getUserConversations() {

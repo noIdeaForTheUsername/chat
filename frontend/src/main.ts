@@ -15,6 +15,7 @@ import { connectionErrorInterceptor } from '@app/http/connection-error.intercept
 import { authInterceptor } from '@app/http/auth.interceptor';
 import { AuthService } from './app/auth/auth.service';
 import { provideServiceWorker } from '@angular/service-worker';
+import { AppInitService } from './app/initialization/app-init.service';
 
 
 bootstrapApplication(AppComponent, {
@@ -32,8 +33,8 @@ bootstrapApplication(AppComponent, {
       lang: 'en'
     }),
     provideAppInitializer(() => {
-      const authService = inject(AuthService);
-      authService.init();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages
+      const initService = inject(AppInitService)
+      initService.loadAuthAndRedirect();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages
     }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

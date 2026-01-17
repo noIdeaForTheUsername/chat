@@ -25,7 +25,7 @@ export class MessageCardComponent  implements OnInit {
   // INPUTS
   message = input.required<MessageView>();
   selectionService = input.required<SelectionService>();
-  previousMessage = input<MessageView | undefined>();
+  previousMessage = computed(() => this.message().prevMessage);
   unreadNoteAbove = input(false);  // if true, "New messages" note (line) will be displayed above
   // OUTPUTS
   repliedClick = output<number>();
@@ -40,18 +40,18 @@ export class MessageCardComponent  implements OnInit {
   private clickLock = false;
   // metadata
   protected deleted = computed(() => !this.message().text && !this.message().file);
-  protected displayMetadata = signal(false);
-  protected displayedDate = signal("");
+  protected displayMetadata = computed(() => this.getDisplayMetadata());
+  protected displayedDate = computed(() => this.getFormattedDate());
 
   // dates formatting
   static dateFormatter = Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
   static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
 
-  constructor() {
-    effect(() => {
-      this.loadFormattedMetadata();
-    });
-  }
+  // constructor() {
+  //   effect(() => {
+  //     this.getDisplayMetadata();
+  //   });
+  // }
 
   async ngOnInit() {
     this.profile.set(await lastValueFrom(this.profileService.getProfileById(this.message().senderId)));
@@ -78,7 +78,7 @@ export class MessageCardComponent  implements OnInit {
   }
 
   
-  private loadFormattedMetadata() {
+  private getDisplayMetadata() {
     let previousTimestamp = this.previousMessage()?.timestamp;
     let timestamp = this.message().timestamp;
 
@@ -86,16 +86,27 @@ export class MessageCardComponent  implements OnInit {
     if (previousTimestamp) previousMessageSentOnOtherDay = timestamp.getDate() != previousTimestamp.getDate();
 
     // Display metadata signal value
-    this.displayMetadata.set((!previousTimestamp)  // there is no previous message (1st in chat) OR
+    return ((!previousTimestamp)  // there is no previous message (1st in chat) OR
       || this.previousMessage()?.senderId != this.message().senderId  // previous message has different sender OR
       || timestamp.getTime() - previousTimestamp.getTime() > 1000 * 300  // previous message was sent a lot of time earlier OR
       || previousMessageSentOnOtherDay!);  // previous message was sent on a different day
+  }
+
+  private getFormattedDate() {
+    if (!this.displayMetadata()) return "";
+
+    let previousTimestamp = this.previousMessage()?.timestamp;
+    let timestamp = this.message().timestamp;
+
+    let previousMessageSentOnOtherDay = true;
+    if (previousTimestamp) previousMessageSentOnOtherDay = timestamp.getDate() != previousTimestamp.getDate();
 
     // Displayed date signal value
     let date = "";
     if (previousMessageSentOnOtherDay)
       date += MessageCardComponent.dateFormatter.format(timestamp) + " ";
     date += MessageCardComponent.timeFormatter.format(timestamp);
-    this.displayedDate.set(date);
+
+    return date;
   }
 }

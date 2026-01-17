@@ -29,7 +29,7 @@ export class ConversationService {
   // not included in dataLoaded boolean, because it's non-critical
   public readonly conversationsMessagePreviews = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
     
-  private api = new BackendConversationApi(this.authService.getUserIdOrError());
+  private api = new BackendConversationApi(this.authService.getUserId());
 
   constructor(private profileService: ProfileService) {
     this.loadConversations().subscribe();
@@ -84,12 +84,6 @@ export class ConversationService {
     this.conversations.set(updatedConversations);
   }
 
-  public updateModifiedMessagePreview(modifiedMessage: Message) {
-      const currentPreviewGid = this.conversationsMessagePreviews().get(modifiedMessage.conversationId)?.globalId;
-      if (currentPreviewGid && modifiedMessage.globalId == currentPreviewGid) {
-        this.processNewMessage(modifiedMessage, false);
-      }
-    }
 
   // -------------------------------------------------- PUBLIC API ---------------------------------------------
 
@@ -174,17 +168,15 @@ export class ConversationService {
   processNewMessage(message: Message, immediateAcknowledge: boolean) {  // immediate acknowledge happens when the conversation is already open
     // find conv
     const conv = this.conversations().find(c => c.id === message.conversationId);
-    console.log("conv: ", conv);
     if (!conv) return;
     // update message preview
     this.conversationsMessagePreviews.update((prev) => {
-      console.log("Updating message preview for conversation", message.conversationId, "with message", message);
       const newMap = new Map(prev);
       newMap.set(message.conversationId, message);
       return newMap;
     });
     // acknowledge not own message (backend auto-acknowledges own messages)
-    if (immediateAcknowledge && message.senderId !== this.authService.getUserIdOrError()) {
+    if (immediateAcknowledge && message.senderId !== this.authService.getUserId()) {
       this.acknowledgeConversationMessages(message.conversationId, message.globalId);
     }
   }
@@ -200,5 +192,12 @@ export class ConversationService {
     this.websocket.acknowledgeConversationMessages(conversationId); // update
     conv.newestReadMessageId = newestId;
     this.updateLocalConversation(conv);
+  }
+
+  public updateModifiedMessagePreview(modifiedMessage: Message) {
+    const currentPreviewGid = this.conversationsMessagePreviews().get(modifiedMessage.conversationId)?.globalId;
+    if (currentPreviewGid && modifiedMessage.globalId == currentPreviewGid) {
+      this.processNewMessage(modifiedMessage, false);
+    }
   }
 }

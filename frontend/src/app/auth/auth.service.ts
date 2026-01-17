@@ -25,10 +25,6 @@ export class AuthService {
   private api = new AuthBackendApi(this.http);
   private router = inject(Router);
 
-  // Settings
-  // Pages that are accessible without login and considered "outside" of the main app
-  private readonly outsidePages = ['/', '/login', '/register', "/welcome", "/account-inactive"];
-
   // User data
   private userId: number | null = null;
   private userAccountActive: boolean = false;
@@ -38,22 +34,8 @@ export class AuthService {
   public readonly processing = signal(false);
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
-  constructor() {
-    this.init();
-  }
 
-  init() {
-    this.userId = Number(localStorage.getItem("userId")) || null;
-    this.userAccountActive = localStorage.getItem("userAccountActive") === "true";
-    // If the user was logged in before, don't even wait for auth check 
-    // (server down, session expired, etc - this will be handled later with alerts)
-    if (this.userId && this.router.url === '/' && this.userAccountActive) {  
-      this.navigateIfOnOutsidePage('/chats');
-    }
-    this.loadAuth().subscribe();
-  }
-
-  // USER ID MANAGEMENT
+  // USER ID / ACCOUNT-ACTIVE GETTERS & SETTERS
 
   private setUserId(id: number | null) {
     this.userId = id;
@@ -72,11 +54,21 @@ export class AuthService {
     return this.userId;
   }
 
+  public getUserAccountActive(): boolean {
+    return this.userAccountActive;
+  }
+
+  // AUTHENTHCATION LOADING
+
+  loadLocalAuth() {
+    this.userId = Number(localStorage.getItem("userId")) || null;
+    this.userAccountActive = localStorage.getItem("userAccountActive") === "true";
+  }
 
   // check if the user is logged in and redirect / handle error accordingly
-  loadAuth() {
+  loadServerAuth(timeoutMs: number = 6000) {
     return this.api.getAccount().pipe(
-      timeout(6000),
+      timeout(timeoutMs),
       tap((res) => {
         this.processing.set(false);
         if (!res.id) {  // hopefully never happens
@@ -88,10 +80,9 @@ export class AuthService {
         localStorage.setItem("userAccountActive", "true");
         this.userAccount.set(res);
         this.setUserId(res.id);
-        this.navigateIfOnOutsidePage('/chats');
       }),
       catchError((e) => {
-        this.handleGetAuthError(e);
+        this.processing.set(false);
         return throwError(() => e);
       })
     );
@@ -106,7 +97,7 @@ export class AuthService {
         if (res.id)
           this.setUserId(res.id);
         else
-          this.loadAuth();
+          this.loadServerAuth();
 
         this.processing.set(false);
         window.location.replace("chats");
@@ -134,7 +125,7 @@ export class AuthService {
         } catch {
           // ignore storage errors
         }
-        this.loadAuth().subscribe();
+        this.loadServerAuth().subscribe();
       }),
       catchError((err) => {
         this.handleRegisterError(err);
@@ -170,44 +161,7 @@ export class AuthService {
 
   // ERROR HANDLING
 
-  private handleGetAuthError(err: any) {
-    this.processing.set(false);
-
-    // Account inactive error
-    if (err.error?.message == "account-inactive") {
-      localStorage.setItem("userAccountActive", "false");
-      this.router.navigate(['/account-inactive']);
-      return;
-    }
-
-    // Invalid credentials or server down:
-
-    // Don't block the start of the app if the user was logged in before (session expired, server down, etc)
-    // User was logged in before:
-    const accountActive = this.userId !== null && this.userAccountActive;
-    if (accountActive && (err.status === 0 || err.status === 504 || err.name === 'TimeoutError')) {  // server down
-      this.navigateIfOnOutsidePage('/chats');
-      this.alertService.displayServerConnectionError();
-    }
-    else if (err.status === 401 && accountActive) {  // session expired
-      this.navigateIfOnOutsidePage('/chats');
-      this.alertService.displayLoginPrompt();
-    }
-    // when user wasn't logged in before:
-    else if (err.status === 0 || err.name === 'TimeoutError') {  // server down
-      this.router.navigate(['/']);
-      this.serverUnavailableWhileLoggedOut.set(true);  // display err on the loading page
-    }
-    else if (err.status === 401) {  // unauthorized, go to welcome (from where the user can login/register)
-      if (this.router.url != '/welcome')
-        this.router.navigate(['/welcome']);
-    }
-    
-    // unknown
-    else {
-      this.alertService.displayUnknownError(err);
-    }
-  }
+  
 
 
   private handleRegisterError(err: any) {
@@ -249,11 +203,5 @@ export class AuthService {
 
   private toKebabCase(str: string): string {
     return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-  }
-
-  private navigateIfOnOutsidePage(destination: string) {
-    if (this.outsidePages.includes(this.router.url)) {
-      this.router.navigate([destination]);
-    }
   }
 }

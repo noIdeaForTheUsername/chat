@@ -49,7 +49,6 @@ export class ConversationsPage {
   // Data
   protected conversations = computed(() => {
     const lastMessages = this.conversationService.conversationsMessagePreviews();
-    console.log("CHANGE DETECTION! Recomputing conversations with last messages:", lastMessages);
     return this.getConvertedConversations(this.conversationService.conversations(), lastMessages);
   });
   protected displayedConversations = computed(() => this.getFilteredConversations(this.conversations()));
@@ -71,7 +70,6 @@ export class ConversationsPage {
 
   // -------------------------------------------------------- PRIVATE FUNCTIONS
   
-
   // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
     return conversations

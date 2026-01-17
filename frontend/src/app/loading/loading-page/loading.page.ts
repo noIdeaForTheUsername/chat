@@ -5,6 +5,7 @@ import { IonButton, IonButtons, IonContent, IonIcon } from "@ionic/angular/stand
 import { LoadingIndicator } from "../loading-indicator-component/loading-indicator.component";
 import { AuthService } from "@app/auth/auth.service";
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
+import { AppInitService } from "@src/app/initialization/app-init.service";
 
 @Component({
   selector: 'app-loading-page',
@@ -16,6 +17,6 @@ export class LoadingPage {
 
   // NOTE: AUTH SERVICE IS THE FILE THAT NAVIGATES THE USER FURTHER FROM THIS LOADING PAGE
 
-  private authService = inject(AuthService);
-  protected serverUnavailableWhileLoggedOut = this.authService.serverUnavailableWhileLoggedOut;
+  private initService = inject(AppInitService);
+  protected serverUnavailableWhileLoggedOut = this.initService.serverUnavailableWhileLoggedOut;
 }

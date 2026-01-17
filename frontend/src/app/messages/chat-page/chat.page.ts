@@ -113,6 +113,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     effect(() => {
       // React to message list changes for scroll management and message acknowledgement
       const msgs = this.messageService.displayedMessages();
+      console.log("msgs changed!");
       if (msgs.length == 0) return;
       if (this.firstMessageLoad) { // first load (saveScrollParams never called before)
         this.firstMessageLoad = false;
@@ -272,7 +273,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // Corrects scroll so the screen doesn't jump on msg reload. Call just AFTER message list updates.
   // Make sure saveScroll params is called just before message list update / this function call
   async correctScrollOnMessageLoad() {
+    console.log("Correcting scroll on message load. Now awaiting DOM stable...");
     await this.waitForDomStable();
+    console.log("DOM stable, correcting scroll.");
     if (this.firstMessageTopDistance === undefined) return;
     const elem2 = document.getElementById(this.firstMessageId);
     if (!elem2) return;

@@ -3,7 +3,7 @@ import { Message } from "../message.interface";
 import { BackendMessageApi } from "./backend-message-api";
 import { MessageService } from "./message.service";
 
-export class MessagePreviewManager {
+export class ReplyPreviewManager {
 
   constructor(private s: MessageService, private api: BackendMessageApi) {}
 
