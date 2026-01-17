@@ -23,6 +23,7 @@
           <p>{{ 'profile.password' | translate }}:</p>
           <input formControlName="password" type="password">
         </label>
+        <p>{{ 'profile.forgot-password-hint' | translate }}</p>
       </div>
 
       <ion-button fill="solid" (click)="login()" [disabled]="this.authService.processing()">

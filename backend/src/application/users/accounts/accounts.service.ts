@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 import { ModifyAccountDto } from "./dto/modify-account.dto";
 import { AccountsDomainService } from "src/domain/accounts/accounts.service";
@@ -92,7 +92,7 @@ export class AccountsService {
     if (callerAccount.id === changedUserId)
       throw new BadRequestException("cannot-change-own-admin-status");
     if (!await verifyPassword(callerAccount, callerPasswordConfirm)) {
-      throw new UnauthorizedException('credentials-invalid');
+      throw new ForbiddenException('credentials-invalid');
     }
     await this.accounts.changeAdminStatus(changedUserId, newIsAdmin);
   }

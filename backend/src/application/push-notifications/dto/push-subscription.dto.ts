@@ -1,5 +1,12 @@
-import { IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { EmptyToNull } from "src/shared/validation/empty-to-null";
+
+class Keys {
+  @IsString()
+  p256dh: string;
+  @IsString()
+  auth: string;
+}
 
 export class PushSubscriptionDto {
   @IsString()
@@ -12,11 +19,4 @@ export class PushSubscriptionDto {
 
   @ValidateNested()
   keys: Keys;
-}
-
-class Keys {
-  @IsString()
-  p256dh: string;
-  @IsString()
-  auth: string;
 }

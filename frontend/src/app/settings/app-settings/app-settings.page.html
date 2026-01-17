@@ -26,6 +26,9 @@
   <!-- APP -->
   <ion-item-group>
     <ion-item-divider><ion-label>{{"common.app" | translate}}</ion-label></ion-item-divider>
+    <!-- notifications -->
+      <app-item-button [text]="'page.app-settings.notifications' | translate" icon="notifications" (click)="requestNotifications()"/>
+
       <!-- language -->
       <app-item-select text="Language / Język" icon="language"
         [value]="languageSelectValue" (selectionChange)="onLanguageSelect($event)">

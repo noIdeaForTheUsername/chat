@@ -10,11 +10,12 @@
       <h1>{{ 'page.account-settings.title' | translate }}</h1>
 
       <hr>
-      <p class="top-hint" [innerHTML]="'page.account-settings.hint' | translate"></p>
+      <p class="top-hint highlighted-b" [innerHTML]="'page.account-settings.hint' | translate"></p>
+      <ion-note>{{ 'profile.forgot-password-hint' | translate }}</ion-note>
 
       <div class="floating-input">
         <label>
-          <p>{{ 'profile.password' | translate }}:</p>
+          <p>{{ 'page.account-settings.current-password' | translate }}:</p>
           <input formControlName="currentPassword" type="password">
         </label>
       </div>
@@ -33,7 +34,7 @@
       <div class="floating-input">
         <label>
           <p>{{ 'page.register.phone-input' | translate }}:</p>
-          <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000" [disabled]="!currentPasswordNonEmpty()">
+          <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000">
         </label>
       </div>
 
@@ -43,14 +44,14 @@
       <div class="floating-input">
         <label>
           <p>{{ 'page.account-settings.new-password' | translate }}:</p>
-          <input formControlName="password" type="password" [disabled]="!currentPasswordNonEmpty()">
+          <input formControlName="password" type="password">
         </label>
       </div>
 
       <div class="floating-input">
         <label>
           <p>{{ 'profile.password-repeat' | translate }}:</p>
-          <input formControlName="passwordRepeat" type="password" [disabled]="!currentPasswordNonEmpty()">
+          <input formControlName="passwordRepeat" type="password">
         </label>
       </div>
 

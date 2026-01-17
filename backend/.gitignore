@@ -1,5 +1,6 @@
 # Sensitive files
-/.env.dev
+/env/
+/certs/
 
 # compiled output
 /dist

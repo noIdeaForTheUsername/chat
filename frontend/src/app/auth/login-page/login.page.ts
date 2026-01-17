@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { IonContent, IonButton, IonButtons, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonButtons } from '@ionic/angular/standalone';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { FormControl, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';

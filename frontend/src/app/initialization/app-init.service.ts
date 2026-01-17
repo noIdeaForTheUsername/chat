@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from "@angular/core";
 import { AuthService } from "../auth/auth.service";
 import { Router } from "@angular/router";
 import { AlertService } from "../alerts/alert-service/alert.service";
+import { NotificationsService } from "../notifications/notifications.service";
 
 
 @Injectable({
@@ -10,6 +11,7 @@ import { AlertService } from "../alerts/alert-service/alert.service";
 export class AppInitService {
 
   private alertService = inject(AlertService);
+  private notificationsService = inject(NotificationsService);
   private auth = inject(AuthService);
   private router = inject(Router);
   
@@ -20,6 +22,11 @@ export class AppInitService {
 
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
+  async initializeApp() {
+    this.loadAuthAndRedirect();
+    this.notificationsService.sendSubscriptionIfAvailable();
+  }
+
   async loadAuthAndRedirect(): Promise<void> {
     this.auth.loadLocalAuth();
     // If the user was logged in before, don't even wait for auth check 
@@ -28,7 +35,6 @@ export class AppInitService {
       if (this.isOnOutsidePage()) {
         this.router.navigateByUrl(this.successStartPage);
       }
-        
     }
 
     // Refresh auth from the server (or load it for the first time)

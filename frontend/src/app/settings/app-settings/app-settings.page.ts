@@ -10,6 +10,7 @@ import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
 import { LanguageService } from '@app/i18n/language.service';
+import { NotificationsService } from '@src/app/notifications/notifications.service';
 
 @Component({
   selector: 'app-settings',
@@ -24,6 +25,7 @@ export class AppSettingsPage {
   protected profileService = inject(ProfileService);
   protected authService = inject(AuthService);
   protected languageService = inject(LanguageService);
+  private notificationsService = inject(NotificationsService)
 
   get languageSelectValue(): string {
     return this.languageService.getCurrent() === 'pl' ? 'polish' : 'english';
@@ -32,6 +34,10 @@ export class AppSettingsPage {
   onLanguageSelect(value: string): void {
     const lang = value === 'polish' ? 'pl' : 'en';
     this.languageService.setLanguage(lang);
+  }
+
+  requestNotifications() {
+    this.notificationsService.requestSubscriptionAndSend();
   }
 
 }

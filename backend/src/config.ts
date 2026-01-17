@@ -34,7 +34,7 @@ export default () => {
       database: process.env.DB_DATABASE ?? 'chat',
     },
 
-    push_notifications: {
+    pushNotifications: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? null,
       vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? null,
       vapidContact: process.env.VAPID_CONTACT ?? '',
@@ -69,9 +69,9 @@ export default () => {
   }
 
   if (
-    !configObject.push_notifications.vapidPublicKey
-    || !configObject.push_notifications.vapidPrivateKey
-    || !configObject.push_notifications.vapidContact
+    !configObject.pushNotifications.vapidPublicKey
+    || !configObject.pushNotifications.vapidPrivateKey
+    || !configObject.pushNotifications.vapidContact
   ) {
     console.warn("VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_CONTACT are not all set in environment variables. The push notifications will be disabled.");
   }

@@ -117,6 +117,13 @@ button.alert-button.danger {
       outline-color: rgba(var(--ion-color-primary-rgb), 0.5);
     }
 
+    &[disabled] {
+      background-color: var(--ion-background-color);
+      border-color: var(--ion-background-color-step-300);
+      color: var(--ion-text-color-step-600);
+      cursor: not-allowed;
+    }
+
     &.ng-invalid.ng-touched {
       border-color: var(--ion-color-danger);
       &:focus-visible {
@@ -140,6 +147,10 @@ button.alert-button.danger {
   max-width: 1000px;
   height: 100%;
   margin: auto;
+}
+
+.highlighted-b b {
+  color: var(--ion-color-warning-shade);
 }
 
 @keyframes pulse-animation {

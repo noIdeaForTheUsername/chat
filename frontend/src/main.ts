@@ -34,7 +34,7 @@ bootstrapApplication(AppComponent, {
     }),
     provideAppInitializer(() => {
       const initService = inject(AppInitService)
-      initService.loadAuthAndRedirect();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages
+      initService.initializeApp();  // purposefully not waiting for completion - instead of blocking the application start, displaying loading pages or delayed error msgs
     }),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

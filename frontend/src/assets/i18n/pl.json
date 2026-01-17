@@ -143,6 +143,7 @@
     "account-settings": {
       "title": "Ustawienia konta",
       "hint": "Wpisz <b>obecne hasło</b>, po czym edytuj <b>tylko te pola, które chcesz zmienić</b>. Następnie potwierdź przyciskiem na dole strony.",
+      "current-password": "Obecne hasło",
       "new-password": "Nowe hasło (jeśli chcesz je zmienić)"
     },
 
@@ -171,7 +172,7 @@
       "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
       "email-input": "Adres e-mail",
       "phone-input": "Telefon z numerem kierunkowym",
-      "email-phone-hint": "Wymagane jest co najmniej jedno poniższe (zalecany telefon). Tymi danymi będziesz mógł się zalogować",
+      "email-phone-hint": "Wymagane jest co najmniej <b>jedno poniższe</b> (zalecany telefon). Tymi danymi będziesz mógł się zalogować",
       "email-phone-settings": "Pozwól innym użytkownikom znaleźć mnie po następujących polach (pola te zawsze pozostaną publicznie ukryte nawet, jeśli włączysz te opcje)",
       "bio-input": "Opis profilu (opcjonalnie)",
       "login-hint": "Mam już konto"
@@ -199,7 +200,8 @@
     "register": "Zarejestruj się",
     "email": "E-mail",
     "password": "Hasło",
-    "password-repeat": "Powtórz hasło"
+    "password-repeat": "Powtórz hasło",
+    "forgot-password-hint": "Jeśli zapomniałeś hasła, skontaktuj się z administratorem w celu jego zresetowania."
   },
 
   "prompt": {
@@ -247,7 +249,7 @@
     },
     "data-invalid": {
       "header": "Nieprawidłowe dane",
-      "description": "Przekazane dane są nieprawidłowe. Sprawdź poprawność wprowadzonych informacji."
+      "description": "Przekazane dane są nieprawidłowe. Sprawdź poprawność wprowadzonych informacji (pola zaznaczone na czerwono)."
     },
 
     "unknown": {

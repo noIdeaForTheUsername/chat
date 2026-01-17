@@ -136,12 +136,14 @@
       "auto-lock": "Auto-lock on close",
       "modify-account": "Modify account data",
       "logout": "Log out",
-      "delete-messages": "Delete all messages in all conversations"
+      "delete-messages": "Delete all messages in all conversations",
+      "notifications": "Enable notifications"
     },
 
     "account-settings": {
       "title": "Account settings",
       "hint": "Enter the <b>current password</b>, and then only edit the <b>fields you want to change</b>. Finally, confirm with the button at the bottom of the page.",
+      "current-password": "Current password",
       "new-password": "New password (if you want to change it)"
     },
 
@@ -165,12 +167,12 @@
 
     "register": {
       "header": "Create a new account",
-      "encouragement": "Your name and login will only be visible to users you who discover you - and this requires knowing your <b>exact</b> login or full name.",
+      "encouragement": "Your name and login will only be visible to the server admin and users <b>who discover you</b> - and this requires knowing the <b>exact</b> value of one of these fields",
       "name-input": "Full name (optional)",
       "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
-      "email-phone-hint": "At least one is required (phone recommended). You'll be able to log in using these fields",
+      "email-phone-hint": "At least <b>one is required</b> (phone recommended). You'll be able to log in using these fields",
       "email-phone-settings": "Make other users able to find me by my (this data will always remain publically hidden, even if you enable these options)",
       "bio-input": "Profile description (optional)",
       "login-hint": "I already have an account"
@@ -198,7 +200,8 @@
     "register": "Register",
     "email": "Email",
     "password": "Password",
-    "password-repeat": "Repeat password"
+    "password-repeat": "Repeat password",
+    "forgot-password-hint": "If you forgot your password, contact the administrator to reset it."
   },
 
 
@@ -248,7 +251,7 @@
     },
     "data-invalid": {
       "header": "Invalid data",
-      "description": "Provided data is invalid. Check the if the input is correct."
+      "description": "Provided data is invalid. Check the if the input is correct (fields marked in red)."
     },
 
     "unknown": {

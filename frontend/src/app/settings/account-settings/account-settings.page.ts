@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonNote } from '@ionic/angular/standalone';
 import { StandardHeaderComponent } from '@app/shared/headers/standard-header-component/standard-header.component';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
@@ -21,6 +21,7 @@ import { Router } from '@angular/router';
     ReactiveFormsModule,
     IonContent,
     IonButton,
+    IonNote,
     StandardHeaderComponent,
     TranslatePipe,
     LoadingIndicator
@@ -36,13 +37,14 @@ export class AccountSettingsPage implements OnInit {
   protected loading = signal(true);
   protected loadErr = signal<number | string | null>(null);
 
-  protected currentPasswordNonEmpty = computed(() => {
-    const val = this.form.get('currentPassword')?.value;
-    return val !== null && val !== undefined;
-  });
 
   ngOnInit(): void {
     this.loadAccount();
+
+    this.disableFormIfCurrentPasswordEmpty();
+    this.form.get('currentPassword')?.valueChanges.subscribe((value) => {
+      this.disableFormIfCurrentPasswordEmpty();
+    });
   }
 
   private async loadAccount() {
@@ -56,6 +58,17 @@ export class AccountSettingsPage implements OnInit {
     }
     catch (e: any) {
       this.loadErr.set(e.error?.message ?? e.status ?? 'data-unavailable');
+    }
+  }
+
+  private disableFormIfCurrentPasswordEmpty() {
+    const disableFields = !this.form.get("currentPassword")?.value;
+    for (let controlName of Object.keys(this.form.controls)) {
+      const control = this.form.get(controlName);
+      if (control && controlName !== "currentPassword") {
+        if (disableFields) control.disable({ emitEvent: false });
+        else control.enable({ emitEvent: false });
+      }
     }
   }
 

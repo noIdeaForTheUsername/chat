@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { AccountsService } from '../accounts/accounts.service';
 import { hashPassword, verifyPassword } from './auth-utils';
@@ -24,7 +24,7 @@ export class AuthService {
 
   async login(req: any, account: string, plainPassword: string) {
     const found = await this.accountsDomainService.findByUniqueField(account);
-    if (!found) throw new UnauthorizedException('credentials-invalid');
+    if (!found) throw new ForbiddenException('credentials-invalid');
     await verifyPassword(found, plainPassword);  // throws exception if invalid
 
 

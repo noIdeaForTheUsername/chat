@@ -12,7 +12,7 @@ let sessionMiddleware: RequestHandler | null = null;
 
 const PgStore = pgSession(session);
 
-export async function initSessionMiddleware(config: ConfigService): RequestHandler {
+export async function initSessionMiddleware(config: ConfigService): Promise<RequestHandler> {
 
   const sessionDataSource = new DataSource({
     type: "postgres",

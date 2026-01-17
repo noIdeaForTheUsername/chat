@@ -6,8 +6,7 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { static as expressStatic } from 'express';
-import session from 'express-session';
-import { getSessionMiddleware, initSessionMiddleware } from './shared/auth/session.middleware';
+import { initSessionMiddleware } from './shared/auth/session.middleware';
 
 async function bootstrap() {
   // TypeORM Transactional Context
@@ -18,6 +17,7 @@ async function bootstrap() {
 
   // Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
+    console.log("validation errors: ", errors);
     throw new BadRequestException(`invalid.${errors[0].property}`);
   }}));
 

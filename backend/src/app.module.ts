@@ -27,11 +27,12 @@ import { AccountsDomainModule } from './domain/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DeviceSessionEntity } from './domain/session/entity/device-session.entity';
+import { PushModule } from './application/push-notifications/push.module';
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.dev', load: [config] }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: 'env/.env.dev', load: [config] }),
     EventEmitterModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
@@ -61,6 +62,7 @@ import { DeviceSessionEntity } from './domain/session/entity/device-session.enti
     ProfilesModule,
     ConversationsModule,
     MessagesModule,
+    PushModule,
     AccountsDomainModule, // for LoggedInGuard
   ],
   controllers: [AppController],
