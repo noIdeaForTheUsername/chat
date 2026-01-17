@@ -28,7 +28,8 @@ export class AuthService {
   // User data
   private userId: number | null = null;
   private userAccountActive: boolean = false;
-  public readonly userAccount = signal<UserAccount | null>(null);
+  // the below one will only load successfully if logged in and server available
+  public readonly userAccount = signal<UserAccount | null>(null);  
 
   // State
   public readonly processing = signal(false);
@@ -96,8 +97,6 @@ export class AuthService {
       next: (res: any) => {
         if (res.id)
           this.setUserId(res.id);
-        else
-          this.loadServerAuth();
 
         this.processing.set(false);
         window.location.replace("chats");
@@ -125,7 +124,7 @@ export class AuthService {
         } catch {
           // ignore storage errors
         }
-        this.loadServerAuth().subscribe();
+        window.location.reload();
       }),
       catchError((err) => {
         this.handleRegisterError(err);

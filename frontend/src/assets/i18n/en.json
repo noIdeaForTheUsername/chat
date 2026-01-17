@@ -16,6 +16,7 @@
     "other": "Other",
     "copy-text": "Copy text",
     "retry": "Retry",
+    "refresh": "Refresh",
     "empty": "Empty",
     "loading": "Loading...",
     "info": "Information",
@@ -51,7 +52,7 @@
       "description": "Your account creation request has been received. Before you can use the app, please wait for an administrator to activate your account. This should not take longer than a day.",
       "different-account": "I want to log in to a different account",
       "meantime": "In the meantime",
-      "install-label": "Install the app to have access from your phone's home screen",
+      "install-label": "Install the app to have access from your phone's home screen (without downloading from the Store, just 3 clicks!)",
       "install-button": "Install",
       "notifications-label": "Enable notifications to get informed about account activation or new received messages",
       "notifications-button": "Enable"
@@ -136,6 +137,7 @@
       "auto-lock": "Auto-lock on close",
       "modify-account": "Modify account data",
       "logout": "Log out",
+      "install-app": "Install the app",
       "delete-messages": "Delete all messages in all conversations",
       "notifications": "Enable notifications"
     },
@@ -149,7 +151,7 @@
 
     "security-verification": {
       "title": "Security verification",
-      "header": "Encryption verification: {{name}}",
+      "header": "This page will work in the future. Go back and pretend everything's ok :P",
       "description": "This verification will help you ensure that no one has messed with the encryption parameters between you and this user (public keys / security codes).",
       "security-codes": "Security codes",
       "my-code": "My code (A)",
@@ -207,8 +209,12 @@
 
   "prompt": {
     "block": {
-      "user": "The user will be hidden for you, you won't receive notifications, and their messages in the group chats will no longer be visible to you. You can unblock them later from your Conversation list. If you want to clear your messages as well, do it before blocking.",
+      "user": "The user will be hidden for you, you won't receive notifications, and their messages in the group chats will no longer be visible to you. They won't be informed of this action. You can unblock them later from the Conversations list page.",
       "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
+    },
+    "install": {
+      "header": "Just 3 clicks...",
+      "description": "but you have to do it yourself. Depending on the browser, it may look different, but usually you need to click the menu icon in one of the screen corners (3 dots or 3 lines), and then find the option \"Install app\" (best!) or, if that doesn't exist, \"Add to home screen\"."
     },
     "unblock": "Are you sure you want to unblock this user/group?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
@@ -216,7 +222,9 @@
     "delete-message": "Are you sure you want to delete the selected own message(s)? (they will be gone for other users as well, however, they might still have temporary access if they don't have internet connection)",
 
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
-    "start-conversation": "Start a new conversation with this user?"
+    "start-conversation": "Start a new conversation with this user?",
+
+    "notifications-enabled": "Notifications have been successfully enabled."
   },
 
 

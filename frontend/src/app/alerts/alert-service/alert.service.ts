@@ -110,6 +110,14 @@ export class AlertService {
     );
   }
 
+  displayInstallGuide() {
+    this.displayMessageAlert(AlertType.INFO,
+      this.translate.instant("prompt.install.description"),
+      undefined,
+      this.translate.instant("prompt.install.header"),
+    );
+  }
+
   displayServerConnectionError(always = false) {  // "always" ignores the limit (for directly user-initiated actions, e.g. login)
     if (this.router.url === '/') return; // loading page has an entire screen for error message
     if (this.serverConnectionErrorDisplayed && !always) return;

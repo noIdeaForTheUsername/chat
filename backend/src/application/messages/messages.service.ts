@@ -71,7 +71,7 @@ export class MessagesService {
     ]);
 
     // send WebSocket message to participants
-    this.eventEmitter.emit("messageSent", new MessageSentEvent(participantIds, sent));
+    this.eventEmitter.emit("messageSent", new MessageSentEvent(callerId, participantIds, sent));
 
     return sent;
   }

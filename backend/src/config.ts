@@ -7,6 +7,7 @@ export default () => {
     app: {
       mode: process.env.NODE_ENV ?? 'development',
       port: parseInt(process.env.APP_PORT ?? "3000", 10) || 3000,
+      frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:4200',
     },
 
     auth: {
@@ -61,6 +62,11 @@ export default () => {
   if (!process.env.COOKIES_SAME_SITE) {
     throw new Error(getErrorMsg("COOKIES_SAME_SITE", "'strict', 'lax' or 'none'"));
   }
+  if (configObject.cookies.sameSite == 'none') {
+    console.error(`COOKIES_SAME_SITE set to 'none'. I'm telling you that this is a bad idea.
+      But if you're going for it, please be aware: CORS allows ALL connections in websockets (all files .gateway.ts). This leaves a criticial vulnerability with cookies set to 'none'.
+      For some reason, CORS in @WebSocketGateway cannot use the .env config no matter what I do, so you have to: find each .gateway file, and manually change "origin: YOUR_FRONTEND_URL" there.`);
+  }
   if (!process.env.COOKIES_HTTP_ONLY) {
     throw new Error(getErrorMsg("COOKIES_HTTP_ONLY", "'true' (recommended) or 'false'"));
   }
@@ -89,10 +95,13 @@ function parseList(val?: string): string[] | undefined {
 }
 
 export function getCorsOrigins() {
-  return parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
+  const toReturn = parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
     "http://localhost:8100",
     "http://192.168.1.2:8100",
     "http://chmuraim.dynv6.net:8100",
     "http://46.205.222.219:8100"
   ];
+  console.log("env :", process.env.CORS_ALLOWED_ORIGINS);
+  console.log("parsed CORS allowed origins:", toReturn);
+  return toReturn;
 }

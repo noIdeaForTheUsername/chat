@@ -4,14 +4,14 @@
   @if (dataLoaded()) {
     <app-profile-preview [profile]="participant()" [viewProfileButton]="true" />
     <!-- GENERAL SETTINGS -->
-    <ion-item-group>
+    <!-- <ion-item-group>
       <ion-item-divider><ion-label>{{"page.conversation-options.general.header" | translate}}</ion-label></ion-item-divider>
 
-      <app-item-button [text]="'profile.call' | translate" icon="call" iconColor="primary" /> <!-- call -->
-      <app-item-button [text]="'page.conversation-options.general.search' | translate" icon="search" /> <!-- search -->
+      <app-item-button [text]="'profile.call' | translate" icon="call" iconColor="primary" />
+      <app-item-button [text]="'page.conversation-options.general.search' | translate" icon="search" />
       <app-item-button [text]="'page.conversation-options.general.show-media' | translate"
-        icon="images" /> <!-- media -->
-    </ion-item-group>
+        icon="images" />
+    </ion-item-group> -->
 
     <!-- USER ACTIONS -->
     <ion-item-group>
@@ -26,12 +26,11 @@
     </ion-item-group>
 
     <!-- CONVERSATION OPTIONS -->
-    <ion-item-group>
+    <!-- <ion-item-group>
       <ion-item-divider><ion-label>{{"page.conversation-options.settings.header" | translate}}</ion-label></ion-item-divider>
 
-      <!-- notifications -->
       <app-item-toggle [text]="'page.conversation-options.settings.notifications' | translate" icon="notifications"></app-item-toggle>
-    </ion-item-group>
+    </ion-item-group> -->
 
     <!-- DANGER ZONE (DELETING) -->
     <ion-item-group>

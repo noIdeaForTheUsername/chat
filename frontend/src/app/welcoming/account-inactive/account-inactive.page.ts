@@ -7,6 +7,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
 import { RouterLink } from '@angular/router';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
+import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 
 @Component({
   selector: 'app-account-inactive',
@@ -18,10 +19,11 @@ import { NotificationsService } from '@src/app/notifications/notifications.servi
 })
 export class AccountInactivePage {
 
-  private notificationsService = inject(NotificationsService);
+  protected alertService = inject(AlertService);
+  protected notificationsService = inject(NotificationsService);
 
-  requestNotifications() {
-    this.notificationsService.requestSubscriptionAndSend();
+  protected reloadPage() {
+    window.location.reload();
   }
 
 }

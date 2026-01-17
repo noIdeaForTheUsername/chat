@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { static as expressStatic } from 'express';
 import { initSessionMiddleware } from './shared/auth/session.middleware';
+// import { SocketIoAdapter } from './shared/websockets/socket-io.adapter';
 
 async function bootstrap() {
   // TypeORM Transactional Context
@@ -39,6 +40,7 @@ async function bootstrap() {
     origin: config.get<string[]>('cors.origins'),
     credentials: true,
   });
+  // app.useWebSocketAdapter(new SocketIoAdapter(config));
   await app.listen(port);
 }
 bootstrap();

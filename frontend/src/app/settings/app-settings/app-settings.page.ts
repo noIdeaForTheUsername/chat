@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
 import { LanguageService } from '@app/i18n/language.service';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
+import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 
 @Component({
   selector: 'app-settings',
@@ -24,6 +25,7 @@ export class AppSettingsPage {
 
   protected profileService = inject(ProfileService);
   protected authService = inject(AuthService);
+  protected alertService = inject(AlertService);
   protected languageService = inject(LanguageService);
   private notificationsService = inject(NotificationsService)
 

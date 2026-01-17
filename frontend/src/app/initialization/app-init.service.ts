@@ -23,8 +23,9 @@ export class AppInitService {
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
   async initializeApp() {
-    this.loadAuthAndRedirect();
-    this.notificationsService.sendSubscriptionIfAvailable();
+    await this.loadAuthAndRedirect();
+    if (this.auth.userAccount())
+      this.notificationsService.sendSubscriptionIfAvailable();
   }
 
   async loadAuthAndRedirect(): Promise<void> {

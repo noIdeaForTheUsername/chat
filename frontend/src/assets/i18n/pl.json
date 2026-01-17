@@ -17,6 +17,7 @@
     "other": "Inne",
     "copy-text": "Kopiuj tekst",
     "retry": "Spróbuj ponownie",
+    "refresh": "Odśwież",
     "empty": "Puste",
     "loading": "Ładowanie...",
     "info": "Informacja",
@@ -51,7 +52,7 @@
       "description": "Prośba o założenie konta została przyjęta. Zanim będziesz mógł używać aplikacji, poczekaj, aż administrator aktywuje Twoje konto. To nie powinno trwać dłużej niż dzień",
       "different-account": "Chcę zalogować się na inne konto",
       "meantime": "W międzyczasie",
-      "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego",
+      "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego (bez pobierania ze Sklepu, po prostu 3 kliknięcia!)",
       "install-button": "Zainstaluj",
       "notifications-label": "Włącz powiadomienia, aby otrzymywać informacje o aktywacji konta lub nowych odebranych wiadomościach",
       "notifications-button": "Włącz"
@@ -137,6 +138,7 @@
       "auto-lock": "Automatycznie zablokuj przy zamknięciu",
       "modify-account": "Modyfikuj dane konta",
       "logout": "Wyloguj się",
+      "install-app": "Zainstaluj aplikację",
       "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach"
     },
 
@@ -149,7 +151,7 @@
 
     "security-verification": {
       "title": "Weryfikacja bezpieczeństwa",
-      "header": "Weryfikacja szyfrowania: {{name}}",
+      "header": "Ta strona będzie działać dopiero w przyszłości. Wróć i udawaj, że wszystko okej :P",
       "description": "Ta weryfikacja pomoże Ci upewnić się, że nikt nie manipulował parametrami szyfrowania między Tobą a tym użytkownikiem (klucze publiczne / kody bezpieczeństwa).",
       "security-codes": "Kody bezpieczeństwa",
       "my-code": "Mój kod (A)",
@@ -167,7 +169,7 @@
 
     "register": {
       "header": "Utwórz nowe konto",
-      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla użytkowników, którzy Cię znajdą - a to wymaga znajomości Twojego <b>pełnego</b> loginu lub imienia i nazwiska.",
+      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla administratora i użytkowników, którzy Cię znajdą - a to wymaga znajomości <b>pełnej</b> wartości jednego z tych pól.",
       "name-input": "Imię i nazwisko (opcjonalne)",
       "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
       "email-input": "Adres e-mail",
@@ -206,8 +208,12 @@
 
   "prompt": {
     "block": {
-      "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Możesz go odblokować później z listy konwersacji. Jeśli chcesz również wyczyścić swoje wiadomości, zrób to przed zablokowaniem.",
+      "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Nie zostanie on poinformowany o tej akcji. Możesz go odblokować później ze strony z listą konwersacji.",
       "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
+    },
+    "install": {
+      "header": "Tylko 3 kliknięcia...",
+      "description": "ale musisz samemu. W zależności od przeglądarki może to wyglądać inaczej, ale zazwyczaj musisz kliknąć ikonę menu w którymś z rogów ekranu (3 kropki lub 3 kreski), a następnie znaleźć opcję \"Zainstaluj aplikację\" (najlepiej!) lub, jeśli taka nie istnieje, to \"Dodaj do ekranu głównego\"."
     },
     "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
@@ -215,7 +221,9 @@
     "delete-message": "Czy na pewno chcesz usunąć wybraną wiadomość / wiadomości? (zostaną one usunięte również dla innych użytkowników, jednak dalej mogą oni mieć do nich tymczasowy dostęp, jeśli nie mają połączenia z internetem)",
 
     "conversation-exists": "Konwersacja z tym użytkownikiem już istnieje. Czy chcesz ją otworzyć?",
-    "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?"
+    "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?",
+
+    "notifications-enabled": "Powiadomienia zostały pomyślnie włączone."
   },
 
   "error": {

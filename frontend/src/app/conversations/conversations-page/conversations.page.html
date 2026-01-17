@@ -16,72 +16,73 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- REFRESH -->
-  <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <div class="max-width-container">
+    <!-- REFRESH -->
+    <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-  <!-- SEARCHBAR -->
-  <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
+    <!-- SEARCHBAR -->
+    <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 
-  @if (this.conversationsLoaded()) {
-    <!-- HEADER -->
-    <div class="ion-padding">
-      <h1>{{"page.conversations.title" | translate}}</h1>
-      @if (searchFilter().length > 0) { <ion-note>{{"common.search-filter-hint" | translate}}</ion-note> }
-    </div>
-  }
-  @else {
-    <!-- LOADING INDICATOR -->
-    <app-loading-indicator type="crescent" color="primary" size="medium" [active]="!this.conversationsLoaded()"/>
-  }
-  
-  
-
-  <!-- CONVERSATIONS LIST -->
-  @if (displayedConversations().length > 0) {
-    <ion-list lines="full">
-      @for (conv of displayedConversations(); track conv.id) {
-        <!-- CONVERSATION ITEM -->
-        <app-conversation-item
-        [selectionService]="selectionService"
-        (openMultiselectActions)="openMultiselectActionSheet()"
-        [conversationView]="conv"
-        [profile]="profiles().get(conv.participantId)"/>
-      }
-    </ion-list>
-  }
-  @else {
-    <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
-    @if (searchFilter().length == 0) { <p class="no-conversations-text">{{"page.conversations.add-conversation-hint" | translate}}</p> }
-  }
-
-  <!-- "ADD" BUTTON (discovery) -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-    <ion-fab-button id="plus-button" [class.pulsing]="conversationsLoaded() && conversations().length === 0">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-  <!-- ACTION MENUS -->
-  <ion-action-sheet trigger="plus-button" [buttons]="plusButtons" (didDismiss)="performPlusButtonAction($event)"
-    [header]="'page.conversations.plus-action.header' | translate">
-  </ion-action-sheet>
-  <ion-action-sheet [isOpen]="multiselectActionSheetOpen()" [buttons]="multiselectActionButtons" (didDismiss)="performMultiselectAction($event)"
-    [header]="'page.conversations.conversation-action.header' | translate">
-  </ion-action-sheet>
-
-  <!-- CORNER MENU -->
-  <app-corner-menu #corner_menu>
-    <app-item-button [text]="'common.settings' | translate" icon="settings" [routerLink]="'/settings'"/>
-    @if (authService.getUserId()) {
-      <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${authService.getUserId()}`"/>
+    @if (this.conversationsLoaded()) {
+      <!-- HEADER -->
+      <div class="ion-padding">
+        <h1>{{"page.conversations.title" | translate}}</h1>
+        @if (searchFilter().length > 0) { <ion-note>{{"common.search-filter-hint" | translate}}</ion-note> }
+      </div>
     }
-    <app-item-button [text]="'page.conversations.toggle-blocked-conversations' | translate"
-      icon="ban" (click)="toggleBlockedConversations()"/>
-    <app-item-button [text]="'common.enter-selection' | translate"
-      icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
-    <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
-  </app-corner-menu>
+    @else {
+      <!-- LOADING INDICATOR -->
+      <app-loading-indicator type="crescent" color="primary" size="medium" [active]="!this.conversationsLoaded()"/>
+    }
+    
+    
 
+    <!-- CONVERSATIONS LIST -->
+    @if (displayedConversations().length > 0) {
+      <ion-list lines="full">
+        @for (conv of displayedConversations(); track conv.id) {
+          <!-- CONVERSATION ITEM -->
+          <app-conversation-item
+          [selectionService]="selectionService"
+          (openMultiselectActions)="openMultiselectActionSheet()"
+          [conversationView]="conv"
+          [profile]="profiles().get(conv.participantId)"/>
+        }
+      </ion-list>
+    }
+    @else {
+      <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
+      @if (searchFilter().length == 0) { <p class="no-conversations-text">{{"page.conversations.add-conversation-hint" | translate}}</p> }
+    }
+
+    <!-- "ADD" BUTTON (discovery) -->
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
+      <ion-fab-button id="plus-button" [class.pulsing]="conversationsLoaded() && conversations().length === 0">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <!-- ACTION MENUS -->
+    <ion-action-sheet trigger="plus-button" [buttons]="plusButtons" (didDismiss)="performPlusButtonAction($event)"
+      [header]="'page.conversations.plus-action.header' | translate">
+    </ion-action-sheet>
+    <ion-action-sheet [isOpen]="multiselectActionSheetOpen()" [buttons]="multiselectActionButtons" (didDismiss)="performMultiselectAction($event)"
+      [header]="'page.conversations.conversation-action.header' | translate">
+    </ion-action-sheet>
+
+    <!-- CORNER MENU -->
+    <app-corner-menu #corner_menu>
+      <app-item-button [text]="'common.settings' | translate" icon="settings" [routerLink]="'/settings'"/>
+      @if (authService.getUserId()) {
+        <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${authService.getUserId()}`"/>
+      }
+      <app-item-button [text]="'page.conversations.toggle-blocked-conversations' | translate"
+        icon="ban" (click)="toggleBlockedConversations()"/>
+      <app-item-button [text]="'common.enter-selection' | translate"
+        icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
+      <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
+    </app-corner-menu>
+  </div>
 </ion-content>

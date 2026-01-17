@@ -5,6 +5,7 @@ import { AlertService } from "../alerts/alert-service/alert.service";
 import { AlertType } from "../alerts/alert-type.enum";
 import { lastValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable({
   providedIn: "root"
@@ -13,6 +14,7 @@ export class NotificationsService {
   private swPush = inject(SwPush);
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
+  private translate = inject(TranslateService);
 
   constructor() {
     console.log("NotificationsService initialized");
@@ -36,25 +38,23 @@ export class NotificationsService {
   }
   
   // This function asks for permissions if not already granted and shows an alert if denied
-  async requestSubscriptionAndSend(alertOnError: boolean = true): Promise<void> {
+  async requestSubscriptionAndSend(displayAlerts: boolean = true): Promise<void> {
     let sub: PushSubscription | undefined = undefined;
     try {
       console.log("Requesting notification subscription...");
       sub = await this.swPush.requestSubscription({
         serverPublicKey: environment.vapidPublicKey
       });
-      console.log("Subscription obtained: ", sub);
-      console.log("Typeof endpoint: ", typeof sub.endpoint);
     }
     catch(err) {
       console.error("Error requesting subscription:", err);
-      if (alertOnError) this.alertService.displayError("notifications-blocked");
+      if (displayAlerts) this.alertService.displayError("notifications-blocked");
     }
-
-    console.log("Obtained subscription:", sub);
 
     if (sub) {
       this.sendSubscriptionToServer(sub);
+      if (displayAlerts)
+        this.alertService.displayMessageAlert(AlertType.INFO, this.translate.instant("prompt.notifications-enabled"));
     }
   }
 

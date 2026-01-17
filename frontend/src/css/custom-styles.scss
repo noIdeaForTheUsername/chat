@@ -35,7 +35,7 @@ ion-badge {
 
 // Text colors modifications in some places, because "primary" is barely visible on light mode
 html {
-  .alert-button.sc-ion-alert-md {
+  .alert-button.sc-ion-alert-md, .action-sheet-button.sc-ion-action-sheet-ios, .alert-button-inner.sc-ion-alert-ios {
     color: var(--darker-text-color);
     font-weight: 600;
   }

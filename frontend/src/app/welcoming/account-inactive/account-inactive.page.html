@@ -10,7 +10,11 @@
     <h1>{{ 'page.account-inactive.title' | translate }}</h1>
     <ion-icon name="hourglass" color="primary"></ion-icon>
     <p>{{ 'page.account-inactive.description' | translate }}</p>
-    <a routerLink="/login">{{ 'page.account-inactive.different-account' | translate }}</a>
+
+    <!-- Actions -->
+    <ion-button (click)="reloadPage()" fill="solid">{{ 'common.refresh' | translate }}</ion-button>
+    <p><a routerLink="/login">{{ 'page.account-inactive.different-account' | translate }}</a></p>
+
 
     <!-- "Meantime" actions -->
     <hr/>
@@ -21,7 +25,7 @@
         <ion-card-title>{{ 'page.account-inactive.notifications-label' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-button (click)="requestNotifications()">
+        <ion-button (click)="this.notificationsService.requestSubscriptionAndSend()">
           {{ 'page.account-inactive.notifications-button' | translate }}
         </ion-button>
       </ion-card-content>
@@ -32,7 +36,7 @@
         <ion-card-title>{{ 'page.account-inactive.install-label' | translate }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-button (click)="requestNotifications()">
+        <ion-button (click)="this.alertService.displayInstallGuide()">
           {{ 'page.account-inactive.install-button' | translate }}
         </ion-button>
       </ion-card-content>

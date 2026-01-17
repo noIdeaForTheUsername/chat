@@ -13,6 +13,7 @@ import { MessagesService } from './messages.service';
 import { MessageSentEvent } from 'src/shared/events/message-sent.event';
 import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 
 // TODO: file a lawsuit for damaging my mental health by not providing any docs for neither auth, cookies, or sessions in websockets
@@ -21,7 +22,7 @@ import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
 @WebSocketGateway({
   cors: {
-    origin: getCorsOrigins(),  // config service refuses to work no matter what I do
+    origin: true,
     credentials: true,
   }
 })
@@ -33,7 +34,7 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   constructor(
     private messagesService: MessagesService,
     private accounts: AccountsDomainService
-  ) {}
+  ) { }
 
 
   // AUTHENTHICATION

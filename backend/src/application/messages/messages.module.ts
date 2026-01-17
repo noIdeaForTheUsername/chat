@@ -7,10 +7,11 @@ import { MessagesGateway } from './messages.gateway';
 import { AccountsDomainModule } from 'src/domain/accounts/accounts.module';
 import { NotBlockingParticipantsModule } from '../shared/not-blocking-participants/not-blocking-participants.module';
 import { MessageBroadcastingService } from './message-broadcasting.service';
+import { ProfilesDomainModule } from 'src/domain/profiles/profiles.module';
 
 @Module({
   controllers: [MessagesController],
   providers: [MessagesService, MessagesGateway, MessageBroadcastingService],
-  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule, NotBlockingParticipantsModule],
+  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule, ProfilesDomainModule, NotBlockingParticipantsModule],
 })
 export class MessagesModule {}

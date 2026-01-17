@@ -25,10 +25,13 @@ export class LoggedInGuard implements CanActivate {
     }
     
     // -- The below code will only be reached if the user is authorized
+
+    const allowInactiveAccount = this.reflector.getAllAndOverride<boolean>('allowInactiveAccount',
+      [context.getHandler(), context.getClass()]) || false;
     
     // Get the caller user from the database and verify if accounts exists and is active
     const account = await this.accounts.findExistingById(req.session.userId);
-    if (!account.activated && !publicAccess) {
+    if (!account.activated && !publicAccess && !allowInactiveAccount) {
       throw new UnauthorizedException('account-inactive');
     }
     req["userAccount"] = account;

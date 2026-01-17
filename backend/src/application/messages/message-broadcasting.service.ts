@@ -4,6 +4,8 @@ import { ConversationClearedEvent } from "src/shared/events/conversation-cleared
 import { MessageDeletedEvent } from "src/shared/events/message-deleted.event";
 import { MessageSentEvent } from "src/shared/events/message-sent.event";
 import { MessagesGateway } from "./messages.gateway";
+import { ConversationsDomainService } from "src/domain/conversations/conversations.service";
+import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 
 // This service is responsible for sending real-time updates to users via WebSockets, or Push Notifications when they are offline.
 
@@ -12,7 +14,9 @@ export class MessageBroadcastingService {
 
   constructor(
     private messagesGateway: MessagesGateway,
-    private eventEmitter: EventEmitter2
+    private eventEmitter: EventEmitter2,
+    private conversations: ConversationsDomainService,
+    private profiles: ProfilesDomainService
   ) {}
 
   @OnEvent("messageSent")
@@ -22,13 +26,32 @@ export class MessageBroadcastingService {
 
       const connected = await this.messagesGateway.getUserConnected(receiverId);
       if (connected) {
+        // Send via a websocket
         this.messagesGateway.sendMessage(payload);
       }
       else {
+        // Prepare and send push notification
+        const conv = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
+        if (!conv || !conv.notifications) continue; // user has disabled notifications for this conversation
+
+        const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
+        if (!profile) continue;
+
+        const senderName = profile.nick || profile.name || profile.login || null;
+        if (!senderName) continue;
+
+        const header = `New message from: ${senderName}`;
+        const message = payload.message.text.length > 100 ?
+          payload.message.text.substring(0, 97) + "..." :
+          payload.message.text;
+        const tag = `new-message:conversation-${payload.message.conversationId}`;
+
         this.eventEmitter.emit("pushNotification", {
           userId: receiverId,
-          title: "New Message",
-          message: "You have received a new message."
+          header,
+          message,
+          tag,
+          clickUrl: `/chats/${payload.message.conversationId}`
         });
       }
     }

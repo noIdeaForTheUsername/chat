@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { OnEvent } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
-import { send } from "node:process";
 import { DeviceSessionEntity } from "src/domain/session/entity/device-session.entity";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 import { Repository } from "typeorm";
@@ -36,14 +35,24 @@ export class PushService {
 
   @OnEvent("pushNotification")
   async handlePushNotificationEvent(payload: PushNotifcationEvent) {
-    await this.sendNotification(payload.userId, payload.title, payload.message);
+    await this.sendNotificationsToUser(payload.userId, payload.header, payload.message, payload.tag, payload.clickUrl);
   }
 
-  async sendNotification(userId: number, title: string, message: string) {
+  async sendNotificationsToUser(userId: number, title: string, message: string,
+    tag?: string, clickUrl?: string
+  ) {
     console.log("trying to send push notification to user ", userId);
     // get subscription
-    const session = await this.deviceSessions.findOneBy({ userId });
-    const subscription = session?.data?.pushSubscription;
+    const sessions = await this.deviceSessions.findBy({ userId });
+    for (const session of sessions) {
+      await this.sendSingleNotification(session, title, message, tag, clickUrl);
+    }
+  }
+
+  private async sendSingleNotification(session: DeviceSessionEntity, title: string, message: string,
+    tag?: string, clickUrl?: string) {
+    const subscription = session.pushSubscription;
+    console.log("sub found: ", subscription);
     if (!subscription) {
       return;
     }
@@ -51,15 +60,20 @@ export class PushService {
     // prepare payload
     const payload = {
       "notification": {
-        "title": title,
+        "title": "CHAT | " + title,
         "body": message,
+        "tag": tag,
+        "data": {
+          "onActionClick": {
+            "default": { "operation": "navigateLastFocusedOrOpen", "url": clickUrl ?? "/chats" }
+          }
+        }
       }
     }
 
     // send
     try {
-      console.log("sub found, sending...");
-      await webpush.sendNotification(subscription, JSON.stringify(payload));
+      await webpush.sendNotification(subscription as any, JSON.stringify(payload));
     } catch (error) {
       console.warn("error sending webpush notification: ", error);
       // on error remove the subscription
