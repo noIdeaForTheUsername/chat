@@ -24,8 +24,6 @@ export class AppInitService {
 
   async initializeApp() {
     await this.loadAuthAndRedirect();
-    if (this.auth.userAccount())
-      this.notificationsService.sendSubscriptionIfAvailable();
   }
 
   async loadAuthAndRedirect(): Promise<void> {
@@ -42,6 +40,7 @@ export class AppInitService {
     this.auth.loadServerAuth().subscribe({
       next: () => {
         // Successful auth load
+        this.notificationsService.sendSubscriptionIfAvailable();
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
           this.router.navigateByUrl(this.successStartPage);
         }

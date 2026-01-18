@@ -47,6 +47,10 @@ export class AccountsDomainService {
       ]
     });
   }
+  
+  async findAdmins(activatedOnly: boolean = true) {
+    return await this.accounts.findBy({ admin: true, activated: activatedOnly });
+  }
 
   async findUnactivatedAccounts() {
     return await this.accounts.findBy({ activated: false });

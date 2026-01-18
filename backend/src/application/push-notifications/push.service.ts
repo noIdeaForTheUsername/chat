@@ -6,11 +6,14 @@ import { DeviceSessionEntity } from "src/domain/session/entity/device-session.en
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 import { Repository } from "typeorm";
 import * as webpush from "web-push";
+import { notificationStrings } from "./notification-strings";
+
 
 @Injectable()
 export class PushService {
 
-  private vapidKeys: { publicKey: string; privateKey: string };
+  private readonly vapidKeys: { publicKey: string; privateKey: string };
+
 
   constructor(
     private config: ConfigService,
@@ -34,35 +37,40 @@ export class PushService {
 
   @OnEvent("pushNotification")
   async handlePushNotificationEvent(payload: PushNotifcationEvent) {
-    await this.sendNotificationsToUser(payload.userId, payload.header, payload.message, payload.tag, payload.clickUrl);
+    await this.sendNotificationsToUser(payload);
   }
 
-  async sendNotificationsToUser(userId: number, title: string, message: string,
-    tag?: string, clickUrl?: string
-  ) {
+  async sendNotificationsToUser(payload: PushNotifcationEvent)
+  {
     // get subscription
-    const sessions = await this.deviceSessions.findBy({ userId });
+    const sessions = await this.deviceSessions.findBy({ userId: payload.userId });
     for (const session of sessions) {
-      await this.sendSingleNotification(session, title, message, tag, clickUrl);
+      await this.sendSingleNotification(session, payload.header, payload.message, payload.tag, /*payload.clickUrl,*/ session.data.language ?? "en");
     }
   }
 
-  private async sendSingleNotification(session: DeviceSessionEntity, title: string, message: string,
-    tag?: string, clickUrl?: string) {
+  private async sendSingleNotification(session: DeviceSessionEntity, title: string | string[], message: string | string[],
+    tag?: string, /*clickUrl?: string,*/ language?: string) {
     const subscription = session.pushSubscription;
     if (!subscription) {
       return;
     }
 
+    const normalizedLang = language?.toLowerCase().includes("pl") ? "pl" : "en";
+    const titleStr = this.getTranslatedString(normalizedLang, ["prefix", ...title]);
+    const messageStr = this.getTranslatedString(normalizedLang, message);
+
     // prepare payload
     const payload = {
       "notification": {
-        "title": "CHAT | " + title,
-        "body": message,
+        "title": titleStr,
+        "body": messageStr,
         "tag": tag,
+        "icon": "assets/icon/icon-glowing.png",
+        "lang": normalizedLang,
         "data": {
           "onActionClick": {
-            "default": { "operation": "navigateLastFocusedOrOpen", "url": clickUrl ?? "/chats" }
+            "default": { "operation": "navigateLastFocusedOrOpen", "url": /*clickUrl ??*/ notificationStrings.homePage }
           }
         }
       }
@@ -72,12 +80,29 @@ export class PushService {
     try {
       await webpush.sendNotification(subscription as any, JSON.stringify(payload));
     } catch (error) {
-      console.warn("error sending webpush notification: ", error);
       // on error remove the subscription
       this.deviceSessions.update(
         { sid: session.sid },
         { pushSubscription: null }
       );
     }
+  }
+
+
+  private getTranslatedString(language: 'pl' | 'en', key: string | string[]): string {
+    const langStrings = notificationStrings[language] as any;
+    let result = "";
+
+    // single string
+    if (typeof key === "string") {
+      return langStrings[key] ?? key;
+    }
+
+    // array
+    for (const entry of key) {
+      const translated = langStrings[entry];
+      result += translated ?? entry;
+    }
+    return result;
   }
 }

@@ -1,8 +1,9 @@
 
+
 export class PushNotifcationEvent {
   userId: number;
-  header: string;
-  message: string
+  header: string | string[];
+  message: string | string[]; 
   tag?: string;
-  clickUrl?: string;
+  // clickUrl?: string;
 }

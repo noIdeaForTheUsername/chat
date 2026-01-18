@@ -22,6 +22,10 @@
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
+    @if (notificationsStatus() === "default") {
+      <ion-button (click)="requestNotifications()" fill="outline" class="notifications-btn">{{"common.enable-notifications" | translate}}</ion-button>
+    }
+
     <!-- SEARCHBAR -->
     <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 

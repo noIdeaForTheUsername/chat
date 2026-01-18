@@ -7,7 +7,8 @@ import { AllowInactiveAccount } from "src/shared/auth/decorators/allow-inactive-
 export class PushController {
 
   @Post("subscribe")
-  public async postSubscription(@Session() session: Record<string, any>, @Body() body: PushSubscription) {
-    session.pushSubscription = body;
+  public async postSubscription(@Session() session: Record<string, any>, @Body() body: PushSubscriptionDto) {
+    session.pushSubscription = body.subscription;
+    session.language = body.language;
   }
 }

@@ -22,6 +22,7 @@
     "info": "Information",
     "error": "Error",
     "danger-zone": "Danger zone",
+    "enable-notifications": "Enable notifications",
 
     "form-field-invalid": "Invalid form field value:",
     "app": "App",
@@ -138,8 +139,7 @@
       "modify-account": "Modify account data",
       "logout": "Log out",
       "install-app": "Install the app",
-      "delete-messages": "Delete all messages in all conversations",
-      "notifications": "Enable notifications"
+      "delete-messages": "Delete all messages in all conversations"
     },
 
     "account-settings": {

@@ -22,6 +22,7 @@ import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { lastValueFrom } from 'rxjs';
+import { NotificationsService } from '@src/app/notifications/notifications.service';
 
 @Component({
   selector: 'app-conversations-page',
@@ -45,6 +46,7 @@ export class ConversationsPage {
   private alertService = inject(AlertService);
   private router = inject(Router);
   protected selectionService = inject(SelectionService);
+  private notificationsService = inject(NotificationsService);
 
   // Data
   protected conversations = computed(() => {
@@ -63,12 +65,17 @@ export class ConversationsPage {
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   protected showBlockedConversations = signal(false);
+  protected notificationsStatus = signal("default");
 
   // HTML elements
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
 
 
   // -------------------------------------------------------- PRIVATE FUNCTIONS
+
+  ionViewWillEnter() {
+    this.notificationsStatus.set(Notification.permission);
+  }
   
   // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
@@ -142,6 +149,11 @@ export class ConversationsPage {
     finally {
       event.target.complete();
     }
+  }
+
+  async requestNotifications() {
+    await this.notificationsService.requestSubscriptionAndSend();
+    this.notificationsStatus.set(Notification.permission);
   }
 
   toggleBlockedConversations() {

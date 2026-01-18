@@ -40,10 +40,12 @@ export class MessageBroadcastingService {
         const senderName = profile.nick || profile.name || profile.login || null;
         if (!senderName) continue;
 
-        const header = `New message from: ${senderName}`;
+
+        const header = ["newMessage", senderName];
         const message = payload.message.text.length > 100 ?
           payload.message.text.substring(0, 97) + "..." :
           payload.message.text;
+        
         const tag = `new-message:conversation-${payload.message.conversationId}`;
 
         this.eventEmitter.emit("pushNotification", {
@@ -51,7 +53,7 @@ export class MessageBroadcastingService {
           header,
           message,
           tag,
-          clickUrl: `/chats/${payload.message.conversationId}`
+          // clickUrl: `/chats/${payload.message.conversationId}`,
         });
       }
     }
@@ -72,4 +74,3 @@ export class MessageBroadcastingService {
     }
   }
 }
-

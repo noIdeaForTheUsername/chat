@@ -7,7 +7,7 @@
   "theme_color": "#00ff78",
   "icons": [
     {
-      "src": "assets/icon/icon-glowing.png",
+      "src": "icon/icon-glowing.png",
       "sizes": "192x192",
       "type": "image/png"
     }

@@ -44,6 +44,14 @@ export class AccountsService {
       const newAccount = await this.accounts.create(login, passwordHash, email, phoneNumber);
       await this.profiles.createProfile(newAccount.id, phoneNumberPublic,
         emailPublic, name, bio);
+
+      // Notify administrators
+      this.notifyAdministration(
+        ["accountCreatedHeader"],
+        ["accountCreatedMessage", login],
+        "account-creation"
+      );
+      
       return newAccount;
     } catch (err) {
       if (err instanceof QueryFailedError && err.driverError.code == "23505"){
@@ -92,10 +100,10 @@ export class AccountsService {
     if (activated) {
       const event: PushNotifcationEvent = {
         userId: changedUserId,
-        header: "Account Activated",
-        message: "Your account has been activated and you can use the app. Welcome!",
+        header: ["accountActivatedHeader"],
+        message: ["accountActivatedMessage"],
         tag: "account-activation",
-        clickUrl: "/chats"
+        // clickUrl: "/chats"
       };
       this.eventEmitter.emit("pushNotification", event);
     }
@@ -109,5 +117,18 @@ export class AccountsService {
       throw new ForbiddenException('credentials-invalid');
     }
     await this.accounts.changeAdminStatus(changedUserId, newIsAdmin);
+  }
+
+  private async notifyAdministration(messageHeader: string[], messageBody: string[], tag: string) {
+    const admins = await this.accounts.findAdmins(true);
+    for (const admin of admins) {
+      const event: PushNotifcationEvent = {
+        userId: admin.id,
+        header: messageHeader,
+        message: messageBody,
+        tag: tag,
+      };
+      this.eventEmitter.emit("pushNotification", event);
+    }
   }
 }

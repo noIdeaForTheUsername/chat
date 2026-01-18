@@ -3,7 +3,6 @@ import { SwPush } from "@angular/service-worker";
 import { environment } from "@src/environments/environment";
 import { AlertService } from "../alerts/alert-service/alert.service";
 import { AlertType } from "../alerts/alert-type.enum";
-import { lastValueFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { TranslateService } from "@ngx-translate/core";
 
@@ -19,14 +18,8 @@ export class NotificationsService {
 
   // This function doesn't do anything if permissions are not granted. Returns success status
   async sendSubscriptionIfAvailable(): Promise<boolean> {
-    if (Notification.permission === "granted") {
-      const existingSub = await this.getExistingSubscription();
-      if (existingSub) {
-        this.sendSubscriptionToServer(existingSub);
-      }
-      else {
-        await this.requestSubscriptionAndSend(false);
-      }
+    if (Notification.permission == "granted") {
+      await this.requestSubscriptionAndSend(false);
       return true;
     }
     else return false;
@@ -42,7 +35,12 @@ export class NotificationsService {
     }
     catch(err) {
       console.error("Error requesting subscription:", err);
-      if (displayAlerts) this.alertService.displayError("notifications-blocked");
+      if (displayAlerts) {
+        if (Notification.permission == "denied")
+          this.alertService.displayError("notifications-blocked");
+        else
+          this.alertService.displayUnknownError();
+      }
     }
 
     if (sub) {
@@ -52,12 +50,15 @@ export class NotificationsService {
     }
   }
 
-  private async getExistingSubscription() {
-    const registration = await navigator.serviceWorker.ready;
-    return await registration.pushManager.getSubscription();
-  }
+  // private async getExistingSubscription() {
+  //   const registration = await navigator.serviceWorker.ready;
+  //   return await registration.pushManager.getSubscription();
+  // }
 
   private sendSubscriptionToServer(subscription: PushSubscription) {
-    this.http.post("/notifications/subscribe", subscription).subscribe();
+    this.http.post("/notifications/subscribe", {
+      subscription,
+      language: this.translate.getCurrentLang()
+    }).subscribe();
   }
 }
