@@ -68,7 +68,6 @@ export class AuthService {
       return res.clearCookie('session').send();
     }
 
-    console.log("Logging out user ", (req.session as any).userId);
     req.session.destroy(() => {
       this.eventEmitter.emit('userLogout', new UserLogoutEvent(session.userId));
       res.clearCookie('session').send();

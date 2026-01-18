@@ -6,7 +6,7 @@
   <title>Document</title>
 </head>
 <body>
-  <form action="/login" method="POST">
+  <form action="/auth/login" method="POST">
     Login, email or phone number: <input type="text" name="account"/><br/>
     Password: <input type="password" name="password"/><br/>
     <input type="submit" value="Log in">
@@ -24,7 +24,6 @@
       if (!answer) return;
 
       const accountId = document.getElementById("accountId").value;
-      console.log("accountId", accountId);
       fetch(`/accounts/${accountId}/activated/`, {
         method: "PATCH",
         credentials: "include",

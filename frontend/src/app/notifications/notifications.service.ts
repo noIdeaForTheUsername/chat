@@ -16,16 +16,11 @@ export class NotificationsService {
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
 
-  constructor() {
-    console.log("NotificationsService initialized");
-  }
 
   // This function doesn't do anything if permissions are not granted. Returns success status
   async sendSubscriptionIfAvailable(): Promise<boolean> {
     if (Notification.permission === "granted") {
-      console.log("Notification permission granted. Getting existing sub...");
       const existingSub = await this.getExistingSubscription();
-      console.log("Existing subscription:", existingSub);
       if (existingSub) {
         this.sendSubscriptionToServer(existingSub);
       }
@@ -41,7 +36,6 @@ export class NotificationsService {
   async requestSubscriptionAndSend(displayAlerts: boolean = true): Promise<void> {
     let sub: PushSubscription | undefined = undefined;
     try {
-      console.log("Requesting notification subscription...");
       sub = await this.swPush.requestSubscription({
         serverPublicKey: environment.vapidPublicKey
       });
@@ -64,7 +58,6 @@ export class NotificationsService {
   }
 
   private sendSubscriptionToServer(subscription: PushSubscription) {
-    console.log("Sending subscription to server:", subscription);
     this.http.post("/notifications/subscribe", subscription).subscribe();
   }
 }

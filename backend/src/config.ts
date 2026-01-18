@@ -95,13 +95,10 @@ function parseList(val?: string): string[] | undefined {
 }
 
 export function getCorsOrigins() {
-  const toReturn = parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
+  return parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
     "http://localhost:8100",
     "http://192.168.1.2:8100",
     "http://chmuraim.dynv6.net:8100",
     "http://46.205.222.219:8100"
   ];
-  console.log("env :", process.env.CORS_ALLOWED_ORIGINS);
-  console.log("parsed CORS allowed origins:", toReturn);
-  return toReturn;
 }

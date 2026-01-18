@@ -18,7 +18,6 @@ async function bootstrap() {
 
   // Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
-    console.log("validation errors: ", errors);
     throw new BadRequestException(`invalid.${errors[0].property}`);
   }}));
 

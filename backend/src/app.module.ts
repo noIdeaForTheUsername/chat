@@ -32,7 +32,7 @@ import { PushModule } from './application/push-notifications/push.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: 'env/.env.dev', load: [config] }),
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env', load: [config] }),
     EventEmitterModule.forRoot(),
 
     TypeOrmModule.forRootAsync({

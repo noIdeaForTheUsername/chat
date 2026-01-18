@@ -19,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       error: (err) => {
         if (req.url.startsWith(environment.apiUrl) && err.status === 401) {
           alertService.displayLoginPrompt();
-          console.log("authInterceptor: detected 401 from backend API: PROMPTING LOGIN!");
+          // console.log("authInterceptor: detected 401 from backend API: PROMPTING LOGIN!");
         }
       }
     })

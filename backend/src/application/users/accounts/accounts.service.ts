@@ -6,13 +6,16 @@ import { Account } from "src/domain/accounts/entities/account.entity";
 import { QueryFailedError } from "typeorm";
 import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 import { hashPassword, verifyPassword } from "../auth/auth-utils";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 
 @Injectable()
 export class AccountsService {
 
   constructor(
     private accounts: AccountsDomainService,
-    private profiles: ProfilesDomainService
+    private profiles: ProfilesDomainService,
+    private eventEmitter: EventEmitter2
   ) {}
 
   // GETTERS
@@ -85,6 +88,17 @@ export class AccountsService {
     if (callerAdminId === changedUserId)
       throw new BadRequestException("cannot-change-own-activation-status");
     await this.accounts.changeActivationStatus(changedUserId, activated);
+
+    if (activated) {
+      const event: PushNotifcationEvent = {
+        userId: changedUserId,
+        header: "Account Activated",
+        message: "Your account has been activated and you can use the app. Welcome!",
+        tag: "account-activation",
+        clickUrl: "/chats"
+      };
+      this.eventEmitter.emit("pushNotification", event);
+    }
   }
 
   async changeAccountAdminStatus(callerAccount: Account, callerPasswordConfirm: string,

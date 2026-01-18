@@ -38,14 +38,4 @@ export class LoggedInGuard implements CanActivate {
 
     return true;
   }
-
-  // private extractTokenFromRequest(req: Request, exceptionOnFail = true): string {
-  //   const jwt = req.cookies?.['authJwt'];
-  //   if (!jwt && exceptionOnFail) {
-  //     console.log("Token missing");
-  //     throw new UnauthorizedException();
-  //   }
-      
-  //   return jwt;
-  // }
 }

@@ -139,7 +139,8 @@
       "modify-account": "Modyfikuj dane konta",
       "logout": "Wyloguj się",
       "install-app": "Zainstaluj aplikację",
-      "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach"
+      "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach",
+      "notifications": "Włącz powiadomienia"
     },
 
     "account-settings": {

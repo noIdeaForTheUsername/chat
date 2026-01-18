@@ -162,7 +162,6 @@ export class MessageService {
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
         this.replyPreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
-        console.log("load conversation messages complete");
       },
       error: (err) => {
         this.dataLoaded.set(true);

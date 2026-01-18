@@ -23,7 +23,6 @@ export class PushService {
     }
 
     const contact = `${this.config.get<string>("pushNotifications.vapidContact")!}`;
-    console.log("VAPID contact:", contact);
 
     webpush.setVapidDetails(
       contact,
@@ -41,7 +40,6 @@ export class PushService {
   async sendNotificationsToUser(userId: number, title: string, message: string,
     tag?: string, clickUrl?: string
   ) {
-    console.log("trying to send push notification to user ", userId);
     // get subscription
     const sessions = await this.deviceSessions.findBy({ userId });
     for (const session of sessions) {
@@ -52,7 +50,6 @@ export class PushService {
   private async sendSingleNotification(session: DeviceSessionEntity, title: string, message: string,
     tag?: string, clickUrl?: string) {
     const subscription = session.pushSubscription;
-    console.log("sub found: ", subscription);
     if (!subscription) {
       return;
     }

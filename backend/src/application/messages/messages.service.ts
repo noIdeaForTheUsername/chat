@@ -77,7 +77,6 @@ export class MessagesService {
   }
 
   async acknowledgeConversationMessages(callerId: number, conversationId: number) {
-    console.log("Acknowledging conversation messages", {callerId, conversationId});
     const maxIdMsg = await this.messagesDomainService.findMostRecentMessageInConversation(conversationId);
     if (maxIdMsg === null) return;  // no messages in conv, ignore and return success
 
