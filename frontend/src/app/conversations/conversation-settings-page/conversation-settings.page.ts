@@ -1,20 +1,19 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonItemGroup, IonLabel, IonItemDivider, IonItem, IonToggle, IonIcon } from '@ionic/angular/standalone';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ProfilePreviewComponent } from "@app/profiles/profile-preview-component/profile-preview.component";
-import { ConversationService } from '../conversation.service';
-import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { Profile } from '@app/profiles/profile.interface';
-import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
-import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
-import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
-import { ItemToggleComponent } from "@app/shared/inputs/item-toggle-component/item-toggle.component";
-import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertType } from '@app/alerts/alert-type.enum';
+import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
+import { ProfilePreviewComponent } from "@app/profiles/profile-preview-component/profile-preview.component";
+import { ProfileService } from '@app/profiles/profile-service/profile.service';
+import { Profile } from '@app/profiles/profile.interface';
+import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
+import { IonContent, IonItemDivider, IonItemGroup, IonLabel } from '@ionic/angular/standalone';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { lastValueFrom } from 'rxjs';
+import { ConversationService } from '../conversation.service';
 
 @Component({
   selector: 'app-conversation-settings',
@@ -23,7 +22,7 @@ import { AlertType } from '@app/alerts/alert-type.enum';
   standalone: true,
   imports: [IonContent, IonItemGroup, IonLabel, IonItemDivider,
     CommonModule, FormsModule, TranslatePipe, RouterLink,
-    ProfilePreviewComponent, LoadingIndicator, ItemButtonComponent, StandardHeaderComponent, ItemToggleComponent],
+    ProfilePreviewComponent, LoadingIndicator, ItemButtonComponent, StandardHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConversationSettingsPage {

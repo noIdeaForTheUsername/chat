@@ -49,19 +49,24 @@
     },
     "account-inactive": {
       "title": "Rejestracja udana",
-      "description": "Prośba o założenie konta została przyjęta. Zanim będziesz mógł używać aplikacji, poczekaj, aż administrator aktywuje Twoje konto. To nie powinno trwać dłużej niż dzień",
+      "description": "Prośba o założenie konta została przyjęta. Zanim będziesz mógł używać aplikacji, poczekaj, aż <b>administrator aktywuje Twoje konto</b>. To nie powinno trwać dłużej niż dzień",
       "different-account": "Chcę zalogować się na inne konto",
       "meantime": "W międzyczasie",
-      "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego (bez pobierania ze Sklepu, po prostu 3 kliknięcia!)",
+      "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego",
       "install-button": "Zainstaluj",
       "notifications-label": "Włącz powiadomienia, aby otrzymywać informacje o aktywacji konta lub nowych odebranych wiadomościach",
       "notifications-button": "Włącz"
+    },
+    "guide": {
+      "title": "Instalacja",
+      "description": "W zależności od przeglądarki może to wyglądać nieco inaczej. Znajdź w <b>menu przeglądarki</b> (które zazwyczaj otwiera się przyciskiem w rogu ekranu) opcję <b>\"Dodaj do ekranu głównego\"</b>, a następnie wybierz <b>\"Zainstaluj\"</b>. Aplikacja będzie widoczna jako ikonka na ekranie głównym Twojego urządzenia.",
+      "image-hint": "Kliknij obrazek, aby otworzyć go w nowym widoku i móc go powiększyć"
     },
 
 
     "conversations": {
       "title": "Konwersacje",
-      "add-conversation-hint": "Użyj przycisku + w prawym dolnym rogu ekranu, aby rozpocząć pierwszą konwersację",
+      "add-conversation-hint": "Użyj <b>przycisku +</b> w prawym dolnym rogu ekranu, aby rozpocząć nową konwersację",
       "plus-action": {
         "header": "Nowa konwersacja...",
         "conversation": "Znajdź użytkownika",
@@ -211,10 +216,6 @@
       "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Nie zostanie on poinformowany o tej akcji. Możesz go odblokować później ze strony z listą konwersacji.",
       "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
     },
-    "install": {
-      "header": "Tylko 3 kliknięcia...",
-      "description": "ale musisz samemu. W zależności od przeglądarki może to wyglądać inaczej, ale zazwyczaj musisz kliknąć ikonę menu w którymś z rogów ekranu (3 kropki lub 3 kreski), a następnie znaleźć opcję \"Zainstaluj aplikację\" (najlepiej!) lub, jeśli taka nie istnieje, to \"Dodaj do ekranu głównego\"."
-    },
     "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
     "conversation-cleared": "Twoje wiadomości zostały usunięte.",
@@ -286,8 +287,8 @@
       "description": "Sprawdź ustawienia daty i godziny na swoim urządzeniu i ustaw poprawny czas (tak, to naprawdę jest ważne)"
     },
     "notifications-blocked": {
-      "header": "Zablokowano powiadomienia w przeglądarce",
-      "description": "Nie będziesz otrzymywał powiadomień o nowych wiadomościach. Jeśli chcesz je ponownie włączyć, musisz to zmienić ręcznie w ustawieniach przeglądarki dla tej strony"
+      "header": "Powiadomienia zablokowane przez przeglądarkę",
+      "description": "Jeśli chcesz je włączyć, musisz to zmienić ręcznie w ustawieniach przeglądarki internetowej lub urządzenia (to poza kontrolą tej aplikacji)"
     },
 
     "failed-to-delete": "Nie udało się usunąć",

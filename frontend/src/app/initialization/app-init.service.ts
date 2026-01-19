@@ -17,7 +17,7 @@ export class AppInitService {
   
   // Settings
   // Pages that are accessible without login and considered "outside" of the main app
-  private readonly outsidePages = ['/', '/login', '/register', "/welcome", "/account-inactive"];
+  private readonly outsidePages = ['/', '/login', '/register', "/welcome", "/account-inactive", "/installation-guide"];
   private readonly successStartPage = '/chats';
 
   public readonly serverUnavailableWhileLoggedOut = signal(false);

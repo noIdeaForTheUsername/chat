@@ -28,10 +28,14 @@
     <ion-item-group>
       <ion-item-divider><ion-label>{{"common.app" | translate}}</ion-label></ion-item-divider>
         <!-- notifications -->
+        @if (notificationsService.notificationsSupported) {
         <app-item-button [text]="'common.enable-notifications' | translate" icon="notifications" (click)="requestNotifications()"/>
+        }
 
         <!-- install app -->
-        <app-item-button [text]="'page.app-settings.install-app' | translate" icon="download" (click)="alertService.displayInstallGuide()"/>
+        @if (!runningAsPwa()) {
+          <app-item-button [text]="'page.app-settings.install-app' | translate" icon="download" routerLink="/installation-guide"/>
+        }
 
         <!-- language -->
         <app-item-select text="Language / Język" icon="language"

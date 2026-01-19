@@ -18,6 +18,12 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
+  // Logging
+  // app.use(async (req: any, res: any, next: any) => {
+  //   console.log(`Incoming request: ${req.method} ${req.url}`);
+  //   next();
+  // });
+
   // Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
     throw new BadRequestException(`invalid.${errors[0].property}`);

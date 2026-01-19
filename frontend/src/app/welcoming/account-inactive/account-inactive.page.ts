@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, IonButton, IonButtons, IonCard, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
@@ -14,7 +14,7 @@ import { AlertService } from '@src/app/alerts/alert-service/alert.service';
   templateUrl: './account-inactive.page.html',
   styleUrls: ['./account-inactive.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, CommonModule, FormsModule, StandardHeaderComponent,
+  imports: [IonContent, IonIcon, CommonModule, FormsModule, StandardHeaderComponent, RouterLink,
     TranslatePipe, IonButton, IonButtons, LanguageButtonComponent, RouterLink, IonCard, IonCardHeader, IonCardTitle, IonCardContent]
 })
 export class AccountInactivePage {
@@ -22,8 +22,16 @@ export class AccountInactivePage {
   protected alertService = inject(AlertService);
   protected notificationsService = inject(NotificationsService);
 
+  protected runningAsPwa = signal(false);
+
   protected reloadPage() {
     window.location.reload();
   }
 
+  ionViewWillEnter() {
+    this.runningAsPwa.set(
+      window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone === true
+    );
+  }
 }

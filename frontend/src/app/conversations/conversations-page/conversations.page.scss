@@ -4,8 +4,14 @@
   color: var(--ion-text-color-step-300);
 }
 
-.notifications-btn {
+ion-button.notifications-btn {
   display: block;
   margin: 8px auto;
   width: 75%;
+  --border-color: var(--ion-color-warning-shade);
+  --color: var(--ion-color-warning-shade);
+}
+
+.something b {
+  color: red;
 }

@@ -9,14 +9,35 @@ a {
 
 ion-card {
   border-radius: 25px;
+  ion-icon {
+    margin: 0;
+    font-size: 1em;
+  }
 }
 
 .spacer {
-  margin-bottom: 32px;
+  padding-bottom: 64px;
 }
 
 hr {
   margin: 2rem 0;
   height: 1px;
   background-color: var(--ion-text-color-step-200);
+}
+
+.highlighted-card {
+  border: 2px solid transparent;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+
+@keyframes pulse-border {
+  0% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--ion-color-warning);
+  }
+  100% {
+    border-color: transparent;
+  }
 }

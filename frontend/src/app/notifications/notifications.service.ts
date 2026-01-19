@@ -14,6 +14,7 @@ export class NotificationsService {
   private alertService = inject(AlertService);
   private http = inject(HttpClient);
   private translate = inject(TranslateService);
+  public readonly notificationsSupported = this.swPush.isEnabled;
 
 
   // This function doesn't do anything if permissions are not granted. Returns success status

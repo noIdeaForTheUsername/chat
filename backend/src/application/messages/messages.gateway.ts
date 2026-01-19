@@ -1,19 +1,15 @@
-import { ConfigService } from '@nestjs/config';
+import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { getCorsOrigins } from 'src/config';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
-import { Message } from 'src/domain/messages/entities/message.entity';
 import { getSessionMiddleware } from 'src/shared/auth/session.middleware';
+import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
+import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
+import { MessageSentEvent } from 'src/shared/events/message-sent.event';
 import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagesService } from './messages.service';
-import { MessageSentEvent } from 'src/shared/events/message-sent.event';
-import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
-import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
-import { IoAdapter } from '@nestjs/platform-socket.io';
 
 
 // TODO: file a lawsuit for damaging my mental health by not providing any docs for neither auth, cookies, or sessions in websockets
@@ -64,6 +60,13 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
         next();
       });
     });
+
+    // this.server.engine.on("connection_error", (err) => {
+    //   console.warn(err.req);      // the request object
+    //   console.warn(err.code);     // the error code, for example 1
+    //   console.warn(err.message);  // the error message, for example "Session ID unknown"
+    //   console.warn(err.context);  // some additional error context
+    // });
   }
 
   // LIFECYCLE
@@ -75,7 +78,7 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   @OnEvent("userLogout")
   handleUserLogoutEvent(payload: UserLogoutEvent) {
     const room = `user-${payload.userId}`;
-    this.server.in(room).disconnectSockets(true);
+    this.server.in(room).disconnectSockets(false);
   }
 
   // FEATURES

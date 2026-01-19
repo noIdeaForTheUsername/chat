@@ -16,14 +16,18 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="max-width-container">
-    <!-- REFRESH -->
-    <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
+  <!-- REFRESH -->
+  <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
+  <div class="max-width-container">
+    <!-- NOTIFICATIONS BUTTON -->
     @if (notificationsStatus() === "default") {
-      <ion-button (click)="requestNotifications()" fill="outline" class="notifications-btn">{{"common.enable-notifications" | translate}}</ion-button>
+      <ion-button (click)="requestNotifications()" fill="outline" class="notifications-btn">
+        <ion-icon slot="start" name="notifications"></ion-icon>
+        {{"common.enable-notifications" | translate}}
+      </ion-button>
     }
 
     <!-- SEARCHBAR -->
@@ -56,9 +60,9 @@
         }
       </ion-list>
     }
-    @else {
+    @else if (this.conversationsLoaded()) {
       <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
-      @if (searchFilter().length == 0) { <p class="no-conversations-text">{{"page.conversations.add-conversation-hint" | translate}}</p> }
+      <p class="no-conversations-text highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></p>
     }
 
     <!-- "ADD" BUTTON (discovery) -->

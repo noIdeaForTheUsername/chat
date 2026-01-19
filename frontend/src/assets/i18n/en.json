@@ -50,18 +50,23 @@
     },
     "account-inactive": {
       "title": "Registration Successful",
-      "description": "Your account creation request has been received. Before you can use the app, please wait for an administrator to activate your account. This should not take longer than a day.",
+      "description": "Your account creation request has been received. Before you can use the app, please <b>wait for an administrator to activate</b> your account. This should not take longer than a day.",
       "different-account": "I want to log in to a different account",
       "meantime": "In the meantime",
-      "install-label": "Install the app to have access from your phone's home screen (without downloading from the Store, just 3 clicks!)",
+      "install-label": "Install the app to have access from your phone's home screen",
       "install-button": "Install",
       "notifications-label": "Enable notifications to get informed about account activation or new received messages",
       "notifications-button": "Enable"
     },
+    "guide": {
+      "title": "Installation",
+      "description": "Depending on the browser, this may look a little different. Find the <b>\"Add to Home Screen\"</b> option in the <b>browser menu</b> (which is usually opened by a button in the corner of the screen), then select <b>\"Install.\"</b> The app will appear as an icon on your device's home screen.",
+      "image-hint": "Click the image to open it in a new view and be able to zoom in"
+    },
 
     "conversations": {
       "title": "Conversations",
-      "add-conversation-hint": "Use the + button in the bottom-right corner to start the first chat",
+      "add-conversation-hint": "Use the <b>+ button</b> in the bottom-right corner to start a new chat",
       "plus-action": {
         "header": "New conversation...",
         "conversation": "Find a user",
@@ -288,8 +293,8 @@
       "description": "Check your device's date and time settings and set the correct time (yes, this is actually important)"
     },
     "notifications-blocked": {
-      "header": "Notifications blocked in browser",
-      "description": "You won't receive notifications about new messages. If you want to enable them again, you need to change this manually in the browser settings for this site"
+      "header": "Notifications blocked by browser",
+      "description": "To enable notifications, you have to go to your browser or device settings and manually allow them (this is out of the app's control)"
     },
 
     "failed-to-delete": "Failed to delete",

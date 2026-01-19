@@ -1,0 +1,17 @@
+<app-standard-header [title]="'page.guide.title' | translate" [backButton]="true">
+  <ion-buttons slot="end">
+    <app-language-button/>
+  </ion-buttons>
+</app-standard-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="max-width-container">
+    <h1>{{ 'page.guide.title' | translate }}</h1>
+    <p class="highlighted-b">{{ 'page.guide.description' | translate }}</p>
+    <hr/>
+    <i>{{ 'page.guide.image-hint' | translate }}</i>
+    <a href="assets/installation-guide.webp" target="_blank" rel="noopener">
+      <img src="assets/installation-guide.webp"/>
+    </a>
+  </div>
+</ion-content>

@@ -9,7 +9,7 @@
     <!-- Title and icon -->
     <h1>{{ 'page.account-inactive.title' | translate }}</h1>
     <ion-icon name="hourglass" color="primary"></ion-icon>
-    <p>{{ 'page.account-inactive.description' | translate }}</p>
+    <p class="highlighted-b" [innerHTML]="'page.account-inactive.description' | translate"></p>
 
     <!-- Actions -->
     <ion-button (click)="reloadPage()" fill="solid">{{ 'common.refresh' | translate }}</ion-button>
@@ -20,23 +20,33 @@
     <hr/>
     <h2>{{ 'page.account-inactive.meantime' | translate }}:</h2>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>{{ 'page.account-inactive.notifications-label' | translate }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-button (click)="this.notificationsService.requestSubscriptionAndSend()">
-          {{ 'page.account-inactive.notifications-button' | translate }}
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+    <!-- The user has to re-enable notifications in PWA anyways so displaying in browser doesn't make sense -->
+    <!-- if user continues using in browser without PWA then they will see a button on the Conversations page -->
+    @if (runningAsPwa()) {
+      <ion-card class="highlighted-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="notifications"/>
+            {{ 'page.account-inactive.notifications-label' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button (click)="this.notificationsService.requestSubscriptionAndSend()">
+            {{ 'page.account-inactive.notifications-button' | translate }}
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
 
-    <ion-card>
+    <ion-card class="highlighted-card">
       <ion-card-header>
-        <ion-card-title>{{ 'page.account-inactive.install-label' | translate }}</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="download"/>
+          {{ 'page.account-inactive.install-label' | translate }}
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <ion-button (click)="this.alertService.displayInstallGuide()">
+        <ion-button routerLink="/installation-guide">
           {{ 'page.account-inactive.install-button' | translate }}
         </ion-button>
       </ion-card-content>

@@ -23,6 +23,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { lastValueFrom } from 'rxjs';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
+import { SwPush } from '@angular/service-worker';
 
 @Component({
   selector: 'app-conversations-page',
@@ -74,7 +75,7 @@ export class ConversationsPage {
   // -------------------------------------------------------- PRIVATE FUNCTIONS
 
   ionViewWillEnter() {
-    this.notificationsStatus.set(Notification.permission);
+    this.notificationsStatus.set(this.notificationsService.notificationsSupported ? Notification.permission : "not-supported");
   }
   
   // Filters by both search and blocked status, and then sorts
@@ -134,20 +135,24 @@ export class ConversationsPage {
   // -------------------------------------------------------- UI FUNCTIONS
 
   async refreshConversations(event: any) {
-    setTimeout(() => event.target.complete(), 8000);  // max waiting time
-    this.conversationService.reconnectWebsocket();
+    let timeout; 
     try {
+      timeout = setTimeout(() => event.target.complete(), 8000);  // max waiting time
       await Promise.all([
         lastValueFrom(this.conversationService.loadMessagePreviews()),
         lastValueFrom(this.conversationService.loadConversations()),
         lastValueFrom(this.profileService.loadData()),
       ]);
+      this.conversationService.reconnectWebsocket();
     }
     catch (e: any) {
-      this.alertService.displayError(e.error.message ?? e.status ?? "data-unavailable");
+      console.log("catched err");
+      this.alertService.displayError(e.status ?? "data-unavailable");
     }
     finally {
+      console.log("event complete");
       event.target.complete();
+      clearTimeout(timeout);
     }
   }
 

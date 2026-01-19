@@ -53,4 +53,8 @@ export const routes: Routes = [
     path: 'account-inactive',
     loadComponent: () => import('./welcoming/account-inactive/account-inactive.page').then( m => m.AccountInactivePage)
   },
+  {
+    path: 'installation-guide',
+    loadComponent: () => import('./welcoming/guide/guide.page').then( m => m.GuidePage)
+  },
 ];

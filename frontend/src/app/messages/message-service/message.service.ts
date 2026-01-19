@@ -309,7 +309,8 @@ export class MessageService {
     if (!this.displayingNewestMessages()) return;
     
     this.displayedMessages.update((msgs) => {
-      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError())];
+      const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
+      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
     });
     this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
     this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);

@@ -13,6 +13,7 @@ import { notificationStrings } from "./notification-strings";
 export class PushService {
 
   private readonly vapidKeys: { publicKey: string; privateKey: string };
+  private readonly notificationTTL = 48 * 3600;
 
 
   constructor(
@@ -45,7 +46,7 @@ export class PushService {
     // get subscription
     const sessions = await this.deviceSessions.findBy({ userId: payload.userId });
     for (const session of sessions) {
-      await this.sendSingleNotification(session, payload.header, payload.message, payload.tag, /*payload.clickUrl,*/ session.data.language ?? "en");
+      await this.sendSingleNotification(session, payload.header, payload.message, payload.tag, /*payload.clickUrl,*/ session.language ?? "en");
     }
   }
 
@@ -66,7 +67,8 @@ export class PushService {
         "title": titleStr,
         "body": messageStr,
         "tag": tag,
-        "icon": "assets/icon/icon-glowing.png",
+        "icon": "assets/icons/icon256.png",
+        "badge": "assets/icons/badge.png",
         "lang": normalizedLang,
         "data": {
           "onActionClick": {
@@ -78,7 +80,10 @@ export class PushService {
 
     // send
     try {
-      await webpush.sendNotification(subscription as any, JSON.stringify(payload));
+      await webpush.sendNotification(subscription as any, JSON.stringify(payload), {
+        TTL: this.notificationTTL,
+        urgency: "high"
+      });
     } catch (error) {
       // on error remove the subscription
       this.deviceSessions.update(

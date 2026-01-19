@@ -19,12 +19,21 @@ export class TypeOrmSessionStore extends session.Store {
       }
 
       // expire check
-      if (record.expiresAt.getTime() <= Date.now()) {
+      if (record.expires.getTime() <= Date.now()) {
         await this.repo.delete({ sid });
         return callback(null, null);
       }
 
-      callback(null, record.data);
+      const sessionData: DeviceSessionEntity = {
+        sid: record.sid,
+        userId: record.userId,
+        expires: record.expires,
+        cookie: record.cookie,
+        pushSubscription: record.pushSubscription,
+        language: record.language,
+      }
+
+      callback(null, sessionData);
     } catch (err) {
       callback(err);
     }
@@ -32,16 +41,17 @@ export class TypeOrmSessionStore extends session.Store {
 
   async set(sid: string, sessionData: any, callback: (err?: any) => void) {
     try {
-      const expiresAt =
+      const expires =
         sessionData.cookie?.expires ??
         new Date(Date.now() + sessionData.cookie.maxAge);
 
       await this.repo.save({
         sid,
-        userId: sessionData.userId ?? null,
-        pushSubscription: sessionData.pushSubscription ?? null,
-        data: sessionData,
-        expiresAt,
+        userId: sessionData.userId,
+        pushSubscription: sessionData.pushSubscription,
+        cookie: sessionData.cookie,
+        language: sessionData.language,
+        expires,
       });
 
       callback();
@@ -61,13 +71,13 @@ export class TypeOrmSessionStore extends session.Store {
 
   async touch(sid: string, sessionData: any, callback: (err?: any) => void) {
     try {
-      const expiresAt =
+      const expires =
         sessionData.cookie?.expires ??
         new Date(Date.now() + sessionData.cookie.maxAge);
 
       await this.repo.update(
         { sid },
-        { expiresAt },
+        { expires },
       );
 
       callback();

@@ -12,16 +12,16 @@
       <a routerLink="/register">{{ "page.login.register-hint" | translate }}</a>
 
       <div class="floating-input">
-        <label>
+        <label for="username">
           <p>{{ 'page.login.account-input' | translate }}:</p>
-          <input formControlName="account">
+          <input formControlName="account" id="username" name="username">
         </label>
       </div>
       
       <div class="floating-input">
-        <label>
+        <label for="password">
           <p>{{ 'profile.password' | translate }}:</p>
-          <input formControlName="password" type="password">
+          <input formControlName="password" id="password" name="password" type="password">
         </label>
         <p>{{ 'profile.forgot-password-hint' | translate }}</p>
       </div>

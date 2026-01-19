@@ -58,7 +58,7 @@ export class ConversationsService {
     // create participations and contacts
     await Promise.all([
       this.conversations.createParticipation(callerId, conversation.id, true),
-      this.conversations.createParticipation(participantId, conversation.id, false),
+      this.conversations.createParticipation(participantId, conversation.id, true),
       this.contacts.createContact(callerId, participantId),
       this.contacts.createContact(participantId, callerId),
     ]);

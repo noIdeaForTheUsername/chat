@@ -29,7 +29,7 @@ export class MessageBroadcastingService {
         // Send via a websocket
         this.messagesGateway.sendMessage(payload);
       }
-      else {
+      // else {
         // Prepare and send push notification
         const conv = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
         if (!conv || !conv.notifications) continue; // user has disabled notifications for this conversation
@@ -41,10 +41,11 @@ export class MessageBroadcastingService {
         if (!senderName) continue;
 
 
-        const header = ["newMessage", senderName];
-        const message = payload.message.text.length > 100 ?
+        const header = "newMessage";
+        const message = senderName + ": " +
+        (payload.message.text.length > 100 ?
           payload.message.text.substring(0, 97) + "..." :
-          payload.message.text;
+          payload.message.text);
         
         const tag = `new-message:conversation-${payload.message.conversationId}`;
 
@@ -55,7 +56,7 @@ export class MessageBroadcastingService {
           tag,
           // clickUrl: `/chats/${payload.message.conversationId}`,
         });
-      }
+      // }
     }
   }
 

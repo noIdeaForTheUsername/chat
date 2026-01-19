@@ -4,7 +4,7 @@ export const notificationStrings = {
 
   pl: {
     prefix: "CZAT | ",
-    newMessage: "Nowe wiadomości od: ",
+    newMessage: "Nowe wiadomości",
     accountActivatedHeader: "Konto aktywowane",
     accountActivatedMessage: "Twoje konto zostało pomyślnie aktywowane i możesz już korzystać z czatu. Witaj!",
     accountCreatedHeader: "Alert utworzenia konta",
@@ -12,7 +12,7 @@ export const notificationStrings = {
   },
   en: {
     prefix: "CHAT | ",
-    newMessage: "New messages from: ",
+    newMessage: "New messages",
     accountActivatedHeader: "Account Activated",
     accountActivatedMessage: "Your account has been successfully activated and you can now use the chat. Welcome!",
     accountCreatedHeader: "Account creation alert",

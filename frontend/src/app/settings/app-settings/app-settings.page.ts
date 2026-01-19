@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonItemGroup, IonItemDivider, IonLabel, IonSelectOption } from '@ionic/angular/standalone';
@@ -27,7 +27,16 @@ export class AppSettingsPage {
   protected authService = inject(AuthService);
   protected alertService = inject(AlertService);
   protected languageService = inject(LanguageService);
-  private notificationsService = inject(NotificationsService)
+  protected notificationsService = inject(NotificationsService);
+
+  protected runningAsPwa = signal(true);
+
+  ionViewWillEnter() {
+    this.runningAsPwa.set(
+      window.matchMedia('(display-mode: standalone)').matches
+      || (window.navigator as any).standalone === true
+    );
+  }
 
   get languageSelectValue(): string {
     return this.languageService.getCurrent() === 'pl' ? 'polish' : 'english';
