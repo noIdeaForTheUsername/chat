@@ -7,11 +7,23 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="max-width-container">
     <h1>{{ 'page.guide.title' | translate }}</h1>
-    <p class="highlighted-b">{{ 'page.guide.description' | translate }}</p>
-    <hr/>
-    <i>{{ 'page.guide.image-hint' | translate }}</i>
-    <a href="assets/installation-guide.webp" target="_blank" rel="noopener">
-      <img src="assets/installation-guide.webp"/>
-    </a>
+
+    @if (isIos()) {
+      <p class="highlighted-b" [innerHTML]="'page.guide.ios-description' | translate"></p>
+      <hr/>
+      <i>{{ 'page.guide.image-hint' | translate }}</i>
+      <a href="assets/ios-installation-guide.webp" target="_blank" rel="noopener">
+        <img src="assets/ios-installation-guide.webp"/>
+      </a>
+    }
+    @else {
+      <p class="highlighted-b" [innerHTML]="'page.guide.description' | translate"></p>
+      <hr/>
+      <i>{{ 'page.guide.image-hint' | translate }}</i>
+      <a href="assets/installation-guide.webp" target="_blank" rel="noopener">
+        <img src="assets/installation-guide.webp"/>
+      </a>
+    }
+    
   </div>
 </ion-content>

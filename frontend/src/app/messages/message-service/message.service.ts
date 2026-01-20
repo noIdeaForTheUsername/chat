@@ -278,6 +278,20 @@ export class MessageService {
     });
   }
 
+  private receiveMessage(message: Message) {
+    if (message.conversationId != this.currentConvId) return;
+    
+    this.beforeNewMessageCallback();
+    if (!this.displayingNewestMessages()) return;
+    
+    this.displayedMessages.update((msgs) => {
+      const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
+      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
+    });
+    this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
+    this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
+  }
+
   deleteMessage(messageId: number) {
     this.api.deleteMessage(messageId, this.currentConvId).subscribe({
       next: (res) => {
@@ -300,20 +314,6 @@ export class MessageService {
       error: (e) => this.alertService.displayMessageAlert(
         AlertType.ERROR, this.translate.instant("error.failed-to-delete")),
     });
-  }
-
-  private receiveMessage(message: Message) {
-    if (message.conversationId != this.currentConvId) return;
-    
-    this.beforeNewMessageCallback();
-    if (!this.displayingNewestMessages()) return;
-    
-    this.displayedMessages.update((msgs) => {
-      const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
-      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
-    });
-    this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
-    this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
   }
 
   private receiveMessageUpdate(message: Message) {
@@ -342,6 +342,13 @@ export class MessageService {
       return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
     this.conversationService.updateModifiedMessagePreview(updatedMsg);
+  }
+
+  // Tells the backend (via a websocket) that the user is actively viewing this conversation. Has to do with push notifications cancelling
+  setActiveViewingStatus(activeViewing: boolean) {
+    let conversationId = activeViewing ? this.currentConvId : null;
+    if (conversationId === -1) conversationId = null;
+    this.websocket.setViewedConversation(conversationId);
   }
 
   exitConversation() {

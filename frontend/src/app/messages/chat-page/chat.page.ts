@@ -85,6 +85,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected displayingOldestMessages = this.messageService.displayingOldestMessages;
   protected showScrollDownButton = signal(false);
 
+  // ACTIVE VIEWING STATUS
+  private windowListeners: Function[] = [];
+
   // ACTION MENU
   protected actionMessageId = signal<number | null>(null);
   protected messageActionSheetOpen = signal(false);
@@ -158,6 +161,24 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   private waitForDomStable(): Promise<void> {
     return firstValueFrom(this.ngZone.onStable);
+  }
+
+  // ------------------------------------------- ACTIVE VIEWING STATUS MANAGEMENT -------------------------------------------
+
+  ionViewDidEnter() {
+    this.messageService.setActiveViewingStatus(true);
+    this.windowListeners = [
+      () => this.messageService.setActiveViewingStatus(true),
+      () => this.messageService.setActiveViewingStatus(false),
+    ]
+    window.addEventListener('focus', this.windowListeners[0] as any);
+    window.addEventListener('blur', this.windowListeners[1] as any);
+  }
+
+  ionViewWillLeave() {
+    window.removeEventListener('focus', this.windowListeners[0] as any);
+    window.removeEventListener('blur', this.windowListeners[1] as any);
+    this.messageService.setActiveViewingStatus(false);
   }
 
   // ------------------------------------------- MESSAGE SENDING / UPDATING / FUNCTIONS -------------------------------------------

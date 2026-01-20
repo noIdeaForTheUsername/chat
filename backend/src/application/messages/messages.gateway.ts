@@ -108,10 +108,16 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
     return await this.messagesService.acknowledgeConversationMessages(userId, data.conversationId);
   }
 
+  @SubscribeMessage("setViewedConversation")
+  async handleViewedConversation(socket: Socket, data: { conversationId: number | null }) {
+    if (data.conversationId !== null && typeof data.conversationId !== 'number')
+      throw new WsException("ConversationId must be a number or null");
+    socket.data.viewedConversation = data.conversationId;
+  }
+
   // HELPERS
 
-  public async getUserConnected(userId: number) {
-    const sockets = await this.server.in(`user-${userId}`).fetchSockets();
-    return sockets.length > 0;
+  public async getActiveUserSockets(userId: number) {
+    return await this.server.in(`user-${userId}`).fetchSockets();
   }
 }

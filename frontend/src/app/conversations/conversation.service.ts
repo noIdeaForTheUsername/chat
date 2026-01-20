@@ -168,7 +168,11 @@ export class ConversationService {
   processNewMessage(message: Message, immediateAcknowledge: boolean) {  // immediate acknowledge happens when the conversation is already open
     // find conv
     const conv = this.conversations().find(c => c.id === message.conversationId);
-    if (!conv) return;
+    if (!conv) {  
+      // new conversation received
+      this.loadConversations().subscribe();
+      return;
+    };
     // update message preview
     this.conversationsMessagePreviews.update((prev) => {
       const newMap = new Map(prev);

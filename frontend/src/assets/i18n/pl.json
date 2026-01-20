@@ -60,12 +60,14 @@
     "guide": {
       "title": "Instalacja",
       "description": "W zależności od przeglądarki może to wyglądać nieco inaczej. Znajdź w <b>menu przeglądarki</b> (które zazwyczaj otwiera się przyciskiem w rogu ekranu) opcję <b>\"Dodaj do ekranu głównego\"</b>, a następnie wybierz <b>\"Zainstaluj\"</b>. Aplikacja będzie widoczna jako ikonka na ekranie głównym Twojego urządzenia.",
+      "ios-description": "Niestety instalacja aplikacji przeglądarkowej na iOS działa tylko w przeglądarce <b>Safari</b>. Aby zainstalować aplikację, otwórz menu Safari (pudełko ze strzałką skierowaną do góry), następnie <b>przewiń w dół</b> i wybierz <b>\"Dodaj do ekranu głównego.\"</b> Aplikacja pojawi się jako ikona na ekranie głównym Twojego urządzenia.",
       "image-hint": "Kliknij obrazek, aby otworzyć go w nowym widoku i móc go powiększyć"
     },
 
 
     "conversations": {
       "title": "Konwersacje",
+      "search": "Szukaj w swoich kontaktach...",
       "add-conversation-hint": "Użyj <b>przycisku +</b> w prawym dolnym rogu ekranu, aby rozpocząć nową konwersację",
       "plus-action": {
         "header": "Nowa konwersacja...",
@@ -83,7 +85,7 @@
     "discovery": {
       "title": "Nowy czat...",
       "header": "Znajdź użytkownika",
-      "info": "W pasku wyszukiwania powyżej wpisz: <ul><li>pełne imię i nazwisko lub</li><li>pełny login lub</li><li>pełny e-mail lub</li><li>pełny numer telefonu z kierunkowym (np. +48 123 123 123)</li></ul> i naciśnij \"Zatwierdź\"",
+      "info": "W pasku wyszukiwania powyżej wpisz: <ul><li>pełne <b>imię i nazwisko</b> lub</li><li>pełny <b>login</b> lub</li><li>pełny <b>e-mail</b> lub</li><li>pełny numer <b>telefonu</b> z kierunkowym (np. +48 123 123 123)</li></ul> i naciśnij \"Zatwierdź\"",
       "searchbar-hint": "Imię i nazwisko, login, e-mail lub telefon...",
       "found": "Znaleziono",
       "not-found": "Nie znaleziono"
@@ -219,7 +221,7 @@
     "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
     "conversation-cleared": "Twoje wiadomości zostały usunięte.",
-    "delete-message": "Czy na pewno chcesz usunąć wybraną wiadomość / wiadomości? (zostaną one usunięte również dla innych użytkowników, jednak dalej mogą oni mieć do nich tymczasowy dostęp, jeśli nie mają połączenia z internetem)",
+    "delete-message": "Czy na pewno chcesz usunąć wybrane swoje wiadomości, dla wszystkich użytkowników?",
 
     "conversation-exists": "Konwersacja z tym użytkownikiem już istnieje. Czy chcesz ją otworzyć?",
     "start-conversation": "Rozpocząć nową konwersację z tym użytkownikiem?",

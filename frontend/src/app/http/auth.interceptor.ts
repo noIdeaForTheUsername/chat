@@ -17,7 +17,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     tap({
       error: (err) => {
-        if (req.url.startsWith(environment.apiUrl) && err.status === 401) {
+        if (req.url.startsWith(environment.apiUrl) && err.status === 401 && err.error?.message !== "account-inactive") {
           alertService.displayLoginPrompt();
           // console.log("authInterceptor: detected 401 from backend API: PROMPTING LOGIN!");
         }

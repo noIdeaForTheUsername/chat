@@ -12,6 +12,7 @@ import { AuthService } from '@app/auth/auth.service';
 import { LanguageService } from '@app/i18n/language.service';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
+import { isPwa } from '@src/app/shared/platform-detection/platformUtils';
 
 @Component({
   selector: 'app-settings',
@@ -32,10 +33,7 @@ export class AppSettingsPage {
   protected runningAsPwa = signal(true);
 
   ionViewWillEnter() {
-    this.runningAsPwa.set(
-      window.matchMedia('(display-mode: standalone)').matches
-      || (window.navigator as any).standalone === true
-    );
+    this.runningAsPwa.set(isPwa());
   }
 
   get languageSelectValue(): string {

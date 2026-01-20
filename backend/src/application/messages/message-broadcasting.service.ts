@@ -24,12 +24,12 @@ export class MessageBroadcastingService {
     for (const receiverId of payload.receiverIds) {
       if (payload.message.senderId === receiverId) continue;  // skip sender
 
-      const connected = await this.messagesGateway.getUserConnected(receiverId);
-      if (connected) {
+      const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
+      if (connectedSockets.length > 0 && connectedSockets.some(s => s.data.viewedConversation === payload.message.conversationId)) {
         // Send via a websocket
         this.messagesGateway.sendMessage(payload);
       }
-      // else {
+      else {
         // Prepare and send push notification
         const conv = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
         if (!conv || !conv.notifications) continue; // user has disabled notifications for this conversation
@@ -56,7 +56,7 @@ export class MessageBroadcastingService {
           tag,
           // clickUrl: `/chats/${payload.message.conversationId}`,
         });
-      // }
+      }
     }
   }
 

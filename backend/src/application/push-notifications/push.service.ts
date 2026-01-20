@@ -67,12 +67,12 @@ export class PushService {
         "title": titleStr,
         "body": messageStr,
         "tag": tag,
-        "icon": "assets/icons/icon256.png",
+        "icon": "assets/icons/icon220.png",
         "badge": "assets/icons/badge.png",
         "lang": normalizedLang,
         "data": {
           "onActionClick": {
-            "default": { "operation": "navigateLastFocusedOrOpen", "url": /*clickUrl ??*/ notificationStrings.homePage }
+            "default": { "operation": "focusLastFocusedOrOpen", "url": /*clickUrl ??*/ notificationStrings.homePage }
           }
         }
       }

@@ -61,11 +61,13 @@
     "guide": {
       "title": "Installation",
       "description": "Depending on the browser, this may look a little different. Find the <b>\"Add to Home Screen\"</b> option in the <b>browser menu</b> (which is usually opened by a button in the corner of the screen), then select <b>\"Install.\"</b> The app will appear as an icon on your device's home screen.",
+      "ios-description": "Unfortunately, web application installation on iOS only works in <b>Safari</b> browser. To install the app, open Safari's menu (the box with an arrow pointing up), then <b>scroll down</b> and select <b>\"Add to Home Screen.\"</b> The app will appear as an icon on your device's home screen.",
       "image-hint": "Click the image to open it in a new view and be able to zoom in"
     },
 
     "conversations": {
       "title": "Conversations",
+      "search": "Search your contacts...",
       "add-conversation-hint": "Use the <b>+ button</b> in the bottom-right corner to start a new chat",
       "plus-action": {
         "header": "New conversation...",
@@ -83,7 +85,7 @@
     "discovery": {
       "title": "New Chat...",
       "header": "Find a user",
-      "info": "In the search bar above, enter: <ul><li>a full name or</li><li>a full login or</li><li>a full email or</li><li>a full phone number with country code (e.g., +48 123 123 123)</li></ul> and press confirm",
+      "info": "In the search bar above, enter: <ul><li>a <b>full name</b> or</li><li>a full <b>login</b> or</li><li>a full <b>email</b> or</li><li>a full <b>phone</b> number with country code (e.g., +48 123 123 123)</li></ul> and press confirm",
       "searchbar-hint": "Full name, login, email or phone...",
       "found": "Found",
       "not-found": "Not found"
@@ -224,7 +226,7 @@
     "unblock": "Are you sure you want to unblock this user/group?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
-    "delete-message": "Are you sure you want to delete the selected own message(s)? (they will be gone for other users as well, however, they might still have temporary access if they don't have internet connection)",
+    "delete-message": "Are you sure you want to delete the selected own message(s), for all users?",
 
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
     "start-conversation": "Start a new conversation with this user?",

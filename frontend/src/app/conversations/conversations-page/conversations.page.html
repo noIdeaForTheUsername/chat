@@ -17,13 +17,13 @@
 
 <ion-content [fullscreen]="true">
   <!-- REFRESH -->
-  <ion-refresher slot="fixed" (ionRefresh)="refreshConversations($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshData($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
   <div class="max-width-container">
     <!-- NOTIFICATIONS BUTTON -->
-    @if (notificationsStatus() === "default") {
+    @if (displayNotificationButton()) {
       <ion-button (click)="requestNotifications()" fill="outline" class="notifications-btn">
         <ion-icon slot="start" name="notifications"></ion-icon>
         {{"common.enable-notifications" | translate}}
@@ -31,7 +31,7 @@
     }
 
     <!-- SEARCHBAR -->
-    <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'common.search' | translate" (ionInput)="onSearchBarInput($event)"/>
+    <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'page.conversations.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 
     @if (this.conversationsLoaded()) {
       <!-- HEADER -->
@@ -44,7 +44,6 @@
       <!-- LOADING INDICATOR -->
       <app-loading-indicator type="crescent" color="primary" size="medium" [active]="!this.conversationsLoaded()"/>
     }
-    
     
 
     <!-- CONVERSATIONS LIST -->

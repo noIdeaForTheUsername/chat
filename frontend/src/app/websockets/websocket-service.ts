@@ -65,6 +65,10 @@ export class WebsocketService implements OnDestroy {
     this.socket.emit("acknowledgeConversation", { conversationId });
   }
 
+  setViewedConversation(conversationId: number | null) {
+    this.socket.emit("setViewedConversation", { conversationId });
+  }
+
   ngOnDestroy() {
     this.socket.disconnect();
     this.messageSubject.complete();

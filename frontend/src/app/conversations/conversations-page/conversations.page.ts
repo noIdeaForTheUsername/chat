@@ -24,6 +24,7 @@ import { AlertType } from '@app/alerts/alert-type.enum';
 import { lastValueFrom } from 'rxjs';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
 import { SwPush } from '@angular/service-worker';
+import { isIOS, isPwa } from '@src/app/shared/platform-detection/platformUtils';
 
 @Component({
   selector: 'app-conversations-page',
@@ -52,7 +53,8 @@ export class ConversationsPage {
   // Data
   protected conversations = computed(() => {
     const lastMessages = this.conversationService.conversationsMessagePreviews();
-    return this.getConvertedConversations(this.conversationService.conversations(), lastMessages);
+    const conversations = this.conversationService.conversations();
+    return this.getConvertedConversations(conversations, lastMessages);
   });
   protected displayedConversations = computed(() => this.getFilteredConversations(this.conversations()));
   
@@ -66,7 +68,13 @@ export class ConversationsPage {
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   protected showBlockedConversations = signal(false);
-  protected notificationsStatus = signal("default");
+  protected lastRefresh = Date.now();
+
+  // Notifications
+  protected notificationsPermission = signal(Notification.permission);
+  protected displayNotificationButton = computed(() => 
+    this.notificationsService.notificationsSupported && this.notificationsPermission() == "default" && !(isIOS() && !isPwa())
+  );
 
   // HTML elements
   @ViewChild("corner_menu") cornerMenu!: CornerMenuComponent;
@@ -74,15 +82,38 @@ export class ConversationsPage {
 
   // -------------------------------------------------------- PRIVATE FUNCTIONS
 
-  ionViewWillEnter() {
-    this.notificationsStatus.set(this.notificationsService.notificationsSupported ? Notification.permission : "not-supported");
+  constructor() {
+    effect(() => {
+      const conversations = this.conversations();
+      if (this.checkDataMissing(conversations)) 
+        this.refreshData(undefined, false);
+    })
+  }
+
+  ngOnInit() {
+    this.notificationsPermission.set(Notification.permission);
+    document.addEventListener("focus", this.refreshIfNotRefreshedRecently.bind(this));
+  }
+
+  private refreshIfNotRefreshedRecently() {
+    if (this.lastRefresh < Date.now() - 1000 * 30) {
+      this.refreshData(undefined, true);
+    }
+  }
+
+  private checkDataMissing(conversations: ConversationView[]): boolean {
+    for (let conv of conversations) {
+      if (!this.profiles().has(conv.participantId)) return true;
+      if (!this.lastMessages().has(conv.id)) return true;
+    }
+    return false;
   }
   
   // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {
     return conversations
       .filter((conv) =>
-        profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter()))
+        profileMatchesSearch(this.profiles().get(conv.participantId), this.searchFilter()) || !this.searchFilter())
       .filter((conv) => 
         this.showBlockedConversations() || (!this.getConversationBlocked(conv)))
       .sort((a, b) => {
@@ -130,35 +161,35 @@ export class ConversationsPage {
     if (profile.type === 'group') return false;
     return profile.blocked;
   }
-  
 
   // -------------------------------------------------------- UI FUNCTIONS
 
-  async refreshConversations(event: any) {
+  async refreshData(event?: any, withConversations: boolean = true) {
     let timeout; 
     try {
-      timeout = setTimeout(() => event.target.complete(), 8000);  // max waiting time
+      if (event) timeout = setTimeout(() => event.target.complete(), 7000);  // max waiting time
       await Promise.all([
         lastValueFrom(this.conversationService.loadMessagePreviews()),
-        lastValueFrom(this.conversationService.loadConversations()),
+        withConversations ? lastValueFrom(this.conversationService.loadConversations()) : Promise.resolve(),
         lastValueFrom(this.profileService.loadData()),
       ]);
       this.conversationService.reconnectWebsocket();
+      this.lastRefresh = Date.now();
     }
     catch (e: any) {
-      console.log("catched err");
       this.alertService.displayError(e.status ?? "data-unavailable");
     }
     finally {
-      console.log("event complete");
-      event.target.complete();
-      clearTimeout(timeout);
+      if (event) {
+        event.target.complete();
+        clearTimeout(timeout);
+      }
     }
   }
 
   async requestNotifications() {
     await this.notificationsService.requestSubscriptionAndSend();
-    this.notificationsStatus.set(Notification.permission);
+    this.notificationsPermission.set(Notification.permission);
   }
 
   toggleBlockedConversations() {
