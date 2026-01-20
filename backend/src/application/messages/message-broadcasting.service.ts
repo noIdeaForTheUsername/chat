@@ -25,11 +25,13 @@ export class MessageBroadcastingService {
       if (payload.message.senderId === receiverId) continue;  // skip sender
 
       const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
-      if (connectedSockets.length > 0 && connectedSockets.some(s => s.data.viewedConversation === payload.message.conversationId)) {
-        // Send via a websocket
+      // Send via a websocket
+      if (connectedSockets.length > 0) {
         this.messagesGateway.sendMessage(payload);
       }
-      else {
+
+      // If no active connection of a user is viewing the conversation, send a push notification
+      if (!connectedSockets.some(s => s.data.viewedConversation === payload.message.conversationId)) {
         // Prepare and send push notification
         const conv = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
         if (!conv || !conv.notifications) continue; // user has disabled notifications for this conversation
