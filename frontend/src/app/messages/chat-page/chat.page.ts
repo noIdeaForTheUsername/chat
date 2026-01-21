@@ -85,8 +85,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected displayingOldestMessages = this.messageService.displayingOldestMessages;
   protected showScrollDownButton = signal(false);
 
-  // ACTIVE VIEWING STATUS
-  private windowListeners: Function[] = [];
+  // EVENT LISTENERS
+  private eventListener: (() => void) | null = null;
 
   // ACTION MENU
   protected actionMessageId = signal<number | null>(null);
@@ -166,19 +166,19 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // ------------------------------------------- ACTIVE VIEWING STATUS MANAGEMENT -------------------------------------------
 
   ionViewDidEnter() {
+    this.eventListener = this.updateActiveViewingStatus.bind(this);
     this.messageService.setActiveViewingStatus(true);
-    this.windowListeners = [
-      () => this.messageService.setActiveViewingStatus(true),
-      () => this.messageService.setActiveViewingStatus(false),
-    ]
-    window.addEventListener('focus', this.windowListeners[0] as any);
-    window.addEventListener('blur', this.windowListeners[1] as any);
+    document.addEventListener('visibilitychange', this.eventListener);
   }
 
   ionViewWillLeave() {
-    window.removeEventListener('focus', this.windowListeners[0] as any);
-    window.removeEventListener('blur', this.windowListeners[1] as any);
+    document.removeEventListener('visibilitychange', this.eventListener!);
     this.messageService.setActiveViewingStatus(false);
+  }
+
+  private updateActiveViewingStatus() {
+    const val = document.visibilityState === 'visible';
+    this.messageService.setActiveViewingStatus(val);
   }
 
   // ------------------------------------------- MESSAGE SENDING / UPDATING / FUNCTIONS -------------------------------------------

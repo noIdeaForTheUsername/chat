@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnDestroy, OnInit, Signal, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonSearchbar, IonFab, IonFabButton,
   IonRefresher, IonRefresherContent, IonIcon, IonButtons, IonButton, IonActionSheet, IonNote } from '@ionic/angular/standalone';
@@ -38,7 +38,7 @@ import { isIOS, isPwa } from '@src/app/shared/platform-detection/platformUtils';
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConversationsPage {
+export class ConversationsPage implements OnInit, OnDestroy {
 
   // Services
   private conversationService = inject(ConversationService);
@@ -69,6 +69,7 @@ export class ConversationsPage {
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   protected showBlockedConversations = signal(false);
   protected lastRefresh = Date.now();
+  protected eventListener?: EventListener;
 
   // Notifications
   protected notificationsPermission = signal(Notification.permission);
@@ -92,7 +93,12 @@ export class ConversationsPage {
 
   ngOnInit() {
     this.notificationsPermission.set(Notification.permission);
-    document.addEventListener("focus", this.refreshIfNotRefreshedRecently.bind(this));
+    this.eventListener = () => { if (document.visibilityState === "visible") this.refreshIfNotRefreshedRecently(); };
+    document.addEventListener("visibilitychange", this.eventListener);
+  }
+  ngOnDestroy() {
+    if (this.eventListener)
+      document.removeEventListener("visibilitychange", this.eventListener);
   }
 
   private refreshIfNotRefreshedRecently() {
@@ -230,6 +236,7 @@ export class ConversationsPage {
     }
   }
 
+  // -------------------------------------------------------- UI ELEMENTS
 
   // "Plus" button action menu
   public plusButtons = [

@@ -108,12 +108,15 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
     return await this.messagesService.acknowledgeConversationMessages(userId, data.conversationId);
   }
 
+  // This tracks the currently open conversation and is used to suppress push notifications
   @SubscribeMessage("setViewedConversation")
   async handleViewedConversation(socket: Socket, data: { conversationId: number | null }) {
     if (data.conversationId !== null && typeof data.conversationId !== 'number')
       throw new WsException("ConversationId must be a number or null");
     socket.data.viewedConversation = data.conversationId;
   }
+
+
 
   // HELPERS
 
