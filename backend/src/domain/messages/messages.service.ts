@@ -48,7 +48,7 @@ export class MessagesDomainService {
     });
   }
 
-  async findMessage(conversationId: number, messageId: number, exceptionOnNotFound = false) {
+  async findMessageById(conversationId: number, messageId: number, exceptionOnNotFound = false) {
     const message = await this.messageRepository.findOneBy({
       conversationId: conversationId,
       globalId: messageId
@@ -56,6 +56,14 @@ export class MessagesDomainService {
     if (!message && exceptionOnNotFound)
       throw new NotFoundException('not-found.message');
     return message;
+  }
+
+  async findMessagesByIds(conversationId: number, messageIds: number[], exceptionOnNotFound = false) {
+    const messages = await this.messageRepository.findBy({
+      conversationId: conversationId,
+      globalId: In(messageIds)
+    });
+    return messages;
   }
 
   async findMessages(conversationId: number, limit: number,

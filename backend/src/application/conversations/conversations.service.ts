@@ -11,8 +11,6 @@ import { Transactional } from 'typeorm-transactional';
 export class ConversationsService {
   constructor(
     private readonly conversations: ConversationsDomainService,
-    private readonly messages: MessagesDomainService,
-    private readonly profiles: ProfilesDomainService,
     private readonly contacts: ContactsDomainService,
     private readonly accounts: AccountsDomainService
   ) {}

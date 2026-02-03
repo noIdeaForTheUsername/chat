@@ -7,7 +7,7 @@ import { MessagesGateway } from "./messages.gateway";
 import { ConversationsDomainService } from "src/domain/conversations/conversations.service";
 import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 
-// This service is responsible for sending real-time updates to users via WebSockets, or Push Notifications when they are offline.
+// This service is responsible for deciding and ordering to send real-time updates to users via WebSockets, or Push Notifications when they are offline.
 
 @Injectable()
 export class MessageBroadcastingService {

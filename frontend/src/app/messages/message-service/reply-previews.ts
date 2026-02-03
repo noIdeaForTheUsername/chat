@@ -5,27 +5,39 @@ import { MessageService } from "./message.service";
 
 export class ReplyPreviewManager {
 
+  // this class modifies "displayedMessages" in the service directly
   constructor(private s: MessageService, private api: BackendMessageApi) {}
 
-  // modifies "displayedMessages" in the service directly
   public loadMessagePreviews(currentConvId: number, highestDisplayedId: number, lowestDisplayedId: number) {  
     const repliedIds = this.s.displayedMessages().filter(msg => msg.repliedId).map(msg => msg.repliedId!);
+    let repliedIdsExistingLocally: number[] = [];
+    let idsToLoad: number[] = [];
     repliedIds.forEach(id => {
-      if (id > highestDisplayedId || id < lowestDisplayedId) {
-        // Load message from the backend
-        this.api.getMessageById(id, currentConvId).subscribe({
-          next: (msg: Message) => {
-            this.addPreview(msg);
-          }
-        });
+      // case where the target message is already loaded and displayed
+      if (id <= highestDisplayedId && id >= lowestDisplayedId) {
+        if (!repliedIdsExistingLocally.includes(id)) repliedIdsExistingLocally.push(id);
       }
-      else {
-        // Get message from the currently displayed list
-        // (and if it's not there, it was probably deleted - do nothing then)
-        const found = this.s.displayedMessages().find(msg => msg.globalId == id);
-        if (found) this.addPreview(found);
+      else {  // case where the target message isn't loaded
+        if (!idsToLoad.includes(id)) idsToLoad.push(id);
       }
     });
+
+    // Update locallly available messages
+    let messagesWithRepliedTexts = repliedIdsExistingLocally.map(id => 
+      this.s.displayedMessages().find(msg => msg.globalId == id)
+    ).filter(msg =>
+      msg !== undefined
+    );
+    this.addPreviews(messagesWithRepliedTexts);
+
+    // Load missing messages
+    if (idsToLoad.length > 0) {
+      this.api.getMessagesByIds(idsToLoad, currentConvId).subscribe({
+        next: (msgs: Message[]) => {
+          this.addPreviews(msgs);
+        }
+      });
+    }
   }
 
   public loadSingleMessagePreview(message: Message, highestDisplayedId: number, lowestDisplayedId: number) {
@@ -34,31 +46,42 @@ export class ReplyPreviewManager {
       // Load message from the backend
       this.api.getMessageById(message.repliedId, message.conversationId).subscribe({
         next: (msg: Message) => {
-          this.addPreview(msg);
+          this.addPreviews(msg);
         }
       });
     }
     else {
       // Get message from the currently displayed list
       const found = this.s.displayedMessages().find(msg => msg.globalId == message.repliedId);
-      if (found) this.addPreview(found);
+      if (found) this.addPreviews(found);
     }
   }
 
-  // modifies "displayedMessages" in the service directly
-  public addPreview(messageWithRepliedText: Message) {
+  public addPreviews(messageWithRepliedTextOrArray: Message | Message[]) {
     this.s.displayedMessages.update((msgs) => {
-      for (let i = 0; i < msgs.length; i++) {
-        if (msgs[i].repliedId == messageWithRepliedText.globalId) {
-          msgs[i] = {
-            ...msgs[i],
-            repliedText: messageWithRepliedText.text
-          };
-          return msgs;
+      // normalize param to array
+      let messagesWithRepliedTexts: Message[];
+      if (Array.isArray(messageWithRepliedTextOrArray)) {
+        messagesWithRepliedTexts = messageWithRepliedTextOrArray;
+      } else {
+        messagesWithRepliedTexts = [messageWithRepliedTextOrArray];
+      }
+
+      // attach replied texts to existing messages
+      for (let i = 0; i < messagesWithRepliedTexts.length; i++) {
+        const messageWithRepliedText = messagesWithRepliedTexts[i];
+        for (let j = 0; j < msgs.length; j++) {
+          if (msgs[j].repliedId == messageWithRepliedText.globalId) {
+            msgs[j] = {
+              ...msgs[j],
+              repliedText: messageWithRepliedText.text?.trim() || undefined,
+            };
+          }
+          // not breaking, there might be multiple messages replying to the same one
         }
       }
       return msgs;
     });
-}
+  }
 }
 

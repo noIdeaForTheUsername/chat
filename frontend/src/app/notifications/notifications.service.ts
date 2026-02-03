@@ -57,7 +57,7 @@ export class NotificationsService {
   // }
 
   private sendSubscriptionToServer(subscription: PushSubscription) {
-    this.http.post("/notifications/subscribe", {
+    this.http.put("/notifications/subscription", {
       subscription,
       language: this.translate.getCurrentLang()
     }).subscribe();

@@ -31,6 +31,15 @@ export class MessagesController {
       callerId, conversationId, query.limit, query.globalIdStart, query.older === 'true');
   }
 
+  @Get("conversations/:id/messages/batch")
+  async getMessagesByIds(
+    @UserId() callerId: number,
+    @Param('id') conversationId: number,
+    @Query('ids', new ParseArrayPipe({ items: Number })) messageIds: number[]
+  ) {
+    return await this.messagesService.getMessagesByIds(callerId, conversationId, messageIds);
+  }
+
   @Get("conversations/:id/messages/:messageId")
   async getMessageById(
     @UserId() callerId: number,

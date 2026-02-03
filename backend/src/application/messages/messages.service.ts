@@ -41,7 +41,13 @@ export class MessagesService {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
     
-    return await this.messagesDomainService.findMessage(conversationId, messageId, true);
+    return await this.messagesDomainService.findMessageById(conversationId, messageId, true);
+  }
+  async getMessagesByIds(callerId: number, conversationId: number, messageIds: number[]) {
+    // assert this conv exists and the caller is a member of it
+    await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
+    
+    return await this.messagesDomainService.findMessagesByIds(conversationId, messageIds, true);
   }
 
   async getRecentMessagePreviews(callerId: number) {
@@ -88,7 +94,7 @@ export class MessagesService {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
-    const message = await this.messagesDomainService.findMessage(conversationId, messageId, true);
+    const message = await this.messagesDomainService.findMessageById(conversationId, messageId, true);
     if (!message)
       throw new NotFoundException('not-found.message');
 
@@ -96,7 +102,7 @@ export class MessagesService {
       throw new ForbiddenException("cannot-delete-not-own-message");
     
     const deleted = await this.messagesDomainService.clearMessageById(conversationId, messageId);
-    await this.sendWebSocketDeletion(deleted);
+    await this.sendRealTimeDeletion(deleted);
   }
 
   async deleteMultipleMessages(callerId: number, conversationId: number, messageIds: number[]) {
@@ -104,7 +110,7 @@ export class MessagesService {
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
     const deleted = await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
-    await this.sendWebSocketDeletion(deleted);
+    await this.sendRealTimeDeletion(deleted);
   }
 
   async deleteAllConversationMessages(callerId: number, conversationId: number) {
@@ -117,8 +123,8 @@ export class MessagesService {
       conversationId));
   }
 
-  // This function assumes that all deletes messages belong to the same user and conversation!
-  private async sendWebSocketDeletion(deleted: Message | Message[]) {
+  // This function assumes that all deleted messages (passed in the parameter) belong to the same user and conversation!
+  private async sendRealTimeDeletion(deleted: Message | Message[]) {
     if (deleted instanceof Array) {
       if (deleted.length === 0) return;
       const first = deleted[0];

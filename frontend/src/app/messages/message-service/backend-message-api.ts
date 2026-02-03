@@ -32,6 +32,16 @@ export class BackendMessageApi {
     );
   }
 
+  getMessagesByIds(messageIds: number[], conversationId: number) {
+    return this.http.get<ServerMessage[]>(`/conversations/${conversationId}/messages/batch`, {
+      params: {
+        ids: messageIds.join(',')
+      }
+    }).pipe(
+      map(serverMessages => serverMessages.map(serverMessageToMessage))
+    );
+  }
+
   sendMessage(conversationId: number, text: string, timestamp: Date, repliedId?: number) {
     return this.http.post(`/conversations/${conversationId}/messages`, {
       conversationId,
