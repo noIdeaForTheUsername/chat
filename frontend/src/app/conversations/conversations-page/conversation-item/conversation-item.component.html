@@ -3,6 +3,7 @@
   [class.selected]="selectionService().selectedIds().includes(conversationView().id)"
   [class.blocked]="blocked()"
   holdDirective (hold)="onConversationHold(conversationView().id)"
+  (contextmenu)="onConversationRightClick($event, conversationView().id)"
   (click)="onConversationClick(conversationView().id)">
   <ion-avatar aria-hidden="true" slot="start"> 
     <img src="assets/avatar.svg"/>

@@ -3,6 +3,7 @@ import { AuthService } from "../auth/auth.service";
 import { Router } from "@angular/router";
 import { AlertService } from "../alerts/alert-service/alert.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { isServerUnavailableError } from "../shared/errors/error-utils";
 
 
 @Injectable({
@@ -63,14 +64,14 @@ export class AppInitService {
 
     // User was logged in before (and should have already been redirected to the "inside" of the app at this point):
     const previouslyAuthorized = this.auth.getUserId() !== null && this.auth.getUserAccountActive();
-    if (previouslyAuthorized && (err.status === 0 || err.status === 504 || err.name === 'TimeoutError')) {  // server down
+    if (previouslyAuthorized && isServerUnavailableError(err)) {  // server down
       this.alertService.displayServerConnectionError();
     }
     else if (previouslyAuthorized && err.status === 401) {  // session expired
       this.alertService.displayLoginPrompt();
     }
     // User wasn't logged in before (redirect needed):
-    else if (err.status === 0 || err.status === 504 || err.name === 'TimeoutError') {  // server down
+    else if (isServerUnavailableError(err)) {
       this.router.navigateByUrl('/');
       this.serverUnavailableWhileLoggedOut.set(true);  // display err on the loading page
     }

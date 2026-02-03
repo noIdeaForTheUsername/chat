@@ -19,7 +19,7 @@ export class HoldDirective {
   private touchStartY = 0;
   private readonly touchMoveTolerancePx = 15;
 
-  @HostListener("mousedown")
+  // @HostListener("mousedown")
   startHoldDetection() {
     this.timeoutId = setTimeout(() => {
       this.hold.emit();
@@ -28,8 +28,8 @@ export class HoldDirective {
   }
 
   @HostListener("touchend")
-  @HostListener("mouseup")
-  @HostListener("mouseleave")
+  // @HostListener("mouseup")
+  // @HostListener("mouseleave")
   cancelHoldDetection() {
     clearTimeout(this.timeoutId);
     setTimeout(() => this.setClickLock.emit(false));

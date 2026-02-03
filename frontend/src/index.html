@@ -19,6 +19,15 @@
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
   <link rel="manifest" href="assets/manifest.webmanifest">
+
+  <style>
+    /* Preloading style, displayed before even the Angular loads - green suggests that the app is at least existing (instead of just black background for a few seconds) */
+    body {
+      width: 100%;
+      height: 100vh;
+      background-color: #00e06a !important;
+    }
+  </style>
 </head>
 
 <body>

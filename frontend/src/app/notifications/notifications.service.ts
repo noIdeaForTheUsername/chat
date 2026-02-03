@@ -40,7 +40,7 @@ export class NotificationsService {
         if (Notification.permission == "denied")
           this.alertService.displayError("notifications-blocked");
         else
-          this.alertService.displayUnknownError();
+          this.alertService.displayUnknownError(err);
       }
     }
 

@@ -8,7 +8,7 @@ import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { MessageView } from './message-view.interface';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-message-card',

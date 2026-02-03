@@ -15,7 +15,7 @@ import { connectionErrorInterceptor } from '@app/http/connection-error.intercept
 import { authInterceptor } from '@app/http/auth.interceptor';
 import { AuthService } from './app/auth/auth.service';
 import { provideServiceWorker } from '@angular/service-worker';
-import { AppInitService } from './app/initialization/app-init.service';
+import { AppInitService } from './app/loading/app-init.service';
 
 
 bootstrapApplication(AppComponent, {

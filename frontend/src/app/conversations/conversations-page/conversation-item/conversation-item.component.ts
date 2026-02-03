@@ -43,14 +43,23 @@ export class ConversationItemComponent {
 
   // Selection
   onConversationHold(id: number) {
-    if (this.selectionService().selectionMode()) this.openMultiselectActions.emit();
-    else this.selectionService().toggleSelectionMode(id);
+    this.processConversationSelection(id);
   }
+  onConversationRightClick(event: MouseEvent, id: number) {
+    event.preventDefault();
+    this.processConversationSelection(id);
+  }
+  
   onConversationClick(id: number) {
     if (this.clickLock) return;
     this.selectionService().toggleItemSelection(id);
   }
   setClickLock(value: boolean) {
     this.clickLock = value;
+  }
+
+  private processConversationSelection(id: number) {
+    if (this.selectionService().selectionMode()) this.openMultiselectActions.emit();
+    else this.selectionService().toggleSelectionMode(id);
   }
 }

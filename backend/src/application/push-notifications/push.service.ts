@@ -58,7 +58,8 @@ export class PushService {
     }
 
     const normalizedLang = language?.toLowerCase().includes("pl") ? "pl" : "en";
-    const titleStr = this.getTranslatedString(normalizedLang, ["prefix", ...title]);
+    const normalizedTitle = Array.isArray(title) ? title : [title];
+    const titleStr = this.getTranslatedString(normalizedLang, ["prefix", ...normalizedTitle]);
     const messageStr = this.getTranslatedString(normalizedLang, message);
 
     // prepare payload

@@ -266,12 +266,12 @@
     },
     "data-invalid": {
       "header": "Invalid data",
-      "description": "Provided data is invalid. Check the if the input is correct (fields marked in red)."
+      "description": "Provided data is invalid. Check the if the input is correct."
     },
 
     "unknown": {
       "header": "Unknown error",
-      "description": "Please contact the administrator if the issue persists."
+      "description": "An unknown error has occured. If the issue persists, try restarting the app completely or contact the administrator."
     },
     "logout-failed": {
       "header": "Logout failed",

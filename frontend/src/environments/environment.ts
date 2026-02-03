@@ -4,8 +4,10 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://192.168.1.2:3000", //"http://localhost:3000/",
-  socketIoUrl: "http://192.168.1.2:3000",  //"http://localhost:3000",
+  //apiUrl: "http://192.168.1.2:3000",
+  apiUrl: "http://localhost:3000/",
+  //socketIoUrl: "http://192.168.1.2:3000",  
+  socketIoUrl: "http://localhost:3000",
   socketIoPath: "/socket.io",
   vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
 };

@@ -260,12 +260,12 @@
     },
     "data-invalid": {
       "header": "Nieprawidłowe dane",
-      "description": "Przekazane dane są nieprawidłowe. Sprawdź poprawność wprowadzonych informacji (pola zaznaczone na czerwono)."
+      "description": "Przekazane dane są nieprawidłowe. Sprawdź poprawność wprowadzonych informacji."
     },
 
     "unknown": {
       "header": "Nieznany błąd",
-      "description": "Skontaktuj się z administratorem, jeśli problem będzie się powtarzał."
+      "description": "Wystąpił nieznany błąd. Jeśli problem będzie się powtarzał, spróbuj całkowicie zamknąć i ponownie uruchomić aplikację lub skontaktuj się z administratorem."
     },
     "logout-failed": {
       "header": "Błąd wylogowania",

@@ -10,7 +10,7 @@ export const connectionErrorInterceptor: HttpInterceptorFn = (req, next) => {
   
   return next(req).pipe(
     catchError((err) => {
-      if (err.status === 0 || err.status === 504) {
+      if (err.status === 0 || err.status === 504 || err.status === 502) {
         alertService.displayServerConnectionError();
       }
       return throwError(() => err);
