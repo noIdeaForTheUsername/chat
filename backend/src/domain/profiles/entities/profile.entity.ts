@@ -11,9 +11,9 @@ export class Profile {
   @Column({ type: 'text', nullable: true })
   bio: string | null;
 
-  @Column({ default: false, name: 'phone_number_public' })
-  phoneNumberPublic: boolean;
+  // @Column({ default: false, name: 'phone_number_public' })
+  // phoneNumberPublic: boolean;
 
-  @Column({ default: false, name: 'email_public' })
-  emailPublic: boolean;
+  // @Column({ default: false, name: 'email_public' })
+  // emailPublic: boolean;
 }

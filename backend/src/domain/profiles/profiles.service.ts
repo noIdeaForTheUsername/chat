@@ -37,7 +37,8 @@ export class ProfilesDomainService {
     return profile;
   }
 
-  async findFullPublicProfile(id: number, exceptionOnNotFound = false) {
+  // Full profile includes email and phone number, that should never be exposed to anyone except the account owner
+  async findFullProfile(id: number, exceptionOnNotFound = false) {
     const profile = await this.fullProfiles.findOneBy( { id } );
     if (!profile && exceptionOnNotFound)
       throw new NotFoundException('not-found.profile');
@@ -52,7 +53,7 @@ export class ProfilesDomainService {
 
     const where = [];
     // Make sure only non-empty searches are added - discovery requires knowledge of the exact value
-    // (and we really do NOT want to return anyone with some field empty as "known and discoverable" - that's a security flaw)
+    // (and we really do NOT want to return anyone with some field empty as "known and discoverable")
     if (loginSearch.trim().length > 0)
       where.push({ login: loginSearch });
     if (emailSearch.trim().length > 0)
@@ -67,18 +68,15 @@ export class ProfilesDomainService {
       return [];
     }
 
+    // Full profile includes email and phone number, that should never be exposed to anyone except the account owner
     return await this.fullProfiles.find({ where });
   }
 
   // CREATING DATA
 
-  async createProfile(accountId: number, phoneNumberPublic: boolean, emailPublic: boolean,
-    name?: string, bio?: string
-  ) {
+  async createProfile(accountId: number, name?: string, bio?: string) {
     const profile = this.profiles.create({
       id: accountId,
-      phoneNumberPublic,
-      emailPublic,
       name,
       bio
     });

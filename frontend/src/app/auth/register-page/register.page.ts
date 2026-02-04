@@ -46,7 +46,7 @@ function passwordsMatchValidator(group: AbstractControl): ValidationErrors | nul
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonContent, IonToggle, RouterLink, ReactiveFormsModule,
+  imports: [IonContent, RouterLink, ReactiveFormsModule,
     TranslatePipe, IonButton, StandardHeaderComponent, IonButtons, LanguageButtonComponent]
 })
 export class RegisterPage {
@@ -65,8 +65,8 @@ export class RegisterPage {
     email: new FormControl('', [Validators.email]),
     phoneNumber: new FormControl('+48 ', [Validators.pattern(/^\+[0-9 ]+$/)]),
     bio: new FormControl(''),
-    emailPublic: new FormControl<boolean>(true, { nonNullable: true }),
-    phoneNumberPublic: new FormControl<boolean>(true, { nonNullable: true }),
+    // emailPublic: new FormControl<boolean>(true, { nonNullable: true }),
+    // phoneNumberPublic: new FormControl<boolean>(true, { nonNullable: true }),
   }, { validators: passwordsMatchValidator });
 
 
@@ -129,8 +129,8 @@ export class RegisterPage {
         email: string | null;
         phoneNumber: string | null;
         bio: string | null;
-        emailPublic: boolean | null;
-        phoneNumberPublic: boolean | null;
+        // emailPublic: boolean | null;
+        // phoneNumberPublic: boolean | null;
       }>;
 
       this.form.patchValue({
@@ -139,8 +139,8 @@ export class RegisterPage {
         email: parsed.email ?? this.form.get('email')?.value,
         phoneNumber: parsed.phoneNumber ?? this.form.get('phoneNumber')?.value,
         bio: parsed.bio ?? this.form.get('bio')?.value,
-        emailPublic: parsed.emailPublic ?? this.form.get('emailPublic')?.value,
-        phoneNumberPublic: parsed.phoneNumberPublic ?? this.form.get('phoneNumberPublic')?.value,
+        // emailPublic: parsed.emailPublic ?? this.form.get('emailPublic')?.value,
+        // phoneNumberPublic: parsed.phoneNumberPublic ?? this.form.get('phoneNumberPublic')?.value,
       }, { emitEvent: false });
     } catch {
       // ignore malformed JSON / storage errors

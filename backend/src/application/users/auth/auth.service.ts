@@ -41,14 +41,12 @@ export class AuthService {
   }
 
   async register(req: any, login: string, plainPassword: string,
-    emailPublic: boolean, phoneNumberPublic: boolean,
     email?: string, phoneNumber?: string,
     name?: string, bio?: string
   ) {
     const hashedPassword = await hashPassword(plainPassword);
 
-    const user = await this.accountsService.createUser(login, hashedPassword, email, phoneNumber,
-      emailPublic, phoneNumberPublic, name, bio);
+    const user = await this.accountsService.createUser(login, hashedPassword, email, phoneNumber, name, bio);
 
     await new Promise<void>((resolve, reject) => {
       req.session.regenerate((err: any) => {

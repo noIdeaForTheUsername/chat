@@ -176,13 +176,12 @@
 
     "register": {
       "header": "Utwórz nowe konto",
-      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla administratora i użytkowników, którzy Cię znajdą - a to wymaga znajomości <b>pełnej</b> wartości jednego z tych pól.",
+      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla administratora i użytkowników, którzy Cię znajdą - a to wymaga znajomości <b>pełnej</b> któregoś z pól profilu.",
       "name-input": "Imię i nazwisko (opcjonalne)",
       "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
       "email-input": "Adres e-mail",
       "phone-input": "Telefon z numerem kierunkowym",
-      "email-phone-hint": "Wymagane jest co najmniej <b>jedno poniższe</b> (zalecany telefon). Tymi danymi będziesz mógł się zalogować",
-      "email-phone-settings": "Pozwól innym użytkownikom znaleźć mnie po następujących polach (pola te zawsze pozostaną publicznie ukryte nawet, jeśli włączysz te opcje)",
+      "email-phone-hint": "Wymagane jest co najmniej <b>jedno poniższe</b> (zalecany telefon). Tymi danymi będziesz mógł się zalogować. Nie będą widoczne dla innych użytkowników.",
       "bio-input": "Opis profilu (opcjonalnie)",
       "login-hint": "Mam już konto"
     }
@@ -281,7 +280,7 @@
       "description": "Wymagany jest e-mail lub numer telefonu."
     },
     "exists": {
-      "header": "Konflikt",
+      "header": "Zajęte",
       "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
     },
     "bad-timestamp": {

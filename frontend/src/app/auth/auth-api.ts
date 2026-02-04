@@ -12,8 +12,8 @@ export interface RegisterBody {
 	email?: string | null;
 	phoneNumber?: string | null;
 	bio?: string | null;
-	emailPublic: boolean;
-	phoneNumberPublic: boolean;
+	// emailPublic: boolean;
+	// phoneNumberPublic: boolean;
 }
 
 export class AuthBackendApi {

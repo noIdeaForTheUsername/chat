@@ -176,13 +176,12 @@
 
     "register": {
       "header": "Create a new account",
-      "encouragement": "Your name and login will only be visible to the server admin and users <b>who discover you</b> - and this requires knowing the <b>exact</b> value of one of these fields",
+      "encouragement": "Your name and login will only be visible to the server admin and users <b>who discover you</b> - and this requires knowing the <b>exact</b> value of one of the profile fields.",
       "name-input": "Full name (optional)",
       "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
       "email-input": "Email address",
       "phone-input": "Phone with country code",
-      "email-phone-hint": "At least <b>one is required</b> (phone recommended). You'll be able to log in using these fields",
-      "email-phone-settings": "Make other users able to find me by my (this data will always remain publically hidden, even if you enable these options)",
+      "email-phone-hint": "At least <b>one is required</b> (phone recommended). You'll be able to log in using these fields. They won't be visible to other users.",
       "bio-input": "Profile description (optional)",
       "login-hint": "I already have an account"
     }
@@ -287,7 +286,7 @@
       "description": "Email or phone required"
     },
     "exists": {
-      "header": "Conflict",
+      "header": "Already taken",
       "description": "User with this {{field}} already exists"
     },
     "bad-timestamp": {

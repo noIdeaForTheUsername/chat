@@ -34,7 +34,6 @@ export class AuthController {
     await this.authService.register(
       req,
       body.login, body.password,
-      body.emailPublic, body.phoneNumberPublic,
       body.email, body.phoneNumber, body.name, body.bio,
     );
     // this.sendJwtCookie(res, authJwt);

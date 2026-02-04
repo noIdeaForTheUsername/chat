@@ -15,11 +15,11 @@ export class RegisterDto {
   @IsString()
   passwordRepeat: string;
 
-  @IsBoolean()
-  emailPublic: boolean;
+  // @IsBoolean()
+  // emailPublic: boolean;
 
-  @IsBoolean()
-  phoneNumberPublic: boolean;
+  // @IsBoolean()
+  // phoneNumberPublic: boolean;
   
   @IsOptional()
   @IsEmail()

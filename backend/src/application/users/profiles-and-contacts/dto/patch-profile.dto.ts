@@ -13,11 +13,11 @@ export class PatchProfileDto {
   @IsString()
   bio?: string | null;
 
-  @IsOptional()
-  @IsBoolean()
-  emailPublic?: boolean;
+  // @IsOptional()
+  // @IsBoolean()
+  // emailPublic?: boolean;
 
-  @IsOptional()
-  @IsBoolean()
-  phoneNumberPublic?: boolean;
+  // @IsOptional()
+  // @IsBoolean()
+  // phoneNumberPublic?: boolean;
 }

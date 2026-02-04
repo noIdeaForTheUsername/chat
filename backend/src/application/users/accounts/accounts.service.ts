@@ -33,7 +33,6 @@ export class AccountsService {
   @Transactional()
   async createUser(login: string, passwordHash: string,
     email?: string, phoneNumber?: string,
-    emailPublic: boolean = false, phoneNumberPublic: boolean = false,
     name?: string, bio?: string
   ) {
     if (!email && !phoneNumber)
@@ -42,8 +41,7 @@ export class AccountsService {
     // Create and return ID
     try {
       const newAccount = await this.accounts.create(login, passwordHash, email, phoneNumber);
-      await this.profiles.createProfile(newAccount.id, phoneNumberPublic,
-        emailPublic, name, bio);
+      await this.profiles.createProfile(newAccount.id, name, bio);
 
       // Notify administrators
       this.notifyAdministration(

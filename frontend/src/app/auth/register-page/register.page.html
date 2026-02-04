@@ -32,22 +32,6 @@
     </div>
 
     <hr>
-    <!-- password -->
-
-    <div class="floating-input">
-      <label>
-        <p>{{ 'profile.password' | translate }}:</p>
-        <input formControlName="password" type="password">
-      </label>
-    </div>
-    <div class="floating-input">
-      <label>
-        <p>{{ 'profile.password-repeat' | translate }}:</p>
-        <input formControlName="passwordRepeat" type="password">
-      </label>
-    </div>
-
-    <hr>
     <!-- email and phone -->
 
     <p class="hint highlighted-b" [innerHTML]="'page.register.email-phone-hint' | translate"></p>
@@ -67,11 +51,27 @@
     </div>
 
     <hr>
-    <!-- email and phone settings -->
+    <!-- password -->
+
+    <div class="floating-input">
+      <label>
+        <p>{{ 'profile.password' | translate }}:</p>
+        <input formControlName="password" type="password">
+      </label>
+    </div>
+    <div class="floating-input">
+      <label>
+        <p>{{ 'profile.password-repeat' | translate }}:</p>
+        <input formControlName="passwordRepeat" type="password">
+      </label>
+    </div>
+
+    <!-- <hr>
+    email and phone settings
 
     <p>{{ 'page.register.email-phone-settings' | translate }}:</p>
     <ion-toggle alignment="center" formControlName="emailPublic">{{'profile.email' | translate }}</ion-toggle><br/>
-    <ion-toggle alignment="center" formControlName="phoneNumberPublic">{{'profile.phone-number' | translate }}</ion-toggle><br/>
+    <ion-toggle alignment="center" formControlName="phoneNumberPublic">{{'profile.phone-number' | translate }}</ion-toggle><br/> -->
     
     <hr>
     <!-- bio -->

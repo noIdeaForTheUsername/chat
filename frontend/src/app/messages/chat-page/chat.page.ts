@@ -201,7 +201,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.enteredMessage.set("");
     const replyingTo = this.replyingToId();
     const replyingToText = this.replyingToText();
-    this.messageService.sendMessage(messageText, this.afterMessageSent.bind(this),
+    this.messageService.operations.sendMessage(messageText, this.afterMessageSent.bind(this),
       replyingTo ?? undefined, replyingToText ?? undefined);
   }
 
@@ -366,14 +366,14 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private deleteMessage() {
     if (this.selectionService.selectionMode()) {  // multiselect delete
       this.promptMessageDeletion(() => {
-        this.messageService.deleteMultipleMessages(this.selectionService.selectedIds());
+        this.messageService.operations.deleteMultipleMessages(this.selectionService.selectedIds());
         this.selectionService.clearSelection();
       });
     }
     else {  // single delete
       const id = this.actionMessageId();
       this.promptMessageDeletion(() =>  {
-        this.messageService.deleteMessage(id!);
+        this.messageService.operations.deleteMessage(id!);
         this.actionMessageId.set(null);
       });
     };

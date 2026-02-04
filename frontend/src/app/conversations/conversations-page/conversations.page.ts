@@ -25,6 +25,7 @@ import { lastValueFrom } from 'rxjs';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
 import { SwPush } from '@angular/service-worker';
 import { isIOS, isPwa } from '@src/app/shared/platform-detection/platformUtils';
+import { RefreshService } from '@src/app/loading/refresh.service';
 
 @Component({
   selector: 'app-conversations-page',
@@ -49,6 +50,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
   private router = inject(Router);
   protected selectionService = inject(SelectionService);
   private notificationsService = inject(NotificationsService);
+  protected refreshService = inject(RefreshService);
 
   // Data
   protected conversations = computed(() => {
@@ -86,8 +88,11 @@ export class ConversationsPage implements OnInit, OnDestroy {
   constructor() {
     effect(() => {
       const conversations = this.conversations();
-      if (this.checkDataMissing(conversations)) 
-        this.refreshData(undefined, false);
+      if (this.refreshService.checkDataMissing(conversations))  {
+        this.refreshService.refreshData(undefined, false);
+        console.log("DATA MISSING!");
+      }
+        
     })
   }
 
@@ -103,16 +108,8 @@ export class ConversationsPage implements OnInit, OnDestroy {
 
   private refreshIfNotRefreshedRecently() {
     if (this.lastRefresh < Date.now() - 1000 * 30) {
-      this.refreshData(undefined, true);
+      this.refreshService.refreshData(undefined, true);
     }
-  }
-
-  private checkDataMissing(conversations: ConversationView[]): boolean {
-    for (let conv of conversations) {
-      if (!this.profiles().has(conv.participantId)) return true;
-      if (!this.lastMessages().has(conv.id)) return true;
-    }
-    return false;
   }
   
   // Filters by both search and blocked status, and then sorts
@@ -169,29 +166,6 @@ export class ConversationsPage implements OnInit, OnDestroy {
   }
 
   // -------------------------------------------------------- UI FUNCTIONS
-
-  async refreshData(event?: any, withConversations: boolean = true) {
-    let timeout; 
-    try {
-      if (event) timeout = setTimeout(() => event.target.complete(), 7000);  // max waiting time
-      await Promise.all([
-        lastValueFrom(this.conversationService.loadMessagePreviews()),
-        withConversations ? lastValueFrom(this.conversationService.loadConversations()) : Promise.resolve(),
-        lastValueFrom(this.profileService.loadData()),
-      ]);
-      this.conversationService.reconnectWebsocket();
-      this.lastRefresh = Date.now();
-    }
-    catch (e: any) {
-      this.alertService.displayError(e.status ?? "data-unavailable");
-    }
-    finally {
-      if (event) {
-        event.target.complete();
-        clearTimeout(timeout);
-      }
-    }
-  }
 
   async requestNotifications() {
     await this.notificationsService.requestSubscriptionAndSend();

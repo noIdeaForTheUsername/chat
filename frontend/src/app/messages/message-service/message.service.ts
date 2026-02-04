@@ -7,7 +7,7 @@ import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { ReplyPreviewManager } from './reply-previews';
-import { AlertType } from '@app/alerts/alert-type.enum';
+import { MessageOperations } from './message-operations';
 import { TranslateService } from '@ngx-translate/core';
 import { WebsocketService } from '../../websockets/websocket-service';
 import { ConversationService } from '@src/app/conversations/conversation.service';
@@ -28,6 +28,10 @@ export class MessageService {
   private conversationService = inject(ConversationService);
   private readonly api = new BackendMessageApi();
   private readonly replyPreviewManager = new ReplyPreviewManager(this, this.api);
+  public readonly operations = new MessageOperations(
+    this, this.api, this.replyPreviewManager,
+    this.authService, this.alertService, this.translate, this.conversationService, this.websocket
+  );
 
   // SETTINGS
   private readonly MAX_MESSAGES_DISPLAYED = 200;
@@ -38,7 +42,7 @@ export class MessageService {
   // DISPLAYED DATA
   public readonly displayedMessages = signal<MessageView[]>([]);  // expected to be sorted from oldest (first) to newest!
   public readonly repliedTexts = signal<Map<number, string>>(new Map());  // map of replied message ID -> text preview
-  private currentConvId: number = -1;
+  private currentConvId: number = -1; public getCurrentConvId() { return this.currentConvId };
 
   // MESSAGE STATE (ADDITIONAL METADATA)
   public readonly displayingNewestMessages = signal(true);
@@ -64,17 +68,18 @@ export class MessageService {
 
 
   constructor() {
-    // Subscribe to incoming messages from the socket service
-    this.websocket.messages$.subscribe({
-      next: (msg: Message) => {
-        this.receiveMessage(msg);
-      }
-    });
-    this.websocket.messageUpdates$.subscribe({
-      next: (msg: Message) => {
-        this.receiveMessageUpdate(msg);
-      }
-    });
+    // this.websocket.messages$.subscribe({
+    //   next: (msg: Message) => {
+    //     this.operations.receiveMessage(msg);
+    //   }
+    // });
+    // this.websocket.messageUpdates$.subscribe({
+    //   next: (msg: Message) => {
+    //     this.operations.receiveMessageUpdate(msg);
+    //   }
+    // });
+
+    // Subscribe to reload messages from the socket service
     this.websocket.reloadConversation$.subscribe({
       next: (convId: number) => {
         if (convId == this.currentConvId) 
@@ -209,6 +214,8 @@ export class MessageService {
 
   // PUBLIC FUNCTIONS
 
+  // ------------------------------------------------ LOADING FUNCTIONS ------------------------------------------------
+
   loadData() {
     if (this.currentConvId == -1) return;
     this.loadConversationInitially(this.currentConvId);
@@ -241,107 +248,6 @@ export class MessageService {
     let loadAmount = this.getMessagesToLoadAmount();
     this.loadsCount++;
     this.loadConvMessages(loadAmount, false, callBeforeComplete, this.highestDisplayedId);
-  }
-
-  sendMessage(text: string, callBeforeComplete?: Function, repliedId?: number, repliedText?: string) {
-    const timestamp = new Date();
-    this.api.sendMessage(this.currentConvId, text, timestamp, repliedId).subscribe({
-      next: (res: any) => {
-        if (res.id === undefined) return;
-        if (callBeforeComplete) callBeforeComplete();
-        if (!this.displayingNewestMessages()) return;
-        const newMsg = {
-          globalId: res.id,
-          numberInConversation: 0,  // todo in the future
-          conversationId: this.currentConvId,
-          senderId: this.authService.getUserIdOrError(),
-          text: text,
-          timestamp,
-          isOwn: true,
-          repliedId,
-          repliedText
-        }
-        this.displayedMessages.update((msgs) => {
-          return [...msgs, {
-            ...newMsg,
-            prevMessage: msgs.length > 0 ? msgs[msgs.length - 1] : undefined
-          }];
-        });
-        this.conversationService.processNewMessage(newMsg, true);
-      },
-      error: (e) => {
-        this.alertService.displayError(
-          e.error.message ?? e.status ?? "unknown",
-          undefined,
-          this.translate.instant("error.failed-to-send-msg"));
-      }
-    });
-  }
-
-  private receiveMessage(message: Message) {
-    if (message.conversationId != this.currentConvId) return;
-    
-    this.beforeNewMessageCallback();
-    if (!this.displayingNewestMessages()) return;
-    
-    this.displayedMessages.update((msgs) => {
-      const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
-      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
-    });
-    this.conversationService.acknowledgeConversationMessages(this.currentConvId, message.globalId);
-    this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
-  }
-
-  deleteMessage(messageId: number) {
-    this.api.deleteMessage(messageId, this.currentConvId).subscribe({
-      next: (res) => {
-        this.deleteOwnMessageLocally(messageId);
-      },
-      error: (e) => {
-        if (e.error.message == "cannot-delete-not-own-message") return;  // silently ignore
-        this.alertService.displayMessageAlert(
-          AlertType.ERROR, this.translate.instant("error.failed-to-delete"));
-      }
-    });
-  }
-
-  deleteMultipleMessages(messageIds: number[]) {
-    this.api.deleteMultipleMessages(messageIds, this.currentConvId).subscribe({
-      next: (res) => {
-        for (const msgId of messageIds)
-          this.deleteOwnMessageLocally(msgId);
-      },
-      error: (e) => this.alertService.displayMessageAlert(
-        AlertType.ERROR, this.translate.instant("error.failed-to-delete")),
-    });
-  }
-
-  private receiveMessageUpdate(message: Message) {
-    // find and update the message in displayedMessages
-    const toUpdate = this.displayedMessages().find(m => m.globalId === message.globalId);
-    if (!toUpdate) return;  // message not displayed so don't proceed
-
-    this.displayedMessages.update((msgs) => {
-      return msgs.map(m => m.globalId === message.globalId ? messageToMessageView(message, this.authService.getUserIdOrError()) : m);
-    });
-    if (message.repliedId) {
-      this.replyPreviewManager.loadSingleMessagePreview(message, this.highestDisplayedId, this.lowestDisplayedId);
-    }
-  }
-
-  private deleteOwnMessageLocally(messageId: number) {
-    const toDelete = this.displayedMessages().find(m => m.globalId === messageId);
-    if (!toDelete || !toDelete.isOwn) return;  // message not displayed or not own - don't proceed
-
-    const updatedMsg: MessageView = {
-      ...toDelete,
-      text: undefined,
-      repliedId: undefined,
-    };
-    this.displayedMessages.update((msgs) => {
-      return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
-    });
-    this.conversationService.updateModifiedMessagePreview(updatedMsg);
   }
 
   // Tells the backend (via a websocket) that the user is actively viewing this conversation. Has to do with push notifications cancelling

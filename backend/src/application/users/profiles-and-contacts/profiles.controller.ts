@@ -26,26 +26,31 @@ export class ProfilesController {
     if (typeof search !== 'string')
       throw new BadRequestException('search-empty');
 
-    // make sure no one tried to perform an empty search like " " to find all users with any field empty (security flaw)
+    // make sure the search isn't empty
     search = search.trim();
     if (!search || search.length === 0) {
       throw new BadRequestException('search-empty');
     }
 
-    return await this.profilesService.findSearchedProfiles(search);
+    // Find and remove the private part
+    const profiles = await this.profilesService.findSearchedProfiles(search);
+    return profiles.map(profile => {
+      const { email, phoneNumber, ...publicProfile } = profile;
+      return publicProfile;
+    });
   }
 
   // My profile
 
   @Get('me')
   async getMyProfile(@UserId() userId: number) {
-    return await this.profilesService.findFullPublicProfile(userId, true);
+    return await this.profilesService.findFullProfile(userId, true);
   }
 
   @Patch('me')
   async updateMyProfile(@UserId() userId: number, @Body() dto: PatchProfileDto) {
     await this.profilesService.updateProfile(userId, dto);
-    return await this.profilesService.findFullPublicProfile(userId, true);
+    return await this.profilesService.findFullProfile(userId, true);
   }
 
   // By ID (contact, or contact + profile)
@@ -53,7 +58,7 @@ export class ProfilesController {
   @Get(':id')
   async getProfileById(@UserId() callerId: number, @Param('id', ParseIntPipe) id: number) {
     if (callerId === id) {  // when user asks for their own profile using this endpoint instead of "me"
-      return await this.profilesService.findFullPublicProfile(id, true);
+      return await this.profilesService.findFullProfile(id, true);
     }
     return await this.profilesService.findUserKnownProfile(callerId, id, true);
   }
