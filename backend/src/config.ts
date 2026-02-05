@@ -12,6 +12,7 @@ export default () => {
     auth: {
       secret: process.env.AUTH_SECRET ?? "test secret",
       expiration: process.env.AUTH_EXPIRATION ?? defaultJwtExpiration,
+      requireAccountActivation: process.env.REQUIRE_ACCOUNT_ACTIVATION?.toLowerCase() === 'true',
     },
 
     cookies: {

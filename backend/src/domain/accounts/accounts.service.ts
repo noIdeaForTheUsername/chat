@@ -58,10 +58,11 @@ export class AccountsDomainService {
 
   // CREATING
 
-  async create(login: string, passwordHash: string, email?: string, phoneNumber?: string) {
+  async create(login: string, passwordHash: string, activated: boolean, email?: string, phoneNumber?: string) {
     const newAccount = this.accounts.create({
       login,
       passwordHash,
+      activated,
       email,
       phoneNumber
     });

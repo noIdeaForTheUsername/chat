@@ -8,6 +8,7 @@ import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 import { hashPassword, verifyPassword } from "../auth/auth-utils";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AccountsService {
@@ -15,7 +16,8 @@ export class AccountsService {
   constructor(
     private accounts: AccountsDomainService,
     private profiles: ProfilesDomainService,
-    private eventEmitter: EventEmitter2
+    private eventEmitter: EventEmitter2,
+    private config: ConfigService
   ) {}
 
   // GETTERS
@@ -33,14 +35,15 @@ export class AccountsService {
   @Transactional()
   async createUser(login: string, passwordHash: string,
     email?: string, phoneNumber?: string,
-    name?: string, bio?: string
+    name?: string, bio?: string,
   ) {
     if (!email && !phoneNumber)
       throw new BadRequestException('email-or-phone-required');
 
     // Create and return ID
     try {
-      const newAccount = await this.accounts.create(login, passwordHash, email, phoneNumber);
+      const newAccount = await this.accounts.create(login, passwordHash,
+        !this.config.getOrThrow('auth.requireAccountActivation'), email, phoneNumber);
       await this.profiles.createProfile(newAccount.id, name, bio);
 
       // Notify administrators
