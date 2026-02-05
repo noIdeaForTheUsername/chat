@@ -70,8 +70,7 @@ export class MessageService {
     // Subscribe to reload messages from the socket service
     this.websocket.reloadConversation$.subscribe({
       next: (convId: number) => {
-        if (convId == this.currentConvId) 
-          this.loadConversationInitially(convId);
+        this.loadCurrentConversation();
       }
     });
   }
@@ -178,7 +177,8 @@ export class MessageService {
   
   // ------------------------------------------------ PUBLIC LOADING FUNCTIONS ------------------------------------------------
 
-  loadData() {
+  // load initially or reload (safe even if no conversation is currently displayed)
+  loadCurrentConversation() {
     if (this.currentConvId == -1) return;
     this.loadConversationInitially(this.currentConvId);
   }

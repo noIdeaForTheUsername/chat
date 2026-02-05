@@ -24,6 +24,7 @@ export class ConversationService {
 
   public readonly conversations = signal<Conversation[]>([]);
   public readonly conversationsLoaded = signal(false);
+  public readonly loadErr = signal<number | null>(null);
   // public readonly loadErrorCode = signal<number | null>(null);
 
   // not included in dataLoaded boolean, because it's non-critical
@@ -57,9 +58,11 @@ export class ConversationService {
       tap((val) => {
         this.conversations.set(val);
         this.conversationsLoaded.set(true);
+        this.loadErr.set(null);
       }),
       catchError((e) => {
         this.conversationsLoaded.set(true);
+        this.loadErr.set(e.status);
         return throwError(() => e);
       })
     );

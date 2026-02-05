@@ -21,9 +21,7 @@ import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/it
 import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
-import { lastValueFrom } from 'rxjs';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
-import { SwPush } from '@angular/service-worker';
 import { isIOS, isPwa } from '@src/app/shared/platform-detection/platformUtils';
 import { RefreshService } from '@src/app/loading/refresh.service';
 
@@ -65,12 +63,16 @@ export class ConversationsPage implements OnInit, OnDestroy {
 
   // State
   protected conversationsLoaded = this.conversationService.conversationsLoaded;
+  protected conversationsLoadErr = this.conversationService.loadErr;
+  protected conversationsEmpty = computed(
+    () => this.conversationsLoaded() && this.conversations().length === 0 && this.conversationsLoadErr() === null);
+  
   protected searchFilter = signal("");
   protected multiselectActionSheetOpen = signal(false);
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   protected showBlockedConversations = signal(false);
-  protected lastRefresh = Date.now();
+  protected lastConvRefresh = Date.now();
   protected eventListener?: EventListener;
 
   // Notifications
@@ -87,6 +89,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
 
   constructor() {
     effect(() => {
+      // Load missing metadata when conversations change
       const conversations = this.conversations();
       if (this.refreshService.checkDataMissing(conversations))  {
         this.refreshService.refreshData(undefined, false);
@@ -96,7 +99,11 @@ export class ConversationsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.notificationsPermission.set(Notification.permission);
-    this.eventListener = () => { if (document.visibilityState === "visible") this.refreshIfNotRefreshedRecently(); };
+
+    this.eventListener = () => { 
+      if (document.visibilityState === "visible")
+        this.refreshIfNotRefreshedRecently();
+    };
     document.addEventListener("visibilitychange", this.eventListener);
   }
   ngOnDestroy() {
@@ -105,8 +112,10 @@ export class ConversationsPage implements OnInit, OnDestroy {
   }
 
   private refreshIfNotRefreshedRecently() {
-    if (this.lastRefresh < Date.now() - 1000 * 30) {
-      this.refreshService.refreshData(undefined, true);
+    if (this.lastConvRefresh < Date.now() - 1000 * 30) {
+      this.conversationService.loadConversations().subscribe();
+      this.lastConvRefresh = Date.now();
+      // this.refreshService.refreshData(undefined, true);
     }
   }
   

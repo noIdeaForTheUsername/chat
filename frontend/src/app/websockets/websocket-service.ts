@@ -25,6 +25,9 @@ export class WebsocketService implements OnDestroy {
   private reloadConversationSubject = new Subject<number>();
   public reloadConversation$: Observable<number> = this.reloadConversationSubject.asObservable();
 
+  private reconnectedSubject = new Subject<void>();
+  public reconnected$: Observable<void> = this.reconnectedSubject.asObservable();
+
 
   constructor() {
     this.socket = io(environment.socketIoUrl, {
@@ -44,16 +47,10 @@ export class WebsocketService implements OnDestroy {
       this.reloadConversationSubject.next(value);
     });
 
-    // this.socket.on("connect_error", (err: any) => {
-    //   // the reason of the error, for example "xhr poll error"
-    //   console.error(err.message);
-
-    //   // some additional description, for example the status code of the initial HTTP response
-    //   console.error(err.description);
-
-    //   // some additional context, for example the XMLHttpRequest object
-    //   console.error(err.context);
-    // });
+    this.socket.io.on("reconnect", () => {
+      console.log("Websocket reconnected");
+      this.reconnectedSubject.next();
+    });
   }
 
   reconnect() {
@@ -74,5 +71,6 @@ export class WebsocketService implements OnDestroy {
     this.messageSubject.complete();
     this.messageUpdatesSubject.complete();
     this.reloadConversationSubject.complete();
+    this.reconnectedSubject.complete();
   }
 }

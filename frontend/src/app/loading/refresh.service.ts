@@ -5,6 +5,7 @@ import { ProfileService } from '../profiles/profile-service/profile.service';
 import { AlertService } from '../alerts/alert-service/alert.service';
 import { ConversationView } from '../conversations/conversations-page/conversation-view.interface';
 import { MessageService } from '../messages/message-service/message.service';
+import { WebsocketService } from '../websockets/websocket-service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,22 +15,29 @@ export class RefreshService {
   private conversationService = inject(ConversationService);
   private profileService = inject(ProfileService);
   private messageService = inject(MessageService);
+  private websocket = inject(WebsocketService);
   private alertService = inject(AlertService);
 
-  private lastRefresh: number = 0;
+
+  constructor() {
+    this.websocket.reconnected$.subscribe(() => {
+      console.log("Websocket reconnected, refreshing data...");
+      this.refreshData(undefined, true, true);
+    });
+  }
   
   // Event is the ion-refresher component event
-  async refreshData(event?: any, withConversations: boolean = true): Promise<void> {
+  async refreshData(event?: any, withConversations = true, withMessages = false): Promise<void> {
     let timeout; 
     try {
       if (event) timeout = setTimeout(() => event.target.complete(), 7000);  // max waiting time
+      if (withMessages) this.messageService.loadCurrentConversation();
       await Promise.all([
         lastValueFrom(this.conversationService.loadMessagePreviews()),
         withConversations ? lastValueFrom(this.conversationService.loadConversations()) : Promise.resolve(),
         lastValueFrom(this.profileService.loadData()),
       ]);
       this.conversationService.reconnectWebsocket();
-      this.lastRefresh = Date.now();
     }
     catch (e: any) {
       this.alertService.displayError(e.status ?? "data-unavailable");

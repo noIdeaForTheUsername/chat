@@ -59,14 +59,19 @@
         }
       </ion-list>
     }
-    @else if (this.conversationsLoaded()) {
+    <!-- No conversations text -->
+    @else if (this.conversationsEmpty()) {
       <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
       <p class="no-conversations-text highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></p>
+    }
+    <!-- Error loading conversations -->
+    @else if (this.conversationsLoadErr() !== null) {
+      <h1 class="no-conversations-text">{{"error.data-unavailable.header" | translate}}</h1>
     }
 
     <!-- "ADD" BUTTON (discovery) -->
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-      <ion-fab-button id="plus-button" [class.pulsing]="conversationsLoaded() && conversations().length === 0">
+      <ion-fab-button id="plus-button" [class.pulsing]="">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
