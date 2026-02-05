@@ -1,20 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { IonCard, IonCardContent, IonIcon, IonNote } from "@ionic/angular/standalone"
-import { ChatNoteComponent } from '../info-note/chat-note.component';
 import { TranslatePipe } from '@ngx-translate/core';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
-import { MessageView } from './message-view.interface';
+import { MessageView } from '../../message-view.interface';
 import { lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonCard, IonCardContent, IonIcon, ChatNoteComponent, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
+  imports: [IonCard, IonCardContent, IonIcon, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
@@ -26,7 +25,6 @@ export class MessageCardComponent  implements OnInit {
   message = input.required<MessageView>();
   selectionService = input.required<SelectionService>();
   previousMessage = computed(() => this.message().prevMessage);
-  unreadNoteAbove = input(false);  // if true, "New messages" note (line) will be displayed above
   // OUTPUTS
   repliedClick = output<number>();
   showActionMenu = output<number>();
@@ -35,7 +33,7 @@ export class MessageCardComponent  implements OnInit {
 
   // appearance
   protected profile = signal<Profile | undefined>(undefined);
-  protected spaceBefore = computed(() => this.previousMessage() && this.previousMessage()!.isOwn != this.message().isOwn && !this.unreadNoteAbove());
+  protected spaceBefore = computed(() => this.previousMessage() && this.previousMessage()!.isOwn != this.message().isOwn);
   // selection
   private clickLock = false;
   // metadata

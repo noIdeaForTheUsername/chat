@@ -7,6 +7,18 @@ ion-card.content-space-taker {
   visibility: hidden;
 }
 
+div.chat-line {
+  width: 100%;
+  display: block;
+  
+  color: var(--ion-text-color-step-450);
+  text-align: center;
+  hr {
+    width: 90%;
+    background-color: var(--ion-text-color-step-450);
+  }
+}
+
 
 div.toolbar-container {
   max-width: 1000px;
@@ -43,24 +55,6 @@ ion-popover ion-content {
   }
 }
 
-// ion-content {
-//   max-width: 1200px;
-//   padding-left: 500px;
-// }
-
-// ion-content.chat-container {
-//   padding:
-// }
-
-// .section-info {
-//   margin: 5px 10px;
-//   color: var(--ion-text-color-step-450);
-//   text-align: center;
-//   hr {
-//     height: 1px;
-//     background-color: var(--ion-text-color-step-450);
-//   }
-// }
 
 
 // limited height of message input

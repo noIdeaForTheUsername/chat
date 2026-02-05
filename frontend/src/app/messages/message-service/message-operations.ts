@@ -1,5 +1,5 @@
 import { Message } from '@app/messages/message.interface';
-import { MessageView } from '../chat-page/message-card-component/message-view.interface';
+import { MessageView } from '../message-view.interface';
 import { messageToMessageView } from '../message-utils';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { BackendMessageApi } from './backend-message-api';

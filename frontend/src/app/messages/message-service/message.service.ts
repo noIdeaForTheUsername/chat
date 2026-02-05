@@ -2,7 +2,7 @@ import { effect, inject, Injectable, signal } from '@angular/core';
 import { Message } from '@app/messages/message.interface';
 import { BackendMessageApi } from './backend-message-api';
 import { Subscription } from 'rxjs';
-import { MessageView } from '../chat-page/message-card-component/message-view.interface';
+import { MessageView } from '../message-view.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
@@ -19,6 +19,8 @@ import { ConversationService } from '@src/app/conversations/conversation.service
   providedIn: 'root'
 })
 export class MessageService {
+
+  // NOTE: This service has all loading functions directly in the file, but other operations are in separate classes
 
   // DEPENDENCIES
   private translate = inject(TranslateService);
@@ -48,9 +50,6 @@ export class MessageService {
   public readonly displayingNewestMessages = signal(true);
   public readonly displayingOldestMessages = signal(false);
 
-  public readonly oldestUnreadMessageId = signal<number | null>(null);
-  private storedOldestUnreadMessageId = signal<number | null>(null);  // might be different than real due to message removals
-
   private lowestDisplayedId: number = -1; public getLowestDisplayedId() { return this.lowestDisplayedId };
   private highestDisplayedId: number = -1; public getHighestDisplayedId() { return this.highestDisplayedId };
   private currentConvNewestMessageId: number = 1;
@@ -68,17 +67,6 @@ export class MessageService {
 
 
   constructor() {
-    // this.websocket.messages$.subscribe({
-    //   next: (msg: Message) => {
-    //     this.operations.receiveMessage(msg);
-    //   }
-    // });
-    // this.websocket.messageUpdates$.subscribe({
-    //   next: (msg: Message) => {
-    //     this.operations.receiveMessageUpdate(msg);
-    //   }
-    // });
-
     // Subscribe to reload messages from the socket service
     this.websocket.reloadConversation$.subscribe({
       next: (convId: number) => {
@@ -86,34 +74,9 @@ export class MessageService {
           this.loadConversationInitially(convId);
       }
     });
-
-    effect(() => {
-      const dataLoaded = this.dataLoaded();
-      const storedOldestUnreadMessageId = this.storedOldestUnreadMessageId();
-      if (dataLoaded && storedOldestUnreadMessageId !== null) {  // after initial load or when unread ID changes
-        // setup the real oldest unread message ID (so we know where exactly to put the "New messages" note display)
-        this.setupRealOldestUnreadMessageId();
-      }
-    });
   }
 
   // PRIVATE FUNCTIONS
-
-  private setupRealOldestUnreadMessageId() {
-    // Find the oldest unread message (we trust that a higher ID always means "newer")
-    // (it has to be done manually because that message and the other ones might have been removed)
-    if (this.storedOldestUnreadMessageId() === null) return;
-    for (let i = this.displayedMessages().length - 1; i >= 0; i--) {
-      if (this.displayedMessages()[i].globalId <= this.storedOldestUnreadMessageId()!) {  // found READ message
-        if (i == this.displayedMessages().length - 1) {
-          break;  // this will be reached if the 1st unread message and everything near it get removed
-          // TODO: inform the server that all messages are read (optionally - maybe just implement an auto-check on the server instead?)
-        }
-        this.oldestUnreadMessageId.set(this.displayedMessages()[i + 1].globalId);
-        break;
-      }
-    }
-  }
 
   // Load messages from the server while managing the state
   private loadConvMessages(messageAmount: number, older: boolean,
@@ -212,9 +175,8 @@ export class MessageService {
     }
   }
 
-  // PUBLIC FUNCTIONS
-
-  // ------------------------------------------------ LOADING FUNCTIONS ------------------------------------------------
+  
+  // ------------------------------------------------ PUBLIC LOADING FUNCTIONS ------------------------------------------------
 
   loadData() {
     if (this.currentConvId == -1) return;
@@ -232,10 +194,6 @@ export class MessageService {
     this.displayedMessages.set([]);
     this.loadsCount++;
     this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, older, callBeforeComplete, messageId, true);
-  }
-
-  setOldestUnreadMessageId(id: number | null) {  // for unread messages / "New messages" note display
-    this.storedOldestUnreadMessageId.set(id);
   }
 
   loadOlderMessages(callBeforeComplete: Function = () => undefined) {
@@ -262,8 +220,6 @@ export class MessageService {
     this.displayedMessages.set([]);
     this.dataLoaded.set(false);
     this.currentConvId = -1;
-    this.storedOldestUnreadMessageId.set(null);
-    this.oldestUnreadMessageId.set(null);
     this.loadsCount = 0;
   }
 

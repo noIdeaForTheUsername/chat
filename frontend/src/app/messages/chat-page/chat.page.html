@@ -31,7 +31,10 @@
     <!-- TOP PROFILE PREVIEW (if scrolled to the very begin of the chat) -->
     @if (displayingOldestMessages() && !messageLoading()) {
       <app-profile-preview [profile]="participant" [viewProfileButton]="true"></app-profile-preview>
-      <app-chat-note [line]="true" [text]="'page.chat.no-more-messages' | translate"/>
+      <div class="chat-line">
+        <hr>
+        <small>{{ 'page.chat.no-more-messages' | translate }}</small>
+      </div>
     }
 
     <!-- TOP MESSAGE LOADING INDICATOR -->
@@ -46,8 +49,7 @@
         [selectionService]="selectionService"
         [class.action-select]="this.actionMessageId() == message.globalId"
         (repliedClick)="onMessageRepliedClick($event)"
-        (showActionMenu)="openMessageActionSheet($event)"
-        [unreadNoteAbove]="oldestUnreadMessageId() == message.globalId"/>
+        (showActionMenu)="openMessageActionSheet($event)"/>
     }
     <div style="display: block; height: 10px;">&nbsp;</div> <!--a professional workaround when shit doesn't work to cooperate :P-->
 

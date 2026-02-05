@@ -15,7 +15,6 @@ import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFa
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
-import { ChatNoteComponent } from './info-note/chat-note.component';
 import { MessageActionButtons } from './message-action-buttons';
 import { MessageCardComponent } from './message-card-component/message-card.component';
 import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
@@ -33,7 +32,7 @@ import { AlertType } from '@src/app/alerts/alert-type.enum';
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
-    MessageLoadingIndicatorComponent, ProfilePreviewComponent, ChatNoteComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
+    MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
     SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -80,7 +79,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // DISPLAYED MESSAGES STATE
   protected firstMessageLoad = true;
-  protected oldestUnreadMessageId = this.messageService.oldestUnreadMessageId;
   protected displayingNewestMessages = this.messageService.displayingNewestMessages;
   protected displayingOldestMessages = this.messageService.displayingOldestMessages;
   protected showScrollDownButton = signal(false);

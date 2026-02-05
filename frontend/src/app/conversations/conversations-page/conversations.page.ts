@@ -90,9 +90,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
       const conversations = this.conversations();
       if (this.refreshService.checkDataMissing(conversations))  {
         this.refreshService.refreshData(undefined, false);
-        console.log("DATA MISSING!");
       }
-        
     })
   }
 

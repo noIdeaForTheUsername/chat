@@ -1,4 +1,4 @@
-import { MessageView } from "./chat-page/message-card-component/message-view.interface";
+import { MessageView } from "./message-view.interface";
 import { Message } from "./message.interface";
 
 export type ServerMessage = Omit<Message, "timestamp"> & { timestamp: string };

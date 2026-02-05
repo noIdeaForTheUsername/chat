@@ -1,4 +1,4 @@
-import { MessageView } from "../chat-page/message-card-component/message-view.interface";
+import { MessageView } from "../message-view.interface";
 import { Message } from "../message.interface";
 import { BackendMessageApi } from "./backend-message-api";
 import { MessageService } from "./message.service";
