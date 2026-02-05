@@ -16,7 +16,7 @@ import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
 import { MessageActionButtons } from './message-action-buttons';
-import { MessageCardComponent } from './message-card-component/message-card.component';
+import { MessageCardComponent } from './message-card/message-card.component';
 import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 import { Conversation } from '@app/conversations/conversation.interface';
 import { Profile } from '@app/profiles/profile.interface';

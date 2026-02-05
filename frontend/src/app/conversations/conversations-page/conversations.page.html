@@ -71,7 +71,7 @@
 
     <!-- "ADD" BUTTON (discovery) -->
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-      <ion-fab-button id="plus-button" [class.pulsing]="">
+      <ion-fab-button id="plus-button" [class.pulsing]="conversationsEmpty()">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>

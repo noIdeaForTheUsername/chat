@@ -15,15 +15,16 @@ input, textarea {  // Input cursor color
 }
 
 // Rounded badge
-ion-badge {
-  border-radius: 8px;
-  --padding-start: 5px;
-  --padding-end: 5px;
-  --padding-top: 5px;
-  --padding-bottom: 5px;
-  min-width: 22px;
-}
+// ion-badge {
+//   border-radius: 8px;
+//   --padding-start: 5px;
+//   --padding-end: 5px;
+//   --padding-top: 5px;
+//   --padding-bottom: 5px;
+//   min-width: 22px;
+// }
 
+// Selection
 *[color="primary"] ::selection, *[color="secondary"] ::selection, *[color="tertiary"] ::selection {
   color: var(--ion-text-color);
   background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));

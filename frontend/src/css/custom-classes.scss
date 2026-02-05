@@ -51,7 +51,7 @@ ion-searchbar.glow-on-focus {
   div.searchbar-input-container
   {
     input {
-      outline: 1px solid rgba(0, 0, 0, 0);
+      outline: 1px solid var(--ion-background-color-step-200);
       transition: outline-color 0.5s;
     }
     input:focus {

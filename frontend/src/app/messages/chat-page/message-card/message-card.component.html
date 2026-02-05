@@ -22,17 +22,15 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
   <div
     [id]="'msg-' + message().globalId"
     class="message-card"
-    [class.own]="message().isOwn">
+    [class.own]="message().isOwn"> 
       @if (repliedId && !deleted()) {
         <!-- response card -->
-        <ion-card class="replied-preview clickable" (click)="repliedClickInternal(repliedId)">
-          <ion-card-content>
-            <ion-icon name="arrow-redo"></ion-icon>&nbsp;
-            <span>{{repliedText || '○ ○ ○'}}</span>
-          </ion-card-content>
-        </ion-card>
+        <div class="replied-preview clickable" (click)="repliedClickInternal(repliedId)">
+          <ion-icon name="arrow-redo"></ion-icon>&nbsp;
+          <span>{{repliedText || '○ ○ ○'}}</span>
+        </div>
       }
       <!-- message text -->
-        <ion-card-content class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}</ion-card-content>
+        <div class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}</div>
     </div>
 </div>

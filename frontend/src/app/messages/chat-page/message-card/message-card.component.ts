@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
-import { IonCard, IonCardContent, IonIcon, IonNote } from "@ionic/angular/standalone"
+import { IonIcon, IonNote } from "@ionic/angular/standalone"
 import { TranslatePipe } from '@ngx-translate/core';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
@@ -13,7 +13,7 @@ import { lastValueFrom } from 'rxjs';
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonCard, IonCardContent, IonIcon, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
+  imports: [IonIcon, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
