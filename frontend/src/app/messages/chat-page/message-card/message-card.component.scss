@@ -30,8 +30,10 @@ div.message-container.selected .message-card {
   background-color: rgba(0, 255, 255, 0.484);
 }
 
-ion-note {
-  margin: 2px 12px;
+.metadata {
+  font-size: 0.8rem;
+  color: var(--ion-text-color-step-400, #262626);
+  margin: 2px 8px;
 }
 
 .message-card {
@@ -71,6 +73,14 @@ ion-note {
   
   // Message text
   .message-text {
+    width: 100%;
+    display: block;
+    font-size: 0.92rem;
+    white-space: pre-wrap; // preserve user newlines
+    overflow-wrap: anywhere; // allow long words to break
+    word-break: break-word;  // fallback for older engines
+    padding: 6px 10px;
+
     color: var(--ion-text-color-step-150, #262626);
   }
   &.own .message-text {
@@ -95,17 +105,6 @@ ion-note {
     
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
-
-  // Message text
-  .message-text {
-    width: 100%;
-    display: block;
-    font-size: 0.9rem;
-    white-space: pre-wrap; // preserve user newlines
-    overflow-wrap: anywhere; // allow long words to break
-    word-break: break-word;  // fallback for older engines
-    padding: 6px 10px;
   }
 }
 

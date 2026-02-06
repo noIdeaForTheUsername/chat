@@ -15,7 +15,7 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
 
   <!-- message metadata -->
   @if (displayMetadata()) { 
-    <ion-note>{{profile() | visibleName}} | {{displayedDate()}}</ion-note> 
+    <p class="metadata">{{profile() | visibleName}} | {{displayedDate()}}</p> 
   }
 
   <!-- message card -->

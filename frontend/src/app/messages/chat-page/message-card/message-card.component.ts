@@ -13,7 +13,7 @@ import { lastValueFrom } from 'rxjs';
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonIcon, TranslatePipe, IonNote, HoldDirective, VisibleNamePipe],
+  imports: [IonIcon, TranslatePipe, HoldDirective, VisibleNamePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
