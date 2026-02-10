@@ -1,0 +1,70 @@
+---
+title: IDENTITY KEYS
+---
+%% Made in Mermaid (https://mermaid.live)
+flowchart TB
+
+  subgraph "KEY MANAGEMENT"
+    %% Orange border means server-side storage and white border means client-only access (the diagrams broke when they were split into 2 subgraphs)
+    classDef serverStored stroke:#C70
+
+    %% Server
+    publicCertificates[("Public signed certificates (RIK, OIKs)")]
+    authedRootIkPub[("DEK-Authenticated Root IK pub")] -->|payload| rootIkPubAuth
+    class publicCertificates,authedRootIkPub serverStored
+
+    %% Client
+    dek(["Root Data Encryption Key (DEK)"])
+    kek(["Root Key Encryption Key (KEK; better-protected than DEK)"])
+
+    dek -->|key| rootIkPubAuth["authenthication verification"]
+    dek -->|key| oiksPrivAead["AEAD"]
+    kek -->|key| rootIkPrivAead["AEAD"]
+
+    rootIkPubAuth -->|verified| rootIkPub(["Root Identity Key public"])
+    oiksPrivAead --> oiksPriv(["Operational Identity Keys private"])
+    rootIkPrivAead --> rootIkPriv2(["Root Identity Key private"])
+
+    %% Server
+    wrappedRootIkPriv[("KEK-Wrapped Root IK priv")] -->|payload| rootIkPrivAead
+    wrappedOiksPriv[("DEK-Wrapped operational IKs priv")] -->|payload| oiksPrivAead
+    class wrappedRootIkPriv,wrappedOiksPriv serverStored
+  end
+
+
+  subgraph "CERTIFICATES GENERATION"
+    direction TB
+    %% Root certificate
+    rootCert(["Root IK certificate"])
+      -->|payload| rootCertSign["Root certificate sign"]
+    rootIkPriv(["Root IK priv"]) -->|private key| rootCertSign
+    rootCertSign --> signedRootCert(["Signed root IK certificate"])
+
+    %% Operational keys
+    rootIkPriv -->|private key| oikSign["Operational IK certificate sign"]
+    oikCert(["Operational IK certificate"]) -->|payload| oikSign
+    oikSign --> signedOikCert(["Signed operational IK certificate"])
+  end
+
+
+  subgraph "CERTIFICATE CHAIN"
+    direction TB
+
+    rootCertOverview("`
+      Root Identity Key certificate. Includes:
+      - Root IK pub
+      - Issue date
+      - Expiration date
+      - Signature with Root IK priv`")
+    
+    rootCertOverview -->|signs| operationalCertOverview("`
+    Operational Identity Key certifiate. Includes:
+    - Operational IK pub
+    - Issue date
+    - Expiration date
+    - Signature with Root IK priv`")
+
+    operationalCertOverview -->|signs| signedData("Further data that requires signature")
+  end
+
+  
