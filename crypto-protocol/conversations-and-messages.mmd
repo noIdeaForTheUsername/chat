@@ -1,0 +1,57 @@
+---
+title: CONVERSATION AND MESSAGE DECRYPTION AND VERIFICATION
+---
+%% Made in Mermaid (https://mermaid.live)
+%% ORANGE border means server-side storage and WHITE border means client-only access (the diagrams broke when they were split into 2 subgraphs)
+flowchart TB
+  classDef dashed stroke-dasharray: 5 5
+  classDef serverStored stroke:#C70
+
+  dek1(["Data Encryption Key (DEK)"])
+
+  authedConvsAmount[("Authenthicated amount of known conversations")] -->|payload| convsAmountAuth
+  class authedConvsAmount serverStored
+  dek1 -->|key| convsAmountAuth["auth verification"]
+  convsAmountAuth --> knownConvsAmount(["Expected amount of known conversations"])
+
+  dek1 -->|key| knownConvsAuth@{ shape: processes, label: "auth verification of each Conversation" }
+  authedConvs[("List of known authenticated conversations")] -->|payloads| knownConvsAuth
+  class authedConvs serverStored
+  knownConvsAuth --> knownConvs(["Known conversations"])
+
+  knownConvsAmount -->|expected| amountCompare["amount verification"]
+  knownConvs -->|actual| amountCompare
+  amountCompare -->|verified| verifiedKnownConvs(["Known conversations"])
+
+  newConversations[("New conversations")] --> initNewConvs@{shape: processes, label: "Initialization and verification of new conversations (details in other docs)"}
+  class newConversations serverStored
+  class initNewConvs dashed
+  initNewConvs -->|new convs| mergeConvs["Merge"]
+  verifiedKnownConvs -->|known convs| mergeConvs
+  mergeConvs --> allConvs(["All conversations"])
+
+  allConvs -->|Viewed conversation| ForViewedConversation
+  
+  %%convListAuth -->|verified| convList("`
+  %% User conversations state list. Authenthicated part includes:
+  %%  - conversationId
+  %%  - epoch amount
+  %%  - latest seen message number`")
+  
+  subgraph ForViewedConversation
+    direction TB
+    
+    subgraph "For viewed Epoch"
+      dek2(["Data Encryption Key (DEK)"]) -->|key| epochKeyAead["AEAD"]
+      wrappedEpochKey[("Wrapped Epoch Key")] -->|payload| epochKeyAead
+      class wrappedEpochKey serverStored
+      epochKeyAead --> epochKey(["Epoch key"])
+      epochKey -->|key| msgAead["AEAD"]
+      subgraph "For each message"
+        encMsg[("Encrypted epoch message")] -->|payload| msgAead
+        class encMsg serverStored
+        msgAead --> plainMsg(["Plaintext message"])
+      end
+    end
+  end
+  
