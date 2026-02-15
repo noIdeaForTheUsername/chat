@@ -3,7 +3,7 @@ title: ROOT KEYS
 --- 
 %% Made in Mermaid (https://mermaid.live)
 %% DESCRIPTION: This diagram shows how all the root keys are computed and stored. The lower-hierarchy keys and data are not shown here - they have separate diagrams.
-%% DIAGRAM SUMMARY: A password-derived key (KEK) is used to decrypt 2 root keys: Root DEK (Data Encryption Key) and Root IK (Identity Key). Encrypted and authenthicated data/keys are stored on the server
+%% DIAGRAM SUMMARY: A password-derived Master Key is used to decrypt and verify the server-stored client state, which includes 2 root keys: Root DEK (Data Encryption Key) and Root IK (Identity Key).
 
 %% SHAPES:
 %% - Rectangles mean operations/algorithms
@@ -21,40 +21,34 @@ flowchart TB
 
     subgraph SERVER
         %% SERVER STORAGE
-        wrappedDek(["Wrapped Data Encryption Key (DEK)"])
-        wrappedRootIKPriv(["Wrapped Root Identity Key (Root IK) priv"])
+        encState(["Encrypted and authenticated client state"])
         userAccount([Non-secret user account data])
-        encUserData(["Other encrypted user data, including more wrapped keys (details in other docs)"])
-        class encUserData dashed
-    end
-
-    subgraph CLIENT
-        %% PASSWORD KEY DERIVIATION
-        login[/"User login (from UI or from server if user logged in via email/phone)"/] -->|salt| passHash["`Hash function (argon2id)`"]
-        pass[/USER PASSWORD/] -->|payload| passHash
-        passHash --> kek(["Key encryption key (KEK)"])
-        class pass,kek red
-
-        %% ROOT DEK
-        kek -->|key| rootDekAead["Symmetric encryption + auth (AEAD)"]
-        rootDekAead --> rootDek(["Root Data Encryption Key (Root DEK)"])
-        rootDek -->|key| dataKeysAead["AEAD"]
-        dataKeysAead --> plainDataKeys(["Unwrapped private keys and data encryption keys (details in other docs)"])
-        plainDataKeys --> dataKeysEnd@{ shape: text, label: "....." }
-        class rootDek,plainDataKeys orange
-        class plainDataKeys dashed
-
-        %% IDENTITY KEYS
-        kek -->|key| rootIkPrivAead["Symmetric encryption + auth (AEAD)"]
-        rootIkPrivAead --> rootIkPriv(["Root Identity Key (Root IK) priv"])
-        class rootIkPriv red
-        rootIkPriv -->|private key| rootIkSignature["Signatures of Operational Identity Keys (further info in Identity Keys docs)"]
-        class rootIkSignature dashed
-        rootIkSignature --> rootIkEnd@{ shape: text, label: "....." }
     end
 
     %% SERVER-CLIENT TRANSFERS
-    wrappedDek -->|payload| rootDekAead
-    wrappedRootIKPriv -->|payload| rootIkPrivAead
     userAccount -->|login| login
-    encUserData -->|payload| dataKeysAead
+    encState -->|payload| stateAead
+
+
+    subgraph CLIENT
+        %% PASSWORD KEY DERIVIATION
+        login[/"User login (from UI or from server if user logged in via email/phone)"/] -->|salt| passDeriv["`Key derivation (argon2id)`"]
+        pass[/USER PASSWORD/] -->|payload| passDeriv
+        passDeriv --> mk(["Master Key (MK)"])
+        mk -->|key| stateAead["Decryption and verification (AEAD)"]
+        stateAead --> state(["Decrypted state, including version number and root keys (see: Replay Protection)"])
+        class pass,mk red
+        class state dashed
+
+        %% IDENTITY KEYS
+        state --> wrappedRootIkPriv(["MK-Wrapped Root Identity Key priv (see: Identity Keys)"])
+        wrappedRootIkPriv -->|unwrap with MK| rootIkPriv(["Root Identity Key private"])
+        class wrappedRootIkPriv,rootIkPriv dashed
+        class rootIkPriv red
+
+        %% DATA
+        state --> rootDk(["Root Data Key (Root DK)"])
+        state --> operationalIks(["Operational Identity Keys (OIKs; pub+priv)"])
+        class rootDk,operationalIks orange
+    end
+

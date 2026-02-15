@@ -7,30 +7,55 @@ flowchart TB
   classDef dashed stroke-dasharray: 5 5
   classDef serverStored stroke:#C70
 
-  dek1(["Data Encryption Key (DEK)"])
+  dk(["Data Key (DK; see: Root Keys)"])
 
-  authedConvsAmount[("Authenthicated amount of known conversations")] -->|payload| convsAmountAuth
-  class authedConvsAmount serverStored
-  dek1 -->|key| convsAmountAuth["auth verification"]
-  convsAmountAuth --> knownConvsAmount(["Expected amount of known conversations"])
+  %% Known conversations
+  authedKnownConvs[("Authenticated conversations list")]
+  class authedKnownConvs serverStored
+  dk -->|key| knownConvsAuthVerif@{shape: processes, label: "authentication verification of each"}
+  authedKnownConvs -->|payloads| knownConvsAuthVerif
+  knownConvsAuthVerif -->|verified| halfVerifiedKnownConvs(["Known conversations with verified authenticity"])
+  halfVerifiedKnownConvs --> knownConvsStateVerif["Comparison with State (see: Replay Protection)"]
+  class knownConvsStateVerif dashed
+  knownConvsStateVerif -->|verified| knownConvs(["Fully verified known conversations"])
 
-  dek1 -->|key| knownConvsAuth@{ shape: processes, label: "auth verification of each Conversation" }
-  authedConvs[("List of known authenticated conversations")] -->|payloads| knownConvsAuth
-  class authedConvs serverStored
-  knownConvsAuth --> knownConvs(["Known conversations"])
+  %% New conversations
+  newConvs[("New conversations")] --> newConvsInit@{shape: processes, label: "Initialization of each conversation (see: Key Exchange)"}
+  class newConvs serverStored
+  class newConvsInit dashed
+  newConvsInit -->|initialized| initializedNewConvs(["New conversations"])
+  initializedNewConvs --> updateState["State update (see: Replay Protection)"]
+  class updateState dashed
 
-  knownConvsAmount -->|expected| amountCompare["amount verification"]
-  knownConvs -->|actual| amountCompare
-  amountCompare -->|verified| verifiedKnownConvs(["Known conversations"])
-
-  newConversations[("New conversations")] --> initNewConvs@{shape: processes, label: "Initialization and verification of new conversations (details in other docs)"}
-  class newConversations serverStored
-  class initNewConvs dashed
-  initNewConvs -->|new convs| mergeConvs["Merge"]
-  verifiedKnownConvs -->|known convs| mergeConvs
+  initializedNewConvs --> mergeConvs["merge"]
+  knownConvs --> mergeConvs
+  
   mergeConvs --> allConvs(["All conversations"])
-
   allConvs -->|Viewed conversation| ForViewedConversation
+
+
+  %% authedConvsAmount[("Authenthicated amount of known conversations")] -->|payload| convsAmountAuth
+  %% class authedConvsAmount serverStored
+  %% dek1 -->|key| convsAmountAuth["auth verification"]
+  %% convsAmountAuth --> knownConvsAmount(["Expected amount of known conversations"])
+
+  %% dek1 -->|key| knownConvsAuth@{ shape: processes, label: "auth verification of each Conversation" }
+  %% authedConvs[("List of known authenticated conversations")] -->|payloads| knownConvsAuth
+  %% class authedConvs serverStored
+  %% knownConvsAuth --> knownConvs(["Known conversations"])
+
+  %% knownConvsAmount -->|expected| amountCompare["amount verification"]
+  %% knownConvs -->|actual| amountCompare
+  %% amountCompare -->|verified| verifiedKnownConvs(["Known conversations"])
+
+  %% newConversations[("New conversations")] --> initNewConvs@{shape: processes, label: "Initialization and verification of new conversations (details in other docs)"}
+  %% class newConversations serverStored
+  %% class initNewConvs dashed
+  %% initNewConvs -->|new convs| mergeConvs["Merge"]
+  %% verifiedKnownConvs -->|known convs| mergeConvs
+  %% mergeConvs --> allConvs(["All conversations"])
+
+  %% allConvs -->|Viewed conversation| ForViewedConversation
   
   %%convListAuth -->|verified| convList("`
   %% User conversations state list. Authenthicated part includes:
@@ -42,7 +67,7 @@ flowchart TB
     direction TB
     
     subgraph "For viewed Epoch"
-      dek2(["Data Encryption Key (DEK)"]) -->|key| epochKeyAead["AEAD"]
+      dk2(["Data Key (DK)"]) -->|key| epochKeyAead["AEAD"]
       wrappedEpochKey[("Wrapped Epoch Key")] -->|payload| epochKeyAead
       class wrappedEpochKey serverStored
       epochKeyAead --> epochKey(["Epoch key"])

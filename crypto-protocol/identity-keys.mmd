@@ -8,28 +8,16 @@ flowchart TB
 
   subgraph "KEY MANAGEMENT"
     classDef serverStored stroke:#C70
-
-    %% Server
-    publicCertificates[("Public signed certificates (RIK, OIKs)")]
-    authedRootIkPub[("DEK-Authenticated Root IK pub")] -->|payload| rootIkPubAuth
-    class publicCertificates,authedRootIkPub serverStored
+    classDef dashed stroke-dasharray: 5 5
 
     %% Client
-    dek(["Root Data Encryption Key (DEK)"])
-    kek(["Root Key Encryption Key (KEK; better-protected than DEK)"])
-
-    dek -->|key| rootIkPubAuth["authenthication verification"]
-    dek -->|key| oiksPrivAead["AEAD"]
-    kek -->|key| rootIkPrivAead["AEAD"]
-
-    rootIkPubAuth -->|verified| rootIkPub(["Root Identity Key public"])
-    oiksPrivAead --> oiksPriv(["Operational Identity Keys private"])
+    state(["State (see: Root Keys, Replay Protection)"]) --> oiksPriv(["Operational Identity Keys: public + private"])
+    class state dashed
+    state --> rootIkPub(["Root Identity Key public"])
+    state --> wrappedRootIkPriv(["Wrapped by Master Key: Root Identity Key private"])
+    wrappedRootIkPriv -->|payload| rootIkPrivAead["AEAD"]
+    masterKey(["Master Key (see: Root Keys)"]) -->|key| rootIkPrivAead["AEAD"]
     rootIkPrivAead --> rootIkPriv2(["Root Identity Key private"])
-
-    %% Server
-    wrappedRootIkPriv[("KEK-Wrapped Root IK priv")] -->|payload| rootIkPrivAead
-    wrappedOiksPriv[("DEK-Wrapped operational IKs priv")] -->|payload| oiksPrivAead
-    class wrappedRootIkPriv,wrappedOiksPriv serverStored
   end
 
 
@@ -45,6 +33,11 @@ flowchart TB
     rootIkPriv -->|private key| oikSign["Operational IK certificate sign"]
     oikCert(["Operational IK certificate"]) -->|payload| oikSign
     oikSign --> signedOikCert(["Signed operational IK certificate"])
+
+    %% Publishment on the server
+    signedRootCert -->|publish| publishedCertificates[("Published signed certificates (RIK, OIKs)")]
+    signedOikCert -->|publish| publishedCertificates
+    class publishedCertificates serverStored
   end
 
 
