@@ -1,0 +1,53 @@
+---
+title: Replay Protection
+---
+%% This refers to the server's ability to serve the client with an old state. The message replays are avoided by message numbers and not described here.
+flowchart TB
+  classDef serverStored stroke:#C70
+
+  subgraph "Conversations list verification"
+    direction TB
+    %% Server
+    authedConversations[("Authenticated conversations")]
+    class authedConversations serverStored
+    authedConversations -->|payloads| authedConvsVerif
+
+  
+    %% Conversation list verification
+    rootKeys2(["Root keys"]) -->|key| authedConvsVerif
+    authedConvsVerif@{ shape: "processes", label: "Authentication verification of each" }
+      --> rejectWrongVersion["Conversations contain State version. Reject every conversation with an older value"]
+    rejectWrongVersion --> removeDuplicateConvs["Remove duplicate IDs"]
+    removeDuplicateConvs --> convs(["Conversations list"])
+    convs --> convsNumberComparison
+    convsNumber2(["Number of known conversations"]) --> convsNumberComparison["Comparison"]
+    convsNumberComparison -->|success| verifiedConvs(["Conversations list"])
+  end
+
+
+  subgraph STATE
+    direction TB
+    %% Server
+    %% The 'State' is an object encrypted and authenticated (using Master Key) by the client containing the client's keys
+    %% and important informaction about their data. It provides partial prevention against the server replaying an entire old state from the past.
+    encryptedState[("`Encrypted STATE. Includes:
+    - State version counter (incremented by the client on each state update)
+    - Client's root keys (see: Root Keys)
+    - Number of authenticated conversations`")]
+    class encryptedState serverStored
+    encryptedState -->|payload| stateAead
+
+    %% Master key
+    masterKey(["Master key"])
+
+    %% State
+    masterKey -->|key| stateAead["AEAD"]
+    stateAead --> rootKeys(["Root keys"])
+    stateAead --> convsNumber(["Number of known, authenticated conversations"])
+    stateAead --> versionCounter(["State version counter"])
+
+    %% State verification
+    versionCounter --> versionComparison["Compare and reject EVERYTHING if the server-provided counter is older"]
+    storedVersionCounter@{ shape: "card", label: "Stored version counter (from client device storage)"} --> versionComparison
+  end
+
