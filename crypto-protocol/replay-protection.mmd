@@ -5,23 +5,23 @@ title: Replay Protection
 flowchart TB
   classDef serverStored stroke:#C70
 
-  subgraph "Conversations list verification"
+  subgraph "Data verification. X is a Conversation or Contact"
     direction TB
     %% Server
-    authedConversations[("Authenticated conversations")]
-    class authedConversations serverStored
-    authedConversations -->|payloads| authedConvsVerif
+    authedData[("Authenticated List of Xs")]
+    class authedData serverStored
+    authedData -->|payloads| authedConvsVerif
 
   
     %% Conversation list verification
     rootKeys2(["Root keys"]) -->|key| authedConvsVerif
     authedConvsVerif@{ shape: "processes", label: "Authentication verification of each" }
-      --> rejectWrongVersion["Conversations contain State version. Reject every conversation with an older value"]
+      -->|verified| rejectWrongVersion["Each X contains State version. Reject every X with an older value"]
     rejectWrongVersion --> removeDuplicateConvs["Remove duplicate IDs"]
-    removeDuplicateConvs --> convs(["Conversations list"])
+    removeDuplicateConvs --> convs(["Xs list"])
     convs --> convsNumberComparison
-    convsNumber2(["Number of known conversations"]) --> convsNumberComparison["Comparison"]
-    convsNumberComparison -->|success| verifiedConvs(["Conversations list"])
+    convsNumber2(["Number of known Xs"]) --> convsNumberComparison["Comparison"]
+    convsNumberComparison -->|success| verifiedConvs(["Xs list"])
   end
 
 
@@ -33,7 +33,8 @@ flowchart TB
     encryptedState[("`Encrypted STATE. Includes:
     - State version counter (incremented by the client on each state update)
     - Client's root keys (see: Root Keys)
-    - Number of authenticated conversations`")]
+    - Number of known conversations
+    - Number of known contacts`")]
     class encryptedState serverStored
     encryptedState -->|payload| stateAead
 
@@ -44,6 +45,7 @@ flowchart TB
     masterKey -->|key| stateAead["AEAD"]
     stateAead --> rootKeys(["Root keys"])
     stateAead --> convsNumber(["Number of known, authenticated conversations"])
+    stateAead --> contactsNumber(["Number of known, authenticated contacts"])
     stateAead --> versionCounter(["State version counter"])
 
     %% State verification

@@ -3,7 +3,7 @@ title: ROOT KEYS
 --- 
 %% Made in Mermaid (https://mermaid.live)
 %% DESCRIPTION: This diagram shows how all the root keys are computed and stored. The lower-hierarchy keys and data are not shown here - they have separate diagrams.
-%% DIAGRAM SUMMARY: A password-derived Master Key is used to decrypt and verify the server-stored client state, which includes 2 root keys: Root DEK (Data Encryption Key) and Root IK (Identity Key).
+%% DIAGRAM SUMMARY: A password-derived Master Key is used to decrypt and verify the server-stored client state, which includes 2 root keys: Root DK (Data Key) and Root IK (Identity Key).
 
 %% SHAPES:
 %% - Rectangles mean operations/algorithms
@@ -18,37 +18,43 @@ flowchart TB
     classDef red color:#f00,stroke:#f00
     classDef orange color:#f60,stroke:#f60
     classDef dashed stroke-dasharray: 5 5
+    classDef serverStored stroke:#C70
 
-    subgraph SERVER
-        %% SERVER STORAGE
-        encState(["Encrypted and authenticated client state"])
-        userAccount([Non-secret user account data])
-    end
+    %% SERVER
+    authenticationEndpoint[("Authentication (login endpoint)")]
+    encState[("Encrypted and authenticated client state")]
+    class authenticationEndpoint,encState,userAccount serverStored
 
     %% SERVER-CLIENT TRANSFERS
-    userAccount -->|login| login
     encState -->|payload| stateAead
+    serverAuth --> authenticationEndpoint
+    
 
+    %% PASSWORD KEY DERIVIATION (to decrypt state)
+    login[/"User phone number"/] -->|salt| passDeriv["`Key derivation (argon2id)`"]
+    pass[/USER PASSWORD/] -->|payload| passDeriv
+    passDeriv --> mk(["Master Key (MK)"])
+    mk --> stateKdf["KDF (info: 'state-key')"]
+    stateKdf --> stateKey(["State key (SK)"])
+    stateKey -->|key| stateAead["Decryption and verification (AEAD)"]
+    stateAead --> state(["Decrypted state, including version number and root keys (see: Replay Protection)"])
+    class pass,mk red
+    class stateKey orange
+    class state dashed
 
-    subgraph CLIENT
-        %% PASSWORD KEY DERIVIATION
-        login[/"User login (from UI or from server if user logged in via email/phone)"/] -->|salt| passDeriv["`Key derivation (argon2id)`"]
-        pass[/USER PASSWORD/] -->|payload| passDeriv
-        passDeriv --> mk(["Master Key (MK)"])
-        mk -->|key| stateAead["Decryption and verification (AEAD)"]
-        stateAead --> state(["Decrypted state, including version number and root keys (see: Replay Protection)"])
-        class pass,mk red
-        class state dashed
+    %% Additional password-derived data
+    mk --> serverAuthKdf["KDF (info: 'server-auth')"]
+    serverAuthKdf --> serverAuth(["Server authentication"])
+    mk --> rootIkPrivWrappingKeyKdf["KDF (info: 'rikp-wrapper')"]
+    rootIkPrivWrappingKeyKdf --> rootIkPrivWrappingKey(["Wrapping Key of Root Identity Key Private (RIKP wrapper)"])
+    class rootIkPrivWrappingKey red
 
-        %% IDENTITY KEYS
-        state --> wrappedRootIkPriv(["MK-Wrapped Root Identity Key priv (see: Identity Keys)"])
-        wrappedRootIkPriv -->|unwrap with MK| rootIkPriv(["Root Identity Key private"])
-        class wrappedRootIkPriv,rootIkPriv dashed
-        class rootIkPriv red
+    %% IDENTITY KEYS
+    state --> wrappedRootIkPriv(["Wrapped Root Identity Key priv (see: Identity Keys)"])
+    class wrappedRootIkPriv,rootIkPriv dashed
 
-        %% DATA
-        state --> rootDk(["Root Data Key (Root DK)"])
-        state --> operationalIks(["Operational Identity Keys (OIKs; pub+priv)"])
-        class rootDk,operationalIks orange
-    end
+    %% DATA
+    state --> rootDk(["Root Data Key (Root DK)"])
+    state --> operationalIks(["Operational Identity Keys public + private (OIKs; see: Identity Keys)"])
+    class rootDk,operationalIks orange
 

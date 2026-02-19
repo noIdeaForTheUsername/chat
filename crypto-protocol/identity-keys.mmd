@@ -5,18 +5,35 @@ title: IDENTITY KEYS
 %% ORANGE border means server-side storage and WHITE border means client-only access (the diagrams broke when they were split into 2 subgraphs)
 
 flowchart TB
+  classDef serverStored stroke:#C70
+  classDef dashed stroke-dasharray: 5 5
+
+  subgraph "Root Identity Key change"
+    direction TB
+    newRootIkPriv(["New Root Identity Key private"]) -->|private key| newRootCertSign["sign with new RIK"]
+    newRootCert(["New Root IK Certificate"]) -->|payload| newRootCertSign
+    newRootCertSign --> signedNewRootCert(["New-RIK-signed certificate"])
+
+    newRootCert -->|payload| newRootCertSignWithOldRik["sign with old RIK"]
+    oldRootIkPriv(["Old Root Identity Key private"]) -->|private key| newRootCertSignWithOldRik
+    newRootCertSignWithOldRik --> signedNewRootCertWithOldRik(["Old-RIK-signed certificate"])
+
+    signedNewRootCert -->|publish| publishedCertificates2[("Published signed certificates")]
+    signedNewRootCertWithOldRik -->|publish| publishedCertificates2
+    class publishedCertificates2 serverStored
+
+    newRootIkPriv --> newOiks["Create new OIKs and their certs"]
+    class newOiks dashed
+  end
 
   subgraph "KEY MANAGEMENT"
-    classDef serverStored stroke:#C70
-    classDef dashed stroke-dasharray: 5 5
-
     %% Client
-    state(["State (see: Root Keys, Replay Protection)"]) --> oiksPriv(["Operational Identity Keys: public + private"])
+    state(["State (see: Root Keys)"]) --> oiksPriv(["Operational Identity Keys: public + private"])
     class state dashed
     state --> rootIkPub(["Root Identity Key public"])
-    state --> wrappedRootIkPriv(["Wrapped by Master Key: Root Identity Key private"])
+    state --> wrappedRootIkPriv(["Wrapped Root Identity Key private"])
     wrappedRootIkPriv -->|payload| rootIkPrivAead["AEAD"]
-    masterKey(["Master Key (see: Root Keys)"]) -->|key| rootIkPrivAead["AEAD"]
+    rikpWrapper(["Wrapping key of Root Identity Key private (RIKP wrapper; see: Root Keys)"]) -->|key| rootIkPrivAead["AEAD"]
     rootIkPrivAead --> rootIkPriv2(["Root Identity Key private"])
   end
 
@@ -60,5 +77,3 @@ flowchart TB
 
     operationalCertOverview -->|signs| signedData("Further data that requires signature")
   end
-
-  
