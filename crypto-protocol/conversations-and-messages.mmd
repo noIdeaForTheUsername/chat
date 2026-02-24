@@ -7,17 +7,17 @@ flowchart TB
   classDef dashed stroke-dasharray: 5 5
   classDef serverStored stroke:#C70
 
-  dk(["Data Key (DK; see: Root Keys)"])
-
+  %% dk(["Data Key (DK; see: Root Keys)"])
   %% Known conversations
-  authedKnownConvs[("Authenticated conversations list")]
-  class authedKnownConvs serverStored
-  dk -->|key| knownConvsAuthVerif@{shape: processes, label: "authentication verification of each"}
-  authedKnownConvs -->|payloads| knownConvsAuthVerif
-  knownConvsAuthVerif -->|verified| halfVerifiedKnownConvs(["Known conversations with verified authenticity"])
-  halfVerifiedKnownConvs --> knownConvsStateVerif["Comparison with State (see: Replay Protection)"]
-  class knownConvsStateVerif dashed
-  knownConvsStateVerif -->|verified| knownConvs(["Fully verified known conversations"])
+  %% authedKnownConvs[("Conversations list (from State - see: Root Keys and Replay Protection)")]
+  %% dk -->|key| knownConvsAuthVerif@{shape: processes, label: "authentication verification of each"}
+  %% authedKnownConvs -->|payloads| knownConvsAuthVerif
+  %% knownConvsAuthVerif -->|verified| halfVerifiedKnownConvs(["Known conversations with verified authenticity"])
+  %% halfVerifiedKnownConvs --> knownConvsStateVerif["Comparison with State (see: Replay Protection)"]
+  %% class knownConvsStateVerif dashed
+  %% knownConvsStateVerif -->|verified|
+
+  knownConvs(["Conversations list (from State - see: Root Keys or Replay Protection)"])
 
   %% New conversations
   newConvs[("New conversations")] --> newConvsInit@{shape: processes, label: "Initialization of each conversation (see: Key Exchange)"}
@@ -33,35 +33,6 @@ flowchart TB
   mergeConvs --> allConvs(["All conversations"])
   allConvs -->|Viewed conversation| ForViewedConversation
 
-
-  %% authedConvsAmount[("Authenthicated amount of known conversations")] -->|payload| convsAmountAuth
-  %% class authedConvsAmount serverStored
-  %% dek1 -->|key| convsAmountAuth["auth verification"]
-  %% convsAmountAuth --> knownConvsAmount(["Expected amount of known conversations"])
-
-  %% dek1 -->|key| knownConvsAuth@{ shape: processes, label: "auth verification of each Conversation" }
-  %% authedConvs[("List of known authenticated conversations")] -->|payloads| knownConvsAuth
-  %% class authedConvs serverStored
-  %% knownConvsAuth --> knownConvs(["Known conversations"])
-
-  %% knownConvsAmount -->|expected| amountCompare["amount verification"]
-  %% knownConvs -->|actual| amountCompare
-  %% amountCompare -->|verified| verifiedKnownConvs(["Known conversations"])
-
-  %% newConversations[("New conversations")] --> initNewConvs@{shape: processes, label: "Initialization and verification of new conversations (details in other docs)"}
-  %% class newConversations serverStored
-  %% class initNewConvs dashed
-  %% initNewConvs -->|new convs| mergeConvs["Merge"]
-  %% verifiedKnownConvs -->|known convs| mergeConvs
-  %% mergeConvs --> allConvs(["All conversations"])
-
-  %% allConvs -->|Viewed conversation| ForViewedConversation
-  
-  %%convListAuth -->|verified| convList("`
-  %% User conversations state list. Authenthicated part includes:
-  %%  - conversationId
-  %%  - epoch amount
-  %%  - latest seen message number`")
   
   subgraph ForViewedConversation
     direction TB

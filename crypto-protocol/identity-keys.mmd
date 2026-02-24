@@ -10,11 +10,11 @@ flowchart TB
 
   subgraph "Root Identity Key change"
     direction TB
-    newRootIkPriv(["New Root Identity Key private"]) -->|private key| newRootCertSign["sign with new RIK"]
+    newRootIkPriv(["New Root Identity Key private"]) -->|private key| newRootCertSign["sign"]
     newRootCert(["New Root IK Certificate"]) -->|payload| newRootCertSign
     newRootCertSign --> signedNewRootCert(["New-RIK-signed certificate"])
 
-    newRootCert -->|payload| newRootCertSignWithOldRik["sign with old RIK"]
+    newRootCert -->|payload| newRootCertSignWithOldRik["sign"]
     oldRootIkPriv(["Old Root Identity Key private"]) -->|private key| newRootCertSignWithOldRik
     newRootCertSignWithOldRik --> signedNewRootCertWithOldRik(["Old-RIK-signed certificate"])
 

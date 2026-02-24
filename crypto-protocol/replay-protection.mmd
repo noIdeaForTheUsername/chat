@@ -5,24 +5,24 @@ title: Replay Protection
 flowchart TB
   classDef serverStored stroke:#C70
 
-  subgraph "Data verification. X is a Conversation or Contact"
-    direction TB
-    %% Server
-    authedData[("Authenticated List of Xs")]
-    class authedData serverStored
-    authedData -->|payloads| authedConvsVerif
+  %% subgraph "Data verification. X is a Conversation or Contact"
+  %%   direction TB
+  %%   %% Server
+  %%   authedData[("Authenticated List of Xs")]
+  %%   class authedData serverStored
+  %%   authedData -->|payloads| authedConvsVerif
 
   
-    %% Conversation list verification
-    rootKeys2(["Root keys"]) -->|key| authedConvsVerif
-    authedConvsVerif@{ shape: "processes", label: "Authentication verification of each" }
-      -->|verified| rejectWrongVersion["Each X contains State version. Reject every X with an older value"]
-    rejectWrongVersion --> removeDuplicateConvs["Remove duplicate IDs"]
-    removeDuplicateConvs --> convs(["Xs list"])
-    convs --> convsNumberComparison
-    convsNumber2(["Number of known Xs"]) --> convsNumberComparison["Comparison"]
-    convsNumberComparison -->|success| verifiedConvs(["Xs list"])
-  end
+  %%   %% Conversation list verification
+  %%   rootKeys2(["Root keys"]) -->|key| authedConvsVerif
+  %%   authedConvsVerif@{ shape: "processes", label: "Authentication verification of each" }
+  %%     -->|verified| rejectWrongVersion["Each X contains State version. Reject every X with an older value"]
+  %%   rejectWrongVersion --> removeDuplicateConvs["Remove duplicate IDs"]
+  %%   removeDuplicateConvs --> convs(["Xs list"])
+  %%   convs --> convsNumberComparison
+  %%   convsNumber2(["Number of known Xs"]) --> convsNumberComparison["Comparison"]
+  %%   convsNumberComparison -->|success| verifiedConvs(["Xs list"])
+  %% end
 
 
   subgraph STATE
@@ -31,21 +31,25 @@ flowchart TB
     %% The 'State' is an object encrypted and authenticated (using Master Key) by the client containing the client's keys
     %% and important informaction about their data. It provides partial prevention against the server replaying an entire old state from the past.
     encryptedState[("`Encrypted STATE. Includes:
-    - State version counter (incremented by the client on each state update)
+    1. ENCRYPTED AND AUTHED:
     - Client's root keys (see: Root Keys)
-    - Number of known conversations
-    - Number of known contacts`")]
+    2. ONLY AUTHED:
+    - State version counter (incremented by the client on each state update)
+    - Conversations list
+    - Contacts list`")]
     class encryptedState serverStored
     encryptedState -->|payload| stateAead
 
     %% Master key
-    masterKey(["Master key"])
+    stateKey(["State key"])
 
     %% State
-    masterKey -->|key| stateAead["AEAD"]
+    stateKey -->|key| stateAead["AEAD"]
     stateAead --> rootKeys(["Root keys"])
-    stateAead --> convsNumber(["Number of known, authenticated conversations"])
-    stateAead --> contactsNumber(["Number of known, authenticated contacts"])
+    stateAead --> contactList(["Contact list"])
+    stateAead --> convList(["Conversation list"])
+    %% stateAead --> convsNumber(["Number of known, authenticated conversations"])
+    %% stateAead --> contactsNumber(["Number of known, authenticated contacts"])
     stateAead --> versionCounter(["State version counter"])
 
     %% State verification

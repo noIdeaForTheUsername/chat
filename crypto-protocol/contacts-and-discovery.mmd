@@ -7,12 +7,12 @@ flowchart TB
   classDef serverStored stroke:#C70
 
   contactInfo("`
-  Server-stored user contact. Includes:
+  User contacts are stored in authenticated State. They include:
   - ID of the other user
   - Public root Identity Key
   - 'Blocked' status
   - Nick ciphertext (encrypted with Data Key)
-  - State version (see: Replay Protection)
+  %% - State version (see: Replay Protection)
   - Auth tag of all the above fields`")
   class contactInfo serverStored
 
