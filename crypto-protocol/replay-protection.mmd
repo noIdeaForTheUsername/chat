@@ -5,26 +5,6 @@ title: Replay Protection
 flowchart TB
   classDef serverStored stroke:#C70
 
-  %% subgraph "Data verification. X is a Conversation or Contact"
-  %%   direction TB
-  %%   %% Server
-  %%   authedData[("Authenticated List of Xs")]
-  %%   class authedData serverStored
-  %%   authedData -->|payloads| authedConvsVerif
-
-  
-  %%   %% Conversation list verification
-  %%   rootKeys2(["Root keys"]) -->|key| authedConvsVerif
-  %%   authedConvsVerif@{ shape: "processes", label: "Authentication verification of each" }
-  %%     -->|verified| rejectWrongVersion["Each X contains State version. Reject every X with an older value"]
-  %%   rejectWrongVersion --> removeDuplicateConvs["Remove duplicate IDs"]
-  %%   removeDuplicateConvs --> convs(["Xs list"])
-  %%   convs --> convsNumberComparison
-  %%   convsNumber2(["Number of known Xs"]) --> convsNumberComparison["Comparison"]
-  %%   convsNumberComparison -->|success| verifiedConvs(["Xs list"])
-  %% end
-
-
   subgraph STATE
     direction TB
     %% Server
@@ -48,8 +28,6 @@ flowchart TB
     stateAead --> rootKeys(["Root keys"])
     stateAead --> contactList(["Contact list"])
     stateAead --> convList(["Conversation list"])
-    %% stateAead --> convsNumber(["Number of known, authenticated conversations"])
-    %% stateAead --> contactsNumber(["Number of known, authenticated contacts"])
     stateAead --> versionCounter(["State version counter"])
 
     %% State verification

@@ -1,0 +1,73 @@
+---
+Title: KEY EXCHANGE
+---
+flowchart TB
+  classDef dashed stroke-dasharray: 5 5
+  classDef serverStored stroke:#C70
+
+  subgraph "BOB (Phase 2 - Bob requests Epoch initialization)"
+    %% DH GENERATION AND PUBLICATION
+    bobDhGen["Generation of Diffie-Hellman parameters"]
+    bobDhGen --> bobDhPub
+    bobDhGen --> bobDhPriv
+    bobOikPriv(["Operational Identity Key private"])
+    bobDhPub(["Public parameters of Diffie-Hellman"])
+    bobDhPriv(["Private parameters of Diffie-Hellman"])
+
+    bobOikPriv -->|private key| bobDhSign["sign"]
+    bobDhPub -->|payload| bobDhSign
+    bobDhSign --> signedBobDh[("Signed Bob-to-Alice Diffie-Hellman parameters")]
+    class signedBobDh serverStored
+
+    %% ALICE'S DH VERIFICATION
+    trustedAliceOikPub(["Trusted Public Operational Identity Key of Alice (see: Contacts and Discovery)"])
+    trustedAliceOikPub -->|key| signedAliceDhVerif["`
+      Verification of Alice's signature on her DH parameters;
+      verification of assoc. data (including date)`"]
+    signedAliceDhBob[("Signed Alice Diffie-Hellman parameters with assoc. data")] -->|payload| signedAliceDhVerif
+    signedAliceDhVerif -->|verified| verifiedAliceDh(["Verified Alice public DH parameters"])
+    
+    verifiedAliceDh --> bobDhCompletion
+    bobDhPriv --> bobDhCompletion["Complete Diffie-Hellman"]
+    bobDhCompletion --> sharedSecretBob(["Shared secret"])
+    
+    class signedAliceDhBob serverStored
+  end
+
+  subgraph SERVER
+    signedAliceDhServer[("Signed Alice Diffie-Hellman parameters with assoc. data (after Phase1)")]
+    signedBobDhServer[("Signed Bob-to-Alice Diffie-Hellman parameters with assoc. data (after Phase2)")]
+    class signedAliceDhServer,signedBobDhServer serverStored
+  end
+
+  subgraph ALICE
+    subgraph "Phase 1 (Alice publishes signed DH params)"
+      aliceDhGen["Generation of Diffie-Hellman parameters"]
+      aliceDhGen --> aliceDhPub
+      aliceDhGen --> aliceDhPriv
+      aliceOikPriv(["Operational Identity Key private"]) -->|private key| aliceDhSign["sign"]
+      aliceDhPub(["Public parameters of Diffie-Hellman"]) --> |payload| aliceDhSign
+      aliceDhPubAssoc(["Associated data"]) -->|payload| aliceDhSign
+      aliceDhPriv(["Private parameters of Diffie-Hellman"])
+
+      aliceDhSign -->|send to server| signedAliceDh[("Signed Alice Diffie-Hellman parameters with assoc. data")]
+      class signedAliceDh serverStored
+    end
+
+    subgraph "Phase 3 (Alice receives Bob's request and DH)"
+
+      trustedBobOikPub(["Trusted Public Operational Identity Key of Bob (see: Contacts and Discovery)"])
+      trustedBobOikPub -->|key| signedBobDhVerif["`
+      Verification of Bob's signature on his DH parameters;
+      verification of assoc. data (including date)`"]
+      signedBobDhAlice[("Signed Bob-to-Alice Diffie-Hellman parameters with assoc. data")] -->|payload| signedBobDhVerif
+      signedBobDhVerif -->|verified| verifiedBobDh(["Verified Bob's public DH parameters"])
+      
+      verifiedBobDh --> aliceDhCompletion
+      aliceDhPriv --> aliceDhCompletion["Complete Diffie-Hellman"]
+      aliceDhCompletion --> sharedSecretAlice(["Shared secret"])
+      class signedBobDhAlice serverStored
+    end
+  end
+
+  

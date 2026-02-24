@@ -7,16 +7,6 @@ flowchart TB
   classDef dashed stroke-dasharray: 5 5
   classDef serverStored stroke:#C70
 
-  %% dk(["Data Key (DK; see: Root Keys)"])
-  %% Known conversations
-  %% authedKnownConvs[("Conversations list (from State - see: Root Keys and Replay Protection)")]
-  %% dk -->|key| knownConvsAuthVerif@{shape: processes, label: "authentication verification of each"}
-  %% authedKnownConvs -->|payloads| knownConvsAuthVerif
-  %% knownConvsAuthVerif -->|verified| halfVerifiedKnownConvs(["Known conversations with verified authenticity"])
-  %% halfVerifiedKnownConvs --> knownConvsStateVerif["Comparison with State (see: Replay Protection)"]
-  %% class knownConvsStateVerif dashed
-  %% knownConvsStateVerif -->|verified|
-
   knownConvs(["Conversations list (from State - see: Root Keys or Replay Protection)"])
 
   %% New conversations
