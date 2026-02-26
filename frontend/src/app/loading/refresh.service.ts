@@ -22,16 +22,18 @@ export class RefreshService {
   constructor() {
     this.websocket.reconnected$.subscribe(() => {
       console.log("Websocket reconnected, refreshing data...");
-      this.refreshData(undefined, true, true);
+      this.refreshData(undefined, true);
+      // Reload current messages if displayingNewestMessages (= if the page is not scrolled up)
+      if (this.messageService.displayingNewestMessages())
+        this.messageService.loadCurrentConversation();
     });
   }
   
   // Event is the ion-refresher component event
-  async refreshData(event?: any, withConversations = true, withMessages = false): Promise<void> {
+  async refreshData(event?: any, withConversations = true): Promise<void> {
     let timeout; 
     try {
       if (event) timeout = setTimeout(() => event.target.complete(), 7000);  // max waiting time
-      if (withMessages) this.messageService.loadCurrentConversation();
       await Promise.all([
         lastValueFrom(this.conversationService.loadMessagePreviews()),
         withConversations ? lastValueFrom(this.conversationService.loadConversations()) : Promise.resolve(),

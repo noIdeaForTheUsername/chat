@@ -45,12 +45,6 @@ export class MessageCardComponent  implements OnInit {
   static dateFormatter = Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
   static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
 
-  // constructor() {
-  //   effect(() => {
-  //     this.getDisplayMetadata();
-  //   });
-  // }
-
   async ngOnInit() {
     this.profile.set(await lastValueFrom(this.profileService.getProfileById(this.message().senderId)));
   }
@@ -93,17 +87,17 @@ export class MessageCardComponent  implements OnInit {
   private getFormattedDate() {
     if (!this.displayMetadata()) return "";
 
-    let previousTimestamp = this.previousMessage()?.timestamp;
     let timestamp = this.message().timestamp;
 
-    let previousMessageSentOnOtherDay = true;
-    if (previousTimestamp) previousMessageSentOnOtherDay = timestamp.getDate() != previousTimestamp.getDate();
+    // let previousMessageSentOnOtherDay = true;
+    // if (previousTimestamp) previousMessageSentOnOtherDay = timestamp.getDate() != previousTimestamp.getDate();
 
     // Displayed date signal value
     let date = "";
-    if (previousMessageSentOnOtherDay)
-      date += MessageCardComponent.dateFormatter.format(timestamp) + " ";
-    date += MessageCardComponent.timeFormatter.format(timestamp);
+    // if (previousMessageSentOnOtherDay)
+    date += MessageCardComponent.dateFormatter.format(timestamp)
+      + " "
+      + MessageCardComponent.timeFormatter.format(timestamp);
 
     return date;
   }

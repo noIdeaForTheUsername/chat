@@ -74,6 +74,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // MESSAGE INPUT
   protected enteredMessage = signal<string>("");
+  protected awaitingMessageSendResponse = signal(false);
+  protected canSendMessage = computed(() => (!this.initialLoading()) && this.enteredMessage().length > 0
+    && !this.awaitingMessageSendResponse());  
   protected replyingToId = signal<null | number>(null);
   protected replyingToText = signal<string>("");
 
@@ -187,6 +190,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   onMessageFieldKeydown(event: KeyboardEvent) {
     if (event.key === "Enter" && !event.shiftKey) {
+      
       event.preventDefault();
       this.sendMessage();
     }
@@ -195,15 +199,20 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   sendMessage() {
     const messageText = this.enteredMessage().trim();
     if (messageText.length === 0) return;
-    this.messageField.value = "";
-    this.enteredMessage.set("");
+    this.awaitingMessageSendResponse.set(true);
+
     const replyingTo = this.replyingToId();
     const replyingToText = this.replyingToText();
-    this.messageService.operations.sendMessage(messageText, this.afterMessageSent.bind(this),
+    this.messageService.operations.sendMessage(messageText, (success: boolean) => this.afterMessageSent(success),
       replyingTo ?? undefined, replyingToText ?? undefined);
   }
 
-  afterMessageSent() {
+  afterMessageSent(success: boolean) {
+    this.awaitingMessageSendResponse.set(false);
+    if (!success) return;
+    
+    this.enteredMessage.set("");
+    this.messageField.value = "";
     this.cancelReply();
     this.correctScrollOnNewMessage();
   }

@@ -36,12 +36,12 @@ export class MessageOperations {
     });
   }
 
-  sendMessage(text: string, callBeforeComplete?: Function, repliedId?: number, repliedText?: string) {
+  sendMessage(text: string, callBeforeComplete?: (success: boolean) => void, repliedId?: number, repliedText?: string) {
     const timestamp = new Date();
     this.api.sendMessage(this.s.getCurrentConvId(), text, timestamp, repliedId).subscribe({
       next: (res: any) => {
         if (res.id === undefined) return;
-        if (callBeforeComplete) callBeforeComplete();
+        callBeforeComplete?.(true);
         if (!this.s.displayingNewestMessages()) return;
         const newMsg = {
           globalId: res.id,
@@ -63,6 +63,7 @@ export class MessageOperations {
         this.conversationService.processNewMessage(newMsg, true);
       },
       error: (e) => {
+        callBeforeComplete?.(false);
         this.alertService.displayError(
           e.error.message ?? e.status ?? "unknown",
           undefined,

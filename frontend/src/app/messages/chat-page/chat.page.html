@@ -116,7 +116,7 @@
         </ion-textarea>
         <!-- SEND BUTTON -->
         <ion-button shape="round" color="primary" fill="solid" class="round-button"
-        [disabled]="this.initialLoading() || this.enteredMessage().length == 0"
+        [disabled]="!canSendMessage()"
         (click)="sendMessage()">
           <ion-icon name="paper-plane" slot="icon-only"></ion-icon>
         </ion-button>
