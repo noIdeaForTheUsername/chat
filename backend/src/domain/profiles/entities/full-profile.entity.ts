@@ -6,17 +6,11 @@ export class FullProfile {
   id: number;
 
   @ViewColumn()
-  login: string;
-
-  @ViewColumn()
   name: string;
 
   @ViewColumn()
   bio: string;
 
-  @ViewColumn()
-  email?: string;
-
   @ViewColumn({ name: 'phone_number' })
-  phoneNumber?: string;
+  phoneNumber: string;
 }

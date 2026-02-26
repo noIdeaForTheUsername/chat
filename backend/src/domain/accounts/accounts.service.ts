@@ -1,9 +1,7 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Account } from './entities/account.entity';
-import { QueryFailedError, Repository } from 'typeorm';
-import { normalizeLogin } from 'src/shared/validation/normalize-login';
-import { normalizeEmail } from 'src/shared/validation/normalize-email';
+import { Repository } from 'typeorm';
 import { normalizePhone } from 'src/shared/validation/normalize-phone';
 
 @Injectable()
@@ -24,25 +22,22 @@ export class AccountsDomainService {
     return found;
   }
 
-  async findByLogin(login: string, exceptionOnNotFound = false) {
-    return await this.accounts.findOneBy({ login });
-  }
-  async findExistingByLogin(login: string) {
-    const found = await this.findByLogin(login);
-    if (!found)
-      throw new NotFoundException('not-found.user');
-    return found;
-  }
+  // async findByLogin(login: string, exceptionOnNotFound = false) {
+  //   return await this.accounts.findOneBy({ login });
+  // }
+  // async findExistingByLogin(login: string) {
+  //   const found = await this.findByLogin(login);
+  //   if (!found)
+  //     throw new NotFoundException('not-found.user');
+  //   return found;
+  // }
 
-  async findByUniqueField(loginOrEmailOrPhone: string) {
-    const loginCheck = normalizeLogin(loginOrEmailOrPhone);
-    const emailCheck = normalizeEmail(loginOrEmailOrPhone);
-    const phoneNumberCheck = normalizePhone(loginOrEmailOrPhone);
+  async findByUniqueField(nameOrPhone: string) {
+    // TODO: NAME CHECK
+    const phoneNumberCheck = normalizePhone(nameOrPhone);
     
     return await this.accounts.findOne({
       where: [
-        { login: loginCheck },
-        { email: emailCheck },
         { phoneNumber: phoneNumberCheck }
       ]
     });
@@ -58,13 +53,11 @@ export class AccountsDomainService {
 
   // CREATING
 
-  async create(login: string, passwordHash: string, activated: boolean, email?: string, phoneNumber?: string) {
+  async create(phoneNumber: string, passwordHash: string, activated: boolean) {
     const newAccount = this.accounts.create({
-      login,
+      phoneNumber,
       passwordHash,
       activated,
-      email,
-      phoneNumber
     });
     const created = await this.accounts.save(newAccount);
     return created;
@@ -75,7 +68,6 @@ export class AccountsDomainService {
   // Only for basic account data modifications and password changes, nothing regarding privileges
   async update(id: number, updatedFields: Partial<Account>) {
     updatedFields.id = undefined;  // prevent id change
-    updatedFields.login = undefined;  // prevent login change
     updatedFields.activated = undefined;  // prevent activation change
     updatedFields.admin = undefined;  // prevent privilege change
 

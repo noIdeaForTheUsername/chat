@@ -9,9 +9,6 @@ export class UserKnownProfile {
   id: number;
 
   @ViewColumn()
-  login: string;
-
-  @ViewColumn()
   name: string;
 
   @ViewColumn()

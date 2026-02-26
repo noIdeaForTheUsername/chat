@@ -46,18 +46,14 @@ export class ProfilesDomainService {
   }
 
   async findSearchedProfiles(search: string) {
-    const loginSearch = normalizeLogin(search);
-    const emailSearch = normalizeEmail(search);
+    // const loginSearch = normalizeLogin(search);
+    // const emailSearch = normalizeEmail(search);
     const nameSearch = normalizeName(search);
     const phoneNumberSearch = normalizePhone(search);
 
     const where = [];
     // Make sure only non-empty searches are added - discovery requires knowledge of the exact value
     // (and we really do NOT want to return anyone with some field empty as "known and discoverable")
-    if (loginSearch.trim().length > 0)
-      where.push({ login: loginSearch });
-    if (emailSearch.trim().length > 0)
-      where.push({ email: emailSearch });
     if (nameSearch.trim().length > 0)
       where.push({ name: nameSearch });
     if (phoneNumberSearch.trim().length > 0)

@@ -5,17 +5,11 @@ export class Account {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  login: string;
+  @Column({ nullable: false, type: "varchar", name: 'phone_number' })
+  phoneNumber: string;
 
   @Column({ name: 'password_hash' })
   passwordHash: string;
-
-  @Column({ nullable: true, type: "text" })
-  email: string | null;
-
-  @Column({ nullable: true, type: "varchar", name: 'phone_number' })
-  phoneNumber: string | null;
 
   @Column({ default: false })
   activated: boolean;

@@ -4,14 +4,9 @@ import { NormalizePhone } from "src/shared/validation/normalize-phone";
 
 export class ModifyAccountDto {
   @IsOptional()
-  @IsEmail()
-  @NormalizeEmail()
-  email?: string | null;
-
-  @IsOptional()
   @IsPhoneNumber()
   @NormalizePhone()
-  phoneNumber?: string | null;
+  phoneNumber?: string;
 
   @IsString()
   currentPassword: string;

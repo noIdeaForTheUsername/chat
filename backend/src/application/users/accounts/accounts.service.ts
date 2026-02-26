@@ -33,23 +33,22 @@ export class AccountsService {
   // BASIC ACCOUNT MODIFICATIONS
 
   @Transactional()
-  async createUser(login: string, passwordHash: string,
-    email?: string, phoneNumber?: string,
+  async createUser(phoneNumber: string, passwordHash: string,
     name?: string, bio?: string,
   ) {
-    if (!email && !phoneNumber)
-      throw new BadRequestException('email-or-phone-required');
+    if (!phoneNumber)
+      throw new BadRequestException('phone-required');
 
     // Create and return ID
     try {
-      const newAccount = await this.accounts.create(login, passwordHash,
-        !this.config.getOrThrow('auth.requireAccountActivation'), email, phoneNumber);
+      const newAccount = await this.accounts.create(phoneNumber, passwordHash,
+        !this.config.getOrThrow('auth.requireAccountActivation'));
       await this.profiles.createProfile(newAccount.id, name, bio);
 
       // Notify administrators
       this.notifyAdministration(
         ["accountCreatedHeader"],
-        ["accountCreatedMessage", login],
+        ["accountCreatedMessage", phoneNumber],
         "account-creation"
       );
       
@@ -76,7 +75,6 @@ export class AccountsService {
     await verifyPassword(found, dto.currentPassword);
 
     let body: Partial<Account> = {
-      email: dto.email,
       phoneNumber: dto.phoneNumber,
       passwordHash: undefined
     }
@@ -87,8 +85,8 @@ export class AccountsService {
     }
 
     const updated = await this.accounts.update(callerId, body);
-    if (!updated.email && !updated.phoneNumber)
-      throw new BadRequestException("email-or-phone-required");
+    if (!updated.phoneNumber)
+      throw new BadRequestException("phone-required");
   }
 
   // ACCOUNT PRIVILEGES OPERATIONS
