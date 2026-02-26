@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { inject } from "@angular/core";
-import { Profile, ServerUserProfile, UserProfile } from "../profile.interface";
-import { mapUserProfile, mapProfileList } from "../profile-utils";
+import { AnyProfile, OwnProfile, Profile } from "../profile.interface";
 import { map, tap } from "rxjs";
+import { mapProfileList } from "../profile-utils";
 
 
 
@@ -12,37 +12,31 @@ export class BackendProfileApi {
   
 
   getCurrentProfile() {
-    return this.http.get<ServerUserProfile>("/profiles/me").pipe(
-      map(mapUserProfile)
-    );
+    return this.http.get<OwnProfile>("/profiles/me");
   }
 
   getUserKnownProfiles() {
-    return this.http.get<ServerUserProfile[]>("/profiles").pipe(
+    return this.http.get<Profile[]>("/profiles").pipe(
       map(mapProfileList)
     );
   }
 
   getProfileById(id: number) {
-    return this.http.get<ServerUserProfile>(`/profiles/${id}`).pipe(
-      map(mapUserProfile)
-    );
+    return this.http.get<AnyProfile>(`/profiles/${id}`);
   }
 
   getSearchedProfiles(search: string) {
-    return this.http.get<ServerUserProfile[]>(`/profiles/search?q=${encodeURIComponent(search)}`).pipe(
+    return this.http.get<Profile[]>(`/profiles/search?q=${encodeURIComponent(search)}`).pipe(
       map(mapProfileList)
     );
   }
 
-  editOwnProfile(profileChanges: Partial<ServerUserProfile>) {
-    return this.http.patch<ServerUserProfile>("/profiles/me", profileChanges).pipe(
-      map(mapUserProfile)
-    );
+  editOwnProfile(profileChanges: Partial<OwnProfile>) {
+    return this.http.patch<OwnProfile>("/profiles/me", profileChanges);
   }
 
   updateNick(profileId: number, newNick: string) {
-    return this.http.patch(`/profiles/${profileId}/nick`, { nick: newNick });
+    return this.http.patch<Profile>(`/profiles/${profileId}/nick`, { nick: newNick });
   }
 
   blockUser(profileId: number) {

@@ -15,7 +15,7 @@ import type { OverlayEventDetail } from '@ionic/core';
 import { profileMatchesSearch } from '@app/profiles/profile-utils';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { Profile } from '@app/profiles/profile.interface';
+import { AnyProfile } from '@app/profiles/profile.interface';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { AuthService } from '@app/auth/auth.service';
@@ -59,7 +59,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
   protected displayedConversations = computed(() => this.getFilteredConversations(this.conversations()));
   
   protected lastMessages: Signal<Map<number, Message | null>> = this.conversationService.conversationsMessagePreviews;
-  protected profiles: Signal<Map<number, Profile>> = this.profileService.profiles;
+  protected profiles: Signal<Map<number, AnyProfile>> = this.profileService.profiles;
 
   // State
   protected conversationsLoaded = this.conversationService.conversationsLoaded;
@@ -168,8 +168,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
       this.profileService.getProfileById(conversation.participantId);  // force loading the missing profile but don't delay the return
       return true;  // consider blocked until loaded
     }
-    if (profile.type === 'group') return false;
-    return profile.blocked;
+    return "blocked" in profile && profile.blocked;
   }
 
   // -------------------------------------------------------- UI FUNCTIONS

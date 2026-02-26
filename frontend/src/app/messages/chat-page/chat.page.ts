@@ -19,7 +19,7 @@ import { MessageActionButtons } from './message-action-buttons';
 import { MessageCardComponent } from './message-card/message-card.component';
 import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 import { Conversation } from '@app/conversations/conversation.interface';
-import { Profile } from '@app/profiles/profile.interface';
+import { AnyProfile } from '@app/profiles/profile.interface';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
@@ -60,7 +60,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // DATA TO DISPLAY
   protected conversationId: number = -1;
   public conversation = signal<Conversation | undefined>(undefined);
-  public participant = signal<Profile | undefined>(undefined);
+  public participant = signal<AnyProfile | undefined>(undefined);
     
   public messages = this.messageService.displayedMessages;
   public repliedTexts = this.messageService.repliedTexts;

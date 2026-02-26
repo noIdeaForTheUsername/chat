@@ -14,6 +14,9 @@ export class UserKnownProfile {
   @ViewColumn()
   bio: string;
 
+  @ViewColumn({ name: 'phone_number' })
+  phoneNumber: string;
+
   @ViewColumn()
   nick?: string;
 

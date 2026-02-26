@@ -85,8 +85,8 @@
     "discovery": {
       "title": "Nowy czat...",
       "header": "Znajdź użytkownika",
-      "info": "W pasku wyszukiwania powyżej wpisz: <ul><li>pełne <b>imię i nazwisko</b> lub</li><li>pełny <b>login</b> lub</li><li>pełny <b>e-mail</b> lub</li><li>pełny numer <b>telefonu</b> z kierunkowym (np. +48 123 123 123)</li></ul> i naciśnij \"Zatwierdź\"",
-      "searchbar-hint": "Imię i nazwisko, login, e-mail lub telefon...",
+      "info": "W pasku wyżej wpisz: <ul><li><b>nr telefonu</b> z kodem kierunkowym (np. +48 123 123 123)</li> <li>lub <b>imię i nazwisko</b> (opcja mniej niezawodna)</li> </ul>",
+      "searchbar-hint": "+48 123 123 123",
       "found": "Znaleziono",
       "not-found": "Nie znaleziono"
     },
@@ -108,7 +108,7 @@
 
     "profile": {
       "title": "Profil użytkownika",
-      "edit-hint": "Loginu nie możesz edytować. Jeśli chcesz zmienić hasło, adres e-mail lub telefon, to kliknij ten tekst, aby przejść do ustawień konta",
+      "edit-hint": "Jeśli chcesz zmienić hasło lub telefon, to kliknij ten tekst, aby przejść do ustawień konta",
       "section": {
         "basic-info": "Podstawowe informacje"
       },
@@ -170,18 +170,14 @@
   
     "login": {
       "header": "Zaloguj się na swoje konto",
-      "account-input": "Login, e-mail lub numer telefonu",
+      "phone-input": "Telefon z numerem kierunkowym",
       "register-hint": "Nie mam jeszcze konta"
     },
 
     "register": {
       "header": "Utwórz nowe konto",
-      "encouragement": "Twoje imię i nazwisko oraz login będą widoczne tylko dla administratora i użytkowników, którzy Cię znajdą - a to wymaga znajomości <b>pełnej</b> któregoś z pól profilu.",
-      "name-input": "Imię i nazwisko (opcjonalne)",
-      "login-input": "Unikalny login (tylko litery, cyfry i podłogi; bez spacji)",
-      "email-input": "Adres e-mail",
-      "phone-input": "Telefon z numerem kierunkowym",
-      "email-phone-hint": "Wymagane jest co najmniej <b>jedno poniższe</b> (zalecany telefon). Tymi danymi będziesz mógł się zalogować. Nie będą widoczne dla innych użytkowników.",
+      "name-input": "Imię (+ nazwisko opcjonalnie)",
+      "phone-input": "Telefon z numerem kierunkowym. Używany do <b>logowania</b> i znajdowania innych użytkowników",
       "bio-input": "Opis profilu (opcjonalnie)",
       "login-hint": "Mam już konto"
     }

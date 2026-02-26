@@ -5,8 +5,8 @@ export class Profile {
   @PrimaryColumn({ update: false })
   id: number;
 
-  @Column({ type: 'varchar', nullable: true })
-  name: string | null;
+  @Column({ type: 'varchar', nullable: false })
+  name: string;
 
   @Column({ type: 'text', nullable: true })
   bio: string | null;

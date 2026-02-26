@@ -7,7 +7,7 @@ import { AlertType } from '@app/alerts/alert-type.enum';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ProfilePreviewComponent } from "@app/profiles/profile-preview-component/profile-preview.component";
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { Profile } from '@app/profiles/profile.interface';
+import { AnyProfile } from '@app/profiles/profile.interface';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { IonContent, IonItemDivider, IonItemGroup, IonLabel } from '@ionic/angular/standalone';
@@ -36,7 +36,7 @@ export class ConversationSettingsPage {
 
   protected conversationId!: number;
   protected participantId!: number;
-  protected participant = signal<Profile | undefined>(undefined);
+  protected participant = signal<AnyProfile | undefined>(undefined);
   protected dataLoaded = signal(false);
   protected loadError = signal<string | number | null>(null);
 
@@ -82,7 +82,7 @@ export class ConversationSettingsPage {
 
   protected promptBlockUser() {
     const participant = this.participant();
-    if (!participant || participant.type !== "user") return;
+    if (!participant) return;
     this.profileService.promptBlockUser(participant.id);
   }
 

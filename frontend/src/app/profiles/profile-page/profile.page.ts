@@ -1,20 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterLink } from '@angular/router';
-import { IonButton, IonContent, IonItemGroup, IonItemDivider, IonLabel, IonIcon, IonTextarea, IonNote, IonCard, IonCardSubtitle } from "@ionic/angular/standalone";
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
-import { Profile } from '@app/profiles/profile.interface';
-import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
-import { ProfileInfoItemComponent } from './profile-info-item/profile-info-item.component';
-import { ConversationService } from '@app/conversations/conversation.service';
-import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
-import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { AuthService } from '@app/auth/auth.service';
-import { firstValueFrom } from 'rxjs';
-import { AlertType } from '@src/app/alerts/alert-type.enum';
+import { ConversationService } from '@app/conversations/conversation.service';
+import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
+import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
+import { ProfileService } from '@app/profiles/profile-service/profile.service';
+import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
+import { IonButton, IonCard, IonCardSubtitle, IonContent, IonIcon, IonItemDivider, IonItemGroup, IonLabel, IonNote, IonTextarea } from "@ionic/angular/standalone";
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ProfileInfoItemComponent } from './profile-info-item/profile-info-item.component';
+import { AnyProfile } from '../profile.interface';
 
 @Component({
   selector: 'app-profile-page',
@@ -38,7 +35,7 @@ export class ProfilePage {
   protected alertService = inject(AlertService);
 
   // Data
-  protected profile = signal<Profile | undefined>(undefined);
+  protected profile = signal<AnyProfile | undefined>(undefined);
   protected conversationId = signal<number | undefined>(undefined);
   protected own = signal(false);
 
@@ -71,7 +68,7 @@ export class ProfilePage {
     this.profileService.getProfileById(parseInt(idStr)).subscribe({
       next: (profile) => {
         this.profile.set(profile);
-        this.editedNick.set((profile.type === "user") ? (profile.nick ?? "") : "");
+        if ("nick" in profile) this.editedNick.set(profile.nick ?? "");
         this.editedName.set(profile.name ?? "");
         this.editedBio.set(profile.bio ?? "");
         if (profile.id === this.authService.getUserId()) {
@@ -79,7 +76,7 @@ export class ProfilePage {
         }
         else {
           this.conversationId.set(this.conversationService.getConversationByParticipantId(
-            parseInt(idStr), this.profile()?.type)?.id
+            parseInt(idStr))?.id
           );
         }
         this.dataLoaded.set(true)
@@ -142,16 +139,16 @@ export class ProfilePage {
 
   promptBlockUser() {
     const profile = this.profile();
-    if (!profile || this.own() || profile.type !== "user") return;
+    if (!profile || this.own()) return;
     this.profileService.promptBlockUser(profile.id);
   }
 
   private updateNick() {
     const profile = this.profile();
-    if (this.own() || !profile || profile.type !== "user")
+    if (this.own() || !profile)
       return;
 
-    if (profile.nick !== this.editedNick()) {
+    if ("nick" in profile && profile.nick !== this.editedNick()) {
       this.profileService.updateNick(this.profile()!.id, this.editedNick()).subscribe();
     }
   }

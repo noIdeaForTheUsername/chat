@@ -1,14 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserKnownProfile } from './entities/user-known-profile.entity';
-import { Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Profile } from './entities/profile.entity';
 import { FullProfile } from './entities/full-profile.entity';
-import { normalize } from 'path';
 import { normalizePhone } from 'src/shared/validation/normalize-phone';
 import { normalizeName } from 'src/shared/validation/normalize-name';
-import { normalizeLogin } from 'src/shared/validation/normalize-login';
-import { normalizeEmail } from 'src/shared/validation/normalize-email';
 
 @Injectable()
 export class ProfilesDomainService {
@@ -70,7 +67,7 @@ export class ProfilesDomainService {
 
   // CREATING DATA
 
-  async createProfile(accountId: number, name?: string, bio?: string) {
+  async createProfile(accountId: number, name: string, bio?: string) {
     const profile = this.profiles.create({
       id: accountId,
       name,

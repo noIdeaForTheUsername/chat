@@ -116,9 +116,6 @@ export class AccountSettingsPage implements OnInit {
     this.authService.updateAccount(body).subscribe({
       next: () => {
         this.router.navigate(["/chats"]);
-      },
-      error: (e) => {
-        this.alertService.displayError(e.error?.message || e.status);
       }
     });
   }

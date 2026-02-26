@@ -28,7 +28,7 @@ export class AuthController {
   // AUTHENTICATION OPERATIONS
 
   @Post('register')
-  async register(@Body() body: RegisterDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async register(@Body() body: RegisterDto, @Req() req: Request) {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException('passwords-different');
     await this.authService.register(
@@ -37,7 +37,6 @@ export class AuthController {
       body.password,
       body.name, body.bio,
     );
-    // this.sendJwtCookie(res, authJwt);
   }
 
   @Post('login')

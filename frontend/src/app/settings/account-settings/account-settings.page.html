@@ -22,18 +22,10 @@
 
       <hr>
 
-      <!-- email -->
-      <div class="floating-input">
-        <label>
-          <p>{{ 'page.register.email-input' | translate }}:</p>
-          <input formControlName="email" type="email" placeholder="example@mail.com">
-        </label>
-      </div>
-
       <!-- phone number -->
       <div class="floating-input">
         <label>
-          <p>{{ 'page.register.phone-input' | translate }}:</p>
+          <p class="highlighted-b" [innerHTML]="'page.register.phone-input' | translate"></p>
           <input formControlName="phoneNumber" type="tel" placeholder="+48 000 000 000">
         </label>
       </div>

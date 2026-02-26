@@ -85,8 +85,8 @@
     "discovery": {
       "title": "New Chat...",
       "header": "Find a user",
-      "info": "In the search bar above, enter: <ul><li>a <b>full name</b> or</li><li>a full <b>login</b> or</li><li>a full <b>email</b> or</li><li>a full <b>phone</b> number with country code (e.g., +48 123 123 123)</li></ul> and press confirm",
-      "searchbar-hint": "Full name, login, email or phone...",
+      "info": "In the search bar above, enter: <ul><li>a <b>phone number</b> with country code (e.g., +48 123 123 123)</li> <li>or a <b>name</b> (a less reliable option)</li> </ul>",
+      "searchbar-hint": "+48 123 123 123",
       "found": "Found",
       "not-found": "Not found"
     },
@@ -108,7 +108,7 @@
 
     "profile": {
       "title": "User profile",
-      "edit-hint": "You can't edit your login. If you want to change the password, email address, or phone number, click this text to go to the account settings.",
+      "edit-hint": "If you want to change the password or phone, click this text to go to the account settings.",
       "section": {
         "basic-info": "Basic information"
       },
@@ -170,18 +170,14 @@
 
     "login": {
       "header": "Log in to your account",
-      "account-input": "Login, email or phone number",
+      "phone-input": "Phone with country code",
       "register-hint": "I don't have an account yet"
     },
 
     "register": {
       "header": "Create a new account",
-      "encouragement": "Your name and login will only be visible to the server admin and users <b>who discover you</b> - and this requires knowing the <b>exact</b> value of one of the profile fields.",
-      "name-input": "Full name (optional)",
-      "login-input": "Unique login (only letters, numbers and underscores; no spaces)",
-      "email-input": "Email address",
-      "phone-input": "Phone with country code",
-      "email-phone-hint": "At least <b>one is required</b> (phone recommended). You'll be able to log in using these fields. They won't be visible to other users.",
+      "name-input": "Name (+ optional surname)",
+      "phone-input": "Phone with country code. Used for <b>logging in</b> and discovering other users",
       "bio-input": "Profile description (optional)",
       "login-hint": "I already have an account"
     }

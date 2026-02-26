@@ -4,7 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
-import { Profile } from '@app/profiles/profile.interface';
+import { AnyProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { MessageView } from '../../message-view.interface';
 import { lastValueFrom } from 'rxjs';
@@ -32,7 +32,7 @@ export class MessageCardComponent  implements OnInit {
   // INTERNAL
 
   // appearance
-  protected profile = signal<Profile | undefined>(undefined);
+  protected profile = signal<AnyProfile | undefined>(undefined);
   protected spaceBefore = computed(() => this.previousMessage() && this.previousMessage()!.isOwn != this.message().isOwn);
   // selection
   private clickLock = false;

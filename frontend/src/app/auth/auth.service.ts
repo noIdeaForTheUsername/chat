@@ -91,7 +91,7 @@ export class AuthService {
   
   // LOGIN & REGISTER & LOGOUT
 
-  login(body: { account: string; password: string }) {
+  login(body: { phoneNumber: string; password: string }) {
     this.processing.set(true);
     this.api.login(body).subscribe({
       next: (res: any) => {
@@ -108,14 +108,14 @@ export class AuthService {
   register(body: RegisterBody) {
     this.processing.set(true);
 
-    if (body.email?.length === 0) 
-      body.email = undefined;
-    if (body.phoneNumber?.length === 0)
-      body.phoneNumber = undefined;
-    if (body.bio?.length === 0)
-      body.bio = undefined;
-    if (body.name?.length === 0)
-      body.name = undefined;
+    // if (body.email?.length === 0) 
+    //   body.email = undefined;
+    // if (body.phoneNumber?.length === 0)
+    //   body.phoneNumber = undefined;
+    // if (body.bio?.length === 0)
+    //   body.bio = undefined;
+    // if (body.name?.length === 0)
+    //   body.name = undefined;
 
     return this.api.register(body).pipe(
       tap((res: null) => {
@@ -153,6 +153,10 @@ export class AuthService {
     return this.api.editAccount(updatedFieldsObject).pipe(
       tap((updatedAccount) => {
         this.userAccount.set(updatedAccount);
+      }),
+      catchError((err) => {
+        this.handleRegisterError(err);
+        return throwError(() => err);
       })
     );
   }

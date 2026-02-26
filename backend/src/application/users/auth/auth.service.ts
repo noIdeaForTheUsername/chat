@@ -42,7 +42,7 @@ export class AuthService {
 
   async register(req: any, phoneNumber: string,
     plainPassword: string,
-    name?: string, bio?: string
+    name: string, bio?: string
   ) {
     const hashedPassword = await hashPassword(plainPassword);
 

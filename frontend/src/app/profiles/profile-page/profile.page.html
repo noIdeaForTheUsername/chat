@@ -41,33 +41,30 @@
       </ion-item-divider>
 
       <!-- NICK -->
-      @if (!own() && p.type == 'user') {
+      @if (!own() && "nick" in p) {
         <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick"
         [editable]="true" (valueChange)="this.onFieldInput('nick', $event)"
         [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
       }
 
-      <!-- USER-ONLY PROPERTIES (no group) -->
-      @if (p.type == 'user') {
-        <profile-info-item [title]="'profile.login' | translate" [value]="p.login"/>
+      <profile-info-item [title]="'profile.phone-number' | translate" [value]="p.phoneNumber"/>
 
-        <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
-        [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
-      }
+      <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
+      [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
     </ion-item-group>
 
     <!-- BIO SECTION -->
     @if (p.bio !== undefined || own()) {
     <ion-item-group class="rounded">
       <ion-card>
-        <ion-card-subtitle>{{`profile.${p.type}-bio` | translate}}</ion-card-subtitle>
+        <ion-card-subtitle>{{`profile.user-bio` | translate}}</ion-card-subtitle>
         <hr>
         @if (editMode()) {  <!-- edit mode -->
           <ion-textarea
           [autoGrow]="true"
           (ionChange)="onFieldInput('bio', $event.target.value)"
           [value]="p.bio"
-          [placeholder]="`profile.${p.type}-bio-placeholder` | translate">
+          [placeholder]="`profile.user-bio-placeholder` | translate">
             <ion-icon name="pencil" slot="start"></ion-icon>
           </ion-textarea>
         }

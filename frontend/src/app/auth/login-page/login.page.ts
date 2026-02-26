@@ -31,7 +31,7 @@ export class LoginPage {
   // protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
   loginForm = new FormGroup({
-    account: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    phoneNumber: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\+[0-9 ]+$/)] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
@@ -42,7 +42,7 @@ export class LoginPage {
   }
 
   ionViewWillLeave() {
-    this.loginForm.patchValue({ account: '', password: '' });
+    this.loginForm.patchValue({ phoneNumber: '', password: '' });
     this.loginForm.reset();
   }
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, signal, ViewChild } from '@angular/core';
 import { LoadingIndicator } from "@app/loading/loading-indicator-component/loading-indicator.component";
-import { UserProfile } from '@app/profiles/profile.interface';
+import { Profile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { IonAvatar, IonButton, IonContent, IonItem, IonLabel, IonSearchbar } from '@ionic/angular/standalone';
@@ -33,7 +33,7 @@ export class DiscoveryPage implements OnDestroy {
 
   // Signals
   protected searchBarFilled = signal<boolean>(false);
-  protected searchResults = signal(new Map<number, UserProfile>);
+  protected searchResults = signal(new Map<number, Profile>);
   protected searchLoading = signal<boolean>(false);
   protected loadError = signal<string | number | null>(null);
 

@@ -1,5 +1,5 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
-import { Profile, ServerUserProfile, UserProfile } from '@app/profiles/profile.interface';
+import { OwnProfile, Profile } from '@app/profiles/profile.interface';
 import { forkJoin, Observable, of, tap } from 'rxjs';
 import { BackendProfileApi } from './backend-profile-api';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
@@ -18,7 +18,7 @@ export class ProfileService {
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
 
-  public readonly profiles = signal(new Map<number, Profile>());
+  public readonly profiles = signal(new Map<number, Profile | OwnProfile>());
   public readonly profilesLoaded = signal<boolean>(false);
   // public readonly loadErrorCode: WritableSignal<number | null> = signal(null);
 
@@ -39,7 +39,7 @@ export class ProfileService {
     );
   }
 
-  public getProfileById(id: number): Observable<Profile> {
+  public getProfileById(id: number): Observable<Profile | OwnProfile> {
     let found = this.profiles().get(id);
     if (found) return of(found);
 
@@ -51,11 +51,12 @@ export class ProfileService {
     );
   }
 
+
   public getPublicUserProfiles(search: string) {
     return this.api.getSearchedProfiles(search);
   }
 
-  public editOwnProfile(profileChanges: Partial<ServerUserProfile>) {
+  public editOwnProfile(profileChanges: Partial<OwnProfile>) {
     return this.api.editOwnProfile(profileChanges).pipe(
       tap(updatedProfile => {
         this.profiles.update(profiles => {
@@ -69,8 +70,8 @@ export class ProfileService {
   public updateNick(profileId: number, newNick: string) {
     return this.api.updateNick(profileId, newNick).pipe(
       tap(() => {
-        let existing = this.profiles().get(profileId);
-        if (!existing || existing.type !== 'user') return;
+        let existing = this.profiles().get(profileId) as Profile | undefined;
+        if (!existing) return;
 
         existing.nick = newNick;
 
@@ -106,14 +107,14 @@ export class ProfileService {
 
   private setUserBlocked(profileId: number, blocked: boolean) {
     const existing = this.profiles().get(profileId);
-    if (!existing || existing.type !== 'user') return;
+    if (!existing) return;
 
     const endpoint = blocked ? this.api.blockUser(profileId) : this.api.unblockUser(profileId);
 
     endpoint.subscribe({
       next: () => {
         let p = this.profiles().get(profileId);
-        if (!p || p.type !== 'user') return;
+        if (!p || !('blocked' in p)) return;
         p.blocked = blocked;
         this.updateProfileInMemory(p);
       },
@@ -121,7 +122,7 @@ export class ProfileService {
     });
   }
 
-  private updateProfileInMemory(updatedProfile: Profile) {
+  private updateProfileInMemory(updatedProfile: Profile | OwnProfile) {
     const itemCopy = {...updatedProfile};
     this.profiles().set(updatedProfile.id, itemCopy);
     let arrayCopy = [...this.profiles()];

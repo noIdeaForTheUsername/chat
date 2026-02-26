@@ -3,7 +3,6 @@ import { Conversation } from './conversation.interface';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { Message } from '@app/messages/message.interface';
 import { BackendConversationApi } from './backend-conversation-api';
-import { Profile } from '@app/profiles/profile.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
@@ -122,8 +121,8 @@ export class ConversationService {
   }
 
   // Unlike getConversationById, this only checks existing conversations in memory
-  getConversationByParticipantId(id: number, participantType: "user" | "group" = "user"): Conversation | undefined {
-    let found = this.conversations().find((c) => c.participantId === id && this.profileService.profiles().get(id)?.type == "user");
+  getConversationByParticipantId(id: number): Conversation | undefined {
+    let found = this.conversations().find((c) => c.participantId === id);
     return found;
   }
 

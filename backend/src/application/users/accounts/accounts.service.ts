@@ -34,7 +34,7 @@ export class AccountsService {
 
   @Transactional()
   async createUser(phoneNumber: string, passwordHash: string,
-    name?: string, bio?: string,
+    name: string, bio?: string,
   ) {
     if (!phoneNumber)
       throw new BadRequestException('phone-required');
@@ -54,18 +54,7 @@ export class AccountsService {
       
       return newAccount;
     } catch (err) {
-      if (err instanceof QueryFailedError && err.driverError.code == "23505"){
-        const constraint = err.driverError.constraint;
-        switch (constraint) {
-          case 'unique_login':
-            throw new ConflictException('exists.login');
-          case 'unique_email':
-            throw new ConflictException('exists.email');
-          case 'unique_phone_number':
-            throw new ConflictException('exists.phone-number');
-        }
-      }
-      throw err;
+      this.handleFieldExistingError(err);
     }
   }
 
@@ -84,7 +73,12 @@ export class AccountsService {
       toUpdate.passwordHash = newPasswordHash;
     }
 
-    const updated = await this.accounts.update(callerId, toUpdate);
+    try {
+      await this.accounts.update(callerId, toUpdate);
+    }
+    catch (err) {
+      this.handleFieldExistingError(err);
+    }
   }
 
   // ACCOUNT PRIVILEGES OPERATIONS
@@ -127,5 +121,20 @@ export class AccountsService {
       };
       this.eventEmitter.emit("pushNotification", event);
     }
+  }
+
+  private handleFieldExistingError(err: any) {
+    if (err instanceof QueryFailedError && err.driverError.code == "23505"){
+      const constraint = err.driverError.constraint;
+      switch (constraint) {
+        // case 'unique_login':
+        //   throw new ConflictException('exists.login');
+        // case 'unique_email':
+        //   throw new ConflictException('exists.email');
+        case 'unique_phone_number':
+          throw new ConflictException('exists.phone-number');
+      }
+    }
+    throw err;
   }
 }
