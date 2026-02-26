@@ -23,21 +23,17 @@ export class ProfilesController {
 
   @Get('search')
   async searchProfiles(@Query('q') search: string) {
+    
+    // make sure the search isn't empty
     if (typeof search !== 'string')
       throw new BadRequestException('search-empty');
-
-    // make sure the search isn't empty
     search = search.trim();
     if (!search || search.length === 0) {
       throw new BadRequestException('search-empty');
     }
 
-    // Find and remove the private part
-    const profiles = await this.profilesService.findSearchedProfiles(search);
-    return profiles.map(profile => {
-      const { email, phoneNumber, ...publicProfile } = profile;
-      return publicProfile;
-    });
+    // Find
+    return await this.profilesService.findSearchedProfiles(search);
   }
 
   // My profile

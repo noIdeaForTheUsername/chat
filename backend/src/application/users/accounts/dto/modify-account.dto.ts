@@ -1,12 +1,11 @@
-import { IsEmail, IsOptional, IsPhoneNumber, IsString } from "class-validator";
-import { NormalizeEmail } from "src/shared/validation/normalize-email";
+import { IsOptional, IsPhoneNumber, IsString } from "class-validator";
 import { NormalizePhone } from "src/shared/validation/normalize-phone";
 
 export class ModifyAccountDto {
   @IsOptional()
   @IsPhoneNumber()
   @NormalizePhone()
-  phoneNumber?: string;
+  phoneNumber: string;
 
   @IsString()
   currentPassword: string;

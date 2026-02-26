@@ -22,8 +22,8 @@ export class AuthService {
     return await this.accountsDomainService.findById(userId);
   }
 
-  async login(req: any, account: string, plainPassword: string) {
-    const found = await this.accountsDomainService.findByUniqueField(account);
+  async login(req: any, phoneNumber: string, plainPassword: string) {
+    const found = await this.accountsDomainService.findByPhoneNumber(phoneNumber);
     if (!found) throw new ForbiddenException('credentials-invalid');
     await verifyPassword(found, plainPassword);  // throws exception if invalid
 
@@ -40,13 +40,13 @@ export class AuthService {
     });
   }
 
-  async register(req: any, login: string, plainPassword: string,
-    email?: string, phoneNumber?: string,
+  async register(req: any, phoneNumber: string,
+    plainPassword: string,
     name?: string, bio?: string
   ) {
     const hashedPassword = await hashPassword(plainPassword);
 
-    const user = await this.accountsService.createUser(login, hashedPassword, email, phoneNumber, name, bio);
+    const user = await this.accountsService.createUser(phoneNumber, hashedPassword, name, bio);
 
     await new Promise<void>((resolve, reject) => {
       req.session.regenerate((err: any) => {

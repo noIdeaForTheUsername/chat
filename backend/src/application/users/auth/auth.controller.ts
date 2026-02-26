@@ -33,8 +33,9 @@ export class AuthController {
       throw new BadRequestException('passwords-different');
     await this.authService.register(
       req,
-      body.login, body.password,
-      body.email, body.phoneNumber, body.name, body.bio,
+      body.phoneNumber,
+      body.password,
+      body.name, body.bio,
     );
     // this.sendJwtCookie(res, authJwt);
   }
@@ -46,7 +47,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() body: LoginDto)
   {
-    const id = await this.authService.login(req, body.account, body.password);
+    const id = await this.authService.login(req, body.phoneNumber, body.password);
     // this.sendJwtCookie(res, authJwt);
     return { id };
   }

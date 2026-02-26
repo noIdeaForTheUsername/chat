@@ -25,9 +25,6 @@ export class AccountsController {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException("passwords-different");
 
-    if (!body.email) body.email = null;
-    if (!body.phoneNumber) body.phoneNumber = null;
-
     return plainToInstance(
       AccountResponseDto,
       await this.accountsService.modifyAccount(userId, body)
@@ -39,10 +36,9 @@ export class AccountsController {
   @UseGuards(AdminGuard)
   @Get("unactivated")
   async getUnactivatedAccounts() {
-    const unsafe = (await this.accountsService.getUnactivatedAccounts()).map(acc =>
+    return (await this.accountsService.getUnactivatedAccounts()).map(acc =>
       plainToInstance(AccountResponseDto, acc)
     );
-    return unsafe;
   }
 
 

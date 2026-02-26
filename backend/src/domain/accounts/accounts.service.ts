@@ -22,17 +22,17 @@ export class AccountsDomainService {
     return found;
   }
 
-  // async findByLogin(login: string, exceptionOnNotFound = false) {
-  //   return await this.accounts.findOneBy({ login });
-  // }
-  // async findExistingByLogin(login: string) {
-  //   const found = await this.findByLogin(login);
-  //   if (!found)
-  //     throw new NotFoundException('not-found.user');
-  //   return found;
-  // }
+  async findByPhoneNumber(phoneNumber: string, exceptionOnNotFound = false) {
+    return await this.accounts.findOneBy({ phoneNumber });
+  }
+  async findExistingByPhoneNumber(phoneNumber: string) {
+    const found = await this.findByPhoneNumber(phoneNumber);
+    if (!found)
+      throw new NotFoundException('not-found.user');
+    return found;
+  }
 
-  async findByUniqueField(nameOrPhone: string) {
+  async findByUniqueFieldUNFINISHED(nameOrPhone: string) {
     // TODO: NAME CHECK
     const phoneNumberCheck = normalizePhone(nameOrPhone);
     

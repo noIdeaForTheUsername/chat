@@ -74,19 +74,17 @@ export class AccountsService {
     const found = await this.accounts.findExistingById(callerId);
     await verifyPassword(found, dto.currentPassword);
 
-    let body: Partial<Account> = {
+    let toUpdate: Partial<Account> = {
       phoneNumber: dto.phoneNumber,
       passwordHash: undefined
     }
 
     if (dto.password) {
       let newPasswordHash = await hashPassword(dto.password);
-      body.passwordHash = newPasswordHash;
+      toUpdate.passwordHash = newPasswordHash;
     }
 
-    const updated = await this.accounts.update(callerId, body);
-    if (!updated.phoneNumber)
-      throw new BadRequestException("phone-required");
+    const updated = await this.accounts.update(callerId, toUpdate);
   }
 
   // ACCOUNT PRIVILEGES OPERATIONS
