@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
+import { loadingPageGuard } from './loading/loading-page.guard';
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./loading/loading-page/loading.page').then(m => m.LoadingPage),
+    canActivate: [loadingPageGuard]
   },
   {
     path: 'chats',

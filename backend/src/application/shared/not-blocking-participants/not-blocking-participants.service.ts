@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Contact } from "src/domain/contacts/entities/contact.entity";
 import { Participation } from "src/domain/conversations/entities/participation.entity";
-import { Not, Repository } from "typeorm";
+import { Repository } from "typeorm";
 
 @Injectable()
 export class NotBlockingParticipantsService {
@@ -10,8 +10,6 @@ export class NotBlockingParticipantsService {
   constructor(
     @InjectRepository(Participation)
     private readonly participationRepository: Repository<Participation>,
-    @InjectRepository(Contact)
-    private readonly contactRepository: Repository<Contact>,
   ) {}
   
   // Returns a list of participant IDs in the specified conversation, without provided userId,

@@ -1,11 +1,10 @@
 import { Component, inject } from "@angular/core";
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { IonButtons, IonContent } from "@ionic/angular/standalone";
 import { TranslatePipe } from "@ngx-translate/core";
-import { IonButton, IonButtons, IonContent, IonIcon } from "@ionic/angular/standalone";
-import { LoadingIndicator } from "../loading-indicator-component/loading-indicator.component";
-import { AuthService } from "@app/auth/auth.service";
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
 import { AppInitService } from "@src/app/loading/app-init.service";
+import { LoadingIndicator } from "../loading-indicator-component/loading-indicator.component";
 
 @Component({
   selector: 'app-loading-page',

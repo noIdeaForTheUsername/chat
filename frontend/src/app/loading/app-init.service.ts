@@ -23,6 +23,8 @@ export class AppInitService {
 
   public readonly serverUnavailableWhileLoggedOut = signal(false);
 
+  public blockLoadPage = false;
+
   async initializeApp() {
     await this.loadAuthAndRedirect();
   }
@@ -33,6 +35,7 @@ export class AppInitService {
     // (server down, session expired, etc - this will be handled later with alerts without holding the user on the loading page)
     if (this.auth.getUserId() && this.isOnOutsidePage() && this.auth.getUserAccountActive()) {  
       if (this.isOnOutsidePage()) {
+        this.blockLoadPage = true;
         this.router.navigateByUrl(this.successStartPage);
       }
     }
@@ -41,6 +44,7 @@ export class AppInitService {
     this.auth.loadServerAuth().subscribe({
       next: () => {
         // Successful auth load
+        this.blockLoadPage = true;
         this.notificationsService.sendSubscriptionIfAvailable();
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
           this.router.navigateByUrl(this.successStartPage);
@@ -76,6 +80,7 @@ export class AppInitService {
       this.serverUnavailableWhileLoggedOut.set(true);  // display err on the loading page
     }
     else if (err.status === 401) {  // unauthorized, go to welcome (from where the user can login/register)
+      this.blockLoadPage = true;
       this.router.navigateByUrl('/welcome');
     }
     
