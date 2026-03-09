@@ -7,6 +7,8 @@ import { TranslateService } from "@ngx-translate/core";
 import { AuthBackendApi, RegisterBody } from "./auth-api";
 import { catchError, tap, throwError, timeout } from "rxjs";
 import { UserAccount } from "./account.interface";
+import { Capacitor, CapacitorCookies } from "@capacitor/core";
+import { environment } from "@src/environments/environment.prod";
 
 
 // Manages the user authenthication state, handles redirects and errors.
@@ -92,11 +94,11 @@ export class AuthService {
   // LOGIN & REGISTER & LOGOUT
 
   login(body: { phoneNumber: string; password: string }) {
+    console.log("login called");
     this.processing.set(true);
     this.api.login(body).subscribe({
-      next: (res: any) => {
-        if (res.id)
-          this.setUserId(res.id);
+      next: (res) => {
+        console.log("Login successful, response:", res);
 
         this.processing.set(false);
         window.location.replace("chats");
@@ -108,22 +110,14 @@ export class AuthService {
   register(body: RegisterBody) {
     this.processing.set(true);
 
-    // if (body.email?.length === 0) 
-    //   body.email = undefined;
-    // if (body.phoneNumber?.length === 0)
-    //   body.phoneNumber = undefined;
-    // if (body.bio?.length === 0)
-    //   body.bio = undefined;
-    // if (body.name?.length === 0)
-    //   body.name = undefined;
-
     return this.api.register(body).pipe(
-      tap((res: null) => {
+      tap(_ => {
         try {
           localStorage.removeItem('registerFormDraft');
         } catch {
           // ignore storage errors
         }
+
         window.location.reload();
       }),
       catchError((err) => {
@@ -145,6 +139,27 @@ export class AuthService {
       }
     });
   }
+
+  // private async setSessionNativeCookie(res: any) {
+  //   let session: string = "";
+  //   console.log("trying to set native cookie");
+  //   console.log("response: ", res);
+  //   if (Capacitor.isNativePlatform() && (res.session || typeof res == "string")) {
+  //     session = typeof res === "string" ? res.split("session=")[1] : res.session;
+  //   }
+  //   if (!session) {
+  //     console.log("No session found in response, not setting native cookie.");
+  //     return;
+  //   }
+
+  //   console.log("Setting cookie in WebView for native platform...");
+  //     await CapacitorCookies.setCookie({
+  //       url: environment.capacitorApiUrl,
+  //       key: 'session',
+  //       value: session
+  //     });
+  //     console.log("set. I think");
+  // };
 
 
   // ACCOUNT DATA MODIFICATIONS
@@ -169,6 +184,7 @@ export class AuthService {
 
   private handleRegisterError(err: any) {
     this.processing.set(false);
+    console.error("handling register error: ", err);
     if (err.status === 0) {
       this.alertService.displayServerConnectionError(true);
     }

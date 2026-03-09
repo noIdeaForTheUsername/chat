@@ -27,6 +27,9 @@ export class DeviceSessionEntity {
   @Column({ type: 'jsonb', nullable: true, name: 'push_subscription' })
   pushSubscription: Record<string, any> | null;
 
+  @Column({ type: 'text', nullable: true, name: 'push_fcm_token' })
+  fcmToken: string | null;
+
   @Column({ type: 'character', length: 2, nullable: true, name: "language"})
   language: string | null;
 }

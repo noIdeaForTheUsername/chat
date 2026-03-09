@@ -7,6 +7,7 @@ import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-
 import { TranslatePipe } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 
+
 @Component({
   selector: 'app-welcome',
   templateUrl: './welcome.page.html',
@@ -24,4 +25,6 @@ export class WelcomePage {
   //     this.router.navigateByUrl('/');
   //   }
   // }
+
+  
 }

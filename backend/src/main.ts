@@ -8,6 +8,8 @@ import { join } from 'path';
 import { static as expressStatic } from 'express';
 import { initSessionMiddleware } from './shared/auth/session.middleware';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { FcmService } from './application/push-notifications/services/fcm.service';
+// import { SessionInBodyInterceptor } from './shared/auth/session-in-body.interceptor';
 // import { SocketIoAdapter } from './shared/websockets/socket-io.adapter';
 
 async function bootstrap() {
@@ -29,10 +31,15 @@ async function bootstrap() {
 
   // Sessions
   const sessionMiddleware = await initSessionMiddleware(config);
+  // app.useGlobalInterceptors(new SessionInBodyInterceptor());
   app.use(sessionMiddleware);
 
   // admin web interface
   app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));
+
+  // FCM notifications
+  const fcmService = app.get(FcmService);
+  fcmService.initFcm();
 
   // Port
   const port = config.get<number>('app.port') ?? 3000;
@@ -42,7 +49,6 @@ async function bootstrap() {
     origin: config.get<string[]>('cors.origins'),
     credentials: true,
   });
-  // app.useWebSocketAdapter(new SocketIoAdapter(config));
   await app.listen(port);
 }
 bootstrap();

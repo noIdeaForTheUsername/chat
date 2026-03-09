@@ -39,7 +39,7 @@ export class MessageBroadcastingService {
         const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
         if (!profile) continue;
 
-        const senderName = profile.nick || profile.name || profile.login || null;
+        const senderName = profile.nick || profile.name || profile.phoneNumber || null;
         if (!senderName) continue;
 
 

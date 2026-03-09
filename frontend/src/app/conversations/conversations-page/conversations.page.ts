@@ -76,7 +76,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
   protected eventListener?: EventListener;
 
   // Notifications
-  protected notificationsPermission = signal(Notification.permission);
+  protected notificationsPermission = signal<string>("default");
   protected displayNotificationButton = computed(() => 
     this.notificationsService.notificationsSupported && this.notificationsPermission() == "default" && !(isIOS() && !isPwa())
   );
@@ -97,8 +97,9 @@ export class ConversationsPage implements OnInit, OnDestroy {
     })
   }
 
-  ngOnInit() {
-    this.notificationsPermission.set(Notification.permission);
+  async ngOnInit() {
+    // this.notificationsPermission.set(Notification.permission);
+    this.notificationsPermission.set(await this.notificationsService.getNotificationsStatus());
 
     this.eventListener = () => { 
       if (document.visibilityState === "visible")
@@ -174,8 +175,8 @@ export class ConversationsPage implements OnInit, OnDestroy {
   // -------------------------------------------------------- UI FUNCTIONS
 
   async requestNotifications() {
-    await this.notificationsService.requestSubscriptionAndSend();
-    this.notificationsPermission.set(Notification.permission);
+    await this.notificationsService.requestAndSendSubscription();
+    this.notificationsPermission.set(await this.notificationsService.getNotificationsStatus());
   }
 
   toggleBlockedConversations() {
@@ -187,10 +188,10 @@ export class ConversationsPage implements OnInit, OnDestroy {
     if (typeof(input) == "string") this.searchFilter.set(input);
   }
 
-  performPlusButtonAction(event: CustomEvent<OverlayEventDetail>) {
-    if (event.detail.role == "cancel" || event.detail.role == 'backdrop') return;
-    this.router.navigate([event.detail.data]);
-  }
+  // performPlusButtonAction(event: CustomEvent<OverlayEventDetail>) {
+  //   if (event.detail.role == "cancel" || event.detail.role == 'backdrop') return;
+  //   this.router.navigate([event.detail.data]);
+  // }
 
   openMultiselectActionSheet() {
     this.multiselectActionSheetOpen.set(true);
@@ -219,23 +220,23 @@ export class ConversationsPage implements OnInit, OnDestroy {
   // -------------------------------------------------------- UI ELEMENTS
 
   // "Plus" button action menu
-  public plusButtons = [
-    {
-      text: this.translate.instant("page.conversations.plus-action.conversation"),
-      icon: "person-add",
-      data: "discovery"
-    },
-    {
-      text: this.translate.instant("page.conversations.plus-action.group"),
-      icon: "people",
-      data: "create-group"
-    },
-    {
-      text: this.translate.instant("common.cancel"),
-      role: 'cancel',
-      cssClass: "bold-text"
-    },
-  ];
+  // public plusButtons = [
+  //   {
+  //     text: this.translate.instant("page.conversations.plus-action.conversation"),
+  //     icon: "person-add",
+  //     data: "discovery"
+  //   },
+  //   {
+  //     text: this.translate.instant("page.conversations.plus-action.group"),
+  //     icon: "people",
+  //     data: "create-group"
+  //   },
+  //   {
+  //     text: this.translate.instant("common.cancel"),
+  //     role: 'cancel',
+  //     cssClass: "bold-text"
+  //   },
+  // ];
 
   public multiselectActionButtons = [
     {

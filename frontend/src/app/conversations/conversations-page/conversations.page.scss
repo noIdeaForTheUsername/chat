@@ -13,6 +13,6 @@ ion-button.notifications-btn {
   --background-activated: transparent;
 }
 
-.something b {
-  color: red;
+ion-fab {
+  margin-bottom: max(32px, var(--ion-safe-area-bottom));
 }

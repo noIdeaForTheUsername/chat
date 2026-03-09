@@ -5,6 +5,7 @@
 </app-standard-header>
 
 <ion-content [fullscreen]="true">
+  <!-- <p>{{this.initService.loadError()}}</p> -->
   <app-loading-indicator color="primary" size="full"
   [errorId]="serverUnavailableWhileLoggedOut() ? 'server-unavailable' : null"/>
 </ion-content>

@@ -2,6 +2,7 @@
 /env/
 /certs/
 /.env
+/firebase-private.json
 
 # compiled output
 /dist

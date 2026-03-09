@@ -4,6 +4,7 @@ import { ServerMessage, serverMessageToMessage } from '../messages/message-utils
 import { map, Observable, Subject } from 'rxjs';
 import { Message } from '../messages/message.interface';
 import { environment } from '@src/environments/environment';
+import { Capacitor } from '@capacitor/core';
 
 @Injectable({
   providedIn: 'root',
@@ -30,9 +31,11 @@ export class WebsocketService implements OnDestroy {
 
 
   constructor() {
-    this.socket = io(environment.socketIoUrl, {
-      path: environment.socketIoPath,
-      withCredentials: true,
+    this.socket = io(
+      Capacitor.isNativePlatform() ? environment.capacitorSocketIoUrl : environment.socketIoUrl,
+      {
+        path: environment.socketIoPath,
+        withCredentials: true,
     });
 
     this.socket.on("message", (value: ServerMessage) => {

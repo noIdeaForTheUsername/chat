@@ -16,6 +16,6 @@ export class LoadingPage {
 
   // NOTE: APP INIT SERVICE IS THE FILE THAT NAVIGATES THE USER FURTHER FROM THIS LOADING PAGE
 
-  private initService = inject(AppInitService);
+  protected initService = inject(AppInitService);
   protected serverUnavailableWhileLoggedOut = this.initService.serverUnavailableWhileLoggedOut;
 }

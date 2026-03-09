@@ -46,7 +46,7 @@ export class AppSettingsPage {
   }
 
   requestNotifications() {
-    this.notificationsService.requestSubscriptionAndSend();
+    this.notificationsService.requestAndSendSubscription();
   }
 
 }

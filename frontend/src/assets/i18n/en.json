@@ -170,7 +170,7 @@
 
     "login": {
       "header": "Log in to your account",
-      "phone-input": "Phone with country code",
+      "phone-input": "Phone with <b>country</b> code",
       "register-hint": "I don't have an account yet"
     },
 

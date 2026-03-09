@@ -69,17 +69,17 @@
       <h1 class="no-conversations-text">{{"error.data-unavailable.header" | translate}}</h1>
     }
 
-    <!-- "ADD" BUTTON (discovery) -->
+    <!-- "ADD" FAB BUTTON (discovery) -->
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-      <ion-fab-button id="plus-button" [class.pulsing]="conversationsEmpty()">
+      <ion-fab-button [class.pulsing]="conversationsEmpty()" routerLink="/discovery">
         <ion-icon name="add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
     <!-- ACTION MENUS -->
-    <ion-action-sheet trigger="plus-button" [buttons]="plusButtons" (didDismiss)="performPlusButtonAction($event)"
+    <!-- <ion-action-sheet trigger="plus-button" [buttons]="plusButtons" (didDismiss)="performPlusButtonAction($event)"
       [header]="'page.conversations.plus-action.header' | translate">
-    </ion-action-sheet>
+    </ion-action-sheet> -->
     <ion-action-sheet [isOpen]="multiselectActionSheetOpen()" [buttons]="multiselectActionButtons" (didDismiss)="performMultiselectAction($event)"
       [header]="'page.conversations.conversation-action.header' | translate">
     </ion-action-sheet>

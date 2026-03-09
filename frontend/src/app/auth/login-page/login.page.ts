@@ -31,7 +31,7 @@ export class LoginPage {
   // protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
   loginForm = new FormGroup({
-    phoneNumber: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\+[0-9 ]+$/)] }),
+    phoneNumber: new FormControl('+48 ', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\+[0-9 ]+$/)] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 

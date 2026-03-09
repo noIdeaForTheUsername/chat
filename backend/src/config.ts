@@ -32,7 +32,7 @@ export default () => {
       port: parseInt(process.env.DB_PORT ?? "5432", 10) || 5432,
       username: process.env.DB_USERNAME ?? 'chat',
       password: process.env.DB_PASSWORD ?? 'chat',
-      database: process.env.DB_DATABASE ?? 'chat',
+      database: process.env.DB_NAME ?? 'chat',
     },
 
     pushNotifications: {

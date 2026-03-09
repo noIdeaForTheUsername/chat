@@ -43,12 +43,9 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-    @Body() body: LoginDto)
-  {
-    const id = await this.authService.login(req, body.phoneNumber, body.password);
-    // this.sendJwtCookie(res, authJwt);
-    return { id };
+    @Body() body: LoginDto,
+  ) {
+    await this.authService.login(req, body.phoneNumber, body.password);
   }
  
   @Post('logout')

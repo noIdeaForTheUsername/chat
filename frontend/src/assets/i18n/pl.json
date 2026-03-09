@@ -170,7 +170,7 @@
   
     "login": {
       "header": "Zaloguj się na swoje konto",
-      "phone-input": "Telefon z numerem kierunkowym",
+      "phone-input": "Telefon z numerem <b>kierunkowym</b>",
       "register-hint": "Nie mam jeszcze konta"
     },
 

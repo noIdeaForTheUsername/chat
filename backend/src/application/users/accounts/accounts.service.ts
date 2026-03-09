@@ -55,6 +55,7 @@ export class AccountsService {
       return newAccount;
     } catch (err) {
       this.handleFieldExistingError(err);
+      throw err; // to make TS happy (handleFieldExistingError should throw an exception ALWAYS anyways)
     }
   }
 
@@ -78,6 +79,7 @@ export class AccountsService {
     }
     catch (err) {
       this.handleFieldExistingError(err);
+      throw err;
     }
   }
 

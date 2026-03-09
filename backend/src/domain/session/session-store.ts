@@ -30,6 +30,7 @@ export class TypeOrmSessionStore extends session.Store {
         expires: record.expires,
         cookie: record.cookie,
         pushSubscription: record.pushSubscription,
+        fcmToken: record.fcmToken,
         language: record.language,
       }
 
@@ -51,6 +52,7 @@ export class TypeOrmSessionStore extends session.Store {
         pushSubscription: sessionData.pushSubscription,
         cookie: sessionData.cookie,
         language: sessionData.language,
+        fcmToken: sessionData.fcmToken,
         expires,
       });
 

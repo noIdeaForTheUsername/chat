@@ -18,10 +18,11 @@ export class AppInitService {
   
   // Settings
   // Pages that are accessible without login and considered "outside" of the main app
-  private readonly outsidePages = ['/', '/login', '/register', "/welcome", "/account-inactive", "/installation-guide"];
+  private readonly outsidePages = ['/', "/#", '/login', '/register', "/welcome", "/account-inactive", "/installation-guide"];
   private readonly successStartPage = '/chats';
 
   public readonly serverUnavailableWhileLoggedOut = signal(false);
+  public readonly loadError = signal<string | null>(null);
 
   public blockLoadPage = false;
 
@@ -78,6 +79,7 @@ export class AppInitService {
     else if (isServerUnavailableError(err)) {
       this.router.navigateByUrl('/');
       this.serverUnavailableWhileLoggedOut.set(true);  // display err on the loading page
+      this.loadError.set(JSON.stringify(err));
     }
     else if (err.status === 401) {  // unauthorized, go to welcome (from where the user can login/register)
       this.blockLoadPage = true;
@@ -86,6 +88,7 @@ export class AppInitService {
     
     // unknown
     else {
+      console.error("AppInitService, handleGetAuthError(): Unknown error during auth load: ", err);
       this.alertService.displayUnknownError(err);
     }
   }

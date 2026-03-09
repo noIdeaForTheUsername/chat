@@ -1,10 +1,16 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
-import { EmptyToNull } from "src/shared/validation/empty-to-null";
+import { IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
 
 
 export class PushSubscriptionDto {
   @IsObject()
-  subscription: object;
+  @IsOptional()
+  subscription?: object;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  fcmToken?: string;
+
 
   @IsString()
   language: string;

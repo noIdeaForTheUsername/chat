@@ -22,19 +22,22 @@ export class AuthService {
     return await this.accountsDomainService.findById(userId);
   }
 
-  async login(req: any, phoneNumber: string, plainPassword: string) {
+  async login(req: any, phoneNumber: string, plainPassword: string): Promise<{ id: number /*userId*/, session: string }> {
     const found = await this.accountsDomainService.findByPhoneNumber(phoneNumber);
     if (!found) throw new ForbiddenException('credentials-invalid');
     await verifyPassword(found, plainPassword);  // throws exception if invalid
 
 
-    return await new Promise<number>((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       req.session.regenerate((err: any) => {
         if (err) return reject(err);
         req.session.userId = found.id;
         req.session.save((saveErr: any) => {
           if (saveErr) return reject(saveErr);
-          resolve(found.id);
+          resolve({
+            id: found.id,
+            session: req.session.id
+          });
         });
       });
     });
@@ -43,18 +46,20 @@ export class AuthService {
   async register(req: any, phoneNumber: string,
     plainPassword: string,
     name: string, bio?: string
-  ) {
+  ): Promise<{ session: string }> {
     const hashedPassword = await hashPassword(plainPassword);
 
     const user = await this.accountsService.createUser(phoneNumber, hashedPassword, name, bio);
 
-    await new Promise<void>((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       req.session.regenerate((err: any) => {
         if (err) return reject(err);
         req.session.userId = user.id;
         req.session.save((saveErr: any) => {
           if (saveErr) return reject(saveErr);
-          resolve();
+          resolve({
+            session: req.session.id
+          });
         });
       });
     });
