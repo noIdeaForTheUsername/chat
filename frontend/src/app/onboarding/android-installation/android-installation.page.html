@@ -1,0 +1,19 @@
+<app-standard-header [title]="'page.android-guide.title' | translate"/>
+
+<ion-content [fullscreen]="true" class="ion-padding ion-text-center">
+  <div class="max-width-container">
+    @if (!this.isAndroid) {
+      <h3>
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>&nbsp;&nbsp;
+        <span class="highlighted-b clickable" routerLink="/installation-guide"
+          [innerHTML]="'page.android-guide.warning' | translate"></span>
+      </h3>
+    }
+
+    <p class="icon">
+      <ion-icon name="logo-android" color="primary"></ion-icon>
+    </p>
+
+    <app-android-installation/>
+  </div>
+</ion-content>

@@ -46,7 +46,8 @@
       "description": "A secure and private messaging app.",
       "hint": "You need to register or log in to use the app.",
       "create-account": "I want to create a new account",
-      "have-account": "I already have an account"
+      "have-account": "I already have an account",
+      "continue-web": "...or continue in web browser and log in:"
     },
     "account-inactive": {
       "title": "Registration Successful",
@@ -58,22 +59,24 @@
       "notifications-label": "Enable notifications to get informed about account activation or new received messages",
       "notifications-button": "Enable"
     },
-    "guide": {
+    "pwa-guide": {
       "title": "Installation",
-      "description": "Depending on the browser, this may look a little different. Find the <b>\"Add to Home Screen\"</b> option in the <b>browser menu</b> (which is usually opened by a button in the corner of the screen), then select <b>\"Install.\"</b> The app will appear as an icon on your device's home screen.",
+      "description": "Depending on the browser, this may look a little different. Find the <b>\"Add to Home Screen\"</b> option in the <b>browser menu</b> (which is usually opened by a button in the corner of the screen), then select <b>\"Install.\"</b> The app will appear as an icon on your device's home screen or desktop.",
       "ios-description": "Unfortunately, web application installation on iOS only works in <b>Safari</b> browser. To install the app, open Safari's menu (the box with an arrow pointing up), then <b>scroll down</b> and select <b>\"Add to Home Screen.\"</b> The app will appear as an icon on your device's home screen.",
-      "image-hint": "Click the image to open it in a new view and be able to zoom in"
+      "image-hint": "Click the image to open it in a new view and be able to zoom in",
+      "android-recommendation": "<b>NOTE:</b> It looks like you're on an Android device. We strongly recommend you to use <a>this installation method (click to see)</a> instead of the one below."
+    },
+    "android-guide": {
+      "title": "Android app",
+      "warning": "This works <b>ONLY on Android</b> devices. If you're on a different platform, <a>click here</a>",
+      "download": "Download the ANDROID app!",
+      "tip": "After downloading, <b>open the notification</b> and <b>confirm</b> the installation"
     },
 
     "conversations": {
       "title": "Conversations",
       "search": "Search your contacts...",
-      "add-conversation-hint": "Use the <b>+ button</b> in the bottom-right corner to start a new chat",
-      "plus-action": {
-        "header": "New conversation...",
-        "conversation": "Find a user",
-        "group": "Create a new group"
-      },
+      "add-conversation-hint": "Use the <b>button</b> in the bottom-right corner to start a new chat",
       "conversation-action": {
         "header": "Selected conversations...",
         "clear-messages": "Clear my messages in selected"
@@ -145,7 +148,8 @@
       "auto-lock": "Auto-lock on close",
       "modify-account": "Modify account data",
       "logout": "Log out",
-      "install-app": "Install the app",
+      "install-pwa": "Install the web app",
+      "install-android": "Android app",
       "delete-messages": "Delete all messages in all conversations"
     },
 
@@ -191,7 +195,6 @@
     "phone-number": "Phone number",
     "user-bio": "About me...",
     "user-bio-placeholder": "A few sentences about yourself...",
-    "group-bio": "About the group",
 
     "my": "My profile",
     "view-profile": "View profile",
@@ -211,14 +214,13 @@
 
   "prompt": {
     "block": {
-      "user": "The user will be hidden for you, you won't receive notifications, and their messages in the group chats will no longer be visible to you. They won't be informed of this action. You can unblock them later from the Conversations list page.",
-      "group": "You will be removed from the group and it will be gone from your Conversation list. No one will be able to re-add you, unless you unblock the group."
+      "user": "The user will be hidden for you, you won't receive notifications. They won't be informed of this action. You can unblock them later from the Conversations list page."
     },
     "install": {
       "header": "Just 3 clicks...",
       "description": "but you have to do it yourself. Depending on the browser, it may look different, but usually you need to click the menu icon in one of the screen corners (3 dots or 3 lines), and then find the option \"Install app\" (best!) or, if that doesn't exist, \"Add to home screen\"."
     },
-    "unblock": "Are you sure you want to unblock this user/group?",
+    "unblock": "Are you sure you want to unblock this user?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
     "delete-message": "Are you sure you want to delete the selected own message(s), for all users?",

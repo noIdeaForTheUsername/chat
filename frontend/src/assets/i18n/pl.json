@@ -45,7 +45,8 @@
       "description": "Bezpieczna i prywatna aplikacja do przesyłania wiadomości.",
       "hint": "Musisz się zarejestrować lub zalogować, aby korzystać z aplikacji.",
       "create-account": "Chcę utworzyć nowe konto",
-      "have-account": "Mam już konto"
+      "have-account": "Mam już konto",
+      "continue-web": "...lub kontynuuj w przeglądarce internetowej i zaloguj się:"
     },
     "account-inactive": {
       "title": "Rejestracja udana",
@@ -57,11 +58,18 @@
       "notifications-label": "Włącz powiadomienia, aby otrzymywać informacje o aktywacji konta lub nowych odebranych wiadomościach",
       "notifications-button": "Włącz"
     },
-    "guide": {
+    "pwa-guide": {
       "title": "Instalacja",
       "description": "W zależności od przeglądarki może to wyglądać nieco inaczej. Znajdź w <b>menu przeglądarki</b> (które zazwyczaj otwiera się przyciskiem w rogu ekranu) opcję <b>\"Dodaj do ekranu głównego\"</b>, a następnie wybierz <b>\"Zainstaluj\"</b>. Aplikacja będzie widoczna jako ikonka na ekranie głównym Twojego urządzenia.",
       "ios-description": "Niestety instalacja aplikacji przeglądarkowej na iOS działa tylko w przeglądarce <b>Safari</b>. Aby zainstalować aplikację, otwórz menu Safari (pudełko ze strzałką skierowaną do góry), następnie <b>przewiń w dół</b> i wybierz <b>\"Dodaj do ekranu głównego.\"</b> Aplikacja pojawi się jako ikona na ekranie głównym Twojego urządzenia.",
-      "image-hint": "Kliknij obrazek, aby otworzyć go w nowym widoku i móc go powiększyć"
+      "image-hint": "Kliknij obrazek, aby otworzyć go w nowym widoku i móc go powiększyć",
+      "android-recommendation": "<b>UWAGA:</b> Wygląda na to, że jesteś na urządzeniu z Androidem. Mocno rekomendujemy Ci <a>tą metodę instalacji (kliknij, aby się przenieść)</a> zamiast poniższej."
+    },
+    "android-guide": {
+      "title": "Aplikacja Androida",
+      "warning": "To działa <b>TYLKO na urządzeniach z Androidem</b>. Jeśli jesteś na innej platformie, <a>kliknij tutaj</a>",
+      "download": "Pobierz aplikację ANDROIDA!",
+      "tip": "Po pobraniu <b>otwórz powiadomienie</b> po czym <b>zatwierdź</b> instalację"
     },
 
 
@@ -69,11 +77,6 @@
       "title": "Konwersacje",
       "search": "Szukaj w swoich kontaktach...",
       "add-conversation-hint": "Użyj <b>przycisku +</b> w prawym dolnym rogu ekranu, aby rozpocząć nową konwersację",
-      "plus-action": {
-        "header": "Nowa konwersacja...",
-        "conversation": "Znajdź użytkownika",
-        "group": "Utwórz nową grupę"
-      },
       "conversation-action": {
         "header": "Zaznaczone konwersacje...",
         "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"
@@ -145,7 +148,8 @@
       "auto-lock": "Automatycznie zablokuj przy zamknięciu",
       "modify-account": "Modyfikuj dane konta",
       "logout": "Wyloguj się",
-      "install-app": "Zainstaluj aplikację",
+      "install-pwa": "Zainstaluj aplikację webową",
+      "install-android": "Aplikacja Androida",
       "delete-messages": "Usuń wszystkie wiadomości we wszystkich konwersacjach"
     },
 
@@ -191,7 +195,6 @@
     "phone-number": "Numer telefonu",
     "user-bio": "O mnie...",
     "user-bio-placeholder": "Kilka zdań o sobie...",
-    "group-bio": "O grupie",
 
     "my": "Mój profil",
     "view-profile": "Zobacz profil",
@@ -210,10 +213,9 @@
 
   "prompt": {
     "block": {
-      "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień, a jego wiadomości w czatach grupowych nie będą już dla Ciebie widoczne. Nie zostanie on poinformowany o tej akcji. Możesz go odblokować później ze strony z listą konwersacji.",
-      "group": "Zostaniesz usunięty z grupy i zniknie ona z listy konwersacji. Nikt nie będzie mógł dodać Cię ponownie, dopóki nie odblokujesz grupy."
+      "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień. Nie zostanie on poinformowany o tej akcji. Możesz go odblokować później ze strony z listą konwersacji."
     },
-    "unblock": "Czy na pewno chcesz odblokować tego użytkownika/grupę?",
+    "unblock": "Czy na pewno chcesz odblokować tego użytkownika?",
     "clear-conversation": "Wszystkie Twoje wiadomości w wybranej konwersacji/ach zostaną trwale usunięte. Tej operacji nie można cofnąć.",
     "conversation-cleared": "Twoje wiadomości zostały usunięte.",
     "delete-message": "Czy na pewno chcesz usunąć wybrane swoje wiadomości, dla wszystkich użytkowników?",

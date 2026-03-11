@@ -34,8 +34,16 @@ async function bootstrap() {
   // app.useGlobalInterceptors(new SessionInBodyInterceptor());
   app.use(sessionMiddleware);
 
-  // admin web interface
-  app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));
+  // STATIC
+  app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));  // admin interface
+  app.use('/android-download', expressStatic(join(__dirname, '..', 'android-download'), {  // android app .apk
+    setHeaders(res) {
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.android.package-archive"
+      );
+      res.setHeader("Cache-Control", "no-cache");
+    }}));
 
   // FCM notifications
   const fcmService = app.get(FcmService);

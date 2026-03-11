@@ -66,6 +66,7 @@ export class AuthService {
   loadLocalAuth() {
     this.userId = Number(localStorage.getItem("userId")) || null;
     this.userAccountActive = localStorage.getItem("userAccountActive") === "true";
+    console.log("Loaded local auth: ", { userId: this.userId, userAccountActive: this.userAccountActive });
   }
 
   // check if the user is logged in and redirect / handle error accordingly
@@ -100,8 +101,9 @@ export class AuthService {
       next: (res) => {
         console.log("Login successful, response:", res);
 
+        // this.
         this.processing.set(false);
-        window.location.replace("chats");
+        window.location.replace("/");
       },
       error: (err) => this.handleRegisterError(err)
     });
@@ -132,34 +134,13 @@ export class AuthService {
     this.api.logout().subscribe({
       next: () => {
         this.setUserId(null);
-        window.location.replace("welcome");
+        window.location.replace("/"); // window.location.replace("#/welcome");
       },
       error: () => {
         this.alertService.displayError('logout-failed');
       }
     });
   }
-
-  // private async setSessionNativeCookie(res: any) {
-  //   let session: string = "";
-  //   console.log("trying to set native cookie");
-  //   console.log("response: ", res);
-  //   if (Capacitor.isNativePlatform() && (res.session || typeof res == "string")) {
-  //     session = typeof res === "string" ? res.split("session=")[1] : res.session;
-  //   }
-  //   if (!session) {
-  //     console.log("No session found in response, not setting native cookie.");
-  //     return;
-  //   }
-
-  //   console.log("Setting cookie in WebView for native platform...");
-  //     await CapacitorCookies.setCookie({
-  //       url: environment.capacitorApiUrl,
-  //       key: 'session',
-  //       value: session
-  //     });
-  //     console.log("set. I think");
-  // };
 
 
   // ACCOUNT DATA MODIFICATIONS
@@ -178,8 +159,6 @@ export class AuthService {
 
 
   // ERROR HANDLING
-
-  
 
 
   private handleRegisterError(err: any) {

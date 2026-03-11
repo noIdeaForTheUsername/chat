@@ -1,0 +1,32 @@
+<app-standard-header [title]="'app.title' | translate" [backButton]="false">
+  <ion-buttons slot="end">
+    <app-language-button/>
+  </ion-buttons>
+</app-standard-header>
+
+<ion-content [fullscreen]="true" class="ion-padding ion-text-center">
+
+  @if (preloading()) {
+    <app-preloading-screen></app-preloading-screen>
+  }
+
+  @else {
+    <div class="max-width-container">
+      <h1>{{ 'page.welcome.header' | translate }}</h1>
+      <p class="emote">👋☺️</p>
+
+      @if (showAndroidDownload()) {
+        <app-android-installation/>
+        <p>{{ 'page.welcome.continue-web' | translate }}</p>
+      }
+      @else {
+        <p>{{ 'page.welcome.hint' | translate }}</p>
+      }
+
+      <ion-button expand="block" fill="solid" routerLink="/register">{{ 'page.welcome.create-account' | translate }}</ion-button>
+      <ion-button expand="block" fill="outline" routerLink="/login">{{ 'page.welcome.have-account' | translate }}</ion-button>
+    </div>
+  }
+
+</ion-content>
+

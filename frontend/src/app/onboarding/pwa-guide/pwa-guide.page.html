@@ -1,0 +1,42 @@
+<app-standard-header [title]="'page.pwa-guide.title' | translate" [backButton]="true">
+  <ion-buttons slot="end">
+    <app-language-button/>
+  </ion-buttons>
+</app-standard-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="max-width-container">
+
+    <!-- Native recommendation for Android users -->
+    @if (isAndroid()) {
+      <h2>
+        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>&nbsp;
+        <span class="highlighted-b clickable"
+          routerLink="/android-installation"
+          [innerHTML]="'page.pwa-guide.android-recommendation' | translate"></span>
+      </h2>
+      <hr/>
+    }
+
+    <!-- PWA installation guide -->
+    <h1>{{ 'page.pwa-guide.title' | translate }}</h1>
+
+    @if (isIos()) {
+      <p class="highlighted-b" [innerHTML]="'page.pwa-guide.ios-description' | translate"></p>
+      <hr/>
+      <i>{{ 'page.pwa-guide.image-hint' | translate }}</i>
+      <a href="assets/ios-installation-guide.webp" target="_blank" rel="noopener">
+        <img src="assets/ios-installation-guide.webp"/>
+      </a>
+    }
+    @else {
+      <p class="highlighted-b" [innerHTML]="'page.pwa-guide.description' | translate"></p>
+      <hr/>
+      <i>{{ 'page.pwa-guide.image-hint' | translate }}</i>
+      <a href="assets/installation-guide.webp" target="_blank" rel="noopener">
+        <img src="assets/installation-guide.webp"/>
+      </a>
+    }
+    
+  </div>
+</ion-content>

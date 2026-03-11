@@ -1,11 +1,9 @@
 import { Routes } from '@angular/router';
-import { loadingPageGuard } from './loading/loading-page.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./loading/loading-page/loading.page').then(m => m.LoadingPage),
-    canActivate: [loadingPageGuard]
+    loadComponent: () => import('./onboarding/welcome/welcome.page').then( m => m.WelcomePage),
   },
   {
     path: 'chats',
@@ -48,15 +46,15 @@ export const routes: Routes = [
     loadComponent: () => import('./settings/account-settings/account-settings.page').then( m => m.AccountSettingsPage)
   },
   {
-    path: 'welcome',
-    loadComponent: () => import('./welcoming/welcome/welcome.page').then( m => m.WelcomePage)
-  },
-  {
     path: 'account-inactive',
-    loadComponent: () => import('./welcoming/account-inactive/account-inactive.page').then( m => m.AccountInactivePage)
+    loadComponent: () => import('./onboarding/account-inactive/account-inactive.page').then( m => m.AccountInactivePage)
   },
   {
     path: 'installation-guide',
-    loadComponent: () => import('./welcoming/guide/guide.page').then( m => m.GuidePage)
+    loadComponent: () => import('./onboarding/pwa-guide/pwa-guide.page').then( m => m.GuidePage)
+  },
+  {
+    path: 'android-installation',
+    loadComponent: () => import('./onboarding/android-installation/android-installation.page').then( m => m.AndroidInstallationPage)
   },
 ];

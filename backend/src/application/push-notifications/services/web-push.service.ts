@@ -51,7 +51,7 @@ export class WebPushService {
         "title": titleStr,
         "body": messageStr,
         "tag": tag,
-        "icon": "assets/icons/icon220.png",
+        "icon": "assets/icons/icon-256.webp",
         "badge": "assets/icons/badge.png",
         "lang": normalizedLang,
         "data": {

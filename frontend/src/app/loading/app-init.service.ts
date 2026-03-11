@@ -18,13 +18,14 @@ export class AppInitService {
   
   // Settings
   // Pages that are accessible without login and considered "outside" of the main app
-  private readonly outsidePages = ['/', "/#", '/login', '/register', "/welcome", "/account-inactive", "/installation-guide"];
+  private readonly outsidePages = ['/', "/#", '/login', '/register', "/account-inactive", "/installation-guide"];
   private readonly successStartPage = '/chats';
 
-  public readonly serverUnavailableWhileLoggedOut = signal(false);
-  public readonly loadError = signal<string | null>(null);
+  public readonly loadingError = signal<string | null>(null);
+  public readonly loadingErrorJson = signal<string | null>(null);
+  public readonly preloading = signal(true);
 
-  public blockLoadPage = false;
+  // public blockLoadPage = false;
 
   async initializeApp() {
     await this.loadAuthAndRedirect();
@@ -35,8 +36,10 @@ export class AppInitService {
     // If the user was logged in before, don't even wait for auth check 
     // (server down, session expired, etc - this will be handled later with alerts without holding the user on the loading page)
     if (this.auth.getUserId() && this.isOnOutsidePage() && this.auth.getUserAccountActive()) {  
+      this.preloading.set(false);
       if (this.isOnOutsidePage()) {
-        this.blockLoadPage = true;
+        // this.blockLoadPage = true;
+        console.log("navigating to chats");
         this.router.navigateByUrl(this.successStartPage);
       }
     }
@@ -44,14 +47,20 @@ export class AppInitService {
     // Refresh auth from the server (or load it for the first time)
     this.auth.loadServerAuth().subscribe({
       next: () => {
+        console.log("load server auth: success");
         // Successful auth load
-        this.blockLoadPage = true;
+        // this.blockLoadPage = true;
+        this.preloading.set(false);
         this.notificationsService.sendSubscriptionIfAvailable();
+        console.log("load server auth: userId = ", this.auth.getUserId());
+        console.log("load server auth: isOnOutsidePage = ", this.isOnOutsidePage());
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
+          console.log("load server auth: navigating from outside page");
           this.router.navigateByUrl(this.successStartPage);
         }
       },
       error: (err) => {
+        console.log("load server auth: fail");
         this.handleGetAuthError(err);
       }
     });
@@ -71,29 +80,39 @@ export class AppInitService {
     const previouslyAuthorized = this.auth.getUserId() !== null && this.auth.getUserAccountActive();
     if (previouslyAuthorized && isServerUnavailableError(err)) {  // server down
       this.alertService.displayServerConnectionError();
+      this.preloading.set(false);
     }
     else if (previouslyAuthorized && err.status === 401) {  // session expired
       this.alertService.displayLoginPrompt();
+      this.preloading.set(false);
     }
     // User wasn't logged in before (redirect needed):
-    else if (isServerUnavailableError(err)) {
+    else if (isServerUnavailableError(err)) {  // server unavailable
       this.router.navigateByUrl('/');
-      this.serverUnavailableWhileLoggedOut.set(true);  // display err on the loading page
-      this.loadError.set(JSON.stringify(err));
+      console.log("navigating cause of: server unavailable and user not logged in");
+      this.loadingError.set("server-unavailable");  // display err on the loading page
+      this.loadingErrorJson.set(JSON.stringify(err));
     }
-    else if (err.status === 401) {  // unauthorized, go to welcome (from where the user can login/register)
-      this.blockLoadPage = true;
-      this.router.navigateByUrl('/welcome');
+    else if (err.status === 401) {  // server available but unauthorized, go to the welcome page
+      // this.blockLoadPage = true;
+      if (!this.isOnOutsidePage()) {
+        console.log("navigating cause of: server available but unauthorized");
+        this.router.navigateByUrl('/');
+      }
+      this.preloading.set(false);
     }
     
     // unknown
     else {
       console.error("AppInitService, handleGetAuthError(): Unknown error during auth load: ", err);
+      this.loadingError.set("unknown");
       this.alertService.displayUnknownError(err);
     }
   }
 
   private isOnOutsidePage(): boolean {
+    console.log("window.location.pathname:", window.location.pathname);
+    console.log("this.outsidePages.includes(window.location.pathname):", this.outsidePages.includes(window.location.pathname));
     return this.outsidePages.includes(window.location.pathname);
   }
 }

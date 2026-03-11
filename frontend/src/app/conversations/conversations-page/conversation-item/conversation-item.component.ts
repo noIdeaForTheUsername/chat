@@ -8,6 +8,7 @@ import { IonAvatar, IonItem, IonLabel, IonIcon } from '@ionic/angular/standalone
 import { ConversationView } from '../conversation-view.interface';
 import { ProfileService } from '@src/app/profiles/profile-service/profile.service';
 import { TranslatePipe } from '@ngx-translate/core';
+import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
 
 @Component({
   selector: 'app-conversation-item',
@@ -47,6 +48,7 @@ export class ConversationItemComponent {
     this.processConversationSelection(id);
   }
   onConversationRightClick(event: MouseEvent, id: number) {
+    if (isTouchOnlyDevice()) return;
     event.preventDefault();
     this.processConversationSelection(id);
   }

@@ -59,20 +59,21 @@
         }
       </ion-list>
     }
-    <!-- No conversations text -->
-    @else if (this.conversationsEmpty()) {
-      <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
-      <p class="no-conversations-text highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></p>
-    }
     <!-- Error loading conversations -->
     @else if (this.conversationsLoadErr() !== null) {
       <h1 class="no-conversations-text">{{"error.data-unavailable.header" | translate}}</h1>
+    }
+    <!-- No conversations text -->
+    @else {
+      <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
+      <p class="no-conversations-text highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></p>
+      <p class="no-conversations-text"><ion-icon name="person-add"/></p>
     }
 
     <!-- "ADD" FAB BUTTON (discovery) -->
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
       <ion-fab-button [class.pulsing]="conversationsEmpty()" routerLink="/discovery">
-        <ion-icon name="add"></ion-icon>
+        <ion-icon name="person-add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
 
@@ -94,7 +95,7 @@
         icon="ban" (click)="toggleBlockedConversations()"/>
       <app-item-button [text]="'common.enter-selection' | translate"
         icon="checkbox-outline" (click)="this.selectionService.toggleSelectionMode()"/>
-      <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/>
+      <!-- <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/> -->
     </app-corner-menu>
   </div>
 </ion-content>

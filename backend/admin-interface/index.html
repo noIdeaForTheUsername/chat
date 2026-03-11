@@ -6,8 +6,8 @@
   <title>Document</title>
 </head>
 <body>
-  <form action="/auth/login" method="POST">
-    Login, email or phone number: <input type="text" name="account"/><br/>
+  <form action="/api/auth/login" method="POST">
+    Login, email or phone number: <input type="tel" name="phoneNumber"/><br/>
     Password: <input type="password" name="password"/><br/>
     <input type="submit" value="Log in">
   </form>
@@ -24,7 +24,7 @@
       if (!answer) return;
 
       const accountId = document.getElementById("accountId").value;
-      fetch(`/accounts/${accountId}/activated/`, {
+      fetch(`/api/accounts/${accountId}/activated/`, {
         method: "PATCH",
         credentials: "include",
         body: JSON.stringify({ activated: true }),
@@ -56,7 +56,7 @@
 
 
   <script>
-    fetch("/accounts/unactivated", { credentials: "include" })
+    fetch("/api/accounts/unactivated", { credentials: "include" })
       .then((res) => res.json())
       .then((accounts) => {
         const list = document.getElementById("list");
