@@ -69,6 +69,7 @@
     "android-guide": {
       "title": "Android app",
       "warning": "This works <b>ONLY on Android</b> devices. If you're on a different platform, <a>click here</a>",
+      "incompatible": "This option <b>only works for Android</b> devices.",
       "download": "Download the ANDROID app!",
       "tip": "After downloading, <b>open the notification</b> and <b>confirm</b> the installation"
     },
@@ -223,7 +224,7 @@
     "unblock": "Are you sure you want to unblock this user?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
-    "delete-message": "Are you sure you want to delete the selected own message(s), for all users?",
+    "delete-message": "Are you sure you want to delete your message(s), for all users?",
 
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
     "start-conversation": "Start a new conversation with this user?",

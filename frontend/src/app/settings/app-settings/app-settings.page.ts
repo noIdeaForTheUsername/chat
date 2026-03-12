@@ -13,6 +13,7 @@ import { LanguageService } from '@app/i18n/language.service';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { isPwa } from '@src/app/shared/platform-detection/platformUtils';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-settings',
@@ -31,9 +32,11 @@ export class AppSettingsPage {
   protected notificationsService = inject(NotificationsService);
 
   protected runningAsPwa = signal(true);
+  protected runningNatively = signal(false);
 
   ionViewWillEnter() {
     this.runningAsPwa.set(isPwa());
+    this.runningNatively.set(Capacitor.isNativePlatform());
   }
 
   get languageSelectValue(): string {

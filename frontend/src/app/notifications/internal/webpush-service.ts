@@ -44,7 +44,7 @@ export class WebPushService {
 
   private sendSubscriptionToServer(subscription: PushSubscription, displayAlerts: boolean = true): void {
     this.http.put("/notifications/subscription", {
-      subcription: subscription,
+      subscription: subscription,
       language: this.translate.getCurrentLang()
     }).subscribe({
       next: () => {

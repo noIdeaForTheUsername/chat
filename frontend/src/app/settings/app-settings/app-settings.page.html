@@ -33,7 +33,7 @@
         }
 
         <!-- install app -->
-        @if (!runningAsPwa()) {
+        @if (!runningAsPwa() && !runningNatively()) {
           <app-item-button [text]="'page.app-settings.install-pwa' | translate" icon="download" routerLink="/installation-guide"/>
         }
         <app-item-button [text]="'page.app-settings.install-android' | translate" icon="logo-android" routerLink="/android-installation"/>

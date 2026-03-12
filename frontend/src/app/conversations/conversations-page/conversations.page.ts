@@ -64,8 +64,8 @@ export class ConversationsPage implements OnInit, OnDestroy {
   // State
   protected conversationsLoaded = this.conversationService.conversationsLoaded;
   protected conversationsLoadErr = this.conversationService.loadErr;
-  protected conversationsEmpty = computed(
-    () => this.conversationsLoaded() && this.conversations().length === 0 && this.conversationsLoadErr() === null);
+  protected displayedConversationsEmpty = computed(
+    () => this.conversationsLoaded() && this.displayedConversations().length === 0 && this.conversationsLoadErr() === null);
   
   protected searchFilter = signal("");
   protected multiselectActionSheetOpen = signal(false);

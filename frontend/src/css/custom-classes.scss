@@ -156,11 +156,16 @@ button.alert-button.danger {
 @keyframes pulse-animation {
   0% {
     transform: scale(0.8);
+    filter: drop-shadow(0 0 2px var(--ion-color-primary));
   }
+
   50% {
     transform: scale(1.2);
+    filter: drop-shadow(0 0 10px var(--ion-color-warning));
   }
+
   100% {
     transform: scale(0.8);
+    filter: drop-shadow(0 0 2px var(--ion-color-primary));
   }
 }

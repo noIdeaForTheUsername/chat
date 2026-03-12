@@ -3,7 +3,7 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslatePipe } from '@ngx-translate/core';
 import { StandardHeaderComponent } from '@src/app/shared/headers/standard-header-component/standard-header.component';
 import { AndroidInstallationComponent } from "../android-installation-component/android-installation.component";
-import { isAndroid } from '@src/app/shared/platform-detection/platformUtils';
+import { isAndroid, isPwa } from '@src/app/shared/platform-detection/platformUtils';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -16,8 +16,10 @@ import { RouterLink } from '@angular/router';
 export class AndroidInstallationPage implements OnInit {
 
   isAndroid = false;
+  isPwa = false;
 
   ngOnInit() {
     this.isAndroid = isAndroid();
+    this.isPwa = isPwa();
   }
 }

@@ -66,13 +66,16 @@
     <!-- No conversations text -->
     @else {
       <h1 class="no-conversations-text">{{"common.nothing-to-show" | translate}}</h1>
-      <p class="no-conversations-text highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></p>
-      <p class="no-conversations-text"><ion-icon name="person-add"/></p>
+      <p class="no-conversations-text">
+        <ion-icon name="person-add" color="warning"/>&nbsp;
+        <span class="highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></span>
+      </p>
+      
     }
 
     <!-- "ADD" FAB BUTTON (discovery) -->
     <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="ion-margin" id="">
-      <ion-fab-button [class.pulsing]="conversationsEmpty()" routerLink="/discovery">
+      <ion-fab-button [class.pulsing]="displayedConversationsEmpty()" routerLink="/discovery">
         <ion-icon name="person-add"></ion-icon>
       </ion-fab-button>
     </ion-fab>
