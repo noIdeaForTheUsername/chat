@@ -4,10 +4,10 @@ export const environment = {
   // apiUrl: "http://192.168.1.16:3000/", //"http://localhost:3000", //"/api",
   // apiUrl: "http://localhost:3000",
   // apiUrl: "/api",
-  // apiUrl: "https://devchat.serwerigora.com/api",
+  // socketIoUrl: "",
   apiUrl: "/api",
+  socketIoUrl: "",
   capacitorApiUrl: "https://chat.serwerigora.com/api",
-  socketIoUrl: "https://chat.serwerigora.com",
   capacitorSocketIoUrl: "https://chat.serwerigora.com",
   // capacitorApiUrl: "https://devchat.serwerigora.com/api",
   // do not forget to update the hostname capacitor.config.ts. Change it to THE SAME master domain

@@ -1,6 +1,5 @@
 export interface Message {
   globalId: number,
-  numberInConversation: number,
   conversationId: number,
   senderId: number,
   timestamp: Date,

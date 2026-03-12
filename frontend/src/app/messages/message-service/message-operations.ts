@@ -36,16 +36,15 @@ export class MessageOperations {
     });
   }
 
-  sendMessage(text: string, callBeforeComplete?: (success: boolean) => void, repliedId?: number, repliedText?: string) {
+  sendMessage(text: string, repliedId?: number, repliedText?: string) {
     const timestamp = new Date();
     this.api.sendMessage(this.s.getCurrentConvId(), text, timestamp, repliedId).subscribe({
       next: (res: any) => {
         if (res.id === undefined) return;
-        callBeforeComplete?.(true);
+        this.s.ownMessageSent.next(true);
         if (!this.s.displayingNewestMessages()) return;
         const newMsg = {
           globalId: res.id,
-          numberInConversation: 0,  // todo in the future
           conversationId: this.s.getCurrentConvId(),
           senderId: this.authService.getUserIdOrError(),
           text: text,
@@ -54,16 +53,18 @@ export class MessageOperations {
           repliedId,
           repliedText
         }
+
         this.s.displayedMessages.update((msgs) => {
           return [...msgs, {
             ...newMsg,
             prevMessage: msgs.length > 0 ? msgs[msgs.length - 1] : undefined
           }];
         });
+        this.s.newMessageAppeared.next();
         this.conversationService.processNewMessage(newMsg, true);
       },
       error: (e) => {
-        callBeforeComplete?.(false);
+        this.s.ownMessageSent.next(false);
         this.alertService.displayError(
           e.error.message ?? e.status ?? "unknown",
           undefined,
@@ -75,13 +76,13 @@ export class MessageOperations {
   receiveMessage(message: Message) {
     if (message.conversationId != this.s.getCurrentConvId()) return;
     
-    this.s.beforeNewMessageCallback();
     if (!this.s.displayingNewestMessages()) return;
     
     this.s.displayedMessages.update((msgs) => {
       const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
     });
+    this.s.newMessageAppeared.next();
     this.conversationService.acknowledgeConversationMessages(this.s.getCurrentConvId(), message.globalId);
     this.replyPreviewManager.loadSingleMessagePreview(message, this.s.getHighestDisplayedId(), this.s.getLowestDisplayedId());
   }

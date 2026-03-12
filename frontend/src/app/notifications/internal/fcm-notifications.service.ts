@@ -55,7 +55,6 @@ export class FcmNotificationsService {
   private async sendTokenToServer(token: string, displayAlerts: boolean = true) {
     const permission = await this.getPermissionStatus();
     if (permission !== "granted")  {
-      console.log("FcmNotificationsService, sendTokenToServer: Permission not granted, not sending token to server");
       return;
     }
 

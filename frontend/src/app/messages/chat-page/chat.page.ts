@@ -76,8 +76,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // MESSAGE INPUT
   protected enteredMessage = signal<string>("");
   protected awaitingMessageSendResponse = signal(false);
-  protected canSendMessage = computed(() => (!this.initialLoading()) && this.enteredMessage().length > 0
-    && !this.awaitingMessageSendResponse());  
+  protected canSendMessage = computed(() =>
+    (!this.initialLoading()) && this.enteredMessage().length > 0 && !this.awaitingMessageSendResponse());  
   protected replyingToId = signal<null | number>(null);
   protected replyingToText = signal<string>("");
 
@@ -99,6 +99,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private performScrollCorrection = false;
   private firstMessageId: string = "";
   private firstMessageTopDistance: number | undefined = undefined;  // for infinite scroll correction
+  private teleportingToMessageId: number | null = null;  // for scrollToMessage after conversation reload (eg. after sending a message)
 
   // ------------------------------------------- INIT/LOAD FUNCTIONS -------------------------------------------
 
@@ -114,6 +115,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     
     // Load conversation data
     this.loadConversationData(this.conversationId);
+    
 
     effect(() => {
       // React to message list changes for scroll management and message acknowledgement
@@ -121,7 +123,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       if (msgs.length == 0) return;
       if (this.firstMessageLoad) { // first load (saveScrollParams never called before)
         this.firstMessageLoad = false;
-        requestAnimationFrame(() => this.content.scrollToBottom(0));
       } else if (this.performScrollCorrection) {  // next loads
         this.correctScrollOnMessageLoad();
         this.performScrollCorrection = false;
@@ -133,7 +134,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       const _ = this.profileService.profiles();
       if (this.conversation())
         this.loadParticipant(this.conversation()!.participantId);
-    })
+    });
   }
 
   private async loadConversationData(conversationId: number) {
@@ -153,9 +154,37 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     ));
   }
 
+  private initSubscriptions() {
+    // New message sent / received
+    this.messageService.newMessageAppeared.subscribe(() => {
+      this.correctScrollOnNewMessage();
+    });
+
+    // Own message sent (server responded)
+    this.messageService.ownMessageSent.subscribe((success: boolean) => {
+      this.afterOwnMessageSent(success);
+    });
+
+    this.messageService.messagesWillRefresh.subscribe(async () => {
+      this.saveScrollParams();
+    });
+    // messagesWillRefresh is called when additional messages are about to load
+    // messagesWillInit is called when the displayed list was completely (re)loaded (teleport on reply click or initial load)
+
+    this.messageService.messagesWillInit.subscribe(async () => {
+      if (this.teleportingToMessageId) {
+        await this.waitForDomStable();
+        this.scrollToMessage(this.teleportingToMessageId, true);
+        this.teleportingToMessageId = null;
+      }
+      else if (this.firstMessageLoad) this.scrollToBottom(0, false); 
+      else await this.scrollToBottom(1000, false);
+    });
+  }
+
   ngAfterViewInit(): void {
     this.initScrollElement();
-    this.messageService.beforeNewMessageCallback = this.correctScrollOnNewMessage.bind(this);
+    this.initSubscriptions();
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
@@ -205,18 +234,18 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
     const replyingTo = this.replyingToId();
     const replyingToText = this.replyingToText();
-    this.messageService.operations.sendMessage(messageText, (success: boolean) => this.afterMessageSent(success),
+    this.messageService.operations.sendMessage(messageText,
       replyingTo ?? undefined, replyingToText ?? undefined);
   }
 
-  afterMessageSent(success: boolean) {
+  afterOwnMessageSent(success: boolean) {
     this.awaitingMessageSendResponse.set(false);
     if (!success) return;
     
     this.enteredMessage.set("");
     this.messageField.value = "";
     this.cancelReply();
-    this.correctScrollOnNewMessage();
+    // this.correctScrollOnNewMessage();
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------
@@ -235,11 +264,11 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
   onInfiniteScrollUp() {
     if (this.displayingOldestMessages()) return;
-    this.messageService.loadOlderMessages(this.saveScrollParams.bind(this));
+    this.messageService.loadOlderMessages();
   }
   onInfiniteScrollDown() {
     if (this.displayingNewestMessages()) return;
-    this.messageService.loadNewerMessages(this.saveScrollParams.bind(this));
+    this.messageService.loadNewerMessages();
   }
 
   onMessageRepliedClick(messageId: number) {
@@ -247,19 +276,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     setTimeout(() => this.scrollToMessage(messageId), 0);
   }
 
-  scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
+  async scrollToBottom(miliseconds: number = 700, loadFirstMessages = false) {
     if (this.initialLoading()) return;
+
     if (loadFirstMessages && !this.displayingNewestMessages()) {  // Reload newest messages
       this.firstMessageLoad = true;  // there's an effect() code that will auto-scroll based on this variable
-      this.messageService.loadConversationInitially(this.conversationId,
-        async () => {
-          await this.waitForDomStable();
-          this.scrollToBottom(1000, false)
-        });
+      this.messageService.loadConversationInitially(this.conversationId);
     }
-    else {  // Just scroll to bottom
+    else {
       this.messageService.cancelMessageLoad();
     }
+    await this.waitForDomStable();
     this.content.scrollToBottom(miliseconds);
   }
 
@@ -281,11 +308,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       }
     }
     else {
-      this.messageService.loadMessagesByStartId(messageId, false,
-        async () => {
-          await this.waitForDomStable();
-          this.scrollToMessage(messageId, true);
-        });
+      this.teleportingToMessageId = messageId;
+      this.messageService.loadMessagesByStartId(messageId, false);
     }
   }
 
@@ -316,7 +340,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (!this.displayingNewestMessages()) return;
     if (this.getScrollPxAwayFromBottom() > this.SCROLL_TO_BOTTOM_ON_NEW_MESSAGE_PX) return;
     await this.waitForDomStable();
-    this.scrollToBottom(300);
+    await this.scrollToBottom(300);
   }
 
   getScrollPxAwayFromBottom() {

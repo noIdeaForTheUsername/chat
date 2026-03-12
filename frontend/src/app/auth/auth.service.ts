@@ -66,7 +66,6 @@ export class AuthService {
   loadLocalAuth() {
     this.userId = Number(localStorage.getItem("userId")) || null;
     this.userAccountActive = localStorage.getItem("userAccountActive") === "true";
-    console.log("Loaded local auth: ", { userId: this.userId, userAccountActive: this.userAccountActive });
   }
 
   // check if the user is logged in and redirect / handle error accordingly
@@ -95,13 +94,9 @@ export class AuthService {
   // LOGIN & REGISTER & LOGOUT
 
   login(body: { phoneNumber: string; password: string }) {
-    console.log("login called");
     this.processing.set(true);
     this.api.login(body).subscribe({
       next: (res) => {
-        console.log("Login successful, response:", res);
-
-        // this.
         this.processing.set(false);
         window.location.replace("/");
       },

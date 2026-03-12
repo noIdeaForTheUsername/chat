@@ -1,7 +1,7 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { Message } from '@app/messages/message.interface';
 import { BackendMessageApi } from './backend-message-api';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { MessageView } from '../message-view.interface';
 import { AuthService } from '@app/auth/auth.service';
 import { messageToMessageView } from '../message-utils';
@@ -55,7 +55,13 @@ export class MessageService {
   private currentConvNewestMessageId: number = 1;
   private currentConvOldestMessageId: number = 1;
 
-  public beforeNewMessageCallback: Function = () => undefined;
+  // events
+  public messagesWillRefresh = new Subject<void>();  // notifies ChatPage that it should save scroll params,
+  // additionally, the above signal ISN'T EMITTED after initial loading or teleport. Only the infinite scroll loading!
+  public messagesWillInit = new Subject<void>();
+  public newMessageAppeared = new Subject<void>();
+  public ownMessageSent = new Subject<boolean>();  // contains success status
+  // public conversationReloadedAtBottom = new Subject<void>();
 
   // LOADING PROPERTIES
   public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
@@ -73,14 +79,18 @@ export class MessageService {
         this.loadCurrentConversation();
       }
     });
+    this.websocket.reconnected$.subscribe(() =>{
+      if (document.visibilityState === "visible")
+        this.websocket.setViewedConversation(this.currentConvId === -1 ? null : this.currentConvId);
+    });
   }
 
   // PRIVATE FUNCTIONS
 
   // Load messages from the server while managing the state
   private loadConvMessages(messageAmount: number, older: boolean,
-    callBeforeComplete: Function = () => undefined,
-    startMessageId?: number, includeGivenId: boolean = false
+    startMessageId?: number, includeGivenId: boolean = false,
+
   ) {
     this.cancelMessageLoad();
     this.loadingMessagesAreOlder.set(startMessageId !== undefined && startMessageId < this.highestDisplayedId);
@@ -90,8 +100,9 @@ export class MessageService {
 
     this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, messageAmount, older, startMessageId).subscribe({
       next: (val: Message[]) => {
-        // execute passed callback
-        callBeforeComplete();
+        // notify that the refresh is coming so ChatPage can save scroll params before the array is updated
+        const displayedMessagesWereEmpty = this.displayedMessages().length === 0;
+        if (!displayedMessagesWereEmpty) this.messagesWillRefresh.next();
 
         // create new displayed messages array
         const newArr = older ? [...val, ...this.displayedMessages()] : [...this.displayedMessages(), ...val];
@@ -120,6 +131,7 @@ export class MessageService {
         const updateHighestDispalyedId = (!older && val.length < messageAmount) || this.loadsCount == 0;
         this.updateDisplayedMessagesMetadata(newArr, updateHighestDispalyedId, older && val.length < messageAmount);
 
+        // SIDE EFFECTS
         if (this.loadsCount == 0) {
           // acknowledge msgs after the first load of newest messages
           this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
@@ -129,6 +141,7 @@ export class MessageService {
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
         this.replyPreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
+        if (displayedMessagesWereEmpty) this.messagesWillInit.next();
       },
       error: (err) => {
         this.dataLoaded.set(true);
@@ -183,30 +196,33 @@ export class MessageService {
     this.loadConversationInitially(this.currentConvId);
   }
 
-  loadConversationInitially(convId: number, callBeforeComplete: Function = () => undefined) {
+  loadConversationInitially(convId: number) {
     this.exitConversation();
     this.currentConvId = convId;
     this.loadsCount = 0;
-    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, true, callBeforeComplete);
+    this.displayedMessages.set([]);
+    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, true);
   }
 
-  loadMessagesByStartId(messageId: number, older: boolean, callBeforeComplete: Function = () => undefined) {
+  loadMessagesByStartId(messageId: number, older: boolean) {
     this.displayedMessages.set([]);
     this.loadsCount++;
-    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, older, callBeforeComplete, messageId, true);
+    this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, older, messageId, true);
   }
 
-  loadOlderMessages(callBeforeComplete: Function = () => undefined) {
+  loadOlderMessages() {
     let loadAmount = this.getMessagesToLoadAmount();
     this.loadsCount++;
-    this.loadConvMessages(loadAmount, true, callBeforeComplete, this.lowestDisplayedId);
+    this.loadConvMessages(loadAmount, true, this.lowestDisplayedId);
   }
 
-  loadNewerMessages(callBeforeComplete: Function = () => undefined) {
+  loadNewerMessages() {
     let loadAmount = this.getMessagesToLoadAmount();
     this.loadsCount++;
-    this.loadConvMessages(loadAmount, false, callBeforeComplete, this.highestDisplayedId);
+    this.loadConvMessages(loadAmount, false, this.highestDisplayedId);
   }
+
+  // ---------------------------------------------------- OTHER GENERAL FUNCTIONS --------------------------------------------------
 
   // Tells the backend (via a websocket) that the user is actively viewing this conversation. Has to do with push notifications cancelling
   setActiveViewingStatus(activeViewing: boolean) {

@@ -39,7 +39,6 @@ export class AppInitService {
       this.preloading.set(false);
       if (this.isOnOutsidePage()) {
         // this.blockLoadPage = true;
-        console.log("navigating to chats");
         this.router.navigateByUrl(this.successStartPage);
       }
     }
@@ -47,20 +46,15 @@ export class AppInitService {
     // Refresh auth from the server (or load it for the first time)
     this.auth.loadServerAuth().subscribe({
       next: () => {
-        console.log("load server auth: success");
         // Successful auth load
         // this.blockLoadPage = true;
         this.preloading.set(false);
         this.notificationsService.sendSubscriptionIfAvailable();
-        console.log("load server auth: userId = ", this.auth.getUserId());
-        console.log("load server auth: isOnOutsidePage = ", this.isOnOutsidePage());
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
-          console.log("load server auth: navigating from outside page");
           this.router.navigateByUrl(this.successStartPage);
         }
       },
       error: (err) => {
-        console.log("load server auth: fail");
         this.handleGetAuthError(err);
       }
     });
@@ -89,14 +83,12 @@ export class AppInitService {
     // User wasn't logged in before (redirect needed):
     else if (isServerUnavailableError(err)) {  // server unavailable
       this.router.navigateByUrl('/');
-      console.log("navigating cause of: server unavailable and user not logged in");
       this.loadingError.set("server-unavailable");  // display err on the loading page
       this.loadingErrorJson.set(JSON.stringify(err));
     }
     else if (err.status === 401) {  // server available but unauthorized, go to the welcome page
       // this.blockLoadPage = true;
       if (!this.isOnOutsidePage()) {
-        console.log("navigating cause of: server available but unauthorized");
         this.router.navigateByUrl('/');
       }
       this.preloading.set(false);
@@ -111,8 +103,6 @@ export class AppInitService {
   }
 
   private isOnOutsidePage(): boolean {
-    console.log("window.location.pathname:", window.location.pathname);
-    console.log("this.outsidePages.includes(window.location.pathname):", this.outsidePages.includes(window.location.pathname));
     return this.outsidePages.includes(window.location.pathname);
   }
 }
