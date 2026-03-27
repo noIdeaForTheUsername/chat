@@ -12,6 +12,7 @@ export class ReplyPreviewManager {
     const repliedIds = this.s.displayedMessages().filter(msg => msg.repliedId).map(msg => msg.repliedId!);
     let repliedIdsExistingLocally: number[] = [];
     let idsToLoad: number[] = [];
+
     repliedIds.forEach(id => {
       // case where the target message is already loaded and displayed
       if (id <= highestDisplayedId && id >= lowestDisplayedId) {
@@ -28,6 +29,7 @@ export class ReplyPreviewManager {
     ).filter(msg =>
       msg !== undefined
     );
+    console.log("Messages with locally available replied texts:", messagesWithRepliedTexts);
     this.addPreviews(messagesWithRepliedTexts);
 
     // Load missing messages
@@ -60,27 +62,41 @@ export class ReplyPreviewManager {
   public addPreviews(messageWithRepliedTextOrArray: Message | Message[]) {
     this.s.displayedMessages.update((msgs) => {
       // normalize param to array
-      let messagesWithRepliedTexts: Message[];
-      if (Array.isArray(messageWithRepliedTextOrArray)) {
-        messagesWithRepliedTexts = messageWithRepliedTextOrArray;
-      } else {
-        messagesWithRepliedTexts = [messageWithRepliedTextOrArray];
-      }
+      const messagesWithRepliedTexts = Array.isArray(messageWithRepliedTextOrArray)
+        ? messageWithRepliedTextOrArray
+        : [messageWithRepliedTextOrArray];
 
       // attach replied texts to existing messages
-      for (let i = 0; i < messagesWithRepliedTexts.length; i++) {
-        const messageWithRepliedText = messagesWithRepliedTexts[i];
-        for (let j = 0; j < msgs.length; j++) {
-          if (msgs[j].repliedId == messageWithRepliedText.globalId) {
-            msgs[j] = {
-              ...msgs[j],
-              repliedText: messageWithRepliedText.text?.trim() || undefined,
-            };
-          }
-          // not breaking, there might be multiple messages replying to the same one
+      return msgs.map(msg => {
+        const messageWithRepliedText = messagesWithRepliedTexts.find(
+          m => m.globalId === msg.repliedId
+        );
+
+        if (messageWithRepliedText) {  // attach the preview text
+          return {
+            ...msg,
+            repliedText: messageWithRepliedText.text?.trim() || undefined,
+          };
         }
-      }
-      return msgs;
+        return msg; // return unchanged
+      });
+
+
+      // for (let i = 0; i < messagesWithRepliedTexts.length; i++) {
+      //   const messageWithRepliedText = messagesWithRepliedTexts[i];
+      //   console.log("Attaching replied text to messages replying to:", messageWithRepliedText);
+      //   for (let j = 0; j < msgs.length; j++) {
+      //     if (msgs[j].repliedId == messageWithRepliedText.globalId) {
+      //       msgs[j] = {
+      //         ...msgs[j],
+      //         repliedText: messageWithRepliedText.text?.trim() || undefined,
+      //       };
+      //     }
+      //     // not breaking, there might be multiple messages replying to the same one
+      //   }
+      // }
+
+      //return msgs;
     });
   }
 }

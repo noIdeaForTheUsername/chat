@@ -7,7 +7,7 @@ import { MessagesGateway } from "./messages.gateway";
 import { ConversationsDomainService } from "src/domain/conversations/conversations.service";
 import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 
-// This service is responsible for deciding and ordering to send real-time updates to users via WebSockets, or Push Notifications when they are offline.
+// Coordinates message delivery via WebSockets and push notifications
 
 @Injectable()
 export class MessageBroadcastingService {
@@ -21,46 +21,45 @@ export class MessageBroadcastingService {
 
   @OnEvent("messageSent")
   public async sendMessageToUsers(payload: MessageSentEvent) {
+    
+    // websocket transmission
+    this.messagesGateway.sendMessage(payload);
+
+    // Send push if user is not viewing this conversation (even with active connections)
     for (const receiverId of payload.receiverIds) {
-      if (payload.message.senderId === receiverId) continue;  // skip sender
-
       const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
-      // Send via a websocket
-      if (connectedSockets.length > 0) {
-        this.messagesGateway.sendMessage(payload);
-      }
-
-      // If no active connection of a user is viewing the conversation, send a push notification
       if (!connectedSockets.some(s => s.data.viewedConversation === payload.message.conversationId)) {
-        // Prepare and send push notification
-        const conv = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
-        if (!conv || !conv.notifications) continue; // user has disabled notifications for this conversation
-
-        const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
-        if (!profile) continue;
-
-        const senderName = profile.nick || profile.name || profile.phoneNumber || null;
-        if (!senderName) continue;
-
-
-        const header = "newMessage";
-        const message = senderName + ": " +
-        (payload.message.text.length > 100 ?
-          payload.message.text.substring(0, 97) + "..." :
-          payload.message.text);
-        
-        const tag = `new-message:conversation-${payload.message.conversationId}`;
-
-        this.eventEmitter.emit("pushNotification", {
-          userId: receiverId,
-          header,
-          message,
-          tag,
-          // clickUrl: `/chats/${payload.message.conversationId}`,
-        });
+        await this.sendMessagePush(receiverId, payload);
       }
     }
   }
+
+  // Prepares the payload and sends an event to handle by the push notification service
+  private async sendMessagePush(receiverId: number, payload: MessageSentEvent) {
+    const conversation = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
+    if (!conversation || !conversation.notifications) return; // user has disabled notifications for this conversation
+
+    const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
+    if (!profile) return;
+
+    const senderName = profile.nick || profile.name || profile.phoneNumber;
+
+    const header = "newMessage";
+    const message = senderName + ": " +
+    (payload.message.text.length > 100 ?  // shorten message to max 100 chars
+      payload.message.text.substring(0, 97) + "..." :
+      payload.message.text);
+    
+    const tag = `new-message:conversation-${payload.message.conversationId}`;
+
+    this.eventEmitter.emit("pushNotification", {
+      userId: receiverId,
+      header,
+      message,
+      tag,
+    });
+  }
+
 
   @OnEvent("messageDeleted")
   public async sendMessageDeletionToUsers(payload: MessageDeletedEvent) {
@@ -72,7 +71,7 @@ export class MessageBroadcastingService {
   @OnEvent("conversationCleared")
   public async sendConversationClearedToUsers(payload: ConversationClearedEvent) {
     for (const userId of payload.userIds) {
-      // No connection check needed because it's pointless to send a push notification here
+      // No connection or viewingStatus check needed because it doesn't send push
       this.messagesGateway.sendConversationCleared(payload);
     }
   }

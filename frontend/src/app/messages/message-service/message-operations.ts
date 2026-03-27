@@ -10,7 +10,9 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ConversationService } from '@src/app/conversations/conversation.service';
 import { WebsocketService } from '@src/app/websockets/websocket-service';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class MessageOperations {
 
   constructor(
@@ -42,26 +44,6 @@ export class MessageOperations {
       next: (res: any) => {
         if (res.id === undefined) return;
         this.s.ownMessageSent.next(true);
-        if (!this.s.displayingNewestMessages()) return;
-        const newMsg = {
-          globalId: res.id,
-          conversationId: this.s.getCurrentConvId(),
-          senderId: this.authService.getUserIdOrError(),
-          text: text,
-          timestamp,
-          isOwn: true,
-          repliedId,
-          repliedText
-        }
-
-        this.s.displayedMessages.update((msgs) => {
-          return [...msgs, {
-            ...newMsg,
-            prevMessage: msgs.length > 0 ? msgs[msgs.length - 1] : undefined
-          }];
-        });
-        this.s.newMessageAppeared.next();
-        this.conversationService.processNewMessage(newMsg, true);
       },
       error: (e) => {
         this.s.ownMessageSent.next(false);
@@ -83,7 +65,8 @@ export class MessageOperations {
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
     });
     this.s.newMessageAppeared.next();
-    this.conversationService.acknowledgeConversationMessages(this.s.getCurrentConvId(), message.globalId);
+    if (message.senderId !== this.authService.getUserId())  // acknowledge not own message (backend auto-acknowledges own messages)
+      this.conversationService.acknowledgeConversationMessages(this.s.getCurrentConvId(), message.globalId);
     this.replyPreviewManager.loadSingleMessagePreview(message, this.s.getHighestDisplayedId(), this.s.getLowestDisplayedId());
   }
 

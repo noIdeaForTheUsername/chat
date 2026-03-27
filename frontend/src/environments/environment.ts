@@ -4,19 +4,22 @@
 
 export const environment = {
   production: false,
-  //apiUrl: "http://192.168.1.16:3000",
+
   // apiUrl: "https://devchat.serwerigora.com/api",
-  // //socketIoUrl: "http://192.168.1.2:3000",  
   // socketIoUrl: "https://devchat.serwerigora.com",
   // capacitorApiUrl: "https://devchat.serwerigora.com/api",
   // capacitorSocketIoUrl: "https://devchat.serwerigora.com",
-  // socketIoPath: "/socket.io",
-  // vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
 
-  apiUrl: "https://chat.serwerigora.com/api",
-  capacitorApiUrl: "https://chat.serwerigora.com/api",
-  socketIoUrl: "https://chat.serwerigora.com",
-  capacitorSocketIoUrl: "https://chat.serwerigora.com",
+  apiUrl: "http://192.168.1.16:3000",
+  socketIoUrl: "http://192.168.1.16:3000",
+  capacitorApiUrl: "http://192.168.1.16:3000",
+  capacitorSocketIoUrl: "http://192.168.1.16:3000",
+
+  // apiUrl: "https://chat.serwerigora.com/api",
+  // capacitorApiUrl: "https://chat.serwerigora.com/api",
+  // socketIoUrl: "https://chat.serwerigora.com",
+  // capacitorSocketIoUrl: "https://chat.serwerigora.com",
+
   socketIoPath: "/socket.io",
   vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
 };

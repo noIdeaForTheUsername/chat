@@ -2,121 +2,123 @@
 </app-standard-header>
 
 <ion-content class="ion-padding" [fullscreen]="true">
-  @if (dataLoaded()) {
+  <div class="max-width-container">
+    @if (dataLoaded()) {
 
-    @let p = profile()!;
+      @let p = profile()!;
 
-    <div class="profile-header-container"> 
-      <!-- PROFILE PREVIEW -->
-      <app-profile-preview [viewProfileButton]="false" [profile]="profile()!"/>
+      <div class="profile-header-container"> 
+        <!-- PROFILE PREVIEW -->
+        <app-profile-preview [viewProfileButton]="false" [profile]="profile()!"/>
 
-      <!-- BUTTONS/INDICATORS -->
-      @if (profileSaving()) {
-        <app-loading-indicator size="medium" type="dots"/>
-      }
-      <!-- save/discard changes buttons -->
-      @else if (own() && editMode()) {
-        <div class="btn-container">
-          <ion-button color="primary" fill="solid" shape="round" (click)="saveOwnProfileChanges()">{{"page.profile.save" | translate}}</ion-button>
-          <ion-button color="danger" fill="outline" shape="round" (click)="this.editMode.set(false)">{{"page.profile.discard" | translate}}</ion-button>
-        </div>
-      }
-      <!-- edit button -->
-      @else if (own()) {
-        <ion-button color="primary" fill="solid" shape="round" (click)="enterEditMode()">{{"page.profile.edit" | translate}}</ion-button>
-      }
-    </div>
+        <!-- BUTTONS/INDICATORS -->
+        @if (profileSaving()) {
+          <app-loading-indicator size="medium" type="dots"/>
+        }
+        <!-- save/discard changes buttons -->
+        @else if (own() && editMode()) {
+          <div class="btn-container">
+            <ion-button color="primary" fill="solid" shape="round" (click)="saveOwnProfileChanges()">{{"page.profile.save" | translate}}</ion-button>
+            <ion-button color="danger" fill="outline" shape="round" (click)="this.editMode.set(false)">{{"page.profile.discard" | translate}}</ion-button>
+          </div>
+        }
+        <!-- edit button -->
+        @else if (own()) {
+          <ion-button color="primary" fill="solid" shape="round" (click)="enterEditMode()">{{"page.profile.edit" | translate}}</ion-button>
+        }
+      </div>
 
 
-    <!-- EDITING HINT -->
-    @if (editMode()) {
-      <hr>
-      <p class="hint clickable" routerLink="/settings/account">{{'page.profile.edit-hint' | translate}}</p>
-    }
-
-    <!-- BASIC INFO SECTION -->
-    <ion-item-group>
-      <ion-item-divider>
-        <ion-label>{{"page.profile.section.basic-info" | translate}}</ion-label>
-      </ion-item-divider>
-
-      <!-- NICK -->
-      @if (!own() && "nick" in p) {
-        <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick"
-        [editable]="true" (valueChange)="this.onFieldInput('nick', $event)"
-        [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
-      }
-
-      <profile-info-item [title]="'profile.phone-number' | translate" [value]="p.phoneNumber"/>
-
-      <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
-      [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
-    </ion-item-group>
-
-    <!-- BIO SECTION -->
-    @if (p.bio !== undefined || own()) {
-    <ion-item-group class="rounded">
-      <ion-card>
-        <ion-card-subtitle>{{`profile.user-bio` | translate}}</ion-card-subtitle>
+      <!-- EDITING HINT -->
+      @if (editMode()) {
         <hr>
-        @if (editMode()) {  <!-- edit mode -->
-          <ion-textarea
-          [autoGrow]="true"
-          (ionChange)="onFieldInput('bio', $event.target.value)"
-          [value]="p.bio"
-          [placeholder]="`profile.user-bio-placeholder` | translate">
-            <ion-icon name="pencil" slot="start"></ion-icon>
-          </ion-textarea>
-        }
-        @else {  <!-- view mode -->
-          @if (p.bio) {
-            <p class="selectable">{{p.bio}}</p>
-          }
-          @else {
-            <p><i>{{'common.empty' | translate}}</i></p>
-          }
-        }
-      </ion-card>
-    </ion-item-group>
-    }
-    
+        <p class="hint clickable" routerLink="/settings/account">{{'page.profile.edit-hint' | translate}}</p>
+      }
 
-    <!-- ACTIONS SECTION -->
-    @if (!own()) {
+      <!-- BASIC INFO SECTION -->
       <ion-item-group>
         <ion-item-divider>
-          <ion-label>{{'common.actions' | translate}}</ion-label>
+          <ion-label>{{"page.profile.section.basic-info" | translate}}</ion-label>
         </ion-item-divider>
 
-        <!-- display conversation button -->
-        <app-item-button (click)="goToConversationPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
+        <!-- nick -->
+        @if (!own() && "nick" in p) {
+          <profile-info-item [title]="'profile.nick' | translate" [value]="p.nick"
+          [editable]="true" (valueChange)="this.onFieldInput('nick', $event)"
+          [infoBox]="true" [infoBoxContent]="'page.profile.nick-info' | translate" />
+        }
 
-        <!-- verify chat security button -->
-        <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
-      
-        <!-- block button -->
-        <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
+        <profile-info-item [title]="'profile.phone-number' | translate" [value]="p.phoneNumber"/>
 
+        <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
+        [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
+        
+        <profile-info-item [title]="'profile.id' | translate" [value]="p.id.toString()"/>
       </ion-item-group>
+
+      <!-- BIO SECTION -->
+      @if (p.bio !== undefined || own()) {
+      <ion-item-group class="rounded">
+        <ion-card>
+          <ion-card-subtitle>{{`profile.user-bio` | translate}}</ion-card-subtitle>
+          <hr>
+          @if (editMode()) {  <!-- edit mode -->
+            <ion-textarea
+            [autoGrow]="true"
+            (ionChange)="onFieldInput('bio', $event.target.value)"
+            [value]="p.bio"
+            [placeholder]="`profile.user-bio-placeholder` | translate">
+              <ion-icon name="pencil" slot="start"></ion-icon>
+            </ion-textarea>
+          }
+          @else {  <!-- view mode -->
+            @if (p.bio) {
+              <p class="selectable bio">{{p.bio}}</p>
+            }
+            @else {
+              <p><i>{{'common.empty' | translate}}</i></p>
+            }
+          }
+        </ion-card>
+      </ion-item-group>
+      }
+      
+
+      <!-- ACTIONS SECTION -->
+      @if (!own()) {
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label>{{'common.actions' | translate}}</ion-label>
+          </ion-item-divider>
+
+          <!-- display conversation button -->
+          <app-item-button (click)="goToConversationPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
+
+          <!-- verify chat security button -->
+          <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
+        
+          <!-- block button -->
+          <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
+
+        </ion-item-group>
+      }
+
+      <!-- "OTHER" SECTION -->
+      <!-- <ion-item-group>
+        <ion-item-divider>
+          <ion-label>{{'common.other' | translate}}</ion-label>
+        </ion-item-divider>
+      </ion-item-group> -->
+
+      <!-- BOTTOM NOTE ("looking for other settings?") -->
+      @if (!own()) {
+        <ion-note (click)="goToConversationSettingsPage()" [innerHTML]="'page.profile.not-found-hint' | translate">
+        </ion-note>
+      }
+
     }
-
-    <!-- "OTHER" SECTION -->
-    <ion-item-group>
-      <ion-item-divider>
-        <ion-label>{{'common.other' | translate}}</ion-label>
-      </ion-item-divider>
-
-      <profile-info-item [title]="'profile.id' | translate" [value]="p.id.toString()"/>
-    </ion-item-group>
-
-    <!-- BOTTOM NOTE ("looking for other settings?") -->
-    @if (!own()) {
-      <ion-note (click)="goToConversationSettingsPage()" [innerHTML]="'page.profile.not-found-hint' | translate">
-      </ion-note>
+    @else {
+      <app-loading-indicator [errorId]="loadingError()" size="full"/>
     }
-
-  }
-  @else {
-    <app-loading-indicator [errorId]="loadingError()" size="full"/>
-  }
+  </div>
 </ion-content>

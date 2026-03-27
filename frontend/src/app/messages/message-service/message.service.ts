@@ -61,7 +61,6 @@ export class MessageService {
   public messagesWillInit = new Subject<void>();
   public newMessageAppeared = new Subject<void>();
   public ownMessageSent = new Subject<boolean>();  // contains success status
-  // public conversationReloadedAtBottom = new Subject<void>();
 
   // LOADING PROPERTIES
   public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
@@ -140,6 +139,7 @@ export class MessageService {
         // notify loading complete
         this.additionalMessagesLoading.set(false);
         this.dataLoaded.set(true);
+        // load reply previews for the currently displayed messages
         this.replyPreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
         if (displayedMessagesWereEmpty) this.messagesWillInit.next();
       },

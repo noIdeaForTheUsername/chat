@@ -177,8 +177,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
         this.scrollToMessage(this.teleportingToMessageId, true);
         this.teleportingToMessageId = null;
       }
-      else if (this.firstMessageLoad) this.scrollToBottom(0, false); 
-      else await this.scrollToBottom(1000, false);
+      else this.scrollToBottom(0, false); 
     });
   }
 
@@ -245,7 +244,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.enteredMessage.set("");
     this.messageField.value = "";
     this.cancelReply();
-    // this.correctScrollOnNewMessage();
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------

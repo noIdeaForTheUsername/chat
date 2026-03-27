@@ -2,6 +2,11 @@ ion-content {
   text-align: center;
 }
 
+.max-width-container {
+  max-width: 700px;
+  margin-bottom: var(--ion-safe-area-bottom);
+}
+
 
 .profile-header-container {
   profile-preview {
@@ -23,12 +28,16 @@ ion-content {
 
 .hint {
   color: var(--ion-text-color-step-300);
-  max-width: 700px;
+  // max-width: 700px;
   margin: auto;
 }
 
+.bio {
+  white-space: pre-wrap;
+}
+
 ion-item-group {
-  max-width: 700px;
+  // max-width: 700px;
   margin: auto;
   margin-bottom: 16px;
 }
@@ -52,7 +61,7 @@ ion-textarea {
 
 ion-note {
   display: block;
-  max-width: 600px;
+  // max-width: 600px;
   margin: auto;
   cursor: pointer;
 }

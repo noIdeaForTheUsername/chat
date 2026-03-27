@@ -71,7 +71,7 @@
       "warning": "This works <b>ONLY on Android</b> devices. If you're on a different platform, <a>click here</a>",
       "incompatible": "This option <b>only works for Android</b> devices.",
       "download": "Download the ANDROID app!",
-      "tip": "After downloading, <b>open the notification</b> and <b>confirm</b> the installation"
+      "tip": "After downloading, <b>open the notification</b> and confirm the installation"
     },
 
     "conversations": {
@@ -89,7 +89,7 @@
     "discovery": {
       "title": "New Chat...",
       "header": "Find a user",
-      "info": "In the search bar above, enter: <ul><li>a <b>phone number</b> with country code (e.g., +48 123 123 123)</li> <li>or a <b>name</b> (a less reliable option)</li> </ul>",
+      "info": "In the search bar above, enter: <ul><li>a <b>phone number</b> with country code (e.g., +48 123 123 123)</li> <li>or a <b>username</b> (a less reliable option)</li> </ul>",
       "searchbar-hint": "+48 123 123 123",
       "found": "Found",
       "not-found": "Not found"
@@ -181,7 +181,7 @@
 
     "register": {
       "header": "Create a new account",
-      "name-input": "Name (+ optional surname)",
+      "name-input": "Username (can be changed anytime; real name recommended)",
       "phone-input": "Phone with country code. Used for <b>logging in</b> and discovering other users",
       "bio-input": "Profile description (optional)",
       "login-hint": "I already have an account"
@@ -192,7 +192,7 @@
     "id": "ID",
     "nick": "Nick",
     "login": "Login",
-    "name": "Name",
+    "name": "Username",
     "phone-number": "Phone number",
     "user-bio": "About me...",
     "user-bio-placeholder": "A few sentences about yourself...",
@@ -278,7 +278,7 @@
 
     "credentials-invalid": {
       "header": "Invalid credentials",
-      "description": "Incorrect account name or password."
+      "description": "Incorrect username or password."
     },
     "email-or-phone-required": {
       "header": "Error",

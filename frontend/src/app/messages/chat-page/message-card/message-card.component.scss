@@ -108,6 +108,16 @@ div.message-container.selected .message-card {
   }
 }
 
+// text selection on own messages color
+.own .message-text::-moz-selection {
+  color: white;
+  background: var(--ion-color-dark, #262626);
+}
+.own .message-text::selection {
+  color: white;
+  background: var(--ion-color-dark, #262626);
+}
+
 
 // Deleted message styling
 .deleted .message-card {

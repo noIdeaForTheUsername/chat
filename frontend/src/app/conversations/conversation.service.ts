@@ -31,7 +31,7 @@ export class ConversationService {
     
   private api = new BackendConversationApi(this.authService.getUserId());
 
-  constructor(private profileService: ProfileService) {
+  constructor() {
     this.loadConversations().subscribe();
     this.loadMessagePreviews().subscribe();
 

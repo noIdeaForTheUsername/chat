@@ -70,7 +70,7 @@
       "warning": "To działa <b>TYLKO na urządzeniach z Androidem</b>. Jeśli jesteś na innej platformie, <a>kliknij tutaj</a>",
       "incompatible": "Ta opcja <b>działa tylko na urządzeniach z Androidem</b>.",
       "download": "Pobierz aplikację ANDROIDA!",
-      "tip": "Po pobraniu <b>otwórz powiadomienie</b> po czym <b>zatwierdź</b> instalację"
+      "tip": "Po pobraniu <b>otwórz powiadomienie</b> po czym zatwierdź instalację"
     },
 
 
@@ -89,7 +89,7 @@
     "discovery": {
       "title": "Nowy czat...",
       "header": "Znajdź użytkownika",
-      "info": "W pasku wyżej wpisz: <ul><li><b>nr telefonu</b> z kodem kierunkowym (np. +48 123 123 123)</li> <li>lub <b>imię i nazwisko</b> (opcja mniej niezawodna)</li> </ul>",
+      "info": "W pasku wyżej wpisz: <ul><li><b>nr telefonu</b> z kodem kierunkowym (np. +48 123 123 123)</li> <li>lub <b>nazwę użytkownika</b> (opcja mniej niezawodna)</li> </ul>",
       "searchbar-hint": "+48 123 123 123",
       "found": "Znaleziono",
       "not-found": "Nie znaleziono"
@@ -181,7 +181,7 @@
 
     "register": {
       "header": "Utwórz nowe konto",
-      "name-input": "Imię (+ nazwisko opcjonalnie)",
+      "name-input": "Nazwa użytkownika (może być zmieniona w dowolnym momencie; zalecamy imię i nazwisko)",
       "phone-input": "Telefon z numerem kierunkowym. Używany do <b>logowania</b> i znajdowania innych użytkowników",
       "bio-input": "Opis profilu (opcjonalnie)",
       "login-hint": "Mam już konto"
@@ -192,7 +192,7 @@
     "id": "ID",
     "nick": "Nick",
     "login": "Login",
-    "name": "Imię i nazwisko",
+    "name": "Nazwa użytkownika",
     "phone-number": "Numer telefonu",
     "user-bio": "O mnie...",
     "user-bio-placeholder": "Kilka zdań o sobie...",

@@ -2,6 +2,8 @@ ion-textarea.message-input {
   --ion-margin: 8px;
   --color: inherit;
   min-height: 36px !important;
+  max-height: 50vh;
+
   label {
     --background: var(--ion-background-color-step-25, #f2f2f2);
     --border-radius: 20px;
@@ -20,6 +22,20 @@ ion-textarea.message-input {
     }
   }
 }
+
+ion-textarea.message-input[auto-grow] .textarea-wrapper,
+ion-textarea.message-input[auto-grow] .textarea-wrapper-inner,
+ion-textarea.message-input[auto-grow] .native-wrapper,
+ion-textarea.message-input[auto-grow] .native-textarea {
+  max-height: 50vh;
+}
+
+ion-textarea.message-input[auto-grow] .native-textarea {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
 .ios ion-textarea.message-input label {
   --padding-end: 11px;
 }

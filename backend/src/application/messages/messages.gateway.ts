@@ -12,9 +12,6 @@ import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
 import { MessagesService } from './messages.service';
 
 
-// TODO: file a lawsuit for damaging my mental health by not providing any docs for neither auth, cookies, or sessions in websockets
-// TODO: write a thankful letter to OpenAI
-
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
 @WebSocketGateway({
   cors: {
@@ -60,13 +57,6 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
         next();
       });
     });
-
-    // this.server.engine.on("connection_error", (err) => {
-    //   console.warn(err.req);      // the request object
-    //   console.warn(err.code);     // the error code, for example 1
-    //   console.warn(err.message);  // the error message, for example "Session ID unknown"
-    //   console.warn(err.context);  // some additional error context
-    // });
   }
 
   // LIFECYCLE
@@ -84,8 +74,9 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   // FEATURES
 
   public sendMessage(payload: MessageSentEvent) {
+    // trasmitting to the sender too, because they may be using multiple devices at the same time
+    this.server.to(`user-${payload.senderId}`).emit('message', payload.message);
     for (const receiverId of payload.receiverIds) {
-      if (payload.message.senderId === receiverId) continue;  // skip sender
       this.server.to(`user-${receiverId}`).emit('message', payload.message);
     }
   }
