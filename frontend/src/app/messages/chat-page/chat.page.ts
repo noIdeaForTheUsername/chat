@@ -232,9 +232,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.awaitingMessageSendResponse.set(true);
 
     const replyingTo = this.replyingToId();
-    const replyingToText = this.replyingToText();
-    this.messageService.operations.sendMessage(messageText,
-      replyingTo ?? undefined, replyingToText ?? undefined);
+    this.messageService.operations.sendMessage(messageText, replyingTo ?? undefined);
   }
 
   afterOwnMessageSent(success: boolean) {

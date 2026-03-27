@@ -1,11 +1,13 @@
 import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { Message } from "../message.interface";
-import { firstValueFrom, map } from "rxjs";
-import { AuthService } from "@app/auth/auth.service";
+import { map } from "rxjs";
 import { ServerMessage, serverMessageToMessage } from "../message-utils";
 
 
+@Injectable({
+  providedIn: 'root',
+})
 export class BackendMessageApi {
 
   private readonly http = inject(HttpClient);

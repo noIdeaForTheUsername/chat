@@ -1,4 +1,4 @@
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Message } from '@app/messages/message.interface';
 import { BackendMessageApi } from './backend-message-api';
 import { Subject, Subscription } from 'rxjs';
@@ -8,7 +8,6 @@ import { messageToMessageView } from '../message-utils';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { ReplyPreviewManager } from './reply-previews';
 import { MessageOperations } from './message-operations';
-import { TranslateService } from '@ngx-translate/core';
 import { WebsocketService } from '../../websockets/websocket-service';
 import { ConversationService } from '@src/app/conversations/conversation.service';
 
@@ -20,140 +19,216 @@ import { ConversationService } from '@src/app/conversations/conversation.service
 })
 export class MessageService {
 
-  // NOTE: This service has all loading functions directly in the file, but other operations are in separate classes
-
   // DEPENDENCIES
-  private translate = inject(TranslateService);
-  private alertService = inject(AlertService);
-  private authService = inject(AuthService);
-  private websocket = inject(WebsocketService);
-  private conversationService = inject(ConversationService);
-  private readonly api = new BackendMessageApi();
-  private readonly replyPreviewManager = new ReplyPreviewManager(this, this.api);
-  public readonly operations = new MessageOperations(
-    this, this.api, this.replyPreviewManager,
-    this.authService, this.alertService, this.translate, this.conversationService, this.websocket
-  );
+  private readonly alertService = inject(AlertService);
+  private readonly authService = inject(AuthService);
+  private readonly websocket = inject(WebsocketService);
+  private readonly conversationService = inject(ConversationService);
+  private readonly api = inject(BackendMessageApi);
+  private readonly replyPreviewManager = inject(ReplyPreviewManager);
+  public readonly operations = inject(MessageOperations);
 
   // SETTINGS
   private readonly MAX_MESSAGES_DISPLAYED = 200;
-  private readonly LOADED_MESSAGES_AMOUNT = 25;  // loaded messages per one top-scroll
-  private readonly INCREASED_LOADED_MESSAGES_AMOUNT = 75;  // per one top-scroll, if the user keeps scrolling to top many times (amount specified below)
+  private readonly LOADED_MESSAGES_AMOUNT = 25; // loaded messages per one top-scroll
+  private readonly INCREASED_LOADED_MESSAGES_AMOUNT = 75; // per one top-scroll, if the user keeps scrolling to top many times (amount specified below)
   private readonly LOADS_BEFORE_INCREASING_LOADED_MESSAGES_AMOUNT = 4; // after this amount of loads (scrolls), the amount will change to the INCREASED_ one
 
   // DISPLAYED DATA
-  public readonly displayedMessages = signal<MessageView[]>([]);  // expected to be sorted from oldest (first) to newest!
-  public readonly repliedTexts = signal<Map<number, string>>(new Map());  // map of replied message ID -> text preview
-  private currentConvId: number = -1; public getCurrentConvId() { return this.currentConvId };
+  public readonly displayedMessages = signal<MessageView[]>([]); // expected to be sorted from oldest (first) to newest!
+  public readonly repliedTexts = signal<Map<number, string>>(new Map()); // map of replied message ID -> text preview
+  private currentConvId: number = -1;
+  public getCurrentConvId() { return this.currentConvId; }
 
   // MESSAGE STATE (ADDITIONAL METADATA)
   public readonly displayingNewestMessages = signal(true);
   public readonly displayingOldestMessages = signal(false);
 
-  private lowestDisplayedId: number = -1; public getLowestDisplayedId() { return this.lowestDisplayedId };
-  private highestDisplayedId: number = -1; public getHighestDisplayedId() { return this.highestDisplayedId };
+  private lowestDisplayedId: number = -1;
+  public getLowestDisplayedId() { return this.lowestDisplayedId; }
+  private highestDisplayedId: number = -1;
+  public getHighestDisplayedId() { return this.highestDisplayedId; }
   private currentConvNewestMessageId: number = 1;
   private currentConvOldestMessageId: number = 1;
 
   // events
-  public messagesWillRefresh = new Subject<void>();  // notifies ChatPage that it should save scroll params,
+  public messagesWillRefresh = new Subject<void>();
   // additionally, the above signal ISN'T EMITTED after initial loading or teleport. Only the infinite scroll loading!
   public messagesWillInit = new Subject<void>();
   public newMessageAppeared = new Subject<void>();
-  public ownMessageSent = new Subject<boolean>();  // contains success status
+  public ownMessageSent = new Subject<boolean>(); // contains success status
 
   // LOADING PROPERTIES
-  public readonly dataLoaded = signal(false);  // specifies if the initial loading was successful
-  public readonly additionalMessagesLoading = signal(true);  // informs if new messages (during infinite scroll) are just being loaded
+  public readonly dataLoaded = signal(false); // specifies if the initial loading was successful
+  public readonly additionalMessagesLoading = signal(true); // informs if new messages (during infinite scroll) are just being loaded
   public readonly loadingMessagesAreOlder = signal(true);
   public readonly loadError = signal<string | number | null>(null);
-  private loadsCount: number = 0;  // number of additional loads since initial conversation load
+  private loadsCount: number = 0; // number of additional loads since initial conversation load
   private convMessagesSub?: Subscription;
 
-
   constructor() {
-    // Subscribe to reload messages from the socket service
+    this.connectCollaborators();
+
     this.websocket.reloadConversation$.subscribe({
-      next: (convId: number) => {
-        this.loadCurrentConversation();
-      }
+      next: () => this.loadCurrentConversation(),
     });
-    this.websocket.reconnected$.subscribe(() =>{
-      if (document.visibilityState === "visible")
+
+    this.websocket.reconnected$.subscribe(() => {
+      if (document.visibilityState === 'visible') {
         this.websocket.setViewedConversation(this.currentConvId === -1 ? null : this.currentConvId);
+      }
     });
   }
 
   // PRIVATE FUNCTIONS
 
+  private connectCollaborators() {
+    this.replyPreviewManager.connect({
+      getDisplayedMessages: () => this.displayedMessages(),
+      updateDisplayedMessages: (updater) => this.displayedMessages.update(updater),
+    });
+
+    this.operations.connect({
+      getCurrentConvId: () => this.currentConvId,
+      isDisplayingNewest: () => this.displayingNewestMessages(),
+      getDisplayedMessages: () => this.displayedMessages(),
+      updateDisplayedMessages: (updater) => this.displayedMessages.update(updater),
+      getHighestDisplayedId: () => this.highestDisplayedId,
+      getLowestDisplayedId: () => this.lowestDisplayedId,
+      notifyNewMessageAppeared: () => this.newMessageAppeared.next(),
+      notifyOwnMessageSent: (success) => this.ownMessageSent.next(success),
+    });
+  }
+
   // Load messages from the server while managing the state
-  private loadConvMessages(messageAmount: number, older: boolean,
-    startMessageId?: number, includeGivenId: boolean = false,
-
+  private loadConvMessages(
+    messageAmount: number,
+    older: boolean,
+    startMessageId?: number,
+    includeGivenId: boolean = false,
   ) {
-    this.cancelMessageLoad();
-    this.loadingMessagesAreOlder.set(startMessageId !== undefined && startMessageId < this.highestDisplayedId);
-    this.additionalMessagesLoading.set(true);
-    if (startMessageId !== undefined && includeGivenId)
-      startMessageId += older ? 1 : -1;
+    const normalizedStartMessageId = this.prepareLoadRequest(startMessageId, older, includeGivenId);
 
-    this.convMessagesSub = this.api.getConversationMessages(this.currentConvId, messageAmount, older, startMessageId).subscribe({
-      next: (val: Message[]) => {
-        // notify that the refresh is coming so ChatPage can save scroll params before the array is updated
-        const displayedMessagesWereEmpty = this.displayedMessages().length === 0;
-        if (!displayedMessagesWereEmpty) this.messagesWillRefresh.next();
-
-        // create new displayed messages array
-        const newArr = older ? [...val, ...this.displayedMessages()] : [...this.displayedMessages(), ...val];
-        // delete excessive messages
-        let overflow = newArr.length - this.MAX_MESSAGES_DISPLAYED;
-        if (overflow > 0 && newArr[0].globalId < this.lowestDisplayedId) {  // if loaded older messages (lowestDisplayedId refers to the previous state)
-          newArr.splice(newArr.length - overflow, overflow);
-        }
-        else if (overflow > 0 && newArr[newArr.length - 1].globalId > this.highestDisplayedId) {  // if loaded newer messages
-          newArr.splice(0, overflow);
-        }
-
-        // Map Message -> MessageView
-        const msgViews: MessageView[] = [];
-        for (let i = 0; i < newArr.length; i++) {
-          msgViews[i] = messageToMessageView(
-            newArr[i],
-            this.authService.getUserIdOrError(),
-            i > 0 ? msgViews[i - 1] : undefined
-          );
-        }
-        // UPDATE THE ARRAY
-        this.displayedMessages.set(msgViews);
-
-        // update metadata
-        const updateHighestDispalyedId = (!older && val.length < messageAmount) || this.loadsCount == 0;
-        this.updateDisplayedMessagesMetadata(newArr, updateHighestDispalyedId, older && val.length < messageAmount);
-
-        // SIDE EFFECTS
-        if (this.loadsCount == 0) {
-          // acknowledge msgs after the first load of newest messages
-          this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
-        }
-        
-        // notify loading complete
-        this.additionalMessagesLoading.set(false);
-        this.dataLoaded.set(true);
-        // load reply previews for the currently displayed messages
-        this.replyPreviewManager.loadMessagePreviews(this.currentConvId, this.highestDisplayedId, this.lowestDisplayedId);
-        if (displayedMessagesWereEmpty) this.messagesWillInit.next();
+    this.convMessagesSub = this.api.getConversationMessages(
+      this.currentConvId,
+      messageAmount,
+      older,
+      normalizedStartMessageId
+    ).subscribe({
+      next: (loadedMessages: Message[]) => {
+        this.handleLoadedMessages(loadedMessages, messageAmount, older);
       },
       error: (err) => {
-        this.dataLoaded.set(true);
-        this.additionalMessagesLoading.set(false);
-        if (this.displayedMessages().length === 0) {
-          this.loadError.set(err.status ?? "data-unavailable");
-          this.displayingNewestMessages.set(true);
-          this.displayingOldestMessages.set(true);
-        }
-        else this.alertService.displayError(err.status ?? "data-unavailable");
+        this.handleLoadError(err);
       }
     });
+  }
+
+  private prepareLoadRequest(startMessageId?: number, older: boolean = true, includeGivenId: boolean = false) {
+    this.cancelMessageLoad();
+    this.loadError.set(null);
+    this.loadingMessagesAreOlder.set(startMessageId !== undefined && startMessageId < this.highestDisplayedId);
+    this.additionalMessagesLoading.set(true);
+
+    if (startMessageId === undefined || !includeGivenId) return startMessageId;
+    return startMessageId + (older ? 1 : -1);
+  }
+
+  private handleLoadedMessages(loadedMessages: Message[], messageAmount: number, older: boolean) {
+    const displayedMessagesWereEmpty = this.displayedMessages().length === 0;
+    if (!displayedMessagesWereEmpty) {
+      this.messagesWillRefresh.next();
+    }
+
+    const mergedMessages = this.mergeLoadedMessages(loadedMessages, older);
+    const trimmedMessages = this.trimOverflowMessages(mergedMessages);
+    const mappedViews = this.mapMessagesToView(trimmedMessages);
+
+    this.displayedMessages.set(mappedViews);
+    this.updateMetadataAfterLoad(trimmedMessages, loadedMessages.length, messageAmount, older);
+    this.handleSuccessfulLoad(displayedMessagesWereEmpty);
+  }
+
+  private mergeLoadedMessages(loadedMessages: Message[], older: boolean) {
+    return older
+      ? [...loadedMessages, ...this.displayedMessages()]
+      : [...this.displayedMessages(), ...loadedMessages];
+  }
+
+  private trimOverflowMessages(messages: Message[]) {
+    const trimmedMessages = [...messages];
+    const overflow = trimmedMessages.length - this.MAX_MESSAGES_DISPLAYED;
+
+    if (overflow <= 0) return trimmedMessages;
+
+    if (trimmedMessages[0].globalId < this.lowestDisplayedId) {
+      trimmedMessages.splice(trimmedMessages.length - overflow, overflow);
+    }
+    else if (trimmedMessages[trimmedMessages.length - 1].globalId > this.highestDisplayedId) {
+      trimmedMessages.splice(0, overflow);
+    }
+
+    return trimmedMessages;
+  }
+
+  private mapMessagesToView(messages: Message[]) {
+    const currentUserId = this.authService.getUserIdOrError();
+    const msgViews: MessageView[] = [];
+
+    for (let i = 0; i < messages.length; i++) {
+      msgViews[i] = messageToMessageView(
+        messages[i],
+        currentUserId,
+        i > 0 ? msgViews[i - 1] : undefined
+      );
+    }
+
+    return msgViews;
+  }
+
+  private updateMetadataAfterLoad(messages: Message[], loadedCount: number, requestedCount: number, older: boolean) {
+    const updateConvNewestMessageId = (!older && loadedCount < requestedCount) || this.loadsCount === 0;
+    const updateConvOldestMessageId = older && loadedCount < requestedCount;
+
+    this.updateDisplayedMessagesMetadata(
+      messages,
+      updateConvNewestMessageId,
+      updateConvOldestMessageId
+    );
+  }
+
+  private handleSuccessfulLoad(displayedMessagesWereEmpty: boolean) {
+    if (this.loadsCount === 0) {
+      // acknowledge msgs after the first load of newest messages
+      this.conversationService.acknowledgeConversationMessages(this.currentConvId, this.highestDisplayedId);
+    }
+
+    this.additionalMessagesLoading.set(false);
+    this.dataLoaded.set(true);
+
+    this.replyPreviewManager.loadMessagePreviews(
+      this.currentConvId,
+      this.highestDisplayedId,
+      this.lowestDisplayedId
+    );
+
+    if (displayedMessagesWereEmpty) {
+      this.messagesWillInit.next();
+    }
+  }
+
+  private handleLoadError(err: any) {
+    this.dataLoaded.set(true);
+    this.additionalMessagesLoading.set(false);
+
+    if (this.displayedMessages().length === 0) {
+      this.loadError.set(err.status ?? 'data-unavailable');
+      this.displayingNewestMessages.set(true);
+      this.displayingOldestMessages.set(true);
+      return;
+    }
+
+    this.alertService.displayError(err.status ?? 'data-unavailable');
   }
 
   private getMessagesToLoadAmount() {
@@ -163,36 +238,41 @@ export class MessageService {
       return this.INCREASED_LOADED_MESSAGES_AMOUNT;
   }
 
-  private updateDisplayedMessagesMetadata(messages: Message[],
-    updateConvNewestMessageId = false, updateConvOldestMessageId = false
+  private updateDisplayedMessagesMetadata(
+    messages: Message[],
+    updateConvNewestMessageId = false,
+    updateConvOldestMessageId = false
   ) {
-    // update control variables
     if (messages.length > 0) {
       this.lowestDisplayedId = messages[0].globalId;
       this.highestDisplayedId = messages[messages.length - 1].globalId;
-      if (updateConvNewestMessageId)
+
+      if (updateConvNewestMessageId) {
         this.currentConvNewestMessageId = this.highestDisplayedId;
-      if (updateConvOldestMessageId)
+      }
+      if (updateConvOldestMessageId) {
         this.currentConvOldestMessageId = this.lowestDisplayedId;
-      this.displayingNewestMessages.set(this.highestDisplayedId == this.currentConvNewestMessageId);
-      this.displayingOldestMessages.set(this.lowestDisplayedId == this.currentConvOldestMessageId);
+      }
+
+      this.displayingNewestMessages.set(this.highestDisplayedId === this.currentConvNewestMessageId);
+      this.displayingOldestMessages.set(this.lowestDisplayedId === this.currentConvOldestMessageId);
+      return;
     }
-    else {  // empty conv
-      this.lowestDisplayedId = -1;
-      this.highestDisplayedId = -1;
-      this.displayingNewestMessages.set(true);
-      this.displayingOldestMessages.set(true);
-      this.currentConvNewestMessageId = -1;
-      this.currentConvOldestMessageId = -1;
-    }
+
+    // empty conversation
+    this.lowestDisplayedId = -1;
+    this.highestDisplayedId = -1;
+    this.displayingNewestMessages.set(true);
+    this.displayingOldestMessages.set(true);
+    this.currentConvNewestMessageId = -1;
+    this.currentConvOldestMessageId = -1;
   }
 
-  
   // ------------------------------------------------ PUBLIC LOADING FUNCTIONS ------------------------------------------------
 
   // load initially or reload (safe even if no conversation is currently displayed)
   loadCurrentConversation() {
-    if (this.currentConvId == -1) return;
+    if (this.currentConvId === -1) return;
     this.loadConversationInitially(this.currentConvId);
   }
 
@@ -211,13 +291,13 @@ export class MessageService {
   }
 
   loadOlderMessages() {
-    let loadAmount = this.getMessagesToLoadAmount();
+    const loadAmount = this.getMessagesToLoadAmount();
     this.loadsCount++;
     this.loadConvMessages(loadAmount, true, this.lowestDisplayedId);
   }
 
   loadNewerMessages() {
-    let loadAmount = this.getMessagesToLoadAmount();
+    const loadAmount = this.getMessagesToLoadAmount();
     this.loadsCount++;
     this.loadConvMessages(loadAmount, false, this.highestDisplayedId);
   }
@@ -235,14 +315,17 @@ export class MessageService {
     this.cancelMessageLoad();
     this.displayedMessages.set([]);
     this.dataLoaded.set(false);
+    this.loadError.set(null);
     this.currentConvId = -1;
     this.loadsCount = 0;
+    this.updateDisplayedMessagesMetadata([]);
   }
 
   cancelMessageLoad() {
-    if (this.convMessagesSub) {
-      this.additionalMessagesLoading.set(false);
-      this.convMessagesSub.unsubscribe();
-    }
+    if (!this.convMessagesSub) return;
+
+    this.additionalMessagesLoading.set(false);
+    this.convMessagesSub.unsubscribe();
+    this.convMessagesSub = undefined;
   }
 }
