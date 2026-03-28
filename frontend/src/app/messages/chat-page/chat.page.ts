@@ -219,7 +219,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   onMessageFieldKeydown(event: KeyboardEvent) {
     if ((!isTouchOnlyDevice()) && event.key === "Enter" && !event.shiftKey) {
-      // if the device is touch-only, we want to allow the user to use the "Enter" key to create new lines (we assume that a
+      // if the device is touch-only, allow the user to use the "Enter" key to create new lines (it's assumed that a
       // touch-only device doesn't have a physical keyboard, and "Enter" on physical keyboard usually means "send message")
       event.preventDefault();
       this.sendMessage();

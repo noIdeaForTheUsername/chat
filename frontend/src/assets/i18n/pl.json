@@ -212,6 +212,13 @@
     "forgot-password-hint": "Jeśli zapomniałeś hasła, skontaktuj się z administratorem w celu jego zresetowania."
   },
 
+  "password-strength": {
+    "length": "Minimum {{length}} znaków",
+    "case": "Wielkie i małe litery",
+    "special": "Przynajmniej jedna cyfra LUB znak specjalny",
+    "match": "Hasła są identyczne"
+  },
+
   "prompt": {
     "block": {
       "user": "Użytkownik zostanie dla Ciebie ukryty, nie będziesz otrzymywać powiadomień. Nie zostanie on poinformowany o tej akcji. Możesz go odblokować później ze strony z listą konwersacji."

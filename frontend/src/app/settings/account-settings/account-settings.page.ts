@@ -10,6 +10,8 @@ import { AuthService } from '@src/app/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { LoadingIndicator } from "@src/app/loading/loading-indicator-component/loading-indicator.component";
 import { Router } from '@angular/router';
+import { PasswordStrengthComponent } from "@src/app/auth/password-strength/password-strength.component";
+import { passwordsValidatorOptional } from '@src/app/shared/inputs/form-utils';
 
 @Component({
   selector: 'app-account-settings',
@@ -24,7 +26,8 @@ import { Router } from '@angular/router';
     IonNote,
     StandardHeaderComponent,
     TranslatePipe,
-    LoadingIndicator
+    LoadingIndicator,
+    PasswordStrengthComponent
 ]
 })
 export class AccountSettingsPage implements OnInit {
@@ -80,7 +83,7 @@ export class AccountSettingsPage implements OnInit {
     // passwords optional when both empty — validator enforces requirements/match conditionally
     password: new FormControl('', { nonNullable: true }),
     passwordRepeat: new FormControl('', { nonNullable: true }),
-  }, { validators: passwordsMatchValidator });
+  }, { validators: [passwordsMatchValidator, passwordsValidatorOptional] });
 
 
 

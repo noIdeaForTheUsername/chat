@@ -10,17 +10,7 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ConversationService } from '@src/app/conversations/conversation.service';
 import { WebsocketService } from '@src/app/websockets/websocket-service';
-
-type MessageOperationsStateAdapter = {
-  getCurrentConvId: () => number;
-  isDisplayingNewest: () => boolean;
-  getDisplayedMessages: () => MessageView[];
-  updateDisplayedMessages: (updater: (msgs: MessageView[]) => MessageView[]) => void;
-  getHighestDisplayedId: () => number;
-  getLowestDisplayedId: () => number;
-  notifyNewMessageAppeared: () => void;
-  notifyOwnMessageSent: (success: boolean) => void;
-};
+import { MessageStateStore } from './message-state.store';
 
 @Injectable({
   providedIn: 'root',
@@ -34,8 +24,7 @@ export class MessageOperations {
   private readonly translate = inject(TranslateService);
   private readonly conversationService = inject(ConversationService);
   private readonly websocket = inject(WebsocketService);
-
-  private state?: MessageOperationsStateAdapter;
+  private readonly state = inject(MessageStateStore);
 
   constructor() {
     this.websocket.messages$.subscribe({
@@ -46,25 +35,18 @@ export class MessageOperations {
     });
   }
 
-  connect(state: MessageOperationsStateAdapter) {
-    this.state = state;
-  }
-
-  disconnect() {
-    this.state = undefined;
-  }
-
   sendMessage(text: string, repliedId?: number) {
-    if (!this.state) return;
+    const currentConvId = this.state.getCurrentConvId();
+    if (currentConvId === -1) return;
 
     const timestamp = new Date();
-    this.api.sendMessage(this.state.getCurrentConvId(), text, timestamp, repliedId).subscribe({
+    this.api.sendMessage(currentConvId, text, timestamp, repliedId).subscribe({
       next: (res: any) => {
         if (res.id === undefined) return;
-        this.state?.notifyOwnMessageSent(true);
+        this.state.ownMessageSent.next(true);
       },
       error: (e) => {
-        this.state?.notifyOwnMessageSent(false);
+        this.state.ownMessageSent.next(false);
         this.alertService.displayError(
           e.error.message ?? e.status ?? 'unknown',
           undefined,
@@ -75,16 +57,15 @@ export class MessageOperations {
   }
 
   receiveMessage(message: Message) {
-    if (!this.state) return;
     if (message.conversationId !== this.state.getCurrentConvId()) return;
-    if (!this.state.isDisplayingNewest()) return;
+    if (!this.state.displayingNewestMessages()) return;
 
-    this.state.updateDisplayedMessages((msgs) => {
+    this.state.displayedMessages.update((msgs) => {
       const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
       return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
     });
 
-    this.state.notifyNewMessageAppeared();
+    this.state.newMessageAppeared.next();
 
     if (message.senderId !== this.authService.getUserId()) {
       this.conversationService.acknowledgeConversationMessages(this.state.getCurrentConvId(), message.globalId);
@@ -98,9 +79,10 @@ export class MessageOperations {
   }
 
   deleteMessage(messageId: number) {
-    if (!this.state) return;
+    const currentConvId = this.state.getCurrentConvId();
+    if (currentConvId === -1) return;
 
-    this.api.deleteMessage(messageId, this.state.getCurrentConvId()).subscribe({
+    this.api.deleteMessage(messageId, currentConvId).subscribe({
       next: () => this.deleteOwnMessageLocally(messageId),
       error: (e) => {
         if (e.error.message === 'cannot-delete-not-own-message') return;
@@ -113,9 +95,10 @@ export class MessageOperations {
   }
 
   deleteMultipleMessages(messageIds: number[]) {
-    if (!this.state) return;
+    const currentConvId = this.state.getCurrentConvId();
+    if (currentConvId === -1) return;
 
-    this.api.deleteMultipleMessages(messageIds, this.state.getCurrentConvId()).subscribe({
+    this.api.deleteMultipleMessages(messageIds, currentConvId).subscribe({
       next: () => {
         for (const msgId of messageIds) {
           this.deleteOwnMessageLocally(msgId);
@@ -129,12 +112,10 @@ export class MessageOperations {
   }
 
   receiveMessageUpdate(message: Message) {
-    if (!this.state) return;
-
-    const toUpdate = this.state.getDisplayedMessages().find(m => m.globalId === message.globalId);
+    const toUpdate = this.state.displayedMessages().find(m => m.globalId === message.globalId);
     if (!toUpdate) return;
 
-    this.state.updateDisplayedMessages((msgs) => {
+    this.state.displayedMessages.update((msgs) => {
       return msgs.map(m =>
         m.globalId === message.globalId
           ? messageToMessageView(message, this.authService.getUserIdOrError())
@@ -152,9 +133,7 @@ export class MessageOperations {
   }
 
   private deleteOwnMessageLocally(messageId: number) {
-    if (!this.state) return;
-
-    const toDelete = this.state.getDisplayedMessages().find(m => m.globalId === messageId);
+    const toDelete = this.state.displayedMessages().find(m => m.globalId === messageId);
     if (!toDelete || !toDelete.isOwn) return;
 
     const updatedMsg: MessageView = {
@@ -163,7 +142,7 @@ export class MessageOperations {
       repliedId: undefined,
     };
 
-    this.state.updateDisplayedMessages((msgs) => {
+    this.state.displayedMessages.update((msgs) => {
       return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
 

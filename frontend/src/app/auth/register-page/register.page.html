@@ -17,15 +17,15 @@
 
     <div class="floating-input">
       <label>
-        <p>{{ 'page.register.name-input' | translate }}:</p>
-        <input formControlName="name">
+        <p class="highlighted-b" [innerHTML]="('page.register.phone-input' | translate) + ':'"></p>
+        <input formControlName="phoneNumber">
       </label>
     </div>
 
     <div class="floating-input">
       <label>
-        <p class="highlighted-b" [innerHTML]="('page.register.phone-input' | translate) + ':'"></p>
-        <input formControlName="phoneNumber">
+        <p>{{ 'page.register.name-input' | translate }}:</p>
+        <input formControlName="name">
       </label>
     </div>
 
@@ -44,7 +44,10 @@
         <p>{{ 'profile.password-repeat' | translate }}:</p>
         <input formControlName="passwordRepeat" type="password">
       </label>
-    </div>  
+    </div> 
+    <app-password-strength
+      [password]="form.get('password')?.value ?? ''"
+      [passwordRepeat]="form.get('passwordRepeat')?.value ?? ''"/>
 
     <hr>
 

@@ -212,6 +212,13 @@
     "forgot-password-hint": "If you forgot your password, contact the administrator to reset it."
   },
 
+  "password-strength": {
+    "length": "At least {{length}} characters",
+    "case": "Both uppercase and lowercase letters",
+    "special": "At least one number OR special character",
+    "match": "Passwords match"
+  },
+
 
   "prompt": {
     "block": {

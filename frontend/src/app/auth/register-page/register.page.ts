@@ -5,33 +5,12 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { AuthService } from '@app/auth/auth.service';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
-import { IonButton, IonButtons, IonContent, IonToggle } from '@ionic/angular/standalone';
+import { IonButton, IonButtons, IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
+import { PasswordStrengthComponent } from "../password-strength/password-strength.component";
+import { passwordsValidator } from '@src/app/shared/inputs/form-utils';
 
-
-function passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
-  const passwordCtrl = group.get('password');
-  const repeatCtrl = group.get('passwordRepeat');
-  if (!passwordCtrl || !repeatCtrl) return null;
-
-  const password = passwordCtrl.value;
-  const repeat = repeatCtrl.value;
-  const mismatch = !!password && !!repeat && password !== repeat;
-
-  const existingErrors = repeatCtrl.errors || {};
-  if (mismatch) {
-    if (!existingErrors['passwordMismatch']) {
-      repeatCtrl.setErrors({ ...existingErrors, passwordMismatch: true });
-    }
-  } else {
-    if (existingErrors['passwordMismatch']) {
-      const { passwordMismatch, ...rest } = existingErrors as Record<string, any>;
-      repeatCtrl.setErrors(Object.keys(rest).length ? rest : null);
-    }
-  }
-  return null;
-}
 
 
 @Component({
@@ -40,9 +19,11 @@ function passwordsMatchValidator(group: AbstractControl): ValidationErrors | nul
   styleUrls: ['./register.page.scss'],
   standalone: true,
   imports: [IonContent, RouterLink, ReactiveFormsModule,
-    TranslatePipe, IonButton, StandardHeaderComponent, IonButtons, LanguageButtonComponent]
+    TranslatePipe, IonButton, StandardHeaderComponent, IonButtons, LanguageButtonComponent, PasswordStrengthComponent]
 })
 export class RegisterPage {
+
+  private readonly REQUIRED_PASSWORD_LENGTH = 10;
 
   protected auth = inject(AuthService);
   private alertService = inject(AlertService);
@@ -56,7 +37,7 @@ export class RegisterPage {
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     passwordRepeat: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     bio: new FormControl(''),
-  }, { validators: passwordsMatchValidator });
+  }, { validators: [passwordsValidator] });
 
 
   ngOnInit() {
@@ -71,7 +52,7 @@ export class RegisterPage {
     });
   }
 
-
+  
   register() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();

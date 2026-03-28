@@ -1,37 +1,22 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { MessageView } from "../message-view.interface";
 import { Message } from "../message.interface";
 import { BackendMessageApi } from "./backend-message-api";
-
-type ReplyPreviewStateAdapter = {
-  getDisplayedMessages: () => MessageView[];
-  updateDisplayedMessages: (updater: (msgs: MessageView[]) => MessageView[]) => void;
-};
+import { MessageStateStore } from "./message-state.store";
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReplyPreviewManager {
-
-  private state?: ReplyPreviewStateAdapter;
+  private readonly state = inject(MessageStateStore);
 
   constructor(private api: BackendMessageApi) {}
 
-  connect(state: ReplyPreviewStateAdapter) {
-    this.state = state;
-  }
-
-  disconnect() {
-    this.state = undefined;
-  }
-
   private getDisplayedMessages() {
-    return this.state?.getDisplayedMessages() ?? [];
+    return this.state.displayedMessages();
   }
 
   public loadMessagePreviews(currentConvId: number, highestDisplayedId: number, lowestDisplayedId: number) {
-    if (!this.state) return;
-
     const repliedIds = this.getDisplayedMessages()
       .filter(msg => msg.repliedId !== undefined)
       .map(msg => msg.repliedId!);
@@ -62,7 +47,6 @@ export class ReplyPreviewManager {
   }
 
   public loadSingleMessagePreview(message: Message, highestDisplayedId: number, lowestDisplayedId: number) {
-    if (!this.state) return;
     if (!message.repliedId) return;
 
     if (message.repliedId > highestDisplayedId || message.repliedId < lowestDisplayedId) {
@@ -77,9 +61,7 @@ export class ReplyPreviewManager {
   }
 
   public addPreviews(messageWithRepliedTextOrArray: Message | Message[]) {
-    if (!this.state) return;
-
-    this.state.updateDisplayedMessages((msgs) => {
+    this.state.displayedMessages.update((msgs) => {
       const messagesWithRepliedTexts = Array.isArray(messageWithRepliedTextOrArray)
         ? messageWithRepliedTextOrArray
         : [messageWithRepliedTextOrArray];

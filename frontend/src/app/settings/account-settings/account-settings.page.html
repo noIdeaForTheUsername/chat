@@ -47,6 +47,12 @@
         </label>
       </div>
 
+      @if (form.get('password')?.value || form.get('passwordRepeat')?.value) {
+        <app-password-strength
+          [password]="form.get('password')?.value ?? ''"
+          [passwordRepeat]="form.get('passwordRepeat')?.value ?? ''"/>
+      }
+
       <hr>
 
       <ion-button fill="solid" (click)="editAccount()">
