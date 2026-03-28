@@ -4,8 +4,8 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity('device_sessions')
-export class DeviceSessionEntity {
+@Entity('sessions')
+export class SessionEntity {
 
   // BASIC
 

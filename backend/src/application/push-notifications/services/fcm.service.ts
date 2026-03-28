@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DeviceSessionEntity } from "src/domain/session/entity/device-session.entity";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { getNormalizedLang, getNotificationTitleString, getTranslatedString } from "../strings/notification-strings-utils";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -12,8 +12,8 @@ import { Repository } from "typeorm";
 export class FcmService {
 
   constructor(
-    @InjectRepository(DeviceSessionEntity)
-    private sessionsRepository: Repository<DeviceSessionEntity>
+    @InjectRepository(SessionEntity)
+    private sessionsRepository: Repository<SessionEntity>
   ) {}
 
   initFcm() {
@@ -45,7 +45,7 @@ export class FcmService {
     }
   }
 
-  async sendNotification(session: DeviceSessionEntity, title: string | string[], message: string | string[],
+  async sendNotification(session: SessionEntity, title: string | string[], message: string | string[],
     ttl: number, tag?: string, language?: string) {
     if (!session.fcmToken) {
       console.warn(`No FCM token for session ${session.sid}, skipping FCM notification. This message shouldn't have appeared.`);

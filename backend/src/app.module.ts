@@ -26,7 +26,7 @@ import config from './config';
 import { AccountsDomainModule } from './domain/accounts/accounts.module';
 import { AuthModule } from './application/users/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { DeviceSessionEntity } from './domain/session/entity/device-session.entity';
+import { SessionEntity } from './domain/session/entity/session.entity';
 import { PushModule } from './application/push-notifications/push.module';
 
 
@@ -48,7 +48,7 @@ import { PushModule } from './application/push-notifications/push.module';
         entities: [
           Account, Profile, FullProfile, Contact, UserKnownProfile,
           Conversation, Participation, UserConversation,
-          Message, UserMessage, LatestUserMessage, DeviceSessionEntity
+          Message, UserMessage, LatestUserMessage, SessionEntity
         ],
       }),
       async dataSourceFactory(options: any) {

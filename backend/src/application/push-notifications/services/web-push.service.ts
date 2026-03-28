@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { notificationStrings } from "../strings/notification-strings";
 import { InjectRepository } from "@nestjs/typeorm";
-import { DeviceSessionEntity } from "src/domain/session/entity/device-session.entity";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { Repository } from "typeorm";
 import * as webpush from "web-push";
 import { ConfigService } from "@nestjs/config";
@@ -15,8 +15,8 @@ export class WebPushService {
 
   constructor(
     private config: ConfigService,
-    @InjectRepository(DeviceSessionEntity)
-    private sessionsRepository: Repository<DeviceSessionEntity>,
+    @InjectRepository(SessionEntity)
+    private sessionsRepository: Repository<SessionEntity>,
   ) {
     this.vapidKeys = {
       publicKey: this.config.get<string>("pushNotifications.vapidPublicKey")!,
@@ -34,7 +34,7 @@ export class WebPushService {
 
   
 
-  public async sendNotification(session: DeviceSessionEntity, title: string | string[], message: string | string[],
+  public async sendNotification(session: SessionEntity, title: string | string[], message: string | string[],
     ttl: number, tag?: string, language?: string) {
     const subscription = session.pushSubscription;
     if (!subscription) {

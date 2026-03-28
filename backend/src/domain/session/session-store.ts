@@ -1,11 +1,11 @@
 import session from 'express-session';
 import { Repository } from 'typeorm';
-import { DeviceSessionEntity } from './entity/device-session.entity';
+import { SessionEntity } from './entity/session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 export class TypeOrmSessionStore extends session.Store {
   constructor(
-    public repo: Repository<DeviceSessionEntity>
+    public repo: Repository<SessionEntity>
   ) {
     super();
   }
@@ -24,7 +24,7 @@ export class TypeOrmSessionStore extends session.Store {
         return callback(null, null);
       }
 
-      const sessionData: DeviceSessionEntity = {
+      const sessionData: SessionEntity = {
         sid: record.sid,
         userId: record.userId,
         expires: record.expires,

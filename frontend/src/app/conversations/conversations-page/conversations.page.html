@@ -31,7 +31,7 @@
     }
 
     <!-- SEARCHBAR -->
-    <ion-searchbar [debounce]="200" class="glow-on-focus" [placeholder]="'page.conversations.search' | translate" (ionInput)="onSearchBarInput($event)"/>
+    <ion-searchbar class="glow-on-focus" [placeholder]="'page.conversations.search' | translate" (ionInput)="onSearchBarInput($event)"/>
 
     @if (this.conversationsLoaded()) {
       <!-- HEADER -->

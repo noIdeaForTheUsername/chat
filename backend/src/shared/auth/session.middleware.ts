@@ -6,7 +6,7 @@ import config from "src/config";
 import { Pool } from "pg";
 import { TypeOrmSessionStore } from "src/domain/session/session-store";
 import { DataSource } from "typeorm";
-import { DeviceSessionEntity } from "src/domain/session/entity/device-session.entity";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 
 let sessionMiddleware: RequestHandler | null = null;
 
@@ -23,7 +23,7 @@ export async function initSessionMiddleware(config: ConfigService): Promise<Requ
     database: config.get<string>('database.database'),
     schema: "public",
     entities: [
-      DeviceSessionEntity
+      SessionEntity
     ],
   });
 
@@ -45,7 +45,7 @@ export async function initSessionMiddleware(config: ConfigService): Promise<Requ
       //   ttl: config.get<number>('cookies.expireMs')
       // }),
       store: new TypeOrmSessionStore(
-        sessionDataSource.getRepository(DeviceSessionEntity)
+        sessionDataSource.getRepository(SessionEntity)
       ),
       secret: config.get<string>('auth.secret') as any,
       resave: false,
