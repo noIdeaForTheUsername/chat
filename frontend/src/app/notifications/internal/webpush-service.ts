@@ -52,7 +52,6 @@ export class WebPushService {
           this.alertService.displayMessageAlert(AlertType.INFO, this.translate.instant("prompt.notifications-enabled"));
       },
       error: (err) => {
-        console.error("Error sending token to server:", err);
         if (displayAlerts)
           this.alertService.displayUnknownError(err);
       }

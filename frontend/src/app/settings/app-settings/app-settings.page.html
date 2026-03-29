@@ -13,15 +13,12 @@
         @if (userId) {
           <app-item-button [text]="'profile.my' | translate" icon="person" [routerLink]="`/profiles/${userId}`"/>
         }
-        <!-- lock -->
-        <!-- <app-item-button [text]="'common.lock-app' | translate" icon="lock-closed"/> -->
-        <!-- auto-lock toggle -->
-        <!-- <app-item-toggle [text]="'page.app-settings.auto-lock' | translate" icon="lock-closed"/> -->
-        <!-- change account information -->
         <app-item-button routerLink="account" [text]="'page.app-settings.modify-account' | translate" icon="build"/>
         <!-- log out -->
         <app-item-button [text]="'page.app-settings.logout' | translate"
-        icon="log-out" iconColor="danger" (click)="authService.logout()"/>
+          icon="log-out" iconColor="danger" (click)="authService.logout()"/>
+        <app-item-button [text]="'page.app-settings.global-logout' | translate"
+          icon="globe" iconColor="danger" (click)="promptGlobalLogout()"/>
     </ion-item-group>
 
     <!-- APP -->

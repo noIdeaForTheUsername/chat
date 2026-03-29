@@ -4,11 +4,9 @@ import { Router } from "@angular/router";
 import { AlertService } from "@app/alerts/alert-service/alert.service";
 import { AlertType } from "@app/alerts/alert-type.enum";
 import { TranslateService } from "@ngx-translate/core";
-import { AuthBackendApi, RegisterBody } from "./auth-api";
 import { catchError, tap, throwError, timeout } from "rxjs";
 import { UserAccount } from "./account.interface";
-import { Capacitor, CapacitorCookies } from "@capacitor/core";
-import { environment } from "@src/environments/environment.prod";
+import { AuthBackendApi, RegisterBody } from "./auth-api";
 
 
 // Manages the user authenthication state, handles redirects and errors.
@@ -137,6 +135,20 @@ export class AuthService {
     });
   }
 
+  globalLogout() {
+    this.api.globalLogout().subscribe({
+      next: () => {
+        this.alertService.displayMessageAlert(
+          AlertType.INFO,
+          this.translate.instant('page.app-settings.global-logout-success'),
+        );
+      },
+      error: () => {
+        this.alertService.displayError('logout-failed');
+      }
+    });
+  }
+
 
   // ACCOUNT DATA MODIFICATIONS
 
@@ -158,7 +170,6 @@ export class AuthService {
 
   private handleRegisterError(err: any) {
     this.processing.set(false);
-    console.error("handling register error: ", err);
     if (err.status === 0) {
       this.alertService.displayServerConnectionError(true);
     }

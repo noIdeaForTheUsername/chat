@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 import { FcmService } from "./fcm.service";
 import { WebPushService } from "./web-push.service";
 
+// PushService is the orchestrator while Fcm and WebPush services actually send the notifications
 
 @Injectable()
 export class PushService {

@@ -219,25 +219,6 @@ export class ConversationsPage implements OnInit, OnDestroy {
 
   // -------------------------------------------------------- UI ELEMENTS
 
-  // "Plus" button action menu
-  // public plusButtons = [
-  //   {
-  //     text: this.translate.instant("page.conversations.plus-action.conversation"),
-  //     icon: "person-add",
-  //     data: "discovery"
-  //   },
-  //   {
-  //     text: this.translate.instant("page.conversations.plus-action.group"),
-  //     icon: "people",
-  //     data: "create-group"
-  //   },
-  //   {
-  //     text: this.translate.instant("common.cancel"),
-  //     role: 'cancel',
-  //     cssClass: "bold-text"
-  //   },
-  // ];
-
   public multiselectActionButtons = [
     {
       text: this.translate.instant("page.conversations.conversation-action.clear-messages"),

@@ -148,6 +148,8 @@
       "auto-lock": "Auto-lock on close",
       "modify-account": "Modify account data",
       "logout": "Log out",
+      "global-logout": "Log out from all devices",
+      "global-logout-success": "You have been logged out from all other devices.",
       "install-pwa": "Install the web app",
       "install-android": "Android app",
       "delete-messages": "Delete all messages in all conversations"

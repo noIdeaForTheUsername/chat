@@ -44,6 +44,7 @@ export function getErrorMessageKey(errorCode: number | string | null, translate:
     }
     // String ID: try to map extra known error codes to error keys
     else if (typeof errorCode === 'string') {
+      errorCode = errorCode.toLowerCase();
       let mappedId = extraErrorsMap.get(errorCode);
       if (mappedId) errorCode = mappedId;
     }

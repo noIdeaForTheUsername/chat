@@ -21,7 +21,6 @@ export class RefreshService {
 
   constructor() {
     this.websocket.reconnected$.subscribe(() => {
-      console.log("Websocket reconnected, refreshing data...");
       this.refreshData(undefined, true);
       // Reload current messages if displayingNewestMessages (= if the page is not scrolled up)
       if (this.messageService.displayingNewestMessages())

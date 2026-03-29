@@ -75,42 +75,4 @@ export class NotificationsService {
       return "denied";
     }
   }
-
-
-  // This function asks for permissions if not already granted and shows an alert if denied
-  // async requestSubscriptionAndSend(displayAlerts: boolean = true): Promise<void> {
-  //   let sub: PushSubscription | undefined = undefined;
-  //   try {
-  //     sub = await this.swPush.requestSubscription({
-  //       serverPublicKey: environment.vapidPublicKey
-  //     });
-  //   }
-  //   catch(err) {
-  //     console.error("Error requesting subscription:", err);
-  //     if (displayAlerts) {
-  //       if (Notification.permission == "denied")
-  //         this.alertService.displayError("notifications-blocked");
-  //       else
-  //         this.alertService.displayUnknownError(err);
-  //     }
-  //   }
-
-  //   if (sub) {
-  //     this.sendSubscriptionToServer(sub);
-  //     if (displayAlerts)
-  //       this.alertService.displayMessageAlert(AlertType.INFO, this.translate.instant("prompt.notifications-enabled"));
-  //   }
-  // }
-
-  // private async getExistingSubscription() {
-  //   const registration = await navigator.serviceWorker.ready;
-  //   return await registration.pushManager.getSubscription();
-  // }
-
-  // private sendSubscriptionToServer(subscription: PushSubscription) {
-  //   this.http.put("/notifications/subscription", {
-  //     subscription,
-  //     language: this.translate.getCurrentLang()
-  //   }).subscribe();
-  // }
 }

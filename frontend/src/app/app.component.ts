@@ -1,15 +1,23 @@
 import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
-import { TranslateService } from '@ngx-translate/core';
 import translationsEN from "@assets/i18n/en.json";
 import translationsPL from "@assets/i18n/pl.json";
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { TranslateService } from '@ngx-translate/core';
 
 import { addIcons } from 'ionicons';
-import { add, alertCircleOutline, arrowDown, arrowRedo, attach, ban, build, call, chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
+import {
+  alertCircleOutline, arrowDown, arrowRedo,
+  ban, build,
+  chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
   flame,
+  globe,
   handLeft,
-  help, helpCircle, hourglass, images, key, language, lockClosed, logoAndroid, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove, search, settings, trash, trashBin, wifiOutline } from 'ionicons/icons';
+  help, helpCircle, hourglass,
+  language,
+  logoAndroid, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove,
+  settings, trash, trashBin, wifiOutline
+} from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
 import { LanguageService } from './i18n/language.service';
 
@@ -20,11 +28,11 @@ import { LanguageService } from './i18n/language.service';
 })
 export class AppComponent {
   constructor(private translate: TranslateService, private languageService: LanguageService) {
-    addIcons({ add, paperPlane, attach, arrowDown, alertCircleOutline, wifiOutline, helpCircle, ban,
-      lockClosed, chatbubbleEllipses, pencil, key, help, settings, ellipsisHorizontal, arrowRedo, 
+    addIcons({ paperPlane, arrowDown, alertCircleOutline, wifiOutline, helpCircle, ban,
+      chatbubbleEllipses, pencil, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
-      call, search, images, people, notifications, download, person, personAdd, personRemove,
-      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid });
+      people, notifications, download, person, personAdd, personRemove,
+      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe });
 
     translate.setTranslation('pl', translationsPL);
     translate.setTranslation('en', translationsEN);

@@ -34,6 +34,10 @@ export class AuthBackendApi {
     return this.http.post<null>('/auth/logout', {});
   }
 
+  globalLogout(): Observable<null> {
+    return this.http.post<null>('/auth/global-logout', {});
+  }
+
   editAccount(updatedFieldsObject: Partial<UserAccount>) {
     return this.http.patch<UserAccount>("/accounts/me", updatedFieldsObject);
   }

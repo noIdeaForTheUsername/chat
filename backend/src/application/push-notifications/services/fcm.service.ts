@@ -89,7 +89,6 @@ export class FcmService {
       await admin.messaging().send(payload);
     }
     catch (error) {
-      console.warn('Error sending FCM notification:', error, "\n\nIt's FCM token was: ", session.fcmToken);
       // on error remove the token
       await this.sessionsRepository.update(session.sid, {
         fcmToken: null

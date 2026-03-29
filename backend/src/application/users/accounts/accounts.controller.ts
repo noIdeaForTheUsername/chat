@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Param, ParseBoolPipe, ParseIntPipe, Patch, Session, UseGuards } from "@nestjs/common";
 import { PublicAccess } from "src/shared/auth/decorators/public-access.decorator";
 import { UserId } from "src/shared/auth/decorators/user-id.decorator";
 import { AccountResponseDto } from "./dto/account-response.dto";
@@ -9,8 +9,11 @@ import { AdminGuard } from "src/shared/auth/guards/admin.guard";
 import { Account } from "src/domain/accounts/entities/account.entity";
 import { SetAdminStatusDto } from "./dto/set-admin.dto";
 import { UserAccount } from "src/shared/auth/decorators/account.decorator";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 
 // User account creation in auth module
+// The accounts controller handles actions related to account data modifications
+// while the auth controller handles login, logout, registration and GET /me
 
 @Controller("accounts")
 export class AccountsController {
@@ -21,13 +24,13 @@ export class AccountsController {
 
   @Patch("me")
   @HttpCode(HttpStatus.OK)
-  async modifyAccount(@UserId() userId: number, @Body() body: ModifyAccountDto): Promise<AccountResponseDto> {
+  async modifyAccount(@Session() session: SessionEntity, @Body() body: ModifyAccountDto): Promise<AccountResponseDto> {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException("passwords-different");
 
     return plainToInstance(
       AccountResponseDto,
-      await this.accountsService.modifyAccount(userId, body)
+      await this.accountsService.modifyAccount(session, body)
     );
   }
 

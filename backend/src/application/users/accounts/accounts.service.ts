@@ -9,6 +9,8 @@ import { hashPassword, verifyPassword } from "../auth/auth-utils";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 import { ConfigService } from "@nestjs/config";
+import { UserGlobalLogoutEvent } from "src/shared/events/user-global-logout.event";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 
 @Injectable()
 export class AccountsService {
@@ -60,7 +62,8 @@ export class AccountsService {
   }
 
   @Transactional()
-  async modifyAccount(callerId: number, dto: ModifyAccountDto) {
+  async modifyAccount(session: SessionEntity, dto: ModifyAccountDto) {
+    const callerId = session.userId;
     const found = await this.accounts.findExistingById(callerId);
     await verifyPassword(found, dto.currentPassword);
 
@@ -72,6 +75,7 @@ export class AccountsService {
     if (dto.password) {
       let newPasswordHash = await hashPassword(dto.password);
       toUpdate.passwordHash = newPasswordHash;
+      this.eventEmitter.emit("userGlobalLogout", new UserGlobalLogoutEvent(callerId, session.sid));
     }
 
     try {
@@ -129,10 +133,6 @@ export class AccountsService {
     if (err instanceof QueryFailedError && err.driverError.code == "23505"){
       const constraint = err.driverError.constraint;
       switch (constraint) {
-        // case 'unique_login':
-        //   throw new ConflictException('exists.login');
-        // case 'unique_email':
-        //   throw new ConflictException('exists.email');
         case 'unique_phone_number':
           throw new ConflictException('exists.phone-number');
       }

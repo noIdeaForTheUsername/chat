@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonItemGroup, IonItemDivider, IonLabel, IonSelectOption } from '@ionic/angular/standalone';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
 import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { ItemSelectComponent } from "../../shared/inputs/item-select-component/item-select.component";
@@ -14,6 +14,7 @@ import { NotificationsService } from '@src/app/notifications/notifications.servi
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { isPwa } from '@src/app/shared/platform-detection/platformUtils';
 import { Capacitor } from '@capacitor/core';
+import { AlertType } from '@src/app/alerts/alert-type.enum';
 
 @Component({
   selector: 'app-settings',
@@ -30,6 +31,7 @@ export class AppSettingsPage {
   protected alertService = inject(AlertService);
   protected languageService = inject(LanguageService);
   protected notificationsService = inject(NotificationsService);
+  private translate = inject(TranslateService);
 
   protected runningAsPwa = signal(true);
   protected runningNatively = signal(false);
@@ -50,6 +52,16 @@ export class AppSettingsPage {
 
   requestNotifications() {
     this.notificationsService.requestAndSendSubscription();
+  }
+
+  promptGlobalLogout() {
+    this.alertService.displayPromptAlert(
+      AlertType.DANGER_PROMPT,
+      this.translate.instant('common.are-you-sure'),
+      () => this.authService.globalLogout(),
+      undefined,
+      this.translate.instant('page.app-settings.global-logout'),
+    )
   }
 
 }
