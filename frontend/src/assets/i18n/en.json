@@ -82,7 +82,8 @@
         "clear-messages": "Clear my messages in selected"
       },
       "toggle-blocked-conversations": "Show/hide blocked conversations",
-      "unblock-hint": "Blocked - click to unblock the user"
+      "unblock-hint": "Blocked - click to unblock the user",
+      "slide-down": "Slide down to refresh"
     },
 
     "discovery": {

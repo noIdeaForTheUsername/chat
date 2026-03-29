@@ -82,7 +82,8 @@
         "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"
       },
       "toggle-blocked-conversations": "Pokaż/ukryj zablokowane konwersacje",
-      "unblock-hint": "Zablokowany/a - kliknij by odblokować"
+      "unblock-hint": "Zablokowany/a - kliknij by odblokować",
+      "slide-down": "Przeciągnij w dół, aby odświeżyć"
     },
 
     "discovery": {

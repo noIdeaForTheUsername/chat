@@ -217,6 +217,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
     }
   }
 
+
   // -------------------------------------------------------- UI ELEMENTS
 
   public multiselectActionButtons = [

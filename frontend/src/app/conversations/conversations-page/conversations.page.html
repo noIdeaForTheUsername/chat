@@ -62,6 +62,7 @@
     <!-- Error loading conversations -->
     @else if (this.conversationsLoadErr() !== null) {
       <h1 class="no-conversations-text">{{"error.data-unavailable.header" | translate}}</h1>
+      <p class="no-conversations-text">{{"page.conversations.slide-down" | translate}}</p>
     }
     <!-- No conversations text -->
     @else {
@@ -70,7 +71,6 @@
         <ion-icon name="person-add" color="warning"/>&nbsp;
         <span class="highlighted-b" [innerHTML]="'page.conversations.add-conversation-hint' | translate"></span>
       </p>
-      
     }
 
     <!-- "ADD" FAB BUTTON (discovery) -->
@@ -81,9 +81,6 @@
     </ion-fab>
 
     <!-- ACTION MENUS -->
-    <!-- <ion-action-sheet trigger="plus-button" [buttons]="plusButtons" (didDismiss)="performPlusButtonAction($event)"
-      [header]="'page.conversations.plus-action.header' | translate">
-    </ion-action-sheet> -->
     <ion-action-sheet [isOpen]="multiselectActionSheetOpen()" [buttons]="multiselectActionButtons" (didDismiss)="performMultiselectAction($event)"
       [header]="'page.conversations.conversation-action.header' | translate">
     </ion-action-sheet>
