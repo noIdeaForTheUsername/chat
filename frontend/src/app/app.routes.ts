@@ -22,10 +22,6 @@ export const routes: Routes = [
     loadComponent: () => import('./profiles/profile-page/profile.page').then( m => m.ProfilePage)
   },
   {
-    path: 'profiles/:id/security-verification',
-    loadComponent: () => import('./profiles/security-verification-page/security-verification.page').then( m => m.SecurityVerificationPage)
-  },
-  {
     path: 'chats/:id/options',
     loadComponent: () => import('./conversations/conversation-settings-page/conversation-settings.page').then( m => m.ConversationSettingsPage)
   },

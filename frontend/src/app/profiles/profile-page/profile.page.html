@@ -93,9 +93,6 @@
 
           <!-- display conversation button -->
           <app-item-button (click)="goToConversationPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
-
-          <!-- verify chat security button -->
-          <app-item-button routerLink="security-verification" [text]="'profile.verify-security' | translate" icon="lock-closed"/>
         
           <!-- block button -->
           <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>

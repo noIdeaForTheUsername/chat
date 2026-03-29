@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
@@ -21,7 +21,7 @@ import { ConversationService } from '../conversation.service';
   styleUrls: ['./conversation-settings.page.scss'],
   standalone: true,
   imports: [IonContent, IonItemGroup, IonLabel, IonItemDivider,
-    CommonModule, FormsModule, TranslatePipe, RouterLink,
+    CommonModule, FormsModule, TranslatePipe,
     ProfilePreviewComponent, LoadingIndicator, ItemButtonComponent, StandardHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

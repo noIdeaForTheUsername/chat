@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsString, MaxLength } from "class-validator";
 
 export class SetAdminStatusDto {
   @IsBoolean()
@@ -6,5 +6,6 @@ export class SetAdminStatusDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(100)
   password: string;
 }

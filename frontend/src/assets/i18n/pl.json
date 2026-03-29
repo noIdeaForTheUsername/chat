@@ -42,7 +42,6 @@
   "page": {
     "welcome" : {
       "header": "Witaj!",
-      "description": "Bezpieczna i prywatna aplikacja do przesyłania wiadomości.",
       "hint": "Musisz się zarejestrować lub zalogować, aby korzystać z aplikacji.",
       "create-account": "Chcę utworzyć nowe konto",
       "have-account": "Mam już konto",
@@ -288,6 +287,10 @@
     "exists": {
       "header": "Zajęte",
       "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
+    },
+    "too-long": {
+      "header": "Dane zbyt długie",
+      "description": "To, co próbujesz wysłać, jest zbyt długie. Sprawdź wprowadzone dane i spróbuj ponownie."
     },
     "notifications-blocked": {
       "header": "Powiadomienia zablokowane przez przeglądarkę",

@@ -43,7 +43,6 @@
   "page": {
     "welcome" : {
       "header": "Welcome!",
-      "description": "A secure and private messaging app.",
       "hint": "You need to register or log in to use the app.",
       "create-account": "I want to create a new account",
       "have-account": "I already have an account",
@@ -294,6 +293,10 @@
     "exists": {
       "header": "Already taken",
       "description": "User with this {{field}} already exists"
+    },
+    "too-long": {
+      "header": "Values too long",
+      "description": "What you're trying to send is too long. Please check the input and try again."
     },
     "notifications-blocked": {
       "header": "Notifications blocked by browser",

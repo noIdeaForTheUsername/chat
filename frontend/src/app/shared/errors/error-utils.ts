@@ -1,4 +1,3 @@
-import { inject } from "@angular/core";
 import { TranslateService } from "@ngx-translate/core";
 
 
@@ -77,7 +76,7 @@ function checkTranslationKeyExists(key: string | null, translate: TranslateServi
 }
 
 function mapServerUnavailable(errorCode: number | string | null) {
-  if (errorCode === "server-unavailable" || errorCode === "no-internet" || errorCode === 0 || errorCode === 504) {
+  if (errorCode === "server-unavailable") {
     if (window.navigator.onLine)
       return 'server-unavailable';
     else

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsObject, IsOptional, IsString, MaxLength } from "class-validator";
 
 
 export class PushSubscriptionDto {
@@ -9,9 +9,11 @@ export class PushSubscriptionDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  @MaxLength(2000, { message: 'too-long' })
   fcmToken?: string;
 
 
   @IsString()
+  @MaxLength(2)
   language: string;
 }
