@@ -55,7 +55,7 @@ export class MessagesController {
     @Body() body: SendMessageDto
   ) {
     const message = await this.messagesService.sendMessage(
-      callerId, body.conversationId, body.text, body.timestamp, body.repliedId);
+      callerId, body.conversationId, body.text, body.repliedId);
     return { id: message.globalId };
   }
 

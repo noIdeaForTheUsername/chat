@@ -68,7 +68,11 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   @OnEvent("userLogout")
   handleUserLogoutEvent(payload: UserLogoutEvent) {
     const room = `user-${payload.userId}`;
-    this.server.in(room).disconnectSockets(false);
+    // this.server.sockets.adapter.rooms.get(room)?.forEach(socketId => {
+    //   const socket = this.server.sockets.sockets.get(socketId);
+    //   socket?.conn.close();
+    // });
+    this.server.in(room).disconnectSockets(true);
   }
 
   // FEATURES

@@ -289,10 +289,6 @@
       "header": "Zajęte",
       "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
     },
-    "bad-timestamp": {
-      "header": "Nieprawidłowy czas",
-      "description": "Sprawdź ustawienia daty i godziny na swoim urządzeniu i ustaw poprawny czas (tak, to naprawdę jest ważne)"
-    },
     "notifications-blocked": {
       "header": "Powiadomienia zablokowane przez przeglądarkę",
       "description": "Jeśli chcesz je włączyć, musisz to zmienić ręcznie w ustawieniach przeglądarki internetowej lub urządzenia (to poza kontrolą tej aplikacji)"

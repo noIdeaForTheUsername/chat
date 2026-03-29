@@ -44,11 +44,10 @@ export class BackendMessageApi {
     );
   }
 
-  sendMessage(conversationId: number, text: string, timestamp: Date, repliedId?: number) {
+  sendMessage(conversationId: number, text: string, repliedId?: number) {
     return this.http.post(`/conversations/${conversationId}/messages`, {
       conversationId,
       text,
-      timestamp,
       repliedId,
     });
   }

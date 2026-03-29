@@ -55,17 +55,12 @@ export class MessagesService {
   }
 
   async sendMessage(callerId: number, conversationId: number,
-    text: string, timestamp: Date, repliedId?: number)
+    text: string, repliedId?: number)
   {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
-
-    const now = new Date().getTime();
-    const messageTime = timestamp.getTime();
-    const messageLate = now - messageTime > this.lateMessageThresholdMs;
-    const messageInTheFuture = messageTime - now > this.earlyMessageThresholdMs;
-    if (messageLate || messageInTheFuture)
-      throw new BadRequestException("bad-timestamp");  
+    
+    const timestamp = new Date();
 
     // Sending
     const sent = await this.messagesDomainService.createMessage(

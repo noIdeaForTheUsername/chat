@@ -295,10 +295,6 @@
       "header": "Already taken",
       "description": "User with this {{field}} already exists"
     },
-    "bad-timestamp": {
-      "header": "Invalid time",
-      "description": "Check your device's date and time settings and set the correct time (yes, this is actually important)"
-    },
     "notifications-blocked": {
       "header": "Notifications blocked by browser",
       "description": "To enable notifications, you have to go to your browser or device settings and manually allow them (this is out of the app's control)"

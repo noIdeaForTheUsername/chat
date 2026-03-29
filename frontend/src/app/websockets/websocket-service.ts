@@ -28,6 +28,8 @@ export class WebsocketService implements OnDestroy {
 
   private reconnectedSubject = new Subject<void>();
   public reconnected$: Observable<void> = this.reconnectedSubject.asObservable();
+  private firstConnection = true;
+  private attemptedReconnectionAfterDisconnectionByServer = false;
 
 
   constructor() {
@@ -37,6 +39,43 @@ export class WebsocketService implements OnDestroy {
         path: environment.socketIoPath,
         withCredentials: true,
     });
+
+    // (RE)CONNECT AND DISCONNECT
+
+    this.socket.on("connect", () => {
+      console.log("websocket connected!");
+      if (!this.firstConnection) {
+        console.log("reconnection detected");
+        this.reconnectedSubject.next();
+      }
+      this.firstConnection = false;
+    });
+    this.socket.on("disconnect", (reason) => {
+      // This snippet detects "manual" disconnections by the server (they are done for example when
+      // a different device of the same user log outs, for security) and tries reconnection
+      if (reason === "io server disconnect") {
+        console.log("Websocket disconnected by server");
+        if (this.attemptedReconnectionAfterDisconnectionByServer) {
+          console.error("Continuous websocket disconnections by the server. Reconnection attempts stopped.")
+          return;
+        }
+        this.attemptedReconnectionAfterDisconnectionByServer = true;
+
+        // attempt reconnection after a short random delay
+        setTimeout(() => { 
+          this.socket.connect();
+        }, Math.random() * 1000);
+        // if in less than 10s the server manually disconnects client again,
+        // don't make more attempts (this function will just return)
+        setTimeout(() => {
+          this.attemptedReconnectionAfterDisconnectionByServer = false;
+        }, 10_000);
+      }
+    });
+
+
+    // APPLICATION EVENTS (SERVER->CLIENT)
+
 
     this.socket.on("message", (value: ServerMessage) => {
       this.messageSubject.next(value);
@@ -49,17 +88,17 @@ export class WebsocketService implements OnDestroy {
     this.socket.on("reloadConversation", (value: number) => {
       this.reloadConversationSubject.next(value);
     });
-
-    this.socket.io.on("reconnect", () => {
-      console.log("Websocket reconnected");
-      this.reconnectedSubject.next();
-    });
   }
 
   reconnect() {
     if (!this.socket.connected)
       this.socket.connect();
   }
+  getConnected() {
+    return this.socket.connected;
+  }
+
+  // APPLICATION EVENTS (CLIENT->SERVER)
 
   acknowledgeConversationMessages(conversationId: number) {
     this.socket.emit("acknowledgeConversation", { conversationId });

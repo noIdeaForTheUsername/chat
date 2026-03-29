@@ -39,11 +39,24 @@ export class MessageOperations {
     const currentConvId = this.state.getCurrentConvId();
     if (currentConvId === -1) return;
 
-    const timestamp = new Date();
-    this.api.sendMessage(currentConvId, text, timestamp, repliedId).subscribe({
+    this.api.sendMessage(currentConvId, text, repliedId).subscribe({
       next: (res: any) => {
         if (res.id === undefined) return;
-        this.state.ownMessageSent.next(true);
+        if (this.websocket.getConnected()) {
+          this.state.ownMessageSent.next(true);
+        }
+        else {
+          // websocket won't "reflect" the sent message, but HTTP returned success so it was sent,
+          // so add it locally as a hopefully rare fallback
+          this.receiveMessage({
+            globalId: res.id,
+            conversationId: this.state.getCurrentConvId(),
+            senderId: this.authService.getUserIdOrError(),
+            text: text,
+            repliedId,
+            timestamp: new Date(),
+          })
+        }
       },
       error: (e) => {
         this.state.ownMessageSent.next(false);

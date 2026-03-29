@@ -9,10 +9,10 @@ export class SendMessageDto {
   @IsString()
   text: string;
 
-  @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  timestamp: Date;
+  // @IsNotEmpty()
+  // @IsDate()
+  // @Type(() => Date)
+  // timestamp: Date;
 
   @IsOptional()
   @IsNumber()
