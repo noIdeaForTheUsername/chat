@@ -9,6 +9,9 @@ import { plainToInstance } from 'class-transformer';
 import { AccountResponseDto } from '../accounts/dto/account-response.dto';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { SessionEntity } from 'src/domain/session/entity/session.entity';
+import { Throttle } from '@nestjs/throttler';
+import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
+import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
 
 
 @Controller("auth")
@@ -28,6 +31,7 @@ export class AuthController {
 
   @Post('register')
   @PublicAccess()
+  @Throttle(SENSITIVE_RATE_LIMIT)
   async register(@Body() body: RegisterDto, @Req() req: Request) {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException('passwords-different');
@@ -42,10 +46,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @PublicAccess()
+  @Throttle(SENSITIVE_RATE_LIMIT)
   async login(
     @Req() req: Request,
     @Body() body: LoginDto,
   ) {
+    console.log("body: ", body);
     await this.authService.login(req, body.phoneNumber, body.password);
   }
  

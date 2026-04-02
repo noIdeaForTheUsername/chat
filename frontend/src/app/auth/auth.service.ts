@@ -127,7 +127,7 @@ export class AuthService {
     this.api.logout().subscribe({
       next: () => {
         this.setUserId(null);
-        window.location.replace("/"); // window.location.replace("#/welcome");
+        window.location.replace("/");
       },
       error: () => {
         this.alertService.displayError('logout-failed');

@@ -23,7 +23,7 @@ export class ConversationsController {
   @Post()
   async createConversation(@UserId() callerId: number, @Body() body: CreateConversationDto) {
     // Direct conversation
-    if (body.type === ConversationType.Direct) {
+    if (body.type === ConversationType.DIRECT) {
       return await this.conversationsService.createConversation(callerId, body.type, body.participantId);
     }
     // TODO: group conversation

@@ -1,4 +1,4 @@
 export enum ConversationType {
-  Direct = 'direct',
-  Group = 'group',
+  DIRECT = 'direct',
+  GROUP = 'group',
 }

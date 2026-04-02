@@ -3,13 +3,33 @@ import { MessagesService } from './messages.service';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
 import { SendMessageDto } from './dto/send-message.dto';
+import { RateLimitedAction } from '../actions-rate-limiting/rate-limited-action.interface';
+import { ActionsThrottlerService } from '../actions-rate-limiting/actions-throttler.service';
+
+
+// Per-account rate limiting
+
+const MESSAGE_SENDING_LIMIT: RateLimitedAction = {
+  name: 'MESSAGE_SEND',
+  limit: 10,
+  ttl: 20 * 1000,
+}
+const MESSAGE_SENDING_LIMIT_2: RateLimitedAction = {
+  name: 'MESSAGE_SEND_2',
+  limit: 60,
+  ttl: 4 * 60 * 1000,
+}
+
 
 @Controller()
 export class MessagesController {
 
   private readonly maxMessagesLoadLimit = 100;
 
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(
+    private readonly messagesService: MessagesService,
+    private readonly actionsThrottler: ActionsThrottlerService
+  ) {}
 
   @Get("message-previews")
   async getRecentMessagePreviews(@UserId() callerId: number) {
@@ -54,6 +74,9 @@ export class MessagesController {
     @UserId() callerId: number,
     @Body() body: SendMessageDto
   ) {
+    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT, callerId.toString());
+    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT_2, callerId.toString());
+
     const message = await this.messagesService.sendMessage(
       callerId, body.conversationId, body.text, body.repliedId);
     return { id: message.globalId };

@@ -50,7 +50,6 @@ export class ProfilesDomainService {
 
     const where = [];
     // Make sure only non-empty searches are added - discovery requires knowledge of the exact value
-    // (and we really do NOT want to return anyone with some field empty as "known and discoverable")
     if (nameSearch.trim().length > 0)
       where.push({ name: nameSearch });
     if (phoneNumberSearch.trim().length > 0)

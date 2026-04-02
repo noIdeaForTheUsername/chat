@@ -4,9 +4,10 @@ import { AccountsModule } from "../accounts/accounts.module";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { SessionsModule } from "src/domain/session/sessions.module";
+import { ActionsThrottlerModule } from "src/application/actions-rate-limiting/actions-throttler.module";
 
 @Module({
-  imports: [AccountsDomainModule, AccountsModule, SessionsModule],
+  imports: [AccountsDomainModule, AccountsModule, SessionsModule, ActionsThrottlerModule],
   controllers: [AuthController],
   providers: [AuthService],
 })

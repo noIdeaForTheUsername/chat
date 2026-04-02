@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Conversation } from './domain/conversations/entities/conversation.entity';
@@ -28,11 +26,17 @@ import { AuthModule } from './application/users/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SessionEntity } from './domain/session/entity/session.entity';
 import { PushModule } from './application/push-notifications/push.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting-settings';
 
 
 @Module({
   imports: [
+
+    // LIBRARY MODULES
+
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env', load: [config] }),
+
     EventEmitterModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
@@ -56,7 +60,18 @@ import { PushModule } from './application/push-notifications/push.module';
         return addTransactionalDataSource(new DataSource(options));
       },
     }),
-    
+
+    ThrottlerModule.forRoot({
+      throttlers: [
+        STANDARD_RATE_LIMIT.fiveSeconds,
+        STANDARD_RATE_LIMIT.minute,
+        STANDARD_RATE_LIMIT.day,
+      ]
+    }),
+
+
+    // APPLICATION MODULES
+
     AuthModule,
     AccountsModule,
     ProfilesModule,
@@ -65,12 +80,14 @@ import { PushModule } from './application/push-notifications/push.module';
     PushModule,
     AccountsDomainModule, // for LoggedInGuard
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     {
       provide: APP_GUARD,
       useClass: LoggedInGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     }
   ],
 })

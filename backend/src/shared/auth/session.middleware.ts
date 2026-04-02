@@ -1,16 +1,12 @@
 import { ConfigService } from "@nestjs/config";
 import { RequestHandler } from "express";
 import session from "express-session";
-import pgSession from 'connect-pg-simple';
-import config from "src/config";
-import { Pool } from "pg";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { TypeOrmSessionStore } from "src/domain/session/session-store";
 import { DataSource } from "typeorm";
-import { SessionEntity } from "src/domain/session/entity/session.entity";
 
 let sessionMiddleware: RequestHandler | null = null;
 
-const PgStore = pgSession(session);
 
 export async function initSessionMiddleware(config: ConfigService): Promise<RequestHandler> {
 
@@ -31,19 +27,6 @@ export async function initSessionMiddleware(config: ConfigService): Promise<Requ
 
   if (!sessionMiddleware) {
     sessionMiddleware = session({
-      // store: new PgStore({
-      //   pool: new Pool({
-      //     host: config.get('database.host'),
-      //     port: config.get('database.port'),
-      //     user: config.get('database.username'),
-      //     password: config.get('database.password'),
-      //     database: config.get('database.database'),
-      //     max: 5,
-      //   }),
-      //   tableName: "device_sessions",
-      //   createTableIfMissing: true,
-      //   ttl: config.get<number>('cookies.expireMs')
-      // }),
       store: new TypeOrmSessionStore(
         sessionDataSource.getRepository(SessionEntity)
       ),

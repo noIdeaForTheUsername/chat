@@ -1,4 +1,4 @@
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
@@ -10,9 +10,14 @@ import { MessageSentEvent } from 'src/shared/events/message-sent.event';
 import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
 import { MessagesService } from './messages.service';
+import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
+import { Throttle } from '@nestjs/throttler';
+import { WEBSOCKET_EVENTS_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
 
 
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
+@UseGuards(WsThrottlerGuard)
+@Throttle(WEBSOCKET_EVENTS_RATE_LIMIT)
 @WebSocketGateway({
   cors: {
     origin: true,
@@ -38,6 +43,7 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
     server.use((socket: any, next: any) => {
       sessionMiddleware(socket.request, {} as any, async () => {
         // Check if session exists
+        console.log('Session data:', socket.request.session);
         if (!((socket.request as any).session?.userId)) {
           return next(new Error("unauthorized"));
         }
@@ -68,10 +74,6 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   @OnEvent("userLogout")
   handleUserLogoutEvent(payload: UserLogoutEvent) {
     const room = `user-${payload.userId}`;
-    // this.server.sockets.adapter.rooms.get(room)?.forEach(socketId => {
-    //   const socket = this.server.sockets.sockets.get(socketId);
-    //   socket?.conn.close();
-    // });
     this.server.in(room).disconnectSockets(true);
   }
 

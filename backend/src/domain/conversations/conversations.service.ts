@@ -35,7 +35,7 @@ export class ConversationsDomainService {
 
   public async findDirectConversationBetweenUsers(user1Id: number, user2Id: number) {
     return await this.userConversations.findOne({
-      where: { ownerId: user1Id, participantId: user2Id, type: ConversationType.Direct }
+      where: { ownerId: user1Id, participantId: user2Id, type: ConversationType.DIRECT }
     });
   }
 

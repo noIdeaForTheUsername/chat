@@ -3,8 +3,6 @@ import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { ConversationType } from 'src/domain/conversations/entities/conversation-type.enum';
-import { MessagesDomainService } from 'src/domain/messages/messages.service';
-import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
@@ -25,7 +23,7 @@ export class ConversationsService {
   
 
   async createConversation(callerId: number, type: ConversationType, participantId?: number) {
-    if (type === ConversationType.Direct) {
+    if (type === ConversationType.DIRECT) {
       // check for stupid inputs
       if (!participantId)
         throw new BadRequestException('participantId is required for direct conversations');
@@ -52,7 +50,7 @@ export class ConversationsService {
       return existing;
 
     // create conversation
-    const conversation = await this.conversations.createConversation(ConversationType.Direct);
+    const conversation = await this.conversations.createConversation(ConversationType.DIRECT);
     // create participations and contacts
     await Promise.all([
       this.conversations.createParticipation(callerId, conversation.id, true),

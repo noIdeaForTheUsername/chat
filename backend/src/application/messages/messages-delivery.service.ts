@@ -10,7 +10,7 @@ import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 // Coordinates message delivery via WebSockets and push notifications
 
 @Injectable()
-export class MessageBroadcastingService {
+export class MessagesDeliveryService {
 
   constructor(
     private messagesGateway: MessagesGateway,

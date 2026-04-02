@@ -38,9 +38,6 @@ export class AccountsService {
   async createUser(phoneNumber: string, passwordHash: string,
     name: string, bio?: string,
   ) {
-    if (!phoneNumber)
-      throw new BadRequestException('phone-required');
-
     // Create and return ID
     try {
       const newAccount = await this.accounts.create(phoneNumber, passwordHash,

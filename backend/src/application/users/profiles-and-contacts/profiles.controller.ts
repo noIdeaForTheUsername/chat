@@ -3,6 +3,10 @@ import { ProfilesDomainService } from 'src/domain/profiles/profiles.service';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { PatchProfileDto } from './dto/patch-profile.dto';
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
+import { Throttle } from '@nestjs/throttler';
+import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
+import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
+import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
 
 // This controller doesn't have a helper service and calls the domain services directly
 
@@ -12,6 +16,7 @@ export class ProfilesController {
   constructor(
     private readonly profilesService: ProfilesDomainService,
     private readonly contactsService: ContactsDomainService,
+    private readonly actionsThrottler: ActionsThrottlerService
   ) {}
 
   // Many profiles
@@ -22,7 +27,11 @@ export class ProfilesController {
   }
 
   @Get('search')
-  async searchProfiles(@Query('q') search: string) {
+  @Throttle(SENSITIVE_RATE_LIMIT)  // sensitive endpoint because it can be used to "brute-force" existing users
+  async searchProfiles(@Query('q') search: string, @UserId() callerId: number) {
+
+    // extra per-userId rate limiting
+    this.actionsThrottler.incrementAndThrow(USER_DISCOVERY_LIMIT, callerId.toString());
     
     // make sure the search isn't empty
     if (typeof search !== 'string')
@@ -32,7 +41,6 @@ export class ProfilesController {
       throw new BadRequestException('search-empty');
     }
 
-    // Find
     return await this.profilesService.findSearchedProfiles(search);
   }
 
@@ -85,4 +93,10 @@ export class ProfilesController {
   ) {
     return await this.contactsService.updateContact(callerId, blockedId, { blocked: false });
   }
+}
+
+const USER_DISCOVERY_LIMIT: RateLimitedAction = {  
+  name: 'USER_DISCOVERY',
+  limit: 50,
+  ttl: 24 * 3600 * 1000,
 }

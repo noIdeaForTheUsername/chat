@@ -7,6 +7,23 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 import { SessionsService } from 'src/domain/session/sessions.service';
 import { UserGlobalLogoutEvent } from 'src/shared/events/user-global-logout.event';
+import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
+import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
+
+
+// Advanced rate limits
+
+const LOGIN_LIMIT_PER_ACCOUNT: RateLimitedAction = {
+  name: 'ACCOUNT_LOGIN',
+  limit: 10,
+  ttl: 24 * 3600 * 1000,  // day
+};
+const ACCOUNT_CREATION_LIMIT: RateLimitedAction = {  // only successful creations count
+  name: 'ACCOUNT_CREATION',
+  limit: 50,
+  ttl: 3 * 24 * 3600 * 1000, // 3 days
+};
+
 
 @Injectable()
 export class AuthService {
@@ -14,6 +31,7 @@ export class AuthService {
   constructor(
     private accountsDomainService: AccountsDomainService,
     private accountsService: AccountsService,
+    private actionsThrottlerService: ActionsThrottlerService,
     private eventEmitter: EventEmitter2,
     private sessionsService: SessionsService,
   ) { }
@@ -25,15 +43,24 @@ export class AuthService {
     return await this.accountsDomainService.findById(userId);
   }
 
-  async login(req: any, phoneNumber: string, plainPassword: string): Promise<{ id: number /*userId*/, session: string }> {
+  async login(req: any, phoneNumber: string, plainPassword: string):
+  Promise<{ id: number /*userId*/, session: string }> {
+
+    // find account
     const account = await this.accountsDomainService.findByPhoneNumber(phoneNumber);
+
+    // rate limiting
+    this.actionsThrottlerService.incrementAndThrow(LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${req.ip}`);
+
+    // verification
     await verifyPassword(account, plainPassword);  // throws exception if invalid
     if (!account) {
-      console.error("AuthService: account is null after verifyPassword, but it should have thrown an exception in such case");
+      console.error(`AuthService: account is null after verifyPassword,
+        but it should have thrown an exception in such case`);
       throw new ForbiddenException('credentials-invalid');
     }
 
-
+    // session
     return await new Promise((resolve, reject) => {
       req.session.regenerate((err: any) => {
         if (err) return reject(err);
@@ -53,9 +80,19 @@ export class AuthService {
     plainPassword: string,
     name: string, bio?: string
   ): Promise<{ session: string }> {
-    const hashedPassword = await hashPassword(plainPassword);
+    
+    let user;
 
-    const user = await this.accountsService.createUser(phoneNumber, hashedPassword, name, bio);
+    // Creation with rate limiting for successful creations, and race condition prevention
+    this.actionsThrottlerService.incrementAndThrow(ACCOUNT_CREATION_LIMIT, req.ip);
+    try {
+      const hashedPassword = await hashPassword(plainPassword);
+      user = await this.accountsService.createUser(phoneNumber, hashedPassword, name, bio);
+    }
+    catch (err) {
+      this.actionsThrottlerService.decrement(ACCOUNT_CREATION_LIMIT, req.ip);
+      throw err;
+    }
 
     return await new Promise((resolve, reject) => {
       req.session.regenerate((err: any) => {
