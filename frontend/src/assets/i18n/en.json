@@ -275,6 +275,18 @@
       "header": "Invalid data",
       "description": "Provided data is invalid. Check the if the input is correct."
     },
+    "too-many-requests": {
+      "header": "Too many actions",
+      "description": "You have exceeded the actions limit on the server and it denies access. This may happen if you click very quickly or if there are too many users in your network. Please try again later."
+    },
+    "too-many-messages": {
+      "header": "Slow down!",
+      "description": "Too many messages sent in a short period. Please wait a moment and try again."
+    },
+    "too-many-login-attempts": {
+      "header": "Too many attempts",
+      "description": "Too many login attempts have been detected for this account. Please try again later or contact the administrator for help."
+    },
 
     "unknown": {
       "header": "Unknown error",

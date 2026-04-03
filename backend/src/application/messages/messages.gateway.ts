@@ -43,7 +43,6 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
     server.use((socket: any, next: any) => {
       sessionMiddleware(socket.request, {} as any, async () => {
         // Check if session exists
-        console.log('Session data:', socket.request.session);
         if (!((socket.request as any).session?.userId)) {
           return next(new Error("unauthorized"));
         }

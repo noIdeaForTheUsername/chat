@@ -98,7 +98,7 @@ export class AuthService {
         this.processing.set(false);
         window.location.replace("/");
       },
-      error: (err) => this.handleRegisterError(err)
+      error: (err) => this.handleLoginError(err)
     });
   }
 
@@ -167,6 +167,13 @@ export class AuthService {
 
   // ERROR HANDLING
 
+  private handleLoginError(err: any) {
+    this.processing.set(false);
+    if (err.status === 429) {
+      this.alertService.displayError("too-many-login-attempts");
+    }
+    else this.handleRegisterError(err);  // same logic as for registration
+  }
 
   private handleRegisterError(err: any) {
     this.processing.set(false);

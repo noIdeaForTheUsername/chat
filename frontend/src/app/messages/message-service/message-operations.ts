@@ -60,11 +60,16 @@ export class MessageOperations {
       },
       error: (e) => {
         this.state.ownMessageSent.next(false);
-        this.alertService.displayError(
-          e.error.message ?? e.status ?? 'unknown',
-          undefined,
-          this.translate.instant('error.failed-to-send-msg')
-        );
+        if (e.status === 429) {
+          this.alertService.displayError("too-many-messages");
+        }
+        else {
+          this.alertService.displayError(
+            e.error.message ?? e.status ?? 'unknown',
+            undefined,
+            this.translate.instant('error.failed-to-send-msg')
+          );
+        }
       }
     });
   }

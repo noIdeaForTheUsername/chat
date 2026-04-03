@@ -6,7 +6,8 @@ export var httpCodeMap: Map<number, string> = new Map([
   [400, 'data-invalid'],
   [401, 'unauthorized'],
   [404, 'not-found'],
-  [500, 'server-error'] 
+  [500, 'server-error'] ,
+  [429, "too-many-requests"],
 ]);
 
 export var serverUnavailableErrorCodes = [0, 502, 503, 504, 521, 522, 523, 524, 444, 408, 425, 507, 511];
@@ -24,6 +25,7 @@ export var errorIconMap: Map<string, string> = new Map([
   ['data-invalid', 'help'],
   ['unauthorized', 'hand-left'],
   ['data-unavailable', 'alert-circle-outline'],
+  ["too-many-requests", 'flame'],
 ]);
 
 

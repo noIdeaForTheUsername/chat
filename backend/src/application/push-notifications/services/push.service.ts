@@ -32,7 +32,6 @@ export class PushService {
 
   async sendNotificationsToUser(payload: PushNotifcationEvent)
   {
-    console.log("gonna send push notification: ", payload);
 
     // get subscription
     const sessions = await this.sessions.findBy({ userId: payload.userId });
