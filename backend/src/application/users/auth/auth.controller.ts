@@ -51,7 +51,6 @@ export class AuthController {
     @Req() req: Request,
     @Body() body: LoginDto,
   ) {
-    console.log("body: ", body);
     await this.authService.login(req, body.phoneNumber, body.password);
   }
  

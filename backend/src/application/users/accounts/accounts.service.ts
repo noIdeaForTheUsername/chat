@@ -113,7 +113,7 @@ export class AccountsService {
     await this.accounts.changeAdminStatus(changedUserId, newIsAdmin);
   }
 
-  private async notifyAdministration(messageHeader: string[], messageBody: string[], tag: string) {
+  async notifyAdministration(messageHeader: string[], messageBody: string[], tag?: string) {
     const admins = await this.accounts.findAdmins(true);
     for (const admin of admins) {
       const event: PushNotifcationEvent = {

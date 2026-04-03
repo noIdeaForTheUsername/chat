@@ -45,43 +45,38 @@ export class FcmService {
     }
   }
 
-  async sendNotification(session: SessionEntity, title: string | string[], message: string | string[],
-    ttl: number, tag?: string, language?: string) {
+  async sendNotification(session: SessionEntity, title: string, message: string,
+    normalizedLang: string, ttl: number, tag?: string) {
     if (!session.fcmToken) {
       console.warn(`No FCM token for session ${session.sid}, skipping FCM notification. This message shouldn't have appeared.`);
       return;
     }
 
-    const normalizedLang = getNormalizedLang(language);
-    const titleStr = getNotificationTitleString(title, normalizedLang);
-    const messageStr = getTranslatedString(normalizedLang, message);
     const notification = {
-      title: titleStr,
-      body: messageStr,
+      title: title,
+      body: message,
       tag: tag,
     };
 
     const payload: admin.messaging.Message = {
       data: {
         notification: JSON.stringify(notification),
-        title: titleStr,
-        body: messageStr,
+        title: title,
+        body: message,
         tag: tag ?? "",
         lang: normalizedLang,
       },
-
       android: {
         ttl: ttl * 1000,
         priority: "high",
         collapseKey: tag,
         notification: {
-          title: titleStr,
-          body: messageStr,
+          title: title,
+          body: message,
           icon: "ic_stat_notification",
           tag: tag
         }
       },
-
       token: session.fcmToken
     };
 
@@ -90,9 +85,13 @@ export class FcmService {
     }
     catch (error) {
       // on error remove the token
-      await this.sessionsRepository.update(session.sid, {
-        fcmToken: null
-      });
+      try {
+        await this.sessionsRepository.update(session.sid, {
+          fcmToken: null
+        });
+      } catch (e) {
+        console.error("Failed to remove FCM token from DB after FCM send error: ", e);
+      }
     }
   }
 }

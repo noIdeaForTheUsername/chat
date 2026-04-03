@@ -2,17 +2,18 @@
 
 // const HOST = process.env.HTTP_HOST ?? 'http://localhost:3000';
 // const PATH = process.env.HTTP_PATH ?? '/auth/login';
-const URL = "http://localhost:3000/conversations/1/messages";
+const URL = "http://localhost:3000/auth/login";
 const METHOD = (process.env.HTTP_METHOD ?? 'POST').toUpperCase();
-const TOTAL_REQUESTS = Number(process.env.HTTP_TOTAL_REQUESTS ?? 20);
-const CONCURRENCY = Number(process.env.HTTP_CONCURRENCY ?? 25);
-const TIMEOUT_MS = Number(process.env.HTTP_TIMEOUT_MS ?? 5000);
-const COOKIE = process.env.HTTP_COOKIE ?? 'session=s%3AaddGcC_J8PtCLp-8odd0v1RqTXTIhADp.ldfEcmxU79cQNKWBa6LipQ3TypaH8A2KSgNncKS4ARo';
+const TOTAL_REQUESTS = Number(process.env.HTTP_TOTAL_REQUESTS ?? 11);
+const CONCURRENCY = Number(process.env.HTTP_CONCURRENCY ?? 20);
+const TIMEOUT_MS = Number(process.env.HTTP_TIMEOUT_MS ?? 3000);
+const COOKIE = process.env.HTTP_COOKIE ?? '';
 
 // const BODY = '';
 const BODY = {
-  conversationId: 1,
-  text: "Hello",
+  phoneNumber: "+48567567568",
+  password: "password1234",
+  ip: "156.156.156.227",
 };
 const EXTRA_HEADERS = process.env.HTTP_HEADERS ?? '';
 
@@ -86,7 +87,6 @@ async function singleRequest() {
       body,
       signal: ctrl.signal,
     });
-    console.log("res: ", response);
 
     incStatus(response.status);
 

@@ -34,22 +34,18 @@ export class WebPushService {
 
   
 
-  public async sendNotification(session: SessionEntity, title: string | string[], message: string | string[],
-    ttl: number, tag?: string, language?: string) {
+  public async sendNotification(session: SessionEntity, title: string, message: string,
+    normalizedLang: string, ttl: number, tag?: string) {
     const subscription = session.pushSubscription;
     if (!subscription) {
       return;
     }
 
-    const normalizedLang = getNormalizedLang(language);
-    const titleStr = getNotificationTitleString(title, normalizedLang);
-    const messageStr = getTranslatedString(normalizedLang, message);
-
     // prepare payload
     const payload = {
       "notification": {
-        "title": titleStr,
-        "body": messageStr,
+        "title": title,
+        "body": message,
         "tag": tag,
         "icon": "assets/icons/icon-256.webp",
         "badge": "assets/icons/badge.png",
@@ -70,11 +66,13 @@ export class WebPushService {
       });
     } catch (error) {
       // on error remove the subscription
-      await this.sessionsRepository.update(session.sid, {
-        pushSubscription: null
-      });
+      try {
+        await this.sessionsRepository.update(session.sid, {
+          pushSubscription: null
+        });
+      } catch (e) {
+        console.error("Failed to remove Web Push subscription from DB after send error: ", e);
+      }
     }
   }
-
-  
 }

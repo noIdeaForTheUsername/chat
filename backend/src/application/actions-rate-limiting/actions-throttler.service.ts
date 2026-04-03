@@ -21,18 +21,21 @@ export class ActionsThrottlerService {
   constructor() {}
 
 
-  private getTrackedActionKey(action: RateLimitedAction, tracker: string) {
-    return `${action.name}:${tracker}`;
-  }
+  // PUBLIC METHODS
 
   public incrementAndThrow(action: RateLimitedAction, tracker: string) {
-    const allowed = this.incrementAndGetReqBelowLimit(action, tracker);
+    const allowed = this.incrementAndGetReqAllowed(action, tracker);
     if (!allowed) throw new HttpException('ThrottlerException: Too Many Requests', 429);
-  } 
+  }
+
+  public incrementAndGetReqAllowed(action: RateLimitedAction, tracker: string): boolean {
+    return this.incrementAndGetStatus(action, tracker).allowed;
+  }
 
   // Increments the rate limit for the specific action and tracker (for example, IP and account creation),
   // returns true if the request is allowed (under the limit)
-  public incrementAndGetReqBelowLimit(action: RateLimitedAction, tracker: string) {
+  public incrementAndGetStatus(action: RateLimitedAction, tracker: string) {
+    
     const key = this.getTrackedActionKey(action, tracker);
     const now = new Date().getTime();
     let tracked = this.trackedActions.get(key);
@@ -56,7 +59,7 @@ export class ActionsThrottlerService {
     }
     
     this.trackedActions.set(key, tracked);
-    return !limitExceeded;
+    return { allowed: !limitExceeded, hits: tracked.hits, limit: action.limit, expires: tracked.expires };
   }
 
   public decrement(action: RateLimitedAction, tracker: string) {
@@ -68,6 +71,19 @@ export class ActionsThrottlerService {
     }
   }
 
+  public resetLimit(action: RateLimitedAction, tracker: string) {
+    const key = this.getTrackedActionKey(action, tracker);
+    this.trackedActions.delete(key);
+  }
+
+
+
+  // PRIVATE METHODS
+
+  private getTrackedActionKey(action: RateLimitedAction, tracker: string) {
+    return `${action.name}:${tracker}`;
+  }
+
   private handleTrackedActionsCleanup() {
     this.requestsSinceLastTrackedActionsCleanup = 
       (this.requestsSinceLastTrackedActionsCleanup + 1) % this.requestsPerTrackedActionsCleanup;
@@ -75,7 +91,6 @@ export class ActionsThrottlerService {
       this.cleanupTrackedActions();
     }
   }
-
 
   // Checks and deletes max *trackedActionsCleanupMaxChecks* expired entries in the trackedActions map
   // If there are more, checks will be continued in next calls from where they stopped

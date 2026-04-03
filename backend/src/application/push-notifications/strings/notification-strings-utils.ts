@@ -17,7 +17,7 @@ export function getTranslatedString(language: 'pl' | 'en', key: string | string[
   return result;
 }
 
-export function getNormalizedLang(language?: string): 'pl' | 'en' {
+export function getNormalizedLang(language?: string | null): 'pl' | 'en' {
   return language?.toLowerCase().includes("pl") ? "pl" : "en";
 }
 

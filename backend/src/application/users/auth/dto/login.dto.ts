@@ -1,4 +1,4 @@
-import { IsPhoneNumber, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 import { NormalizePhone } from 'src/shared/validation/normalize-phone';
 
 export class LoginDto {

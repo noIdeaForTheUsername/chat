@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { AccountsService } from '../accounts/accounts.service';
 import { hashPassword, verifyPassword } from './auth-utils';
@@ -7,22 +7,10 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 import { SessionsService } from 'src/domain/session/sessions.service';
 import { UserGlobalLogoutEvent } from 'src/shared/events/user-global-logout.event';
-import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
 import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
+import { ACCOUNT_CREATION_LIMIT, LONG_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, SHORT_LOGIN_LIMIT_PER_ACCOUNT } from './auth-rate-limits';
+import { glob } from 'fs';
 
-
-// Advanced rate limits
-
-const LOGIN_LIMIT_PER_ACCOUNT: RateLimitedAction = {
-  name: 'ACCOUNT_LOGIN',
-  limit: 10,
-  ttl: 24 * 3600 * 1000,  // day
-};
-const ACCOUNT_CREATION_LIMIT: RateLimitedAction = {  // only successful creations count
-  name: 'ACCOUNT_CREATION',
-  limit: 50,
-  ttl: 3 * 24 * 3600 * 1000, // 3 days
-};
 
 
 @Injectable()
@@ -46,11 +34,11 @@ export class AuthService {
   async login(req: any, phoneNumber: string, plainPassword: string):
   Promise<{ id: number /*userId*/, session: string }> {
 
+
+    await this.handleLoginRateLimits(phoneNumber, req.ip);
+
     // find account
     const account = await this.accountsDomainService.findByPhoneNumber(phoneNumber);
-
-    // rate limiting
-    this.actionsThrottlerService.incrementAndThrow(LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${req.ip}`);
 
     // verification
     await verifyPassword(account, plainPassword);  // throws exception if invalid
@@ -59,6 +47,9 @@ export class AuthService {
         but it should have thrown an exception in such case`);
       throw new ForbiddenException('credentials-invalid');
     }
+
+    // on login success reset rate limit
+    this.resetLoginRateLimits(phoneNumber, req.ip);
 
     // session
     return await new Promise((resolve, reject) => {
@@ -129,5 +120,43 @@ export class AuthService {
   @OnEvent('userGlobalLogout')
   async globalLogoutEventHandler(event: UserGlobalLogoutEvent) {
     this.globalLogout(event.userId, event.excludeSession);
+  }
+
+  // CONDITIONAL RATE LIMITING
+
+  private async handleLoginRateLimits(phoneNumber: string, ip: string) {
+    this.actionsThrottlerService.incrementAndThrow(SHORT_LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${ip}`);
+    this.actionsThrottlerService.incrementAndThrow(LONG_LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${ip}`);
+    
+    const globalBlockStatus = this.actionsThrottlerService.incrementAndGetStatus(
+      GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, phoneNumber);
+
+    if (!globalBlockStatus.allowed) {
+      // Security alert for administration
+      if (globalBlockStatus.hits === GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT.limit + 1) {
+        console.warn(`Global login limit hit for phone number ${phoneNumber} (Over ${globalBlockStatus.limit} attempts).
+          All further attempts will be blocked until ${new Date(globalBlockStatus.expires).toLocaleString()}`);
+
+        this.accountsService.notifyAdministration(
+          ["accountAttackHeader"],
+          ["accountAttackMessage", phoneNumber],
+        );
+      }
+
+      throw new HttpException('Throttler Exception: Too Many Requests', 429);
+    }
+
+    const delayingLimit = !this.actionsThrottlerService.incrementAndGetReqAllowed(
+      GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, phoneNumber);
+    if (delayingLimit) {
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 3000));
+    }
+  }
+
+  private async resetLoginRateLimits(phoneNumber: string, ip: string) {
+    this.actionsThrottlerService.resetLimit(SHORT_LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${ip}`);
+    this.actionsThrottlerService.resetLimit(LONG_LOGIN_LIMIT_PER_ACCOUNT, `${phoneNumber};${ip}`);
+    this.actionsThrottlerService.resetLimit(GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, phoneNumber);
+    this.actionsThrottlerService.resetLimit(GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, phoneNumber);
   }
 }
