@@ -3,7 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
-import { getSessionMiddleware } from 'src/shared/auth/session.middleware';
+import { getSessionMiddleware } from 'src/domain/session/session.middleware';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
 import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
 import { MessageSentEvent } from 'src/shared/events/message-sent.event';

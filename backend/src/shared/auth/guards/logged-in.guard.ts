@@ -13,6 +13,7 @@ export class LoggedInGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     if (context.getType() !== 'http') return true;
     const req = context.switchToHttp().getRequest();
+    const res = context.switchToHttp().getResponse();
 
     const publicAccess = this.reflector.getAllAndOverride('publicAccess',
       [context.getHandler(), context.getClass()]) || false;
@@ -20,11 +21,13 @@ export class LoggedInGuard implements CanActivate {
     if (!req.session.userId) {
       if (publicAccess)
         return true;
-      else
+      else {
+        if (req.cookies.session) res.clearCookie('session');  // clear invalid cookie
         throw new UnauthorizedException();
+      }
     }
     
-    // -- The below code will only be reached if the user is authorized
+    // -- The below code will only be reached if the user is logged in (valid session)
 
     const allowInactiveAccount = this.reflector.getAllAndOverride<boolean>('allowInactiveAccount',
       [context.getHandler(), context.getClass()]) || false;

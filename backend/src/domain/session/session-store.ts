@@ -1,11 +1,13 @@
 import session from 'express-session';
 import { Repository } from 'typeorm';
 import { SessionEntity } from './entity/session.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+
 
 export class TypeOrmSessionStore extends session.Store {
   constructor(
-    public repo: Repository<SessionEntity>
+    public repo: Repository<SessionEntity>,
+    public config: ConfigService,
   ) {
     super();
   }
@@ -19,19 +21,14 @@ export class TypeOrmSessionStore extends session.Store {
       }
 
       // expire check
-      if (record.expires.getTime() <= Date.now()) {
+      if (record.inactiveExpires.getTime() <= Date.now()
+        || record.absolutelyExpires.getTime() <= Date.now()) {
         await this.repo.delete({ sid });
         return callback(null, null);
       }
 
       const sessionData: SessionEntity = {
-        sid: record.sid,
-        userId: record.userId,
-        expires: record.expires,
-        cookie: record.cookie,
-        pushSubscription: record.pushSubscription,
-        fcmToken: record.fcmToken,
-        language: record.language,
+        ...record,
       }
 
       callback(null, sessionData);
@@ -40,20 +37,21 @@ export class TypeOrmSessionStore extends session.Store {
     }
   }
 
-  async set(sid: string, sessionData: any, callback: (err?: any) => void) {
+  async set(sid: string, sessionData: Record<string, any>, callback: (err?: any) => void) {
     try {
-      const expires =
+      const inactiveExpires =
         sessionData.cookie?.expires ??
-        new Date(Date.now() + sessionData.cookie.maxAge);
+        new Date(Date.now() + this.config.get('auth.inactiveExpiration'));
+
+      let absolutelyExpires = sessionData.absolutelyExpires;
+      if (absolutelyExpires === undefined)
+        absolutelyExpires = new Date(Date.now() + this.config.get('auth.absoluteExpiration'));
 
       await this.repo.save({
+        ...sessionData,
         sid,
-        userId: sessionData.userId,
-        pushSubscription: sessionData.pushSubscription,
-        cookie: sessionData.cookie,
-        language: sessionData.language,
-        fcmToken: sessionData.fcmToken,
-        expires,
+        inactiveExpires,
+        absolutelyExpires,
       });
 
       callback();
@@ -71,15 +69,14 @@ export class TypeOrmSessionStore extends session.Store {
     }
   }
 
-  async touch(sid: string, sessionData: any, callback: (err?: any) => void) {
+  async touch(sid: string, sessionData: Record<string, any>, callback: (err?: any) => void) {
     try {
       const expires =
-        sessionData.cookie?.expires ??
-        new Date(Date.now() + sessionData.cookie.maxAge);
+        new Date(Date.now() + this.config.get('auth.inactiveExpiration'));
 
       await this.repo.update(
         { sid },
-        { expires },
+        { inactiveExpires: expires },
       );
 
       callback();

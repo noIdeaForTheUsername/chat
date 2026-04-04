@@ -9,14 +9,6 @@ import { AccountsController } from "./accounts.controller";
   imports: [
     AccountsDomainModule,
     ProfilesDomainModule,
-    // JwtModule.registerAsync({
-    //   global: true,
-    //   inject: [ConfigService],
-    //   useFactory: (config: ConfigService) => ({
-    //     secret: config.get<string>('jwt.secret'),
-    //     signOptions: { expiresIn: config.get<any>('jwt.expiration') },
-    //   }),
-    // }),
   ],
   controllers: [AccountsController],
   providers: [AccountsService],

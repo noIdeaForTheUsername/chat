@@ -1,9 +1,19 @@
-const defaultJwtExpiration = '7d';
-const defaultCookieExpirationMs = 7 * 24 * 60 * 60 * 1000; // 7 days
+import ms from "ms";
+
+// default vals
+let inactiveSessionExpiration = ms('14d');
+let absoluteSessionExpiration = ms('60d');
 
 export default () => {
-  const configObject = {
+  try {
+    inactiveSessionExpiration = ms(process.env.INACTIVE_SESSION_EXPIRATION as any) as any as number;
+    absoluteSessionExpiration = ms(process.env.ABSOLUTE_SESSION_EXPIRATION as any) as any as number;
+  } catch (error) {
+    throw new Error(`Error parsing INACTIVE_SESSION_EXPIRATION or ABSOLUTE_SESSION_EXPIRATION .env variables.
+      Input correct values of session lifetimes, like '14d'. Error details: `, error);
+  }
 
+  const configObject = {
     app: {
       mode: process.env.NODE_ENV ?? 'development',
       port: parseInt(process.env.APP_PORT ?? "3000", 10) || 3000,
@@ -11,16 +21,17 @@ export default () => {
 
     auth: {
       secret: process.env.AUTH_SECRET ?? "test secret",
-      expiration: process.env.AUTH_EXPIRATION ?? defaultJwtExpiration,
+      inactiveExpiration: inactiveSessionExpiration,
+      absoluteExpiration: absoluteSessionExpiration,
       requireAccountActivation: process.env.REQUIRE_ACCOUNT_ACTIVATION?.toLowerCase() === 'true',
     },
+
 
     cookies: {
       // if not explicitly set to 'false', then true because it is safer
       sameSite: process.env.COOKIES_SAME_SITE?.toLowerCase() ?? 'lax',
       httpOnly: process.env.COOKIES_HTTP_ONLY?.toLowerCase() !== 'false',
       secure: process.env.COOKIES_SECURE?.toLowerCase() !== 'false',
-      expireMs: process.env.COOKIES_EXPIRE_MS ? parseInt(process.env.COOKIES_EXPIRE_MS, 10) : defaultCookieExpirationMs,
     },
 
     cors: {
@@ -42,6 +53,9 @@ export default () => {
     }
   }
 
+  console.log("Inactive expiration: ", configObject?.auth?.inactiveExpiration);
+  console.log("Absolute expiration: ", configObject?.auth?.absoluteExpiration);
+
   if (process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "production") {
     throw new Error("NODE_ENV is set to an invalid value. Allowed values are 'development' and 'production'.");
   }
@@ -56,9 +70,13 @@ export default () => {
   if (!process.env.AUTH_SECRET) {
     throw new Error("AUTH_SECRET is not defined in environment variables. Please generate a strong secret, set it in .ENV and keep it safe");
   }
-  if (!process.env.AUTH_EXPIRATION) {
-    console.warn(getErrorMsg("AUTH_EXPIRATION", `a desired session expiration time like '12h' (currently falling back to '${defaultJwtExpiration}' by default)`));
+  if (!process.env.INACTIVE_SESSION_EXPIRATION) {
+    console.warn(getErrorMsg("INACTIVE_SESSION_EXPIRATION", `a desired session expiration time like '3600' (currently falling back to '${inactiveSessionExpiration}' by default)`));
   }
+  if (!process.env.ABSOLUTE_SESSION_EXPIRATION) {
+    console.warn(getErrorMsg("ABSOLUTE_SESSION_EXPIRATION", `a desired session expiration time like '3600' (currently falling back to '${absoluteSessionExpiration}' by default)`));
+  }
+
   if (!process.env.COOKIES_SAME_SITE) {
     throw new Error(getErrorMsg("COOKIES_SAME_SITE", "'strict', 'lax' or 'none'"));
   }
@@ -95,10 +113,5 @@ function parseList(val?: string): string[] | undefined {
 }
 
 export function getCorsOrigins() {
-  return parseList(process.env.CORS_ALLOWED_ORIGINS) ?? [
-    "http://localhost:8100",
-    "http://192.168.1.2:8100",
-    "http://chmuraim.dynv6.net:8100",
-    "http://46.205.222.219:8100"
-  ];
+  return parseList(process.env.CORS_ALLOWED_ORIGINS);
 }

@@ -3,17 +3,14 @@ import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import * as path from 'path';
 import { SessionEntity } from "src/domain/session/entity/session.entity";
-import { getNormalizedLang, getNotificationTitleString, getTranslatedString } from "../strings/notification-strings-utils";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { SessionsService } from "src/domain/session/sessions.service";
 
 
 @Injectable()
 export class FcmService {
 
   constructor(
-    @InjectRepository(SessionEntity)
-    private sessionsRepository: Repository<SessionEntity>
+    private sessionsService: SessionsService,
   ) {}
 
   initFcm() {
@@ -86,9 +83,7 @@ export class FcmService {
     catch (error) {
       // on error remove the token
       try {
-        await this.sessionsRepository.update(session.sid, {
-          fcmToken: null
-        });
+        await this.sessionsService.removeFcmToken(session.sid);
       } catch (e) {
         console.error("Failed to remove FCM token from DB after FCM send error: ", e);
       }

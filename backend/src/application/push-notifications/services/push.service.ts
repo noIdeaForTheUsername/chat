@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 import { FcmService } from "./fcm.service";
 import { WebPushService } from "./web-push.service";
 import { getNormalizedLang, getNotificationTitleString } from "../strings/notification-strings-utils";
+import { SessionsService } from "src/domain/session/sessions.service";
 
 // PushService is the orchestrator while Fcm and WebPush services actually send the notifications
 
@@ -17,8 +18,7 @@ export class PushService {
   private readonly notificationTTL = 48 * 3600;
 
   constructor(
-    @InjectRepository(SessionEntity)
-    private sessions: Repository<SessionEntity>,
+    private sessionsService: SessionsService,
     private webPushService: WebPushService,
     private fcmService: FcmService,
   ) {}
@@ -32,9 +32,7 @@ export class PushService {
 
   async sendNotificationsToUser(payload: PushNotifcationEvent)
   {
-
-    // get subscription
-    const sessions = await this.sessions.findBy({ userId: payload.userId });
+    const sessions = await this.sessionsService.getUserSessions(payload.userId);
 
     for (const session of sessions) {
       // prepare data
@@ -44,10 +42,12 @@ export class PushService {
 
       // send
       if (session.pushSubscription) {
-        this.webPushService.sendNotification(session, titleStr, messageStr, normalizedLang, this.notificationTTL, payload.tag);
+        this.webPushService.sendNotification(session, titleStr, messageStr,
+          normalizedLang, this.notificationTTL, payload.tag);
       }
       else if (session.fcmToken) {
-        this.fcmService.sendNotification(session, titleStr, messageStr, normalizedLang, this.notificationTTL, payload.tag);
+        this.fcmService.sendNotification(session, titleStr, messageStr,
+          normalizedLang, this.notificationTTL, payload.tag);
       }
     }
   }

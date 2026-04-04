@@ -1,16 +1,15 @@
-import { initializeTransactionalContext } from 'typeorm-transactional';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import cookieParser from 'cookie-parser';
-import { BadRequestException, NestApplicationOptions, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { join } from 'path';
-import { static as expressStatic } from 'express';
-import { initSessionMiddleware } from './shared/auth/session.middleware';
+import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
+import { static as expressStatic } from 'express';
+import { join } from 'path';
+import { initializeTransactionalContext } from 'typeorm-transactional';
+import { AppModule } from './app.module';
 import { FcmService } from './application/push-notifications/services/fcm.service';
-// import { SessionInBodyInterceptor } from './shared/auth/session-in-body.interceptor';
-// import { SocketIoAdapter } from './shared/websockets/socket-io.adapter';
+import { initSessionMiddleware } from './domain/session/session.middleware';
+
 
 async function bootstrap() {
   // TypeORM Transactional Context
@@ -31,7 +30,6 @@ async function bootstrap() {
 
   // Sessions
   const sessionMiddleware = await initSessionMiddleware(config);
-  // app.useGlobalInterceptors(new SessionInBodyInterceptor());
   app.use(sessionMiddleware);
 
   // STATIC

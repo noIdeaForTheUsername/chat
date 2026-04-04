@@ -1,11 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { notificationStrings } from "../strings/notification-strings";
-import { InjectRepository } from "@nestjs/typeorm";
-import { SessionEntity } from "src/domain/session/entity/session.entity";
-import { Repository } from "typeorm";
-import * as webpush from "web-push";
 import { ConfigService } from "@nestjs/config";
-import { getNormalizedLang, getNotificationTitleString, getTranslatedString } from "../strings/notification-strings-utils";
+import { SessionEntity } from "src/domain/session/entity/session.entity";
+import { SessionsService } from "src/domain/session/sessions.service";
+import * as webpush from "web-push";
+import { notificationStrings } from "../strings/notification-strings";
 
 
 @Injectable()
@@ -15,8 +13,7 @@ export class WebPushService {
 
   constructor(
     private config: ConfigService,
-    @InjectRepository(SessionEntity)
-    private sessionsRepository: Repository<SessionEntity>,
+    private sessionsService: SessionsService,
   ) {
     this.vapidKeys = {
       publicKey: this.config.get<string>("pushNotifications.vapidPublicKey")!,
@@ -67,9 +64,7 @@ export class WebPushService {
     } catch (error) {
       // on error remove the subscription
       try {
-        await this.sessionsRepository.update(session.sid, {
-          pushSubscription: null
-        });
+        await this.sessionsService.removeWebPushSubscription(session.sid);
       } catch (e) {
         console.error("Failed to remove Web Push subscription from DB after send error: ", e);
       }

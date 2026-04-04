@@ -28,17 +28,18 @@ export async function initSessionMiddleware(config: ConfigService): Promise<Requ
   if (!sessionMiddleware) {
     sessionMiddleware = session({
       store: new TypeOrmSessionStore(
-        sessionDataSource.getRepository(SessionEntity)
+        sessionDataSource.getRepository(SessionEntity),
+        config,
       ),
-      secret: config.get<string>('auth.secret') as any,
+      secret: config.getOrThrow<string>('auth.secret') as any,
       resave: false,
       saveUninitialized: false,
       name: 'session',
       cookie: {
-        httpOnly: config.get<boolean>('cookies.httpOnly'),
-        sameSite: config.get<string>('cookies.sameSite') as any,
-        secure: config.get<boolean>('cookies.secure'),
-        maxAge: config.get<number>('cookies.expireMs'),
+        httpOnly: config.getOrThrow<boolean>('cookies.httpOnly'),
+        sameSite: config.getOrThrow<string>('cookies.sameSite') as any,
+        secure: config.getOrThrow<boolean>('cookies.secure'),
+        maxAge: config.getOrThrow<number>('auth.absoluteExpiration') as any * 2,
       },
     });
   }

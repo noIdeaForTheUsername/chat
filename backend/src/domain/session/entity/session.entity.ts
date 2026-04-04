@@ -15,8 +15,11 @@ export class SessionEntity {
   @Column({ type: 'int', nullable: false, name: 'user_id' })
   userId: number;
 
-  @Column({ type: 'timestamptz', nullable: false, name: 'expires' })
-  expires: Date;
+  @Column({ type: 'timestamptz', nullable: false, name: 'inactive_expires' })
+  inactiveExpires: Date;
+
+  @Column({ type: 'timestamptz', nullable: false, name: 'absolutely_expires' })
+  absolutelyExpires: Date;
 
   @Column({ type: 'jsonb', nullable: false, name: 'cookie' })
   cookie: Record<string, any>;
