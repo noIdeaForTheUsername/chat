@@ -64,10 +64,7 @@ export class ConversationsDomainService {
     return await this.participations.save(participationObj);
   }
 
-  public async createGroupConversation() {  //TODO:
-    throw new BadRequestException('Not implemented yet');
-  }
-
+  
   // UPDATING
 
   public async acceptConversation(userId: number, conversationId: number) {

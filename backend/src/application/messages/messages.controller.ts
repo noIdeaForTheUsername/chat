@@ -72,13 +72,14 @@ export class MessagesController {
   @Post("conversations/:id/messages")
   async sendMessage(
     @UserId() callerId: number,
+    @Param('id') conversationId: number,
     @Body() body: SendMessageDto
   ) {
     this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT, callerId.toString());
     this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT_2, callerId.toString());
 
     const message = await this.messagesService.sendMessage(
-      callerId, body.conversationId, body.text, body.repliedId);
+      callerId, conversationId, body.text, body.repliedId);
     return { id: message.globalId };
   }
 

@@ -33,7 +33,6 @@ export class ConversationsService {
       // execute
       return await this.createDirectConversation(callerId, participantId);
     }
-    // TODO: group conversation
     return undefined;
   }
 

@@ -1,15 +1,16 @@
-import { ForbiddenException, HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
-import { AccountsService } from '../accounts/accounts.service';
-import { hashPassword, verifyPassword } from './auth-utils';
-import { Request, Response } from 'express';
+import { ForbiddenException, HttpException, Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
-import { SessionsService } from 'src/domain/session/sessions.service';
-import { UserGlobalLogoutEvent } from 'src/shared/events/user-global-logout.event';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { Request, Response } from 'express';
 import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
-import { ACCOUNT_CREATION_LIMIT, LONG_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, SHORT_LOGIN_LIMIT_PER_ACCOUNT } from './auth-rate-limits';
-import { glob } from 'fs';
+import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
+import { Account } from 'src/domain/accounts/entities/account.entity';
+import { SessionsService } from 'src/domain/session/sessions.service';
+import { PasswordChangeEvent } from 'src/shared/events/user-global-logout.event';
+import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
+import { AccountsService } from '../accounts/accounts.service';
+import { ACCOUNT_CREATION_LIMIT, GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, LONG_LOGIN_LIMIT_PER_ACCOUNT, SHORT_LOGIN_LIMIT_PER_ACCOUNT } from './auth-rate-limits';
+import { hashPassword, verifyPassword } from './auth-utils';
 
 
 
@@ -32,8 +33,7 @@ export class AuthService {
   }
 
   async login(req: any, phoneNumber: string, plainPassword: string):
-  Promise<{ id: number /*userId*/, session: string }> {
-
+  Promise<{ userId: number, session: string }> {
 
     await this.handleLoginRateLimits(phoneNumber, req.ip);
 
@@ -48,29 +48,17 @@ export class AuthService {
       throw new ForbiddenException('credentials-invalid');
     }
 
-    // on login success reset rate limit
+    // -- After verification (login success):
+
     this.resetLoginRateLimits(phoneNumber, req.ip);
 
-    // session
-    return await new Promise((resolve, reject) => {
-      req.session.regenerate((err: any) => {
-        if (err) return reject(err);
-        req.session.userId = account.id;
-        req.session.save((saveErr: any) => {
-          if (saveErr) return reject(saveErr);
-          resolve({
-            id: account.id,
-            session: req.session.id
-          });
-        });
-      });
-    });
+    return await this.createSession(account, req);
   }
 
   async register(req: any, phoneNumber: string,
     plainPassword: string,
     name: string, bio?: string
-  ): Promise<{ session: string }> {
+  ): Promise<{ userId: number, session: string }> {
     
     let user;
 
@@ -85,18 +73,7 @@ export class AuthService {
       throw err;
     }
 
-    return await new Promise((resolve, reject) => {
-      req.session.regenerate((err: any) => {
-        if (err) return reject(err);
-        req.session.userId = user.id;
-        req.session.save((saveErr: any) => {
-          if (saveErr) return reject(saveErr);
-          resolve({
-            session: req.session.id
-          });
-        });
-      });
-    });
+    return await this.createSession(user, req);
   }
 
   async logout(req: Request, res: Response) {
@@ -112,15 +89,41 @@ export class AuthService {
   }
 
 
+  @OnEvent('passwordChangeEvent')
+  async passwordChangeEventHandler(event: PasswordChangeEvent) {
+    this.globalLogout(event.userId, event.sessionId);
+  }
+  
   async globalLogout(userId: number, excludeSession?: string) {    
     await this.sessionsService.destroyUserSessions(userId, excludeSession);
     this.eventEmitter.emit('userLogout', new UserLogoutEvent(userId));
   }
 
-  @OnEvent('userGlobalLogout')
-  async globalLogoutEventHandler(event: UserGlobalLogoutEvent) {
-    this.globalLogout(event.userId, event.excludeSession);
+
+  // SESSIONS MANAGEMENT
+
+  private async createSession(account: Account, req: any): Promise<{ userId: number, session: string }> {
+    return await new Promise((resolve, reject) => {
+      req.session.regenerate(async (err: any) => {
+        if (err) return reject(err);
+        await this.sessionsService.removeSessionsExceedingAccountLimit(account.id);
+        req.session.userId = account.id;
+        req.session.save((saveErr: any) => {
+          if (saveErr) return reject(saveErr);
+          resolve({
+            userId: account.id,
+            session: req.session.id
+          });
+        });
+      });
+    });
   }
+
+  @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON)
+  private async cleanupExpiredSessions() {
+    await this.sessionsService.cleanupExpiredSessions();
+  }
+
 
   // CONDITIONAL RATE LIMITING
 

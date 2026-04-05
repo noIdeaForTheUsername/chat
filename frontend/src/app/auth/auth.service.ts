@@ -138,10 +138,12 @@ export class AuthService {
   globalLogout() {
     this.api.globalLogout().subscribe({
       next: () => {
-        this.alertService.displayMessageAlert(
-          AlertType.INFO,
-          this.translate.instant('page.app-settings.global-logout-success'),
-        );
+        setTimeout(() => {
+          this.alertService.displayMessageAlert(
+            AlertType.INFO,
+            this.translate.instant('page.app-settings.global-logout-success'),
+          );
+        }, 200);
       },
       error: () => {
         this.alertService.displayError('logout-failed');

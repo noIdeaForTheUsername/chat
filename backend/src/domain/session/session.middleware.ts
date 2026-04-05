@@ -39,7 +39,7 @@ export async function initSessionMiddleware(config: ConfigService): Promise<Requ
         httpOnly: config.getOrThrow<boolean>('cookies.httpOnly'),
         sameSite: config.getOrThrow<string>('cookies.sameSite') as any,
         secure: config.getOrThrow<boolean>('cookies.secure'),
-        maxAge: config.getOrThrow<number>('auth.absoluteExpiration') as any * 2,
+        maxAge: config.getOrThrow<number>('auth.absoluteExpiration'),
       },
     });
   }

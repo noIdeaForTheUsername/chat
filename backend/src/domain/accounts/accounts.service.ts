@@ -31,17 +31,6 @@ export class AccountsDomainService {
       throw new NotFoundException('not-found.user');
     return found;
   }
-
-  async findByUniqueFieldUNFINISHED(nameOrPhone: string) {
-    // TODO: NAME CHECK
-    const phoneNumberCheck = normalizePhone(nameOrPhone);
-    
-    return await this.accounts.findOne({
-      where: [
-        { phoneNumber: phoneNumberCheck }
-      ]
-    });
-  }
   
   async findAdmins(activatedOnly: boolean = true) {
     return await this.accounts.findBy({ admin: true, activated: activatedOnly });

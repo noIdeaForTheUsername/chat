@@ -3,8 +3,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { SessionEntity } from "./entity/session.entity";
 import { LessThan, Not, Repository } from "typeorm";
 
+
 @Injectable()
 export class SessionsService {
+
+  private readonly MAX_SESSIONS_PER_ACCOUNT = 10;
   
   constructor(
     @InjectRepository(SessionEntity)
@@ -38,5 +41,24 @@ export class SessionsService {
       { sid: sessionId },
       { fcmToken: null });
   }
+  
+  async removeSessionsExceedingAccountLimit(userId: number) {
+    await this.sessions.query(`
+      DELETE FROM sessions
+      WHERE sid IN (
+        SELECT sid FROM sessions
+        WHERE user_id = $1
+        ORDER BY absolutely_expires DESC
+        OFFSET $2
+      )
+    `, [userId, this.MAX_SESSIONS_PER_ACCOUNT - 1]);
+  }
 
+  async cleanupExpiredSessions() {
+    const now = new Date();
+    await this.sessions.delete({
+      inactiveExpires: LessThan(now),
+      absolutelyExpires: LessThan(now),
+    });
+  }
 }

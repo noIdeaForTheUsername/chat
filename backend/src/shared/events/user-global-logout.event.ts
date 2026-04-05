@@ -1,7 +1,7 @@
 
-export class UserGlobalLogoutEvent {
+export class PasswordChangeEvent {
   constructor(
     public userId: number,
-    public excludeSession?: string
+    public sessionId?: string
   ) {}
 }

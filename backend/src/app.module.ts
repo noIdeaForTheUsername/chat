@@ -28,16 +28,16 @@ import { SessionEntity } from './domain/session/entity/session.entity';
 import { PushModule } from './application/push-notifications/push.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting-settings';
+import { ScheduleModule } from '@nestjs/schedule';
 
 
 @Module({
   imports: [
-
-    // LIBRARY MODULES
+    // ----------------------------------------------------------------------- LIBRARY MODULES
 
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env', load: [config] }),
-
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -69,8 +69,7 @@ import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting
       ]
     }),
 
-
-    // APPLICATION MODULES
+    // ----------------------------------------------------------------------- APPLICATION MODULES
 
     AuthModule,
     AccountsModule,
@@ -79,7 +78,10 @@ import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting
     MessagesModule,
     PushModule,
     AccountsDomainModule, // for LoggedInGuard
+
   ],
+
+
   providers: [
     {
       provide: APP_GUARD,
@@ -90,6 +92,8 @@ import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting
       useClass: ThrottlerGuard,
     }
   ],
+
+
 })
 export class AppModule {
   constructor(private dataSource: DataSource, private config: ConfigService) {} 

@@ -9,7 +9,7 @@ import { hashPassword, verifyPassword } from "../auth/auth-utils";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 import { ConfigService } from "@nestjs/config";
-import { UserGlobalLogoutEvent } from "src/shared/events/user-global-logout.event";
+import { PasswordChangeEvent } from "src/shared/events/user-global-logout.event";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
 
 @Injectable()
@@ -72,7 +72,7 @@ export class AccountsService {
     if (dto.password) {
       let newPasswordHash = await hashPassword(dto.password);
       toUpdate.passwordHash = newPasswordHash;
-      this.eventEmitter.emit("userGlobalLogout", new UserGlobalLogoutEvent(callerId, session.sid));
+      this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(callerId, session.sid));
     }
 
     try {

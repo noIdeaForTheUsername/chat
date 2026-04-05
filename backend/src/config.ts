@@ -113,5 +113,5 @@ function parseList(val?: string): string[] | undefined {
 }
 
 export function getCorsOrigins() {
-  return parseList(process.env.CORS_ALLOWED_ORIGINS);
+  return parseList(process.env.ALLOWED_ORIGINS);
 }
