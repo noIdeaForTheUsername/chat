@@ -34,9 +34,7 @@ export default () => {
       secure: process.env.COOKIES_SECURE?.toLowerCase() !== 'false',
     },
 
-    cors: {
-      origins: getCorsOrigins(),
-    },
+    allowedOrigins: getAllowedOrigins(),
 
     database: {
       host: process.env.DB_HOST ?? 'localhost',
@@ -112,6 +110,6 @@ function parseList(val?: string): string[] | undefined {
   return val.split(',').map(s => s.trim()).filter(Boolean);
 }
 
-export function getCorsOrigins() {
-  return parseList(process.env.ALLOWED_ORIGINS);
+export function getAllowedOrigins() {
+  return parseList(process.env.ALLOWED_ORIGINS) ?? [];
 }

@@ -29,6 +29,7 @@ import { PushModule } from './application/push-notifications/push.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting-settings';
 import { ScheduleModule } from '@nestjs/schedule';
+import { OriginFilterGuard } from './shared/origin-filter.guard';
 
 
 @Module({
@@ -90,6 +91,10 @@ import { ScheduleModule } from '@nestjs/schedule';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: OriginFilterGuard,
     }
   ],
 
