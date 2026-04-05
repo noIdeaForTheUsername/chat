@@ -4,11 +4,19 @@ import { Capacitor } from "@capacitor/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { FcmNotificationsService } from "./internal/fcm-notifications.service";
 import { WebPushService } from "./internal/webpush-service";
+import { HttpClient } from "@angular/common/http";
+import { language } from "ionicons/icons";
+import { AlertService } from "../alerts/alert-service/alert.service";
+import { AlertType } from "../alerts/alert-type.enum";
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable({
   providedIn: "root"
 })
 export class NotificationsService {
+  private http = inject(HttpClient);
+  private alertService = inject(AlertService);
+  private translate = inject(TranslateService);
   private swPush = inject(SwPush);
   private webPush = inject(WebPushService);
   private fcm = inject(FcmNotificationsService);
@@ -39,7 +47,7 @@ export class NotificationsService {
     return false;
   }
 
-  async requestAndSendSubscription(displayAlerts: boolean = true): Promise<void> {
+  async requestAndSendSubscription(displayAlerts: boolean = true) {
     if (Capacitor.getPlatform() == "android") {
       try {
         await this.fcm.requestAndSendSubscription(displayAlerts);
@@ -52,6 +60,22 @@ export class NotificationsService {
     else {
       await this.webPush.requestAndSendSubscription(displayAlerts);
     }
+  }
+
+  async unsubscribeFromNotifications(){
+    return this.http.put("/notifications/subscription",
+      {}  // empty body removes the subscription on the server
+    ).subscribe({
+      next: () => {
+        this.alertService.displayMessageAlert(
+          AlertType.INFO,
+          this.translate.instant("prompt.notifications-changed")
+        );
+      },
+      error: (err) => {
+        this.alertService.displayError(err.status);
+      }
+    });
   }
 
   async getNotificationsStatus() {

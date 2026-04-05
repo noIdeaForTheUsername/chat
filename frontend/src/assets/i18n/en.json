@@ -23,6 +23,8 @@
     "error": "Error",
     "danger-zone": "Danger zone",
     "enable-notifications": "Enable notifications",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
 
     "form-field-invalid": "Invalid form field value:",
     "app": "App",
@@ -128,19 +130,11 @@
 
     "conversation-options": {
       "title": "Conversation options",
-      "general": {
-        "header": "General",
-        "search": "Search in conversation",
-        "show-media": "Show conversation media"
-      },
       "settings": {
-        "header": "Conversation settings",
-        "notifications": "Receive notifications",
-        "auto-download": "Auto-download all files"
+        "header": "Conversation settings"
       },
       "danger-zone": {
-        "delete": "Delete all messages in this conversation",
-        "delete-with-contact": "Delete all messages and this contact"
+        "delete": "Delete all messages in this conversation"
       }
     },
 
@@ -153,7 +147,8 @@
       "global-logout-success": "You have been logged out from all other devices. If you want to log out from this device as well, click the regular logout button.",
       "install-pwa": "Install the web app",
       "install-android": "Android app",
-      "delete-messages": "Delete all messages in all conversations"
+      "delete-messages": "Delete all messages in all conversations",
+      "notifications": "Notifications"
     },
 
     "account-settings": {
@@ -161,18 +156,6 @@
       "hint": "Enter the <b>current password</b>, and then only edit the <b>fields you want to change</b>. Finally, confirm with the button at the bottom of the page.",
       "current-password": "Current password",
       "new-password": "New password (if you want to change it)"
-    },
-
-    "security-verification": {
-      "title": "Security verification",
-      "header": "This page will work in the future. Go back and pretend everything's ok :P",
-      "description": "This verification will help you ensure that no one has messed with the encryption parameters between you and this user (public keys / security codes).",
-      "security-codes": "Security codes",
-      "my-code": "My code (A)",
-      "other-code": "{{name}}'s code (B)",
-      "instructions-header": "Verification instructions",
-      "step-1-description": "Exchange these codes via a safe communications channel (other than this app) or physically.<br/>Verify if <b>both</b> your and {{name}}'s code are exactly the same on both devices.<br/>(your device's <b>A</b> must match their device's <b>B</b> and vice versa).",
-      "step-2-description": "Your conversations are <b>only</b> secure if both pairs do match. Mismatch is a critical alert. Once verified successfully, there's no need to redo this in the future."
     },
 
     "login": {
@@ -226,10 +209,6 @@
     "block": {
       "user": "The user will be hidden for you, you won't receive notifications. They won't be informed of this action. You can unblock them later from the Conversations list page."
     },
-    "install": {
-      "header": "Just 3 clicks...",
-      "description": "but you have to do it yourself. Depending on the browser, it may look different, but usually you need to click the menu icon in one of the screen corners (3 dots or 3 lines), and then find the option \"Install app\" (best!) or, if that doesn't exist, \"Add to home screen\"."
-    },
     "unblock": "Are you sure you want to unblock this user?",
     "clear-conversation": "All your messages in the conversation(s) will be permanently deleted. This action cannot be undone.",
     "conversation-cleared": "Your messages have been cleared.",
@@ -238,7 +217,8 @@
     "conversation-exists": "A conversation with this user already exists. Do you want to open it?",
     "start-conversation": "Start a new conversation with this user?",
 
-    "notifications-enabled": "Notifications have been successfully enabled."
+    "notifications-enabled": "Notifications have been successfully enabled.",
+    "notifications-changed": "Notifications settings have been successfully changed."
   },
 
 
@@ -316,6 +296,10 @@
     "notifications-blocked": {
       "header": "Notifications blocked by browser",
       "description": "To enable notifications, you have to go to your browser or device settings and manually allow them (this is out of the app's control)"
+    },
+    "notifications-unknown-error": {
+      "header": "We don't know what happened",
+      "description": "An unknown error occurred while trying to enable notifications, and your browser does not provide us any more information on it. Try restarting the app, changing settings, internet browser, or, if you're using phone, downloading the native Android app from the settings menu"
     },
 
     "failed-to-delete": "Failed to delete",

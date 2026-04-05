@@ -25,13 +25,17 @@ export class WebPushService {
         serverPublicKey: environment.vapidPublicKey
       });
     }
-    catch(err) {
+    catch(err: any) {
       console.error("Error requesting subscription:", err);
       if (displayAlerts) {
         if (Notification.permission == "denied")
           this.alertService.displayError("notifications-blocked");
-        else
-          this.alertService.displayUnknownError(err);
+        else {
+          if (Object.keys(err).length === 0)
+            this.alertService.displayError("notifications-unknown-error");
+          else
+            this.alertService.displayUnknownError(err);
+        }
       }
     }
 
@@ -53,7 +57,7 @@ export class WebPushService {
       },
       error: (err) => {
         if (displayAlerts)
-          this.alertService.displayUnknownError(err);
+          this.alertService.displayError(err.status);
       }
     });
   }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Put, Session } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Patch, Put, Session } from "@nestjs/common";
 import { AllowInactiveAccount } from "src/shared/auth/decorators/allow-inactive-account";
 import { PushSubscriptionDto } from "./dto/push-subscription.dto";
 
@@ -10,16 +10,20 @@ export class PushController {
   public async putSubscription(@Session() session: Record<string, any>, @Body() body: PushSubscriptionDto) {
     if (body.subscription) {
       session.pushSubscription = body.subscription;
-      session.fcmToken = undefined; // idk what users copy cookies between platforms but let's just be safe
+      // different-platform subscription shouldn't have been here before but it's better to be safe
+      session.fcmToken = null;  
     }
     else if (body.fcmToken) {
       session.fcmToken = body.fcmToken;
-      session.pushSubscription = undefined;
+      session.pushSubscription = null;
     }
     else {
-      throw new BadRequestException("Either subscription or fcmToken must be provided");
+      // the endpoint also allows to disable the notifications with an empty body
+      session.fcmToken = null;
+      session.pushSubscription = null;
+      return;  // prevent language update
     }
     
-    session.language = body.language;
+    session.language = body.language ?? "en";
   }
 }

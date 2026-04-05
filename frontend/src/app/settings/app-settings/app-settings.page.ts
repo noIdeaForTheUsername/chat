@@ -50,6 +50,14 @@ export class AppSettingsPage {
     this.languageService.setLanguage(lang);
   }
 
+  onNotificationsToggle(value: string): void {
+    let enabled = value.toLowerCase() == 'enabled';
+    if (enabled)
+      this.notificationsService.requestAndSendSubscription(true);
+    else
+      this.notificationsService.unsubscribeFromNotifications();
+  }
+
   requestNotifications() {
     this.notificationsService.requestAndSendSubscription();
   }

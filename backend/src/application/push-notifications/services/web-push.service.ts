@@ -57,11 +57,13 @@ export class WebPushService {
 
     // send
     try {
+      console.log("notif sending");
       await webpush.sendNotification(subscription as any, JSON.stringify(payload), {
         TTL: ttl,
         urgency: "high"
       });
     } catch (error) {
+      console.log("err sending");
       // on error remove the subscription
       try {
         await this.sessionsService.removeWebPushSubscription(session.sid);

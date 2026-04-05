@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SessionEntity } from "./entity/session.entity";
-import { LessThan, Not, Repository } from "typeorm";
+import { LessThan, MoreThan, Not, Repository } from "typeorm";
 
 
 @Injectable()
@@ -18,8 +18,8 @@ export class SessionsService {
   async getUserSessions(userId: number) {
     return await this.sessions.findBy({
       userId,
-      inactiveExpires: LessThan(new Date()),
-      absolutelyExpires: LessThan(new Date()),
+      inactiveExpires: MoreThan(new Date()),
+      absolutelyExpires: MoreThan(new Date()),
     });
   }
 

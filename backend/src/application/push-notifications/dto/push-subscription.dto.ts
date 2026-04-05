@@ -14,6 +14,7 @@ export class PushSubscriptionDto {
 
 
   @IsString()
+  @IsOptional()
   @MaxLength(2)
-  language: string;
+  language?: string;
 }
