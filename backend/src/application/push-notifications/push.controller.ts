@@ -21,9 +21,8 @@ export class PushController {
       // the endpoint also allows to disable the notifications with an empty body
       session.fcmToken = null;
       session.pushSubscription = null;
-      return;  // prevent language update
     }
     
-    session.language = body.language ?? "en";
+    session.language = body.language ?? session.language ?? "en";
   }
 }

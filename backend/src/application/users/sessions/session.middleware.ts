@@ -2,7 +2,7 @@ import { ConfigService } from "@nestjs/config";
 import { RequestHandler } from "express";
 import session from "express-session";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
-import { TypeOrmSessionStore } from "src/domain/session/session-store";
+import { TypeOrmSessionStore } from "src/application/users/sessions/session-store";
 import { DataSource } from "typeorm";
 
 let sessionMiddleware: RequestHandler | null = null;

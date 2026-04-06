@@ -274,7 +274,7 @@
     },
     "logout-failed": {
       "header": "Logout failed",
-      "description": "An error occurred while logging out. If necessary, try erasing the browser cookies and data."
+      "description": "An error occurred while logging out. If necessary, try erasing the browser/application data."
     },
 
     "credentials-invalid": {

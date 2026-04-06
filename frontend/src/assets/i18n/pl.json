@@ -272,7 +272,7 @@
     },
     "logout-failed": {
       "header": "Błąd wylogowania",
-      "description": "Wystąpił błąd podczas wylogowywania (prawdopodobnie brak połączenia z serwerem). W razie potrzeby konieczności wylogowania offline spróbuj wyczyścić dane przeglądarki."
+      "description": "Wystąpił błąd podczas wylogowywania (prawdopodobnie brak połączenia z serwerem). W razie potrzeby konieczności wylogowania offline spróbuj wyczyścić dane przeglądarki/aplikacji."
     },
 
     "credentials-invalid": {

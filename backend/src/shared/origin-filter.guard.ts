@@ -27,7 +27,7 @@ export class OriginFilterGuard implements CanActivate {
     if (this.allowedOrigins.length === 0 || origin === undefined)
       return true;
 
-    if (origin && !this.allowedOrigins.includes(origin)) {
+    if (!this.allowedOrigins.includes(origin)) {
       throw new ForbiddenException("Origin not allowed");
     }
 

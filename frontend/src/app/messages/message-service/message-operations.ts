@@ -46,8 +46,8 @@ export class MessageOperations {
           this.state.ownMessageSent.next(true);
         }
         else {
-          // websocket won't "reflect" the sent message, but HTTP returned success so it was sent,
-          // so add it locally as a hopefully rare fallback
+          // websocket won't "reflect" the sent message, but HTTP returned success so it was
+          // successfully sent, so add it locally as a hopefully rare fallback
           this.receiveMessage({
             globalId: res.id,
             conversationId: this.state.getCurrentConvId(),
@@ -55,7 +55,8 @@ export class MessageOperations {
             text: text,
             repliedId,
             timestamp: new Date(),
-          })
+          });
+          this.state.ownMessageSent.next(true);
         }
       },
       error: (e) => {

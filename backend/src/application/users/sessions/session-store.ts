@@ -1,6 +1,6 @@
 import session from 'express-session';
 import { Repository } from 'typeorm';
-import { SessionEntity } from './entity/session.entity';
+import { SessionEntity } from 'src/domain/session/entity/session.entity';
 import { ConfigService } from '@nestjs/config';
 
 

@@ -1,22 +1,23 @@
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
+import { Throttle } from '@nestjs/throttler';
 import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
-import { getSessionMiddleware } from 'src/domain/session/session.middleware';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
 import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
 import { MessageSentEvent } from 'src/shared/events/message-sent.event';
 import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
+import { WEBSOCKET_EVENTS_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
+import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
+import { getWsAuthMiddleware, getWsOriginFilterMiddleware, getWsSessionMiddleware } from 'src/shared/websocket-middlewares';
 import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
 import { MessagesService } from './messages.service';
-import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
-import { Throttle } from '@nestjs/throttler';
-import { WEBSOCKET_EVENTS_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
 
 
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
-@UseGuards(WsThrottlerGuard)
+@UseGuards(WsThrottlerGuard)  // auth check via session middleware in afterInit
 @Throttle(WEBSOCKET_EVENTS_RATE_LIMIT)
 @WebSocketGateway({
   cors: {
@@ -29,39 +30,23 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   @WebSocketServer()
   private server: Server;
 
+  private readonly allowedOrigins: string[];
+
   constructor(
     private messagesService: MessagesService,
-    private accounts: AccountsDomainService
-  ) { }
+    private accounts: AccountsDomainService,
+    private configService: ConfigService
+  ) {
+    this.allowedOrigins = this.configService.getOrThrow<string[]>("allowedOrigins");
+  }
 
 
   // AUTHENTHICATION
 
   afterInit(server: any) {
-    // Session middleware
-    const sessionMiddleware = getSessionMiddleware();
-    server.use((socket: any, next: any) => {
-      sessionMiddleware(socket.request, {} as any, async () => {
-        // Check if session exists
-        if (!((socket.request as any).session?.userId)) {
-          return next(new Error("unauthorized"));
-        }
-
-        // Get account
-        const userId = (socket.request as any).session.userId;
-        const account = await this.accounts.findById(userId);
-
-        // auth checks and errors
-        if (!account)
-          return next(new Error('not-found.user'));
-        if (!account.activated)
-          return next(new Error('account-inactive'));
-
-        // success
-        socket.data.userId = userId;
-        next();
-      });
-    });
+    server.use(getWsOriginFilterMiddleware(this.allowedOrigins));
+    server.use(getWsSessionMiddleware());
+    server.use(getWsAuthMiddleware(this.accounts));
   }
 
   // LIFECYCLE

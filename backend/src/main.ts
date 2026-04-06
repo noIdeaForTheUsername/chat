@@ -8,7 +8,7 @@ import { join } from 'path';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AppModule } from './app.module';
 import { FcmService } from './application/push-notifications/services/fcm.service';
-import { initSessionMiddleware } from './domain/session/session.middleware';
+import { initSessionMiddleware } from './application/users/sessions/session.middleware';
 
 
 async function bootstrap() {
