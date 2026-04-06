@@ -3,22 +3,14 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   @if (dataLoaded()) {
     <app-profile-preview [profile]="participant()" [viewProfileButton]="true" />
-
-    <!-- USER ACTIONS -->
     <ion-item-group>
       <ion-item-divider><ion-label>{{"common.actions" | translate}}</ion-label></ion-item-divider> 
 
       <!-- block -->
       <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate"
         icon="ban" iconColor="danger" />
-    </ion-item-group>
 
-    <!-- CONVERSATION OPTIONS -->
-
-    <!-- DANGER ZONE (DELETING) -->
-    <ion-item-group>
-      <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider>
-
+      <!-- delete all messages -->
       <app-item-button [text]="'page.conversation-options.danger-zone.delete' | translate"
         icon="trash" iconColor="danger" (click)="promptClearConversation()" />
     </ion-item-group>

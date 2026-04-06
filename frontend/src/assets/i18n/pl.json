@@ -64,7 +64,7 @@
       "description": "W zależności od przeglądarki może to wyglądać nieco inaczej. Znajdź w <b>menu przeglądarki</b> (które zazwyczaj otwiera się przyciskiem w rogu ekranu) opcję <b>\"Dodaj do ekranu głównego\"</b>, a następnie wybierz <b>\"Zainstaluj\"</b>. Aplikacja będzie widoczna jako ikonka na ekranie głównym Twojego urządzenia.",
       "ios-description": "Niestety instalacja aplikacji przeglądarkowej na iOS działa tylko w przeglądarce <b>Safari</b>. Aby zainstalować aplikację, otwórz menu Safari (pudełko ze strzałką skierowaną do góry), następnie <b>przewiń w dół</b> i wybierz <b>\"Dodaj do ekranu głównego.\"</b> Aplikacja pojawi się jako ikona na ekranie głównym Twojego urządzenia.",
       "image-hint": "Kliknij obrazek, aby otworzyć go w nowym widoku i móc go powiększyć",
-      "android-recommendation": "<b>UWAGA:</b> Wygląda na to, że jesteś na urządzeniu z Androidem. Mocno rekomendujemy Ci <a>tą metodę instalacji (kliknij, aby się przenieść)</a> zamiast poniższej."
+      "android-recommendation": "<b>UWAGA:</b> Wygląda na to, że jesteś na urządzeniu z Androidem. Mocno rekomendujemy Ci <a>tę metodę instalacji (kliknij, aby się przenieść)</a> zamiast poniższej."
     },
     "android-guide": {
       "title": "Aplikacja Androida",
@@ -78,7 +78,7 @@
     "conversations": {
       "title": "Konwersacje",
       "search": "Szukaj w swoich kontaktach...",
-      "add-conversation-hint": "Użyj <b>przycisku +</b> w prawym dolnym rogu ekranu, aby rozpocząć nową konwersację",
+      "add-conversation-hint": "Użyj <b>przycisku</b> w prawym dolnym rogu ekranu, aby rozpocząć nową konwersację",
       "conversation-action": {
         "header": "Zaznaczone konwersacje...",
         "clear-messages": "Wyczyść moje wiadomości w zaznaczonych"

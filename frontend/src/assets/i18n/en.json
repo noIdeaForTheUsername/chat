@@ -218,7 +218,7 @@
     "start-conversation": "Start a new conversation with this user?",
 
     "notifications-enabled": "Notifications have been successfully enabled.",
-    "notifications-changed": "Notifications settings have been successfully changed."
+    "notifications-changed": "Notification settings have been successfully changed."
   },
 
 
@@ -253,7 +253,7 @@
     },
     "data-invalid": {
       "header": "Invalid data",
-      "description": "Provided data is invalid. Check the if the input is correct."
+      "description": "Provided data is invalid. Check if the input is correct."
     },
     "too-many-requests": {
       "header": "Too many actions",
@@ -270,11 +270,11 @@
 
     "unknown": {
       "header": "Unknown error",
-      "description": "An unknown error has occured. If the issue persists, try restarting the app completely or contact the administrator."
+      "description": "An unknown error has occurred. If the issue persists, try restarting the app completely or contact the administrator."
     },
     "logout-failed": {
       "header": "Logout failed",
-      "description": "An error occurred while logging out. If necessary, try erasing the browser/application data."
+      "description": "An error occurred while logging out (may be a server connection issue). If logout is necessary, try erasing the browser/application data."
     },
 
     "credentials-invalid": {
