@@ -78,6 +78,14 @@ export class AccountsDomainService {
     );
     if (result.affected === 0) throw new NotFoundException("not-found.account");
   }
+
+  async changePassword(id: number, newPasswordHash: string) {
+    const result = await this.accounts.update(
+      { id },
+      { passwordHash: newPasswordHash }
+    );
+    if (result.affected === 0) throw new NotFoundException("not-found.account");
+  }
   
   async changeAdminStatus(id: number, isAdmin: boolean) {
     const result = await this.accounts.update(

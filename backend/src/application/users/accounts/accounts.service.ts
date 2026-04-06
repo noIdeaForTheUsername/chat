@@ -113,6 +113,17 @@ export class AccountsService {
     await this.accounts.changeAdminStatus(changedUserId, newIsAdmin);
   }
 
+  async changeAccountPassword(callerAccount: Account, callerPasswordConfirm: string,
+    changedUserId: number, newPassword: string) {
+
+    const verified = await verifyPassword(callerAccount, callerPasswordConfirm);
+    if (!verified) throw new ForbiddenException('credentials-invalid');
+
+    const newPasswordHash = await hashPassword(newPassword);
+    await this.accounts.changePassword(changedUserId, newPasswordHash);
+    this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(changedUserId, undefined));
+  }
+
   async notifyAdministration(messageHeader: string[], messageBody: string[], tag?: string) {
     const admins = await this.accounts.findAdmins(true);
     for (const admin of admins) {

@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Admin panel</title>
 </head>
 <body>
-  <form action="/api/auth/login" method="POST">
+  <form action="/auth/login" method="POST">
     Login, email or phone number: <input type="tel" name="phoneNumber"/><br/>
     Password: <input type="password" name="password"/><br/>
     <input type="submit" value="Log in">
@@ -24,7 +24,7 @@
       if (!answer) return;
 
       const accountId = document.getElementById("accountId").value;
-      fetch(`/api/accounts/${accountId}/activated/`, {
+      fetch(`/accounts/${accountId}/activated/`, {
         method: "PATCH",
         credentials: "include",
         body: JSON.stringify({ activated: true }),
@@ -51,12 +51,124 @@
 
   <hr>
 
+  <h1>Search profiles:</h1>
+  Search by name or phone number: <input type="text" id="profileSearchQuery"/><br/>
+  <button id="searchProfilesBtn">Search profiles</button>
+  <div id="searchProfilesStatus"></div>
+  <ul id="searchResults"></ul>
+
+  <script>
+    document.getElementById("searchProfilesBtn").addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const query = document.getElementById("profileSearchQuery").value.trim();
+      const status = document.getElementById("searchProfilesStatus");
+      const results = document.getElementById("searchResults");
+      status.textContent = "";
+      results.innerHTML = "";
+
+      if (!query) {
+        status.textContent = "Enter a name or phone number first.";
+        return;
+      }
+
+      fetch(`/profiles/search?q=${encodeURIComponent(query)}`, { credentials: "include" })
+        .then(async (res) => {
+          if (!res.ok) {
+            const message = res.status === 401
+              ? "Unauthorized - please log in using the admin account"
+              : res.status === 403
+                ? "Forbidden - please log in using the admin account"
+                : res.status === 429
+                  ? "Too many search requests - please wait and try again"
+                  : "Error searching profiles";
+            throw new Error(message);
+          }
+          return res.json();
+        })
+        .then((profiles) => {
+          if (!Array.isArray(profiles) || profiles.length === 0) {
+            status.textContent = "No profiles found.";
+            return;
+          }
+
+          status.textContent = `Found ${profiles.length} profile(s).`;
+          profiles.forEach((profile) => {
+            const item = document.createElement("li");
+            item.textContent = `ID: ${profile.id} | Name: ${profile.name ?? "-"} | Phone: ${profile.phoneNumber ?? "-"}`;
+            results.appendChild(item);
+          });
+        })
+        .catch((error) => {
+          status.textContent = error.message;
+        });
+    });
+  </script>
+
+  <hr>
+
+  <h1>Change a user password:</h1>
+  User ID: <input type="text" id="passwordUserId"/><br/>
+  Admin password: <input type="password" id="adminPassword"/><br/>
+  New password: <input type="password" id="newPassword"/><br/>
+  <button id="changePasswordBtn">Change password</button>
+  <div id="changePasswordStatus"></div>
+
+  <script>
+    document.getElementById("changePasswordBtn").addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const userId = document.getElementById("passwordUserId").value.trim();
+      const adminPassword = document.getElementById("adminPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const status = document.getElementById("changePasswordStatus");
+      status.textContent = "";
+
+      if (!userId) {
+        status.textContent = "Enter a user ID first.";
+        return;
+      }
+
+      fetch(`/accounts/${encodeURIComponent(userId)}/password`, {
+        method: "PATCH",
+        credentials: "include",
+        body: JSON.stringify({ adminPassword, newPassword }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then((res) => {
+        if (res.status === 200 || res.status === 204) {
+          status.textContent = "Password changed successfully.";
+          return;
+        }
+
+        if (res.status === 401) {
+          throw new Error("Unauthorized - please log in using the admin account");
+        }
+        if (res.status === 403) {
+          throw new Error("Forbidden - invalid credentials or non-admin account");
+        }
+        if (res.status === 404) {
+          throw new Error("Account not found");
+        }
+
+        throw new Error("Error changing password");
+      })
+      .catch((error) => {
+        status.textContent = error.message;
+      });
+    });
+  </script>
+
+  <hr>
+
   <h1>Unactivated accounts list:</h1>
   <ul id="list"></ul>
 
 
   <script>
-    fetch("/api/accounts/unactivated", { credentials: "include" })
+    fetch("/accounts/unactivated", { credentials: "include" })
       .then((res) => res.json())
       .then((accounts) => {
         const list = document.getElementById("list");

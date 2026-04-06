@@ -10,6 +10,7 @@ import { Account } from "src/domain/accounts/entities/account.entity";
 import { SetAdminStatusDto } from "./dto/set-admin.dto";
 import { UserAccount } from "src/shared/auth/decorators/account.decorator";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
+import { ChangePasswordDto } from "./dto/admin-change-password.dto";
 
 // User account creation in auth module
 // The accounts controller handles actions related to account data modifications
@@ -55,12 +56,23 @@ export class AccountsController {
     await this.accountsService.changeAccountActivationStatus(adminId, userId, activated);
   }
 
+  @Patch(":id/password")
+  @UseGuards(AdminGuard)
+  async changeAccountPassword(
+    @UserAccount() adminAccount: Account,
+    @Body() body: ChangePasswordDto,
+    @Param('id', ParseIntPipe) userId: number
+  ) {
+    await this.accountsService.changeAccountPassword(adminAccount, body.adminPassword, userId, body.newPassword);
+  }
+
+
   @UseGuards(AdminGuard)
   @Patch(":id/admin")
   async changeAccountAdminStatus(
     @UserAccount() adminAccount: Account,
     @Body() body: SetAdminStatusDto, 
-    @Body('id', ParseIntPipe) userId: number)
+    @Param('id', ParseIntPipe) userId: number)
   {
     await this.accountsService.changeAccountAdminStatus(adminAccount, body.password, userId, body.isAdmin);
   }
