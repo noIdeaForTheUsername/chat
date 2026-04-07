@@ -1,9 +1,8 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Message } from './entities/message.entity';
 import { In, LessThan, MoreThan, Repository } from 'typeorm';
-import { UserMessage } from './entities/user-message.entity';
 import { LatestUserMessage } from './entities/latest-user-message.entity';
+import { Message } from './entities/message.entity';
 
 @Injectable()
 export class MessagesDomainService {
@@ -13,8 +12,6 @@ export class MessagesDomainService {
   constructor(
     @InjectRepository(Message)
     private readonly messageRepository: Repository<Message>,
-    @InjectRepository(UserMessage)
-    private readonly userMessageRepository: Repository<UserMessage>,
     @InjectRepository(LatestUserMessage)
     private readonly latestUserMessageRepository: Repository<LatestUserMessage>,
   ) {}
@@ -32,21 +29,15 @@ export class MessagesDomainService {
     return await this.messageRepository.save(message);
   }
 
-  async findMostRecentUserMessagePerConversation(userId: number) {
+  async findMostRecentUserMessagesPerConversation(userId: number) {
     const msgs = await this.latestUserMessageRepository.find({
       select: { globalId: true, conversationId: true, senderId: true,
-        text: true, timestamp: true, repliedId: true, numberInConversation: true },
+        text: true, timestamp: true, repliedId: true },
       where: { userId: userId },
     });
     return msgs;
   }
 
-  async findMostRecentMessageInConversation(conversationId: number) {
-    return await this.messageRepository.findOne({
-      where: { conversationId: conversationId },
-      order: { globalId: 'DESC' },
-    });
-  }
 
   async findMessageById(conversationId: number, messageId: number, exceptionOnNotFound = false) {
     const message = await this.messageRepository.findOneBy({

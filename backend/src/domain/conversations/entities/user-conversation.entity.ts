@@ -15,12 +15,6 @@ export class UserConversation {
   @ViewColumn({ name: 'participant_id' })
   participantId: number;
 
-  @ViewColumn()
-  accepted: boolean;
-
-  @ViewColumn()
-  notifications: boolean;
-
   @ViewColumn({ name: 'newest_read_message_id' })
   newestReadMessageId: number | null;
 }

@@ -51,7 +51,7 @@ export class MessagesService {
   }
 
   async getRecentMessagePreviews(callerId: number) {
-    return await this.messagesDomainService.findMostRecentUserMessagePerConversation(callerId);
+    return await this.messagesDomainService.findMostRecentUserMessagesPerConversation(callerId);
   }
 
   async sendMessage(callerId: number, conversationId: number,
@@ -78,11 +78,8 @@ export class MessagesService {
   }
 
   async acknowledgeConversationMessages(callerId: number, conversationId: number) {
-    const maxIdMsg = await this.messagesDomainService.findMostRecentMessageInConversation(conversationId);
-    if (maxIdMsg === null) return;  // no messages in conv, ignore and return success
-
     // No need to verify participation manually - setNewestReadMessage only modifies the Participation record
-    return await this.conversationsDomainService.setNewestReadMessage(callerId, conversationId, maxIdMsg.globalId);
+    return await this.conversationsDomainService.ackowledgeConversation(callerId, conversationId);
   }
 
   async deleteMessageById(callerId: number, conversationId: number, messageId: number) {

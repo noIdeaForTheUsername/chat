@@ -51,8 +51,6 @@ export default () => {
     }
   }
 
-  console.log("Inactive expiration: ", configObject?.auth?.inactiveExpiration);
-  console.log("Absolute expiration: ", configObject?.auth?.absoluteExpiration);
 
   if (process.env.NODE_ENV !== "development" && process.env.NODE_ENV !== "production") {
     throw new Error("NODE_ENV is set to an invalid value. Allowed values are 'development' and 'production'.");

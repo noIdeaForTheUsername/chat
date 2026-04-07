@@ -33,7 +33,9 @@ export class AccountsDomainService {
   }
   
   async findAdmins(activatedOnly: boolean = true) {
-    return await this.accounts.findBy({ admin: true, activated: activatedOnly });
+    let where: Record<string, boolean> = { admin: true };
+    if (activatedOnly) where['activated'] = true;
+    return await this.accounts.findBy(where);
   }
 
   async findUnactivatedAccounts() {

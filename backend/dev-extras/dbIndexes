@@ -1,0 +1,7 @@
+CREATE INDEX session_user_id ON public.sessions (user_id);
+CREATE INDEX name ON public.profiles (name);
+CREATE INDEX phone_number ON public.accounts (phone_number);
+CREATE UNIQUE INDEX user_in_conversation_index ON public.participations(user_id, conversation_id)
+CREATE INDEX conversation_id_index ON public.participations USING btree (conversation_id)
+CREATE INDEX conversation_messages ON public.messages(conversation_id, global_id);
+CREATE UNIQUE INDEX owners_and_participants ON public.contacts(owner_id, participant_id);

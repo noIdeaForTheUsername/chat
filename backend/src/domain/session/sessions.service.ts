@@ -56,9 +56,9 @@ export class SessionsService {
 
   async cleanupExpiredSessions() {
     const now = new Date();
-    await this.sessions.delete({
-      inactiveExpires: LessThan(now),
-      absolutelyExpires: LessThan(now),
-    });
+    await this.sessions.delete([
+      { inactiveExpires: LessThan(now) },
+      { absolutelyExpires: LessThan(now) }
+    ]);
   }
 }

@@ -28,10 +28,4 @@ export class ConversationsController {
     }
     return undefined;
   }
-
-  @Post(':id/accept')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async acceptConversation(@UserId() callerId: number, @Param('id', ParseIntPipe) conversationId: number) {
-    return await this.conversationsService.acceptConversation(callerId, conversationId);
-  }
 }

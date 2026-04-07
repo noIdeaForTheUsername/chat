@@ -52,17 +52,13 @@ export class ConversationsService {
     const conversation = await this.conversations.createConversation(ConversationType.DIRECT);
     // create participations and contacts
     await Promise.all([
-      this.conversations.createParticipation(callerId, conversation.id, true),
-      this.conversations.createParticipation(participantId, conversation.id, true),
+      this.conversations.createParticipation(callerId, conversation.id),
+      this.conversations.createParticipation(participantId, conversation.id),
       this.contacts.createContact(callerId, participantId),
       this.contacts.createContact(participantId, callerId),
     ]);
 
     // return conversation
     return await this.conversations.findUserConversation(callerId, conversation.id, true);
-  }
-
-  async acceptConversation(callerId: number, conversationId: number) {
-    return await this.conversations.acceptConversation(callerId, conversationId);
   }
 }

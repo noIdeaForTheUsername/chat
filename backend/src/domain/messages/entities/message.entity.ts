@@ -8,9 +8,6 @@ export class Message {
   @Column({ name: "conversation_id" })
   conversationId: number;
 
-  @Column({ name: "number_in_conversation" })
-  numberInConversation: number;
-
   @Column({ name: "sender_id" })
   senderId: number;
 

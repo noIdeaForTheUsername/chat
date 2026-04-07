@@ -38,7 +38,6 @@ export class AppInitService {
     if (this.auth.getUserId() && this.isOnOutsidePage() && this.auth.getUserAccountActive()) {  
       this.preloading.set(false);
       if (this.isOnOutsidePage()) {
-        // this.blockLoadPage = true;
         this.router.navigateByUrl(this.successStartPage);
       }
     }
@@ -47,7 +46,6 @@ export class AppInitService {
     this.auth.loadServerAuth().subscribe({
       next: () => {
         // Successful auth load
-        // this.blockLoadPage = true;
         this.preloading.set(false);
         this.notificationsService.sendSubscriptionIfAvailable();
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
@@ -87,7 +85,6 @@ export class AppInitService {
       this.loadingErrorJson.set(JSON.stringify(err));
     }
     else if (err.status === 401) {  // server available but unauthorized, go to the welcome page
-      // this.blockLoadPage = true;
       if (!this.isOnOutsidePage()) {
         this.router.navigateByUrl('/');
       }
@@ -103,6 +100,9 @@ export class AppInitService {
   }
 
   private isOnOutsidePage(): boolean {
-    return this.outsidePages.includes(window.location.pathname);
+    const hashPath = window.location.hash;
+
+    return this.outsidePages.includes(hashPath)
+      || this.outsidePages.includes(hashPath.replace('#', ''));
   }
 }

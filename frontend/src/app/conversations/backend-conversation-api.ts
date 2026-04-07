@@ -44,15 +44,7 @@ export class BackendConversationApi {
     return this.http.post<Conversation>("/conversations", { type: "direct", participantId });
   }
 
-  acceptConversation(conversationId: number) {
-    return this.http.post(`/conversations/${conversationId}/accept`, {});
-  }
-
   clearConversationMessages(conversationId: number) {
     return this.http.delete(`/conversations/${conversationId}/messages/all`);
   }
-
-  // ackowledgeMessages(conversationId: number) {
-  //   return this.http.post<void>(`/conversations/${conversationId}/acknowledge`, {});
-  // }
 }

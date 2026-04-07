@@ -9,7 +9,6 @@ import { DataSource, Not, Repository } from 'typeorm';
 @Injectable()
 export class ConversationsDomainService {
   constructor(
-    private dataSource: DataSource,
     @InjectRepository(Conversation) private readonly conversations: Repository<Conversation>,
     @InjectRepository(Participation) private readonly participations: Repository<Participation>,
     @InjectRepository(UserConversation) private readonly userConversations: Repository<UserConversation>,
@@ -19,15 +18,15 @@ export class ConversationsDomainService {
 
   public async findUserConversations(userId: number) {
     return await this.userConversations.find({
-      select: { id: true, type: true, participantId: true, accepted: true, notifications: true, newestReadMessageId: true },
+      select: { id: true, type: true, participantId: true, newestReadMessageId: true },
       where: { ownerId: userId }
     });
   }
 
   public async findUserConversation(userId: number, conversationId: number, exceptionOnNotFound = false) {
     const conv = await this.userConversations.findOne({
-      select: { id: true, type: true, participantId: true, accepted: true, notifications: true },
-      where: { ownerId: userId, id: conversationId }
+      select: { id: true, type: true, participantId: true, },
+      where: { id: conversationId, ownerId: userId }
     });
     if (!conv && exceptionOnNotFound) throw new NotFoundException('not-found.conversation');
     return conv;
@@ -38,14 +37,6 @@ export class ConversationsDomainService {
       where: { ownerId: user1Id, participantId: user2Id, type: ConversationType.DIRECT }
     });
   }
-
-  public async findConversationParticipantsIds(conversationId: number) {
-    const participations = await this.participations.find({
-      select: { userId: true },
-      where: { conversationId: conversationId }
-    });
-    return participations.map(p => p.userId);
-  }
   
 
   // CREATING
@@ -55,11 +46,10 @@ export class ConversationsDomainService {
     return await this.conversations.save(conversationObjectObj);
   }
 
-  public async createParticipation(userId: number, conversationId: number, accepted = false) {
+  public async createParticipation(userId: number, conversationId: number) {
     const participationObj = this.participations.create({
       userId: userId,
       conversationId: conversationId,
-      accepted: accepted,
     });
     return await this.participations.save(participationObj);
   }
@@ -67,19 +57,22 @@ export class ConversationsDomainService {
   
   // UPDATING
 
-  public async acceptConversation(userId: number, conversationId: number) {
-    const result = await this.participations.update(
-      { userId: userId, conversationId: conversationId },
-      { accepted: true }
-    );
-    if (result.affected === 0)
-      throw new NotFoundException('not-found.conversation');
-  }
 
   public async setNewestReadMessage(userId: number, conversationId: number, messageId: number) {
     const result = await this.participations.update(
       { userId: userId, conversationId: conversationId },
       { newestReadMessageId: messageId }
+    );
+    if (result.affected === 0)
+      throw new NotFoundException('not-found.conversation');
+  }
+
+  public async ackowledgeConversation(userId: number, conversationId: number) {
+    const result = await this.participations.query(
+      "UPDATE participations" +
+      " SET newest_read_message_id = (SELECT MAX(global_id) FROM messages WHERE conversation_id = $1)" +
+      " WHERE user_id = $2 AND conversation_id = $1",
+      [conversationId, userId]
     );
     if (result.affected === 0)
       throw new NotFoundException('not-found.conversation');

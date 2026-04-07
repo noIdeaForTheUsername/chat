@@ -17,7 +17,6 @@ import { AccountsModule } from './application/users/accounts/accounts.module';
 import { ProfilesModule } from './application/users/profiles-and-contacts/profiles.module';
 import { Message } from './domain/messages/entities/message.entity';
 import { MessagesModule } from './application/messages/messages.module';
-import { UserMessage } from './domain/messages/entities/user-message.entity';
 import { LatestUserMessage } from './domain/messages/entities/latest-user-message.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config';
@@ -53,7 +52,7 @@ import { OriginFilterGuard } from './shared/origin-filter.guard';
         entities: [
           Account, Profile, FullProfile, Contact, UserKnownProfile,
           Conversation, Participation, UserConversation,
-          Message, UserMessage, LatestUserMessage, SessionEntity
+          Message, LatestUserMessage, SessionEntity
         ],
       }),
       async dataSourceFactory(options: any) {

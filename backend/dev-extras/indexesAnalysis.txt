@@ -1,0 +1,41 @@
+MESSAGES:
+	-Previews:
+		- in a view: JOIN ON messages.conversation_id = participations.conversation_id
+			ORDER BY: p.user_id, p.conversation_id, m.global_id
+		- additional filtering:
+			WHERE user_id
+
+	-Actual messages:
+		get/del by ID:
+			all are just using WHERE global_id
+		Mass deletion:
+			WHERE conversation_id AND (filters ~50% of records, doesn't matter a lot) sender_id
+		Infinite scroll get:
+			WHERE conversation_id, global_id
+			ORDER BY global_id ASC/DESC
+
+			Conclusion: do (conversation_id, global_id) and (global_id) is done by primary key
+
+PARTICIPATIONS:
+
+	- multiple searches by user_id (owner_id) and conversation_id
+	- one search by userId only
+	- JOINS:
+		- (self-join) p1.conversation_id = p2.conversation_id AND p1.user_id <> p2.user_id
+		- conversation_id = conversation.id
+
+
+CONTACTS:
+	- one update WHERE ownerId AND participantId (not very often)
+	- frequently used view:
+			SELECT p1.id AS contact_owner_id,
+				p2.id,
+				p2.name,
+				p2.bio,
+				p2.phone_number,
+				c.nick,
+				c.blocked
+			FROM profiles p1
+				JOIN contacts c ON c.owner_id = p1.id
+				LEFT JOIN full_profiles p2 ON c.participant_id = p2.id;
+			(frequently used with: WHERE contact_owner_id=? AND id=p2.id)
