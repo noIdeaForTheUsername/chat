@@ -5,8 +5,7 @@ export const UserAccount = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const account = ctx.switchToHttp().getRequest().userAccount;
     if (!account) {
-      console.error('UserAccount decorator: no userAccount in request - this decorator should be used after the privilege check (login guard)');
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException("UserAccount decorator: no userAccount in request - this decorator should be used after the privilege check (login guard)");
     }
     return account as Account;
   },

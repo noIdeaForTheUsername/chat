@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, Session } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Post, Req, Res, Session } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import { PublicAccess } from 'src/shared/auth/decorators/public-access.decorator';
@@ -12,6 +12,8 @@ import { SessionEntity } from 'src/domain/session/entity/session.entity';
 import { Throttle } from '@nestjs/throttler';
 import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
 import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
+import { UserAccount } from 'src/shared/auth/decorators/account.decorator';
+import { Account } from 'src/domain/accounts/entities/account.entity';
 
 
 @Controller("auth")
@@ -22,9 +24,13 @@ export class AuthController {
   ) {}
 
   @Get('me')
-  async getCurrentUser(@UserId() userId: number) {
-    const unsafe = await this.authService.getCurrentUser(userId);
-    return plainToInstance(AccountResponseDto, unsafe);
+  async getCurrentUser(@UserAccount() account: Account) {
+    return plainToInstance(AccountResponseDto, account);
+  }
+
+  @Post("test")
+  async test() {
+    throw new InternalServerErrorException("EA");
   }
 
   // AUTHENTICATION OPERATIONS

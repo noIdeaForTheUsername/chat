@@ -14,13 +14,6 @@ import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared
 @Injectable()
 export class MessagesService {
 
-  // variables below are used in checks the user-provided timestamp
-  // is not too far from the actual current time
-  // 1. When the message arrives to the server later than the provided timestamp
-  private readonly lateMessageThresholdMs = 3 * 60 * 1000;
-  // 2. When the message arrives to the server earlier than the provided timestamp
-  private readonly earlyMessageThresholdMs = 1 * 60 * 1000;
-
   constructor(
     private messagesDomainService: MessagesDomainService,
     private conversationsDomainService: ConversationsDomainService,

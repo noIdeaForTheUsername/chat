@@ -9,16 +9,21 @@ import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AppModule } from './app.module';
 import { FcmService } from './application/push-notifications/services/fcm.service';
 import { initSessionMiddleware } from './application/users/sessions/session.middleware';
+import { LoggingService } from './shared/logging/app-logger';
 
 
 async function bootstrap() {
   // TypeORM Transactional Context
   initializeTransactionalContext();
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
   const config = app.get(ConfigService);
-  app.getHttpAdapter().getInstance().set('trust proxy', 1);
+  if (config.get('app.trustProxy'))
+    app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
+  app.useLogger(app.get(LoggingService));
 
   // Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
@@ -31,6 +36,10 @@ async function bootstrap() {
   // Sessions
   const sessionMiddleware = await initSessionMiddleware(config);
   app.use(sessionMiddleware);
+
+  // Security headers - TODO: MOVE TO NGINX
+  // const securityHeadersMiddleware = app.get(SecurityHeadersMiddleware);
+  // app.use(securityHeadersMiddleware);
 
   // STATIC
   app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));  // admin interface
@@ -47,14 +56,14 @@ async function bootstrap() {
   const fcmService = app.get(FcmService);
   fcmService.initFcm();
 
-  // Port
-  const port = config.get<number>('app.port') ?? 3000;
-
   // CORS
   app.enableCors({
     origin: config.get<string[]>('allowedOrigins'),
     credentials: true,
   });
+
+  // Port
+  const port = config.get<number>('app.port') ?? 3000;
   await app.listen(port);
 }
 bootstrap();

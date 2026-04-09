@@ -26,7 +26,6 @@ export class PushService {
 
   @OnEvent("pushNotification")
   async handlePushNotificationEvent(payload: PushNotifcationEvent) {
-    console.log("Push notif: ", payload);
     await this.sendNotificationsToUser(payload);
   }
   
@@ -36,7 +35,6 @@ export class PushService {
     const sessions = await this.sessionsService.getUserSessions(payload.userId);
 
     for (const session of sessions) {
-      console.log("sess: ", session);
       // prepare data
       const normalizedLang = getNormalizedLang(session.language);
       const titleStr = getNotificationTitleString(payload.header, normalizedLang);
@@ -44,7 +42,6 @@ export class PushService {
 
       // send
       if (session.pushSubscription) {
-        console.log('webpush detected');
         this.webPushService.sendNotification(session, titleStr, messageStr,
           normalizedLang, this.notificationTTL, payload.tag);
       }

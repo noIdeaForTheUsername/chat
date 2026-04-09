@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { SessionsService } from "src/domain/session/sessions.service";
+import { LoggingService } from "src/shared/logging/app-logger";
 
 
 @Injectable()
@@ -11,6 +12,7 @@ export class FcmService {
 
   constructor(
     private sessionsService: SessionsService,
+    private logger: LoggingService,
   ) {}
 
   initFcm() {
@@ -20,8 +22,8 @@ export class FcmService {
     );
 
     if (!fs.existsSync(serviceAccountPath)) {
-      console.error('FCM service account JSON NOT FOUND! Get it from Google Firebase Console for push notifications to work.');
-      console.error('Expected path:', serviceAccountPath);
+      this.logger.error('FCM service account JSON NOT FOUND! Get it from Google Firebase Console for push notifications to work.', null, 'FcmService');
+      this.logger.error('Expected path:', serviceAccountPath, 'FcmService');
       process.exit(1);
     }
 
@@ -34,10 +36,9 @@ export class FcmService {
         credential: admin.credential.cert(serviceAccount),
       });
 
-      console.log('Firebase Admin initialized successfully');
+      this.logger.log('Firebase Admin initialized successfully', 'FcmService');
     } catch (error) {
-      console.error('Failed to initialize Firebase Admin');
-      console.error(error);
+      this.logger.error('Failed to initialize Firebase Admin', error, 'FcmService');
       process.exit(1);
     }
   }
@@ -45,7 +46,7 @@ export class FcmService {
   async sendNotification(session: SessionEntity, title: string, message: string,
     normalizedLang: string, ttl: number, tag?: string) {
     if (!session.fcmToken) {
-      console.warn(`No FCM token for session ${session.sid}, skipping FCM notification. This message shouldn't have appeared.`);
+      this.logger.warn(`No FCM token for session ${session.sid}, skipping FCM notification. This message shouldn't have appeared.`, 'FcmService');
       return;
     }
 
@@ -85,7 +86,7 @@ export class FcmService {
       try {
         await this.sessionsService.removeFcmToken(session.sid);
       } catch (e) {
-        console.error("Failed to remove FCM token from DB after FCM send error: ", e);
+        this.logger.error("Failed to remove FCM token from DB after FCM send error: ", e, 'FcmService');
       }
     }
   }

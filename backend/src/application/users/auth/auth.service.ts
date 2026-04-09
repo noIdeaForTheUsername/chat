@@ -11,6 +11,8 @@ import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
 import { AccountsService } from '../accounts/accounts.service';
 import { ACCOUNT_CREATION_LIMIT, GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, LONG_LOGIN_LIMIT_PER_ACCOUNT, SHORT_LOGIN_LIMIT_PER_ACCOUNT } from './auth-rate-limits';
 import { hashPassword, verifyPassword } from './auth-utils';
+import { LoggingService } from 'src/shared/logging/app-logger';
+import { Severity } from 'src/shared/logging/logging-enums';
 
 
 
@@ -23,19 +25,22 @@ export class AuthService {
     private actionsThrottlerService: ActionsThrottlerService,
     private eventEmitter: EventEmitter2,
     private sessionsService: SessionsService,
+    private logger: LoggingService,
   ) { }
   
 
   // LOGIN & REGISTER
 
-  async getCurrentUser(userId: number){
-    return await this.accountsDomainService.findById(userId);
-  }
-
   async login(req: any, phoneNumber: string, plainPassword: string):
   Promise<{ userId: number, session: string }> {
 
     await this.handleLoginRateLimits(phoneNumber, req.ip);
+
+    this.logger.securityLog(
+      `Login attempt for phone number ${phoneNumber} from IP ${req.ip} and User-Agent ${req.headers['user-agent']}`,
+      Severity.LOW,
+      'AuthService'
+    );
 
     // find account
     const account = await this.accountsDomainService.findByPhoneNumber(phoneNumber);
@@ -43,8 +48,8 @@ export class AuthService {
     // verification
     await verifyPassword(account, plainPassword);  // throws exception if invalid
     if (!account) {
-      console.error(`AuthService: account is null after verifyPassword,
-        but it should have thrown an exception in such case`);
+      this.logger.error(`AuthService: account is null after verifyPassword,
+        but it should have thrown an exception in such case`, null, 'AuthService');
       throw new ForbiddenException('credentials-invalid');
     }
 
@@ -137,8 +142,12 @@ export class AuthService {
     if (!globalBlockStatus.allowed) {
       // Security alert for administration
       if (globalBlockStatus.hits === GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT.limit + 1) {
-        console.warn(`Global login limit hit for phone number ${phoneNumber} (Over ${globalBlockStatus.limit} attempts).
-          All further attempts will be blocked until ${new Date(globalBlockStatus.expires).toLocaleString()}`);
+        this.logger.securityLog(
+          `Global login limit hit for phone number ${phoneNumber} (Over ${globalBlockStatus.limit} attempts).`
+          + ` All further attempts will be blocked until ${new Date(globalBlockStatus.expires).toLocaleString()}`,
+          Severity.HIGH,
+          'AuthService'
+        );
 
         this.accountsService.notifyAdministration(
           ["accountAttackHeader"],

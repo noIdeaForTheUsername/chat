@@ -13,11 +13,13 @@ const MESSAGE_SENDING_LIMIT: RateLimitedAction = {
   name: 'MESSAGE_SEND',
   limit: 10,
   ttl: 20 * 1000,
+  logExceeded: false,
 }
 const MESSAGE_SENDING_LIMIT_2: RateLimitedAction = {
   name: 'MESSAGE_SEND_2',
   limit: 60,
   ttl: 4 * 60 * 1000,
+  logExceeded: false,
 }
 
 

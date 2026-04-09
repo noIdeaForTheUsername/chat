@@ -26,6 +26,8 @@ export class MessageOperations {
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
 
+  private readonly MESSAGE_LENGTH_LIMIT = 4000;  // enforced on backend too
+
   constructor() {
     this.websocket.messages$.subscribe({
       next: (msg: Message) => this.receiveMessage(msg),
@@ -38,6 +40,18 @@ export class MessageOperations {
   sendMessage(text: string, repliedId?: number) {
     const currentConvId = this.state.getCurrentConvId();
     if (currentConvId === -1) return;
+
+    // Reject too long message
+    if (text.length > this.MESSAGE_LENGTH_LIMIT) {
+      this.alertService.displayMessageAlert(
+        AlertType.ERROR,
+        this.translate.instant('error.message-too-long.description', { excess: text.length - this.MESSAGE_LENGTH_LIMIT }),
+        undefined,
+        this.translate.instant('error.message-too-long.header')
+      );
+      this.state.ownMessageSent.next(false);
+      return;
+    }
 
     this.api.sendMessage(currentConvId, text, repliedId).subscribe({
       next: (res: any) => {

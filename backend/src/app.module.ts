@@ -5,7 +5,7 @@ import { Conversation } from './domain/conversations/entities/conversation.entit
 import { Participation } from './domain/conversations/entities/participation.entity';
 import { UserConversation } from './domain/conversations/entities/user-conversation.entity';
 import { Account } from './domain/accounts/entities/account.entity';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggedInGuard } from './shared/auth/guards/logged-in.guard';
 import { UserKnownProfile } from './domain/profiles/entities/user-known-profile.entity';
 import { Profile } from './domain/profiles/entities/profile.entity';
@@ -28,7 +28,10 @@ import { PushModule } from './application/push-notifications/push.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting-settings';
 import { ScheduleModule } from '@nestjs/schedule';
-import { OriginFilterGuard } from './shared/origin-filter.guard';
+import { OriginFilterGuard } from './shared/web-security/origin-filter.guard';
+import { ServerErrorLoggingExceptionFilter } from './shared/logging/server-error-filter';
+import { HttpLoggingInterceptor } from './shared/logging/http-logging.interceptor';
+import { LoggingModule } from './shared/logging/logging.module';
 
 
 @Module({
@@ -78,7 +81,7 @@ import { OriginFilterGuard } from './shared/origin-filter.guard';
     MessagesModule,
     PushModule,
     AccountsDomainModule, // for LoggedInGuard
-
+    LoggingModule,
   ],
 
 
@@ -94,7 +97,7 @@ import { OriginFilterGuard } from './shared/origin-filter.guard';
     {
       provide: APP_GUARD,
       useClass: OriginFilterGuard,
-    }
+    },
   ],
 
 

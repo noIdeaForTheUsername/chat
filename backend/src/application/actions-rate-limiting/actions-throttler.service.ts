@@ -1,5 +1,7 @@
 import { HttpException, Injectable } from "@nestjs/common";
 import { RateLimitedAction } from "./rate-limited-action.interface";
+import { LoggingService } from "src/shared/logging/app-logger";
+import { Severity } from "src/shared/logging/logging-enums";
 
 
 interface TrackedAction {
@@ -18,7 +20,9 @@ export class ActionsThrottlerService {
   private readonly requestsPerTrackedActionsCleanup = 2500;
   private requestsSinceLastTrackedActionsCleanup = 0;
 
-  constructor() {}
+  constructor(
+    private logger: LoggingService,
+  ) {}
 
 
   // PUBLIC METHODS
@@ -40,6 +44,7 @@ export class ActionsThrottlerService {
     const now = new Date().getTime();
     let tracked = this.trackedActions.get(key);
     let limitExceeded = false;
+    let limitJustExceeded = false;
     this.handleTrackedActionsCleanup();
 
     // treat as non-existent if expired
@@ -50,12 +55,23 @@ export class ActionsThrottlerService {
     if (tracked) {
       tracked.hits++;
       limitExceeded = (tracked.hits > action.limit);
+      limitJustExceeded = (tracked.hits === action.limit + 1);
     }
     else {
       tracked = {
         hits: 1,
         expires: now + action.ttl,
       }
+    }
+
+    // logs on the first time the limit is exceeded
+    if (limitJustExceeded) {
+      this.logger.securityLog(
+        `Rate limit for action ${action.name} just exceeded for tracker ${tracker} (Limit settings:`
+        + `${action.limit} hits per ${action.ttl / 1000} seconds).`,
+        Severity.MEDIUM,
+        'ActionsThrottlerService'
+      )
     }
     
     this.trackedActions.set(key, tracked);

@@ -9,7 +9,7 @@ export class PushSubscriptionDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  @MaxLength(2000, { message: 'too-long' })
+  @MaxLength(2000)
   fcmToken?: string;
 
 

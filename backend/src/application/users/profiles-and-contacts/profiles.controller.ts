@@ -99,4 +99,5 @@ const USER_DISCOVERY_LIMIT: RateLimitedAction = {
   name: 'USER_DISCOVERY',
   limit: 50,
   ttl: 24 * 3600 * 1000,
+  logExceeded: true,
 }

@@ -2,7 +2,7 @@ import ms from "ms";
 
 // default vals
 let inactiveSessionExpiration = ms('14d');
-let absoluteSessionExpiration = ms('60d');
+let absoluteSessionExpiration = ms('90d');
 
 export default () => {
   try {
@@ -17,6 +17,7 @@ export default () => {
     app: {
       mode: process.env.NODE_ENV ?? 'development',
       port: parseInt(process.env.APP_PORT ?? "3000", 10) || 3000,
+      trustProxy: process.env.TRUST_PROXY?.toLowerCase() === 'true',
     },
 
     auth: {
@@ -56,30 +57,35 @@ export default () => {
     throw new Error("NODE_ENV is set to an invalid value. Allowed values are 'development' and 'production'.");
   }
 
+
   if (process.env.NODE_ENV === "development") {
-    console.warn("Warning: Application is running in development mode. Change the NODE_ENV to 'production' for production environments (security-critical).");
+    console.warn(`Warning: Application is running in development mode. Change the NODE_ENV to 'production'
+      for production environments (security-critical).`);
     return configObject;
   }
+
 
   // Further validation only for production mode
 
   if (!process.env.AUTH_SECRET) {
-    throw new Error("AUTH_SECRET is not defined in environment variables. Please generate a strong secret, set it in .ENV and keep it safe");
+    throw new Error(`AUTH_SECRET is not defined in environment variables. Please generate a strong secret,
+      set it in .ENV and keep it safe`);
   }
   if (!process.env.INACTIVE_SESSION_EXPIRATION) {
-    console.warn(getErrorMsg("INACTIVE_SESSION_EXPIRATION", `a desired session expiration time like '3600' (currently falling back to '${inactiveSessionExpiration}' by default)`));
+    console.warn(getErrorMsg("INACTIVE_SESSION_EXPIRATION", `a desired session expiration time like '3600'
+      (currently falling back to '${inactiveSessionExpiration}' by default)`));
   }
   if (!process.env.ABSOLUTE_SESSION_EXPIRATION) {
-    console.warn(getErrorMsg("ABSOLUTE_SESSION_EXPIRATION", `a desired session expiration time like '3600' (currently falling back to '${absoluteSessionExpiration}' by default)`));
+    console.warn(getErrorMsg("ABSOLUTE_SESSION_EXPIRATION", `a desired session expiration time like '3600'
+      (currently falling back to '${absoluteSessionExpiration}' by default)`));
   }
 
   if (!process.env.COOKIES_SAME_SITE) {
     throw new Error(getErrorMsg("COOKIES_SAME_SITE", "'strict', 'lax' or 'none'"));
   }
   if (configObject.cookies.sameSite == 'none') {
-    console.error(`COOKIES_SAME_SITE set to 'none'. I'm telling you that this is a bad idea.
-      But if you're going for it, please be aware: CORS allows ALL connections in websockets (all files .gateway.ts). This leaves a criticial vulnerability with cookies set to 'none'.
-      For some reason, CORS in @WebSocketGateway cannot use the .env config no matter what I do, so you have to: find each .gateway file, and manually change "origin: YOUR_FRONTEND_URL" there.`);
+    console.warn(`COOKIES_SAME_SITE set to 'none'. This makes no sense for production mode as the app
+      has been built on a single domain - please look into this.`);
   }
   if (!process.env.COOKIES_HTTP_ONLY) {
     throw new Error(getErrorMsg("COOKIES_HTTP_ONLY", "'true' (recommended) or 'false'"));
@@ -93,7 +99,8 @@ export default () => {
     || !configObject.pushNotifications.vapidPrivateKey
     || !configObject.pushNotifications.vapidContact
   ) {
-    console.warn("VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_CONTACT are not all set in environment variables. The push notifications will be disabled.");
+    console.warn(`VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_CONTACT are not all set in
+      environment variables. The push notifications will be disabled.`);
   }
 
   return configObject;

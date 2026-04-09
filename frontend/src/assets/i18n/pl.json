@@ -287,9 +287,9 @@
       "header": "Zajęte",
       "description": "Użytkownik z takim samym następującym polem już istnieje: {{field}}"
     },
-    "too-long": {
-      "header": "Dane zbyt długie",
-      "description": "To, co próbujesz wysłać, jest zbyt długie. Sprawdź wprowadzone dane i spróbuj ponownie."
+    "message-too-long": {
+      "header": "Wiadomość zbyt długa",
+      "description": "Usuń {{excess}} znaków i spróbuj ponownie"
     },
     "notifications-blocked": {
       "header": "Powiadomienia zablokowane przez przeglądarkę",

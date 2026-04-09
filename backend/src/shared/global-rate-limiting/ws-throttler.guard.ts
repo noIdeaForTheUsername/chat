@@ -15,7 +15,6 @@ export class WsThrottlerGuard extends ThrottlerGuard {
       ttl,
       throttler,
       blockDuration,
-      generateKey,
     } = requestProps;
 
     const client = context.switchToWs().getClient<Socket>();
@@ -24,20 +23,6 @@ export class WsThrottlerGuard extends ThrottlerGuard {
     
     const { totalHits, timeToExpire, isBlocked, timeToBlockExpire } =
       await this.storageService.increment(key, ttl, limit, blockDuration, throttler.name ?? "default");
-
-    // debug logs
-    // console.log("--- WsThrottlerGuard");
-    // console.log("client IP: ", ip);
-    // console.log("tracker: ", tracker);
-    // console.log("throttler name: ", throttler.name ?? "default");
-    // console.log("Generated key: ", key);
-    // console.log("totalHits: ", totalHits);
-    // console.log("isBlocked: ", isBlocked);
-    // if (!this.keysSeen.includes(key))
-    //   this.keysSeen.push(key);
-    // console.log("keysSeen: ", this.keysSeen);
-    // console.log("WsThrottlerGuard ---");
-    
 
     if (isBlocked) {
       await this.throwThrottlingException(context, {
@@ -62,81 +47,3 @@ export class WsThrottlerGuard extends ThrottlerGuard {
     return `ws-${suffix}-${name}`;
   }
 }
-
-
-
-
-// OLD WORKING VER:
-// async handleRequest(requestProps: ThrottlerRequest): Promise<boolean> {
-//     const {
-//       context,
-//       limit,
-//       ttl,
-//       throttler,
-//       blockDuration,
-//       getTracker,
-//     } = requestProps;
-
-//     const client = context.switchToWs().getClient<Socket>();
-//     const request = client.request as Socket['request'] & {
-//       session?: { userId?: number | string };
-//     };
-//     const userId = client.data?.userId ?? request?.session?.userId;
-//     const tracker = userId
-//       ? `user:${userId}`
-//       : (await getTracker(request ?? {}, context)) ??
-//         client?.handshake?.address ??
-//         client?.conn?.remoteAddress ??
-//         "unknown";
-
-//     const key = this.generateWsKey(context, tracker, throttler.name ?? 'default');
-//     const { totalHits, timeToExpire, isBlocked, timeToBlockExpire } =
-//       await this.storageService.increment(
-//         key,
-//         ttl,
-//         limit,
-//         blockDuration,
-//         throttler.name ?? "default",
-//       );
-
-//     // Throw an error when the user reached their limit.
-//     if (isBlocked) {
-//       await this.throwThrottlingException(context, {
-//         limit,
-//         ttl,
-//         key,
-//         tracker,
-//         totalHits,
-//         timeToExpire,
-//         isBlocked,
-//         timeToBlockExpire,
-//       });
-//     }
-
-//     return true;
-//   }
-
-//   private generateWsKey(
-//     context: ExecutionContext,
-//     tracker: string,
-//     throttlerName: string,
-//   ): string {
-//     return `ws:${context.getClass().name}:${throttlerName}:${tracker}`;
-//   }
-
-//   protected async throwThrottlingException(
-//     _context: ExecutionContext,
-//     throttlerLimitDetail: ThrottlerLimitDetail,
-//   ): Promise<void> {
-//     throw new WsException({
-//       code: "rate-limit-exceeded",
-//       message: "Too Many Requests",
-//       details: {
-//         limit: throttlerLimitDetail.limit,
-//         ttl: throttlerLimitDetail.ttl,
-//         totalHits: throttlerLimitDetail.totalHits,
-//         timeToExpire: throttlerLimitDetail.timeToExpire,
-//         timeToBlockExpire: throttlerLimitDetail.timeToBlockExpire,
-//       },
-//     });
-//   }

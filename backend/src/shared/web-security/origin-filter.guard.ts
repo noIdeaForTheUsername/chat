@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { IncomingHttpHeaders } from "http";
+import { LoggingService } from "../logging/app-logger";
 
 
 
@@ -10,12 +11,15 @@ export class OriginFilterGuard implements CanActivate {
   private readonly allowedOrigins: string[];
 
   constructor(
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly logger: LoggingService,
   ) {
     this.allowedOrigins = this.configService.getOrThrow<string[]>("allowedOrigins");
     if (this.allowedOrigins.length === 0) {
-      console.warn(`OriginFilterGuard: ALLOWED_ORIGINS is not set or empty in environment variables, so the guard is disabled.
-        Even if the app only makes same-origin requests, set ALLOWED_ORIGINS in .env to enable origin filtering`);
+      this.logger.warn(
+        `ALLOWED_ORIGINS is not set or empty in environment variables, so the guard is disabled.`
+        + `Even if the app only makes same-origin requests, set ALLOWED_ORIGINS in .env to enable origin filtering`,
+        'OriginFilterGuard');
     }
   }
 

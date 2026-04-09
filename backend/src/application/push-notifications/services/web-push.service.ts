@@ -4,6 +4,7 @@ import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { SessionsService } from "src/domain/session/sessions.service";
 import * as webpush from "web-push";
 import { notificationStrings } from "../strings/notification-strings";
+import { LoggingService } from "src/shared/logging/app-logger";
 
 
 @Injectable()
@@ -14,6 +15,7 @@ export class WebPushService {
   constructor(
     private config: ConfigService,
     private sessionsService: SessionsService,
+    private logger: LoggingService,
   ) {
     this.vapidKeys = {
       publicKey: this.config.get<string>("pushNotifications.vapidPublicKey")!,
@@ -57,18 +59,16 @@ export class WebPushService {
 
     // send
     try {
-      console.log("notif sending");
       await webpush.sendNotification(subscription as any, JSON.stringify(payload), {
         TTL: ttl,
         urgency: "high"
       });
     } catch (error) {
-      console.log("err sending");
       // on error remove the subscription
       try {
         await this.sessionsService.removeWebPushSubscription(session.sid);
       } catch (e) {
-        console.error("Failed to remove Web Push subscription from DB after send error: ", e);
+        this.logger.error("Failed to remove Web Push subscription from DB after send error: ", e, 'WebPushService');
       }
     }
   }

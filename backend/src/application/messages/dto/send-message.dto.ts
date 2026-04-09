@@ -3,7 +3,7 @@ import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from "cl
 export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
-  @MaxLength(4000, { message: 'too-long' })
+  @MaxLength(4000)
   text: string;
 
 

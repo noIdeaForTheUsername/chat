@@ -6,9 +6,10 @@ import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { WebPushService } from "./services/web-push.service";
 import { FcmService } from "./services/fcm.service";
 import { SessionsModule } from "src/domain/session/sessions.module";
+import { LoggingModule } from "src/shared/logging/logging.module";
 
 @Module({
-  imports: [SessionsModule],
+  imports: [SessionsModule, LoggingModule],
   providers: [PushService, WebPushService, FcmService],
   controllers: [PushController],
   exports: [PushService]

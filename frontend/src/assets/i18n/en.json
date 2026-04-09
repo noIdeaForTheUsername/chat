@@ -289,9 +289,9 @@
       "header": "Already taken",
       "description": "User with this {{field}} already exists"
     },
-    "too-long": {
-      "header": "Values too long",
-      "description": "What you're trying to send is too long. Please check the input and try again."
+    "message-too-long": {
+      "header": "Message too long",
+      "description": "Remove {{excess}} characters and try again"
     },
     "notifications-blocked": {
       "header": "Notifications blocked by browser",
