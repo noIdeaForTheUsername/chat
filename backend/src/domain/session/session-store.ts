@@ -2,6 +2,7 @@ import session from 'express-session';
 import { Repository } from 'typeorm';
 import { SessionEntity } from 'src/domain/session/entity/session.entity';
 import { ConfigService } from '@nestjs/config';
+import { getSidHash } from 'src/shared/sid-hash';
 
 
 export class TypeOrmSessionStore extends session.Store {
@@ -43,15 +44,21 @@ export class TypeOrmSessionStore extends session.Store {
         sessionData.cookie?.expires ??
         new Date(Date.now() + this.config.get('auth.inactiveExpiration'));
 
+      // Handle columns init (expected to happen only once on session creation)
       let absolutelyExpires = sessionData.absolutelyExpires;
       if (absolutelyExpires === undefined)
         absolutelyExpires = new Date(Date.now() + this.config.get('auth.absoluteExpiration'));
+      let sidHash = sessionData.sidHash;
+      if (!sidHash)
+        sidHash = getSidHash(sid);
+
 
       await this.repo.save({
         ...sessionData,
         sid,
         inactiveExpires,
         absolutelyExpires,
+        sidHash,
       });
 
       callback();
@@ -85,3 +92,4 @@ export class TypeOrmSessionStore extends session.Store {
     }
   }
 }
+

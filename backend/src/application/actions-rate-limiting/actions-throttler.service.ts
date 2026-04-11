@@ -6,7 +6,7 @@ import { Severity } from "src/shared/logging/logging-enums";
 
 interface TrackedAction {
   hits: number;
-  expires: number;  // timestamp
+  expires: number | null;  // timestamp or null for never-automatically-expiring action
 }
 
 
@@ -60,7 +60,7 @@ export class ActionsThrottlerService {
     else {
       tracked = {
         hits: 1,
-        expires: now + action.ttl,
+        expires: action.ttl ? now + action.ttl : null,
       }
     }
 
@@ -68,9 +68,8 @@ export class ActionsThrottlerService {
     if (limitJustExceeded) {
       this.logger.securityLog(
         `Rate limit for action ${action.name} just exceeded for tracker ${tracker} (Limit settings:`
-        + `${action.limit} hits per ${action.ttl / 1000} seconds).`,
+        + ` ${action.limit} hits per ${action.ttl ? action.ttl / 1000: '[infinite]'} seconds).`,
         Severity.MEDIUM,
-        'ActionsThrottlerService'
       )
     }
     
@@ -119,7 +118,8 @@ export class ActionsThrottlerService {
 
     let result = this.trackedActionsCleanupIterator.next();
     while (checks < this.trackedActionsCleanupMaxChecks && !result.done) {
-      if (now > result.value[1].expires) {
+      let expires = result.value[1].expires;
+      if (expires && now > expires) {
         this.trackedActions.delete(result.value[0]);
       }
       checks++;

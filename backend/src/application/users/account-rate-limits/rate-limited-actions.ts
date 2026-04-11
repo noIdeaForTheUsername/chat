@@ -1,7 +1,6 @@
 import { RateLimitedAction } from "src/application/actions-rate-limiting/rate-limited-action.interface";
 
-// Advanced rate limits, besides the standard @Throttle limits
-
+// LOGIN
 
 // tracked by IP and entered phone number
 export const SHORT_LOGIN_LIMIT_PER_ACCOUNT: RateLimitedAction = {  
@@ -31,6 +30,15 @@ export const GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT: RateLimitedAction = {
   logExceeded: true,
 };
 
+// PASSWORD-PROTECTED ACTIONS (like password reset, global logout), tracker by sessionIdHash
+export const PASSWORD_PROTECTED_ACTION_LIMIT_PER_SESSION: RateLimitedAction = {
+  name: 'PASSWORD_PROTECTED_SESSION_ACTION',
+  limit: 10,
+  ttl: null,
+  logExceeded: true,
+}
+
+// ACCOUNT CREATION
 // counts only successful account creations, tracked by IP
 export const ACCOUNT_CREATION_LIMIT: RateLimitedAction = {  
   name: 'ACCOUNT_CREATION',

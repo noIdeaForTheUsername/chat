@@ -10,20 +10,26 @@ import { AppModule } from './app.module';
 import { FcmService } from './application/push-notifications/services/fcm.service';
 import { initSessionMiddleware } from './application/users/sessions/session.middleware';
 import { LoggingService } from './shared/logging/app-logger';
+import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 
 
 async function bootstrap() {
+
   // TypeORM Transactional Context
   initializeTransactionalContext();
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
+
+  // Config and trust proxy
   const config = app.get(ConfigService);
   if (config.get('app.trustProxy'))
     app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
+  // Logging
   app.useLogger(app.get(LoggingService));
+  // HttpLogging middleware in app.module in configure()
 
   // Validation
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory(errors) {
@@ -37,11 +43,7 @@ async function bootstrap() {
   const sessionMiddleware = await initSessionMiddleware(config);
   app.use(sessionMiddleware);
 
-  // Security headers - TODO: MOVE TO NGINX
-  // const securityHeadersMiddleware = app.get(SecurityHeadersMiddleware);
-  // app.use(securityHeadersMiddleware);
-
-  // STATIC
+  // static
   app.use('/admin', expressStatic(join(__dirname, '..', 'admin-interface')));  // admin interface
   app.use('/android-download', expressStatic(join(__dirname, '..', 'android-download'), {  // android app .apk
     setHeaders(res) {

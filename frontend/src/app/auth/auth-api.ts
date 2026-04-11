@@ -34,8 +34,8 @@ export class AuthBackendApi {
     return this.http.post<null>('/auth/logout', {});
   }
 
-  globalLogout(): Observable<null> {
-    return this.http.post<null>('/auth/global-logout', {});
+  globalLogout(password: string): Observable<null> {
+    return this.http.post<null>('/auth/global-logout', { password });
   }
 
   editAccount(updatedFieldsObject: Partial<UserAccount>) {

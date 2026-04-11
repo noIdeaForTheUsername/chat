@@ -30,6 +30,13 @@ export class SessionsService {
     });
   }
 
+  async destroySession(sidOrSidHash: string) {
+    const result = await this.sessions.delete([
+      { sid: sidOrSidHash },
+      { sidHash: sidOrSidHash }
+    ]);
+  }
+
   async removeWebPushSubscription(sessionId: string) {
     return await this.sessions.update(
       { sid: sessionId },

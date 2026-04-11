@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, Injectable } from "@nestjs/common";
 import { Transactional } from "typeorm-transactional";
 import { ModifyAccountDto } from "./dto/modify-account.dto";
 import { AccountsDomainService } from "src/domain/accounts/accounts.service";
@@ -11,6 +11,9 @@ import { PushNotifcationEvent } from "src/shared/events/push-notification.event"
 import { ConfigService } from "@nestjs/config";
 import { PasswordChangeEvent } from "src/shared/events/user-global-logout.event";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
+import { LoggingService } from "src/shared/logging/app-logger";
+import { Severity } from "src/shared/logging/logging-enums";
+import { AccountRateLimitsService } from "../account-rate-limits/account-rate-limits.service";
 
 @Injectable()
 export class AccountsService {
@@ -19,7 +22,9 @@ export class AccountsService {
     private accounts: AccountsDomainService,
     private profiles: ProfilesDomainService,
     private eventEmitter: EventEmitter2,
-    private config: ConfigService
+    private config: ConfigService,
+    private logger: LoggingService,
+    private accountRateLimiter: AccountRateLimitsService,
   ) {}
 
   // GETTERS
@@ -45,24 +50,28 @@ export class AccountsService {
       await this.profiles.createProfile(newAccount.id, name, bio);
 
       // Notify administrators
-      this.notifyAdministration(
-        ["accountCreatedHeader"],
-        ["accountCreatedMessage", phoneNumber],
-        "account-creation"
-      );
-      
+      const admins = await this.accounts.findAdmins(true);
+      for (const admin of admins) {
+        const event: PushNotifcationEvent = {
+          userId: admin.id,
+          header: ["accountCreatedHeader"],
+          message: ["accountCreatedMessage", phoneNumber],
+          tag: "account-creation",
+        };
+        this.eventEmitter.emit("pushNotification", event);
+      }
+
       return newAccount;
+
     } catch (err) {
       this.handleFieldExistingError(err);
       throw err; // to make TS happy (handleFieldExistingError should throw an exception ALWAYS anyways)
     }
   }
 
-  @Transactional()
-  async modifyAccount(session: SessionEntity, dto: ModifyAccountDto) {
-    const callerId = session.userId;
-    const found = await this.accounts.findExistingById(callerId);
-    await verifyPassword(found, dto.currentPassword);
+  async modifyAccount(account: Account, session: SessionEntity, dto: ModifyAccountDto) {
+    this.accountRateLimiter.handlePasswordProtectedActionRateLimits(session);
+    await verifyPassword(account, dto.currentPassword);
 
     let toUpdate: Partial<Account> = {
       phoneNumber: dto.phoneNumber,
@@ -72,15 +81,29 @@ export class AccountsService {
     if (dto.password) {
       let newPasswordHash = await hashPassword(dto.password);
       toUpdate.passwordHash = newPasswordHash;
-      this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(callerId, session.sid));
+      this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(account.id, session.sid));
     }
 
     try {
-      await this.accounts.update(callerId, toUpdate);
+      await this.accounts.update(account.id, toUpdate);
+      if (account.admin) {
+        this.logger.securityLog(
+          `Administrator id=${account.id} has changed their account data from sessionIdHash: ${session.sidHash}`,
+          Severity.HIGH, "AccountsService");
+      }
+      else {
+        this.logger.securityLog(
+          `User id=${account.id} has changed their account data from sessionIdHash: ${session.sidHash}`,
+          Severity.MEDIUM, "AccountsService");
+      }
     }
     catch (err) {
       this.handleFieldExistingError(err);
       throw err;
+    }
+    finally {
+      // If this try-catch block was reached then the password was correct
+      this.accountRateLimiter.resetPasswordProtectedActionRateLimits(session);
     }
   }
 
@@ -99,42 +122,48 @@ export class AccountsService {
         tag: "account-activation",
         // clickUrl: "/chats"
       };
+      this.logger.securityLog(
+        `Admin id=${callerAdminId} has activated account id=${changedUserId}`,
+        Severity.MEDIUM, "AccountsService");
       this.eventEmitter.emit("pushNotification", event);
     }
   }
 
-  async changeAccountAdminStatus(callerAccount: Account, callerPasswordConfirm: string,
+  async changeAccountAdminStatus(callerAccount: Account, callerSession: SessionEntity, callerPasswordConfirm: string,
     changedUserId: number, newIsAdmin: boolean) {
+
+    this.accountRateLimiter.handlePasswordProtectedActionRateLimits(callerSession);
+
     if (callerAccount.id === changedUserId)
       throw new BadRequestException("cannot-change-own-admin-status");
     if (!await verifyPassword(callerAccount, callerPasswordConfirm)) {
       throw new ForbiddenException('credentials-invalid');
     }
+
     await this.accounts.changeAdminStatus(changedUserId, newIsAdmin);
+
+    this.accountRateLimiter.resetPasswordProtectedActionRateLimits(callerSession);
+    this.logger.securityLog(
+      `User id=${callerAccount.id} has changed admin status for account id=${changedUserId} to ${newIsAdmin ? 'true' : 'false'}`,
+      Severity.CRITICAL, "AccountsService");
   }
 
-  async changeAccountPassword(callerAccount: Account, callerPasswordConfirm: string,
+  async changeAccountPassword(callerAccount: Account, callerSession: SessionEntity, callerPasswordConfirm: string,
     changedUserId: number, newPassword: string) {
+
+    this.accountRateLimiter.handlePasswordProtectedActionRateLimits(callerSession);
 
     const verified = await verifyPassword(callerAccount, callerPasswordConfirm);
     if (!verified) throw new ForbiddenException('credentials-invalid');
 
     const newPasswordHash = await hashPassword(newPassword);
     await this.accounts.changePassword(changedUserId, newPasswordHash);
-    this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(changedUserId, undefined));
-  }
 
-  async notifyAdministration(messageHeader: string[], messageBody: string[], tag?: string) {
-    const admins = await this.accounts.findAdmins(true);
-    for (const admin of admins) {
-      const event: PushNotifcationEvent = {
-        userId: admin.id,
-        header: messageHeader,
-        message: messageBody,
-        tag: tag,
-      };
-      this.eventEmitter.emit("pushNotification", event);
-    }
+    this.accountRateLimiter.resetPasswordProtectedActionRateLimits(callerSession);
+    this.eventEmitter.emit("passwordChangeEvent", new PasswordChangeEvent(changedUserId, undefined));
+    this.logger.securityLog(
+      `User id=${callerAccount.id} has changed password for account id=${changedUserId}`,
+      Severity.MEDIUM, "AccountsService");
   }
 
   private handleFieldExistingError(err: any) {

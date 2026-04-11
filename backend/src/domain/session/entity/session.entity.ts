@@ -35,4 +35,7 @@ export class SessionEntity {
 
   @Column({ type: 'character', length: 2, nullable: true, name: "language"})
   language: string | null;
+
+  @Column({ type: "text", nullable: true, name: "sid_hash"})
+  sidHash: string | null;
 }

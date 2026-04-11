@@ -249,7 +249,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   onScroll(event: CustomEvent<ScrollDetail>) {
     // Handle message loading
     if (!this.messageLoading()) {
-      if (event.detail.scrollTop < 10 && event.detail.deltaY < 0) this.onInfiniteScrollUp();  // this should set messageLoading to true, preventing the event from calling infinitely
+      // this should set messageLoading to true, preventing the event from calling infinitely
+      if (event.detail.scrollTop < 10 && event.detail.deltaY < 0) this.onInfiniteScrollUp();
       else if (this.getScrollPxAwayFromBottom() <= 10 && event.detail.deltaY > 0) this.onInfiniteScrollDown();
     }
 

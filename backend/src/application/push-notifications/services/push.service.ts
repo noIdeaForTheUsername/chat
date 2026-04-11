@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { OnEvent } from "@nestjs/event-emitter";
+import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
@@ -21,6 +21,7 @@ export class PushService {
     private sessionsService: SessionsService,
     private webPushService: WebPushService,
     private fcmService: FcmService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
 
@@ -28,7 +29,7 @@ export class PushService {
   async handlePushNotificationEvent(payload: PushNotifcationEvent) {
     await this.sendNotificationsToUser(payload);
   }
-  
+
 
   async sendNotificationsToUser(payload: PushNotifcationEvent)
   {

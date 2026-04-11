@@ -14,25 +14,24 @@ export class LoggingService extends ConsoleLogger {
   }
 
   // Logs client information, request details and the status it returned (HTTP requests only)
-  httpLog(argumentsHost: ArgumentsHost, responseStatusCode: number) {
-    if (argumentsHost.getType() !== 'http') return;
+  httpLog(req: Request, responseStatusCode: number) {
 
-    const req: Request = argumentsHost.switchToHttp().getRequest();
     const session: SessionEntity = req.session as any;
     let sessionInfo = "No session";
-    if (session?.userId) {
-      sessionInfo = `UserId=${session.userId}`;
+    if (session?.userId && session?.sidHash) {
+      sessionInfo = `UserId: ${session.userId ?? "noUserId"}; SidHash: ${session.sidHash ?? "noHash"}`;
     }
     
-    const message = `${req.ip} ${req.headers["user-agent"] ?? "Unknown User agent"} | ${sessionInfo} | `
-      + `${req.method} ${req.url} -> ${responseStatusCode}`;
+    const message = `${req.method} ${req.url} -> ${responseStatusCode}`
+    + `\nClient: ${req.ip} ${req.headers["user-agent"] ?? "Unknown User agent"} | ${sessionInfo}`
     this.log(message, 'HTTP');
   }
 
   // Logs security-related events
   securityLog(message: string, severity: Severity, context?: string) {
     const severityStr = Severity[severity];
-    const consoleContext = `SECURITY LOG (Severity: ${severity} - ${severityStr})`;
+    const contextStr = context ? `:${context}` : '';
+    const consoleContext = `SECURITY${contextStr} | Severity:${severityStr}`;
     
     if (severity <= Severity.MEDIUM)
       this.log(message, consoleContext);
@@ -40,7 +39,7 @@ export class LoggingService extends ConsoleLogger {
       this.warn(message, consoleContext);
   }
 
-  internalServerError(error: any, argumentsHost: ArgumentsHost, context?: string) {
+  internalServerError(error: any, context?: string) {
     const consoleMessage = `-INTERNAL SERVER ERROR-`;
     this.error(consoleMessage, error, context ?? 'ContextNotProvided');
   }

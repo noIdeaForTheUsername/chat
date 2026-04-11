@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Conversation } from './domain/conversations/entities/conversation.entity';
@@ -30,7 +30,7 @@ import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting
 import { ScheduleModule } from '@nestjs/schedule';
 import { OriginFilterGuard } from './shared/web-security/origin-filter.guard';
 import { ServerErrorLoggingExceptionFilter } from './shared/logging/server-error-filter';
-import { HttpLoggingInterceptor } from './shared/logging/http-logging.interceptor';
+import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 import { LoggingModule } from './shared/logging/logging.module';
 
 
@@ -87,6 +87,11 @@ import { LoggingModule } from './shared/logging/logging.module';
 
   providers: [
     {
+      provide: APP_FILTER,
+      useClass: ServerErrorLoggingExceptionFilter,
+    },
+    
+    {
       provide: APP_GUARD,
       useClass: LoggedInGuard,
     },
@@ -102,6 +107,12 @@ import { LoggingModule } from './shared/logging/logging.module';
 
 
 })
-export class AppModule {
+export class AppModule implements NestModule{
   constructor(private dataSource: DataSource, private config: ConfigService) {} 
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(HttpLoggingMiddleware)
+      .forRoutes("*");
+  }
 }

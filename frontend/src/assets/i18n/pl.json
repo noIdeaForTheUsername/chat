@@ -144,6 +144,7 @@
       "modify-account": "Modyfikuj dane konta",
       "logout": "Wyloguj się",
       "global-logout": "Wyloguj się ze wszystkich urządzeń",
+      "password-confirm": "Aby potwierdzić, wpisz swoje hasło. Jeśli nie pamiętasz hasła, skontaktuj się z administratorem",
       "global-logout-success": "Zostałeś wylogowany ze wszystkich innych urządzeń. Jeśli chcesz wylogować się również z tego urządzenia, kliknij przycisk zwykłego wylogowania.",
       "install-pwa": "Zainstaluj aplikację webową",
       "install-android": "Aplikacja Androida",

@@ -21,7 +21,7 @@ export class ServerErrorLoggingExceptionFilter extends BaseExceptionFilter {
     if (!(exception instanceof HttpException)
       || internalServerError
     ) {
-      this.logger.internalServerError(exception, host);
+      this.logger.internalServerError(exception);
       if (internalServerError) {  // Override the message for internal server errors
         (exception as any).getResponse().message = "Internal Server Error";
       }

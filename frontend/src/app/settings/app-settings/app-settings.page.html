@@ -18,7 +18,7 @@
         <app-item-button [text]="'page.app-settings.logout' | translate"
           icon="log-out" iconColor="danger" (click)="authService.logout()"/>
         <app-item-button [text]="'page.app-settings.global-logout' | translate"
-          icon="globe" iconColor="danger" (click)="promptGlobalLogout()"/>
+          icon="globe" iconColor="danger" id="present-global-logout-confirm"/>
     </ion-item-group>
 
     <!-- APP -->
@@ -47,12 +47,16 @@
           <ion-select-option value="english">English</ion-select-option>
         </app-item-select>
     </ion-item-group>
-
-    <!-- DANGER ZONE -->
-    <!-- <ion-item-group>
-      <ion-item-divider><ion-label>{{"common.danger-zone" | translate}}</ion-label></ion-item-divider> -->
-      <!-- delete all messages -->
-      <!-- <app-item-button [text]="'page.app-settings.delete-messages' | translate" icon="trash" iconColor="danger"/>
-    </ion-item-group> -->
   </div>
+
+  <!-- Global logout password prompt -->
+  <ion-alert
+    trigger="present-global-logout-confirm"
+    [header]="'page.app-settings.global-logout' | translate"
+    [message]="'page.app-settings.password-confirm' | translate"
+    [buttons]="globalLogoutAlertButtons"
+    [inputs]="globalLogoutInputs"
+    (didDismiss)="onGlobalLogoutAlertDismiss($event)"
+  ></ion-alert>
+
 </ion-content>

@@ -69,7 +69,15 @@ export class AuthController {
 
   @Post('global-logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async globalLogout(@Session() session: SessionEntity) {
-    await this.authService.globalLogout(session.userId, session.sid);
+  @Throttle(SENSITIVE_RATE_LIMIT)
+  async globalLogout(
+    @Req() req: Request,
+    @Body("password") password: string,
+  ) {
+    if (typeof password != 'string')
+      throw new BadRequestException('password must be a string');
+    
+    await this.authService.globalLogoutWithPasswordCheck(
+      req, password);
   }
 }

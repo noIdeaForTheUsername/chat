@@ -96,7 +96,7 @@ export class AuthService {
     this.api.login(body).subscribe({
       next: (res) => {
         this.processing.set(false);
-        window.location.replace("/");
+        window.location.reload();
       },
       error: (err) => this.handleLoginError(err)
     });
@@ -135,8 +135,8 @@ export class AuthService {
     });
   }
 
-  globalLogout() {
-    this.api.globalLogout().subscribe({
+  globalLogout(password: string) {
+    this.api.globalLogout(password).subscribe({
       next: () => {
         setTimeout(() => {
           this.alertService.displayMessageAlert(
@@ -145,8 +145,11 @@ export class AuthService {
           );
         }, 200);
       },
-      error: () => {
-        this.alertService.displayError('logout-failed');
+      error: (err) => {
+        if (err.status == 403)
+          this.alertService.displayError('credentials-invalid');
+        else
+          this.alertService.displayError(err.status);
       }
     });
   }

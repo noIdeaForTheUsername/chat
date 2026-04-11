@@ -11,12 +11,15 @@ import { SetAdminStatusDto } from "./dto/set-admin.dto";
 import { UserAccount } from "src/shared/auth/decorators/account.decorator";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { ChangePasswordDto } from "./dto/admin-change-password.dto";
+import { Throttle } from "@nestjs/throttler";
+import { SENSITIVE_RATE_LIMIT } from "src/shared/global-rate-limiting/rate-limiting-settings";
 
 // User account creation in auth module
 // The accounts controller handles actions related to account data modifications
 // while the auth controller handles login, logout, registration and GET /me
 
 @Controller("accounts")
+@Throttle(SENSITIVE_RATE_LIMIT)
 export class AccountsController {
 
   constructor(private readonly accountsService: AccountsService) {}
@@ -25,13 +28,16 @@ export class AccountsController {
 
   @Patch("me")
   @HttpCode(HttpStatus.OK)
-  async modifyAccount(@Session() session: SessionEntity, @Body() body: ModifyAccountDto): Promise<AccountResponseDto> {
+  async modifyAccount(
+    @UserAccount() account: Account,
+    @Session() session: SessionEntity,
+    @Body() body: ModifyAccountDto): Promise<AccountResponseDto> {
     if (body.password !== body.passwordRepeat)
       throw new BadRequestException("passwords-different");
 
     return plainToInstance(
       AccountResponseDto,
-      await this.accountsService.modifyAccount(session, body)
+      await this.accountsService.modifyAccount(account, session, body)
     );
   }
 
@@ -60,10 +66,11 @@ export class AccountsController {
   @UseGuards(AdminGuard)
   async changeAccountPassword(
     @UserAccount() adminAccount: Account,
+    @Session() adminSession: SessionEntity,
     @Body() body: ChangePasswordDto,
     @Param('id', ParseIntPipe) userId: number
   ) {
-    await this.accountsService.changeAccountPassword(adminAccount, body.adminPassword, userId, body.newPassword);
+    await this.accountsService.changeAccountPassword(adminAccount, adminSession, body.adminPassword, userId, body.newPassword);
   }
 
 
@@ -71,9 +78,10 @@ export class AccountsController {
   @Patch(":id/admin")
   async changeAccountAdminStatus(
     @UserAccount() adminAccount: Account,
+    @Session() adminSession: SessionEntity,
     @Body() body: SetAdminStatusDto, 
     @Param('id', ParseIntPipe) userId: number)
   {
-    await this.accountsService.changeAccountAdminStatus(adminAccount, body.password, userId, body.isAdmin);
+    await this.accountsService.changeAccountAdminStatus(adminAccount, adminSession, body.password, userId, body.isAdmin);
   }
 }

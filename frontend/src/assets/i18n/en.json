@@ -144,6 +144,7 @@
       "modify-account": "Modify account data",
       "logout": "Log out",
       "global-logout": "Log out from all devices",
+      "password-confirm": "To confirm, please enter your password. If you don't remember your password, contact the administrator.",
       "global-logout-success": "You have been logged out from all other devices. If you want to log out from this device as well, click the regular logout button.",
       "install-pwa": "Install the web app",
       "install-android": "Android app",

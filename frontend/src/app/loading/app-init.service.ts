@@ -100,9 +100,9 @@ export class AppInitService {
   }
 
   private isOnOutsidePage(): boolean {
-    const hashPath = window.location.hash;
+    const route = this.router.url.replace('#', '');
 
-    return this.outsidePages.includes(hashPath)
-      || this.outsidePages.includes(hashPath.replace('#', ''));
+    return this.outsidePages.includes(route)
+      /*|| this.outsidePages.includes(route.replace('#', ''))*/;
   }
 }
