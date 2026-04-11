@@ -17,6 +17,7 @@ export class Message {
   @Column()
   timestamp: Date;
 
-  @Column({ name: "replied_id", type: "int", nullable: true, transformer: { to: _ => _, from: (value) => Number(value) } })
+  @Column({ name: "replied_id", type: "int", nullable: true, transformer: { to: _ => _, from: (value) =>
+    typeof value === "string" ? Number(value) : value } })
   repliedId: number | null;
 }

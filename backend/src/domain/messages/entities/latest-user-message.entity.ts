@@ -18,7 +18,8 @@ export class LatestUserMessage {
   @ViewColumn()
   timestamp: Date;
 
-  @ViewColumn({ name: "replied_id", transformer: { to: _ => _, from: (value) => Number(value) } })
+  @ViewColumn({ name: "replied_id", transformer: { to: _ => _, from: (value) =>
+    typeof value === "string" ? Number(value) : value } })
   repliedId?: number;
 
   @ViewColumn({ name: "user_id" })

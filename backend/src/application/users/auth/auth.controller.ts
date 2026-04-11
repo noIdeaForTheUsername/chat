@@ -1,26 +1,21 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Post, Req, Res, Session } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { BadRequestException, Body, Controller, Get, HttpCode, HttpStatus, InternalServerErrorException, Post, Req, Res } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
+import { plainToInstance } from 'class-transformer';
 import type { Request, Response } from 'express';
+import { Account } from 'src/domain/accounts/entities/account.entity';
+import { UserAccount } from 'src/shared/auth/decorators/account.decorator';
 import { PublicAccess } from 'src/shared/auth/decorators/public-access.decorator';
+import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
+import { AccountResponseDto } from '../accounts/dto/account-response.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { plainToInstance } from 'class-transformer';
-import { AccountResponseDto } from '../accounts/dto/account-response.dto';
-import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
-import { SessionEntity } from 'src/domain/session/entity/session.entity';
-import { Throttle } from '@nestjs/throttler';
-import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
-import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
-import { UserAccount } from 'src/shared/auth/decorators/account.decorator';
-import { Account } from 'src/domain/accounts/entities/account.entity';
 
 
 @Controller("auth")
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly config: ConfigService
   ) {}
 
   @Get('me')
@@ -28,10 +23,6 @@ export class AuthController {
     return plainToInstance(AccountResponseDto, account);
   }
 
-  @Post("test")
-  async test() {
-    throw new InternalServerErrorException("EA");
-  }
 
   // AUTHENTICATION OPERATIONS
 

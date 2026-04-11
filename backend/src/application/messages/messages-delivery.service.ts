@@ -37,7 +37,7 @@ export class MessagesDeliveryService {
   // Prepares the payload and sends an event to handle by the push notification service
   private async sendMessagePush(receiverId: number, payload: MessageSentEvent) {
     const conversation = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
-    if (!conversation || !conversation.notifications) return; // user has disabled notifications for this conversation
+    if (!conversation) return;
 
     const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
     if (!profile) return;

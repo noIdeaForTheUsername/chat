@@ -37,7 +37,7 @@ import { RefreshService } from '@src/app/loading/refresh.service';
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConversationsPage implements OnInit, OnDestroy {
+export class ConversationsPage implements OnInit {
 
   // Services
   private conversationService = inject(ConversationService);
@@ -45,7 +45,6 @@ export class ConversationsPage implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   protected authService = inject(AuthService);
   private alertService = inject(AlertService);
-  private router = inject(Router);
   protected selectionService = inject(SelectionService);
   private notificationsService = inject(NotificationsService);
   protected refreshService = inject(RefreshService);
@@ -72,8 +71,7 @@ export class ConversationsPage implements OnInit, OnDestroy {
   protected selectionMode: Signal<boolean> = this.selectionService.selectionMode;
   protected selectedIds: Signal<number[]> = this.selectionService.selectedIds;
   protected showBlockedConversations = signal(false);
-  protected lastConvRefresh = Date.now();
-  protected eventListener?: EventListener;
+
 
   // Notifications
   protected notificationsPermission = signal<string>("default");
@@ -98,27 +96,9 @@ export class ConversationsPage implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    // this.notificationsPermission.set(Notification.permission);
     this.notificationsPermission.set(await this.notificationsService.getNotificationsStatus());
-
-    this.eventListener = () => { 
-      if (document.visibilityState === "visible")
-        this.refreshIfNotRefreshedRecently();
-    };
-    document.addEventListener("visibilitychange", this.eventListener);
-  }
-  ngOnDestroy() {
-    if (this.eventListener)
-      document.removeEventListener("visibilitychange", this.eventListener);
   }
 
-  private refreshIfNotRefreshedRecently() {
-    if (this.lastConvRefresh < Date.now() - 1000 * 30) {
-      this.conversationService.loadConversations().subscribe();
-      this.lastConvRefresh = Date.now();
-      // this.refreshService.refreshData(undefined, true);
-    }
-  }
   
   // Filters by both search and blocked status, and then sorts
   private getFilteredConversations(conversations: ConversationView[]): ConversationView[] {

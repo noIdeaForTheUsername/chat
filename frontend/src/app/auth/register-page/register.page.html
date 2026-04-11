@@ -18,14 +18,14 @@
     <div class="floating-input">
       <label>
         <p class="highlighted-b" [innerHTML]="('page.register.phone-input' | translate) + ':'"></p>
-        <input formControlName="phoneNumber">
+        <input formControlName="phoneNumber" maxlength="17">
       </label>
     </div>
 
     <div class="floating-input">
       <label>
         <p>{{ 'page.register.name-input' | translate }}:</p>
-        <input formControlName="name">
+        <input formControlName="name" maxlength="60">
       </label>
     </div>
 
@@ -36,13 +36,13 @@
     <div class="floating-input">
       <label>
         <p>{{ 'profile.password' | translate }}:</p>
-        <input formControlName="password" type="password">
+        <input formControlName="password" type="password" maxlength="100">
       </label>
     </div>
     <div class="floating-input">
       <label>
         <p>{{ 'profile.password-repeat' | translate }}:</p>
-        <input formControlName="passwordRepeat" type="password">
+        <input formControlName="passwordRepeat" type="password" maxlength="100">
       </label>
     </div> 
     <app-password-strength
@@ -56,7 +56,7 @@
     <div class="floating-input">
       <label>
         <p>{{ 'page.register.bio-input' | translate }}:</p>
-        <textarea formControlName="bio" placeholder="{{ 'profile.user-bio-placeholder' | translate }}"></textarea>
+        <textarea formControlName="bio" placeholder="{{ 'profile.user-bio-placeholder' | translate }}" maxlength="500"></textarea>
       </label>
     </div>
 

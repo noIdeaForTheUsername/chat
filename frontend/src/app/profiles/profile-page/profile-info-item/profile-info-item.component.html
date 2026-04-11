@@ -13,6 +13,7 @@
     @if (editable()) {
       <ion-input
         [type]="type()"
+        maxlength="60"
         class="editable"
         [placeholder]="'common.empty' | translate"
         [value]="value()"

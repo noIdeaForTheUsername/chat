@@ -4,12 +4,12 @@ import { EmptyToNull } from 'src/shared/validation/empty-to-null';
 export class PatchProfileDto {
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(60)
   name?: string;
 
   @EmptyToNull()
   @IsOptional()
   @IsString()
-  @MaxLength(2000)
+  @MaxLength(500)
   bio?: string | null;
 }

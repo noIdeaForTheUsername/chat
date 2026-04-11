@@ -33,9 +33,12 @@ export class ProfilesController {
     // extra per-userId rate limiting
     this.actionsThrottler.incrementAndThrow(USER_DISCOVERY_LIMIT, callerId.toString());
     
-    // make sure the search isn't empty
+    // basic search query validation
     if (typeof search !== 'string')
       throw new BadRequestException('search-empty');
+    if (search.length > 100)
+      throw new BadRequestException('search-too-long');
+    
     search = search.trim();
     if (!search || search.length === 0) {
       throw new BadRequestException('search-empty');
@@ -75,6 +78,7 @@ export class ProfilesController {
     @Body('nick') nick: string,
   ) {
     if (typeof nick !== 'string') throw new BadRequestException('nick must be a string');
+    if (nick.length > 60) throw new BadRequestException('nick too long');
     return await this.contactsService.updateContact(callerId, userId, { nick });
   }
 

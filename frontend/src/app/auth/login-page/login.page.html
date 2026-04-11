@@ -13,12 +13,12 @@
 
       <div class="floating-input">
         <label for="phoneNumber"><p class="highlighted-b" [innerHTML]="'page.login.phone-input' | translate"></p></label>
-        <input formControlName="phoneNumber" id="phoneNumber" name="username" type="tel" placeholder="+48 123 123 123">
+        <input formControlName="phoneNumber" id="phoneNumber" name="username" type="tel" placeholder="+48 123 123 123" maxlength="17">
       </div>
       
       <div class="floating-input">
         <label for="password"><p>{{ 'profile.password' | translate }}:</p></label>
-        <input formControlName="password" id="password" name="password" type="password">
+        <input formControlName="password" id="password" name="password" type="password" maxlength="100">
         <p>{{ 'profile.forgot-password-hint' | translate }}</p>
       </div>
 

@@ -18,8 +18,10 @@ export class ReplyPreviewManager {
 
   public loadMessagePreviews(currentConvId: number, highestDisplayedId: number, lowestDisplayedId: number) {
     const repliedIds = this.getDisplayedMessages()
-      .filter(msg => msg.repliedId !== undefined)
+      .filter(msg => !!msg.repliedId)  // reject null/falsy values
       .map(msg => msg.repliedId!);
+
+    console.log("Replied ids: ", repliedIds);
 
     const repliedIdsExistingLocally: number[] = [];
     const idsToLoad: number[] = [];
@@ -39,6 +41,7 @@ export class ReplyPreviewManager {
 
     this.addPreviews(messagesWithRepliedTexts);
 
+    console.log("Ids to load: ", idsToLoad);
     if (idsToLoad.length > 0) {
       this.api.getMessagesByIds(idsToLoad, currentConvId).subscribe({
         next: (msgs: Message[]) => this.addPreviews(msgs),

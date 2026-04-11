@@ -65,6 +65,7 @@
           @if (editMode()) {  <!-- edit mode -->
             <ion-textarea
             [autoGrow]="true"
+            maxlength="500"
             (ionChange)="onFieldInput('bio', $event.target.value)"
             [value]="p.bio"
             [placeholder]="`profile.user-bio-placeholder` | translate">
