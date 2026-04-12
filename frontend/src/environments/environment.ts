@@ -11,16 +11,17 @@ export const environment = {
   // capacitorSocketIoUrl: "https://devchat.serwerigora.com",
 
   // Dev configuration
-  // apiUrl: "http://192.168.1.16:3000",
-  // socketIoUrl: "http://192.168.1.16:3000",
-  // capacitorApiUrl: "http://192.168.1.16:3000",
-  // capacitorSocketIoUrl: "http://192.168.1.16:3000",
+  apiUrl: "http://192.168.1.16:3000",
+  socketIoUrl: "http://192.168.1.16:3000",
+  capacitorApiUrl: "http://192.168.1.16:3000",
+  capacitorSocketIoUrl: "http://192.168.1.16:3000",
 
   // Production configuration
-  apiUrl: "/api",
-  capacitorApiUrl: "https://chat.serwerigora.com/api",
-  socketIoUrl: "",
-  capacitorSocketIoUrl: "https://chat.serwerigora.com",
+  // apiUrl: "/api",
+  // capacitorApiUrl: "https://chat.serwerigora.com/api",
+  // socketIoUrl: "",
+  // capacitorSocketIoUrl: "https://chat.serwerigora.com",
+  
   socketIoPath: "/socket.io",
 
   vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
