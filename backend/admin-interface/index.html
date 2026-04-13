@@ -4,13 +4,68 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin panel</title>
+  <script>
+    // --------------------------------------------------- INPUT API URL HERE ---------------------------------------------------
+    var apiUrl = "";
+
+    if (apiUrl.endsWith("/")) {
+      apiUrl = apiUrl.slice(0, -1);
+    }
+  </script>
 </head>
 <body>
-  <form action="/auth/login" method="POST">
-    Login, email or phone number: <input type="tel" name="phoneNumber"/><br/>
-    Password: <input type="password" name="password"/><br/>
-    <input type="submit" value="Log in">
+
+  <button id="logoutBtn">Log out</button><br/><br/>
+  
+  <form>
+    Login, email or phone number: <input type="tel" id="loginPhoneNumber" name="phoneNumber"/><br/>
+    Password: <input type="password" id="loginPassword" name="password"/><br/>
+    <button id="loginBtn">Log in</button>
   </form>
+  <script>
+    document.getElementById("loginBtn").addEventListener("click", (event) => {
+      event.preventDefault();
+      const phoneNumber = document.getElementById("loginPhoneNumber").value;
+      const password = document.getElementById("loginPassword").value;
+
+      fetch(apiUrl + "/auth/login", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ phoneNumber, password }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          alert("Logged in successfully");
+          window.location.reload();
+        } else if (res.status === 403) {
+          alert("Invalid credentials");
+        } else if (res.status === 429) {
+          alert("Too many login attempts - please wait and try again");
+        } else {
+          alert("Error logging in\n" + JSON.stringify(res));
+        }
+      });
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      fetch(apiUrl + "/auth/logout", {
+        method: "POST",
+        credentials: "include"
+      })
+      .then((res) => {
+        if (res.status >= 200 && res.status < 400) {
+          alert(`Logged out successfully (status: ${res.status})`);
+          window.location.reload();
+        } else {
+          alert("Error logging out. Clear the browser cookies.\n" + JSON.stringify(res));
+        }
+      });
+    });
+  </script>
+  
   
   <hr>
 
@@ -24,7 +79,7 @@
       if (!answer) return;
 
       const accountId = document.getElementById("accountId").value;
-      fetch(`/accounts/${accountId}/activated/`, {
+      fetch(apiUrl + `/accounts/${accountId}/activated/`, {
         method: "PATCH",
         credentials: "include",
         body: JSON.stringify({ activated: true }),
@@ -72,7 +127,7 @@
         return;
       }
 
-      fetch(`/profiles/search?q=${encodeURIComponent(query)}`, { credentials: "include" })
+      fetch(apiUrl + `/profiles/search?q=${encodeURIComponent(query)}`, { credentials: "include" })
         .then(async (res) => {
           if (!res.ok) {
             const message = res.status === 401
@@ -129,7 +184,7 @@
         return;
       }
 
-      fetch(`/accounts/${encodeURIComponent(userId)}/password`, {
+      fetch(apiUrl + `/accounts/${encodeURIComponent(userId)}/password`, {
         method: "PATCH",
         credentials: "include",
         body: JSON.stringify({ adminPassword, newPassword }),
@@ -168,7 +223,7 @@
 
 
   <script>
-    fetch("/accounts/unactivated", { credentials: "include" })
+    fetch(apiUrl + "/accounts/unactivated", { credentials: "include" })
       .then((res) => res.json())
       .then((accounts) => {
         const list = document.getElementById("list");

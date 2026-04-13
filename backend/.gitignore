@@ -3,6 +3,7 @@
 /certs/
 /.env
 /firebase-private.json
+/dev-extras/chatDeployCommands.txt
 
 # compiled output
 /dist
