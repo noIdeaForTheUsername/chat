@@ -10,7 +10,7 @@ export var httpCodeMap: Map<number, string> = new Map([
   [429, "too-many-requests"],
 ]);
 
-export var serverUnavailableErrorCodes = [0, 502, 503, 504, 521, 522, 523, 524, 444, 408, 425, 507, 511];
+export var serverUnavailableErrorCodes = [0, 502, 503, 504, 521, 522, 523, 524, 530, 444, 408, 425, 507, 511];
 
 export var extraErrorsMap: Map<string, string> = new Map([
   ["token-invalid", 'unauthorized'],

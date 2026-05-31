@@ -1,14 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
-import { InjectRepository } from "@nestjs/typeorm";
-import { SessionEntity } from "src/domain/session/entity/session.entity";
+import { SessionsService } from "src/domain/session/sessions.service";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
-import { Repository } from "typeorm";
+import { getNormalizedLang, getNotificationMessageString } from "../strings/notification-strings-utils";
 import { FcmService } from "./fcm.service";
 import { WebPushService } from "./web-push.service";
-import { getNormalizedLang, getNotificationTitleString } from "../strings/notification-strings-utils";
-import { SessionsService } from "src/domain/session/sessions.service";
 
 // PushService is the orchestrator while Fcm and WebPush services actually send the notifications
 
@@ -38,8 +34,8 @@ export class PushService {
     for (const session of sessions) {
       // prepare data
       const normalizedLang = getNormalizedLang(session.language);
-      const titleStr = getNotificationTitleString(payload.header, normalizedLang);
-      const messageStr = getNotificationTitleString(payload.message, normalizedLang);
+      const titleStr = getNotificationMessageString(payload.header, normalizedLang);
+      const messageStr = getNotificationMessageString(payload.message, normalizedLang);
 
       // send
       if (session.pushSubscription) {

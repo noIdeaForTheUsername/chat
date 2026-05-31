@@ -47,7 +47,7 @@ export class AppInitService {
       next: () => {
         // Successful auth load
         this.preloading.set(false);
-        this.notificationsService.sendSubscriptionIfAvailable();
+        this.notificationsService.tryRefresingSubscription();
         if (this.auth.getUserId() && this.isOnOutsidePage()) {
           this.router.navigateByUrl(this.successStartPage);
         }

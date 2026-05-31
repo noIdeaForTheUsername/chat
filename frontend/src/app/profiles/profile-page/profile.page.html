@@ -50,7 +50,7 @@
 
         <profile-info-item [title]="'profile.phone-number' | translate" [value]="p.phoneNumber"/>
 
-        <profile-info-item [title]="'profile.name' | translate" [value]="p.name"
+        <profile-info-item [title]="'profile.name' | translate" [value]="p.name" [maxlength]="40"
         [editable]="editMode()" (valueChange)="this.onFieldInput('name', $event)"/>
         
         <profile-info-item [title]="'profile.id' | translate" [value]="p.id.toString()"/>

@@ -12,6 +12,7 @@ import { IonButton, IonCard, IonCardSubtitle, IonContent, IonIcon, IonItemDivide
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProfileInfoItemComponent } from './profile-info-item/profile-info-item.component';
 import { AnyProfile } from '../profile.interface';
+import { AlertType } from '@src/app/alerts/alert-type.enum';
 
 @Component({
   selector: 'app-profile-page',
@@ -119,6 +120,13 @@ export class ProfilePage {
   }
 
   saveOwnProfileChanges() {
+    if (this.editedName().trim() === "") {
+      this.alertService.displayMessageAlert(
+        AlertType.ERROR,
+        this.translate.instant("page.profile.name-empty"),
+      );
+      return;
+    }
     this.editMode.set(false);
     this.profileSaving.set(true);
     this.profileService.editOwnProfile({
@@ -133,7 +141,10 @@ export class ProfilePage {
         });
         this.profileSaving.set(false);
       },
-      error: (error) => this.alertService.displayError(error.status.toString())
+      error: (error) => {
+        this.alertService.displayError(error.status.toString());
+        this.profileSaving.set(false);
+      }
     });
   }
 

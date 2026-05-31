@@ -19,6 +19,26 @@ export class FcmNotificationsService {
 
   private displayAlertOnRegistration = false;
 
+  constructor() {
+    if (!Capacitor.isNativePlatform()) return;
+    PushNotifications.addListener("registration", (token) => {
+      this.sendTokenToServer(token.value, this.displayAlertOnRegistration);
+      if (this.displayAlertOnRegistration)
+        this.displayAlertOnRegistration = false; // reset to default after registration
+    });
+  }
+
+  async sendSubscriptionIfGranted() {
+    try {
+      const permissions = await PushNotifications.checkPermissions();
+      if (permissions.receive === "granted") {
+        await this.requestAndSendSubscription(false);
+      }
+    }
+    catch (err) {
+      console.error("Error in handleAutoSubscriptionSending in FcmNotificationsService:", err);
+    }
+  }
 
   async requestAndSendSubscription(displayAlerts: boolean = true): Promise<void> {
     if (!Capacitor.isNativePlatform()) throw new Error("FcmNotificationsService can only be used on native platforms");
@@ -43,14 +63,6 @@ export class FcmNotificationsService {
     return permission.receive;
   }
 
-  constructor() {
-    if (!Capacitor.isNativePlatform()) return;
-    PushNotifications.addListener("registration", (token) => {
-      this.sendTokenToServer(token.value, this.displayAlertOnRegistration);
-      if (this.displayAlertOnRegistration)
-        this.displayAlertOnRegistration = false; // reset to default after registration
-    });
-  }
 
   private async sendTokenToServer(token: string, displayAlerts: boolean = true) {
     const permission = await this.getPermissionStatus();

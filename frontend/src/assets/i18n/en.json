@@ -105,7 +105,6 @@
       "message-action": {
         "header": "Selected message actions...",
         "reply": "Reply",
-        "download-all": "Download all selected files",
         "delete-all": "Delete selected (yours)"
       },
       "options": "Chat options",
@@ -122,6 +121,7 @@
       "edit": "Edit profile",
       "save": "Save changes",
       "discard": "Discard changes",
+      "name-empty": "Username cannot be empty",
       
       "unset": "Unset/private",
       "show-conversation": "Show conversation",

@@ -46,11 +46,6 @@ export class MessageActionButtons {
       data: "delete"
     },
     {
-      text: this.translate.instant("page.chat.message-action.download-all"),
-      icon: "download",
-      data: "download"
-    },
-    {
       text: this.translate.instant("common.exit-selection"),
       icon: "checkbox-outline",
       data: "selection-mode"

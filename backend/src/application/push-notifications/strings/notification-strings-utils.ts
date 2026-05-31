@@ -21,7 +21,7 @@ export function getNormalizedLang(language?: string | null): 'pl' | 'en' {
   return language?.toLowerCase().includes("pl") ? "pl" : "en";
 }
 
-export function getNotificationTitleString(rawTitle: string | string[], normalizedLang: 'pl' | 'en'): string {
-  const normalizedTitle = Array.isArray(rawTitle) ? rawTitle : [rawTitle];
-  return getTranslatedString(normalizedLang, ["prefix", ...normalizedTitle]);
+export function getNotificationMessageString(rawMessage: string | string[], normalizedLang: 'pl' | 'en'): string {
+  const normalizedMessage = Array.isArray(rawMessage) ? rawMessage : [rawMessage];
+  return getTranslatedString(normalizedLang, [...normalizedMessage]);
 }

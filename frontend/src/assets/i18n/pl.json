@@ -105,7 +105,6 @@
       "message-action": {
         "header": "Akcje dla zaznaczonych wiadomości...",
         "reply": "Odpowiedz",
-        "download-all": "Pobierz wszystkie zaznaczone pliki",
         "delete-all": "Usuń zaznaczone (swoje)"
       },
       "options": "Opcje czatu",
@@ -122,6 +121,7 @@
       "edit": "Edytuj profil",
       "save": "Zapisz zmiany",
       "discard": "Anuluj zmiany",
+      "name-empty": "Nazwa użytkownika nie może być pusta",
 
       "unset": "Brak/ukryte",
       "show-conversation": "Pokaż konwersację",

@@ -17,7 +17,8 @@
         class="editable"
         [placeholder]="'common.empty' | translate"
         [value]="value()"
-        (ionChange)="onValueChange($event.target.value)">
+        (ionChange)="onValueChange($event.target.value)"
+        [maxlength]="maxlength()">
         <ion-icon name="pencil" class="edit-icon" slot="end"/>
       </ion-input>
     }

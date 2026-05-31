@@ -96,7 +96,7 @@ export class ConversationsPage implements OnInit {
   }
 
   async ngOnInit() {
-    this.notificationsPermission.set(await this.notificationsService.getNotificationsStatus());
+    this.notificationsPermission.set(await this.notificationsService.getPermissionStatus());
   }
 
   
@@ -155,8 +155,8 @@ export class ConversationsPage implements OnInit {
   // -------------------------------------------------------- UI FUNCTIONS
 
   async requestNotifications() {
-    await this.notificationsService.requestAndSendSubscription();
-    this.notificationsPermission.set(await this.notificationsService.getNotificationsStatus());
+    await this.notificationsService.toggleNotifications(true);
+    this.notificationsPermission.set(await this.notificationsService.getPermissionStatus());
   }
 
   toggleBlockedConversations() {

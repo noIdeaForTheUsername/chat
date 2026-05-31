@@ -27,11 +27,10 @@
         <!-- notifications -->
         @if (notificationsService.notificationsSupported) {
           <app-item-select [text]="'page.app-settings.notifications' | translate" icon="notifications"
-            (selectionChange)="onNotificationsToggle($event)">
+            (selectionChange)="onNotificationsToggle($event)" [value]="notificationsSelectValue()">
             <ion-select-option value="enabled">{{'common.enabled' | translate}}</ion-select-option>
             <ion-select-option value="disabled">{{'common.disabled' | translate}}</ion-select-option>
           </app-item-select>
-          <!-- <app-item-button [text]="'common.enable-notifications' | translate" icon="notifications" (click)="requestNotifications()"/> -->
         }
 
         <!-- install app -->

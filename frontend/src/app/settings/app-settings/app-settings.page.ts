@@ -1,21 +1,19 @@
-import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonItemGroup, IonItemDivider, IonLabel, IonSelectOption, IonAlert } from '@ionic/angular/standalone';
-import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
-import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
-import { ItemSelectComponent } from "../../shared/inputs/item-select-component/item-select.component";
-import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
 import { LanguageService } from '@app/i18n/language.service';
-import { NotificationsService } from '@src/app/notifications/notifications.service';
-import { AlertService } from '@src/app/alerts/alert-service/alert.service';
-import { isPwa } from '@src/app/shared/platform-detection/platformUtils';
+import { ProfileService } from '@app/profiles/profile-service/profile.service';
+import { StandardHeaderComponent } from "@app/shared/headers/standard-header-component/standard-header.component";
+import { ItemButtonComponent } from "@app/shared/inputs/item-button-component/item-button.component";
 import { Capacitor } from '@capacitor/core';
-import { AlertType } from '@src/app/alerts/alert-type.enum';
-import { max } from 'rxjs';
+import { IonAlert, IonContent, IonItemDivider, IonItemGroup, IonLabel, IonSelectOption } from '@ionic/angular/standalone';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { AlertService } from '@src/app/alerts/alert-service/alert.service';
+import { NotificationsService } from '@src/app/notifications/notifications.service';
+import { isPwa } from '@src/app/shared/platform-detection/platformUtils';
+import { ItemSelectComponent } from "../../shared/inputs/item-select-component/item-select.component";
 
 @Component({
   selector: 'app-settings',
@@ -36,6 +34,12 @@ export class AppSettingsPage {
 
   protected runningAsPwa = signal(true);
   protected runningNatively = signal(false);
+  protected notificationsSelectValue = signal("...");
+
+
+  constructor() {
+    this.loadNotificationsSelectValue();
+  }
 
   ionViewWillEnter() {
     this.runningAsPwa.set(isPwa());
@@ -46,32 +50,25 @@ export class AppSettingsPage {
     return this.languageService.getCurrent() === 'pl' ? 'polish' : 'english';
   }
 
+
   onLanguageSelect(value: string): void {
     const lang = value === 'polish' ? 'pl' : 'en';
     this.languageService.setLanguage(lang);
   }
 
-  onNotificationsToggle(value: string): void {
+  async onNotificationsToggle(value: string) {
     let enabled = value.toLowerCase() == 'enabled';
-    if (enabled)
-      this.notificationsService.requestAndSendSubscription(true);
+    this.notificationsService.toggleNotifications(enabled);
+  }
+
+  private async loadNotificationsSelectValue() {
+    if (await this.notificationsService.getPermissionStatus() == "granted"
+    && this.notificationsService.notificationsSetting())
+      this.notificationsSelectValue.set("enabled");
     else
-      this.notificationsService.unsubscribeFromNotifications();
+      this.notificationsSelectValue.set("disabled");
   }
 
-  requestNotifications() {
-    this.notificationsService.requestAndSendSubscription();
-  }
-
-  // promptGlobalLogout() {
-  //   this.alertService.displayPromptAlert(
-  //     AlertType.DANGER_PROMPT,
-  //     this.translate.instant('common.are-you-sure'),
-  //     () => this.authService.globalLogout(),
-  //     undefined,
-  //     this.translate.instant('page.app-settings.global-logout'),
-  //   )
-  // }
 
   // Global logout confirmation alert
 
@@ -93,7 +90,7 @@ export class AppSettingsPage {
         maxlength: 100
       }
     }
-  ]
+  ];
 
   onGlobalLogoutAlertDismiss(event: any) {
     if (event?.detail?.role === 'confirm') {

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString, MaxLength } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength } from "class-validator";
 
 
 export class PushSubscriptionDto {

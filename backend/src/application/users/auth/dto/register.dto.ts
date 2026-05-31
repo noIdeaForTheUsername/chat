@@ -18,7 +18,7 @@ export class RegisterDto {
   passwordRepeat: string;
 
   @IsString()
-  @MaxLength(60)
+  @MaxLength(40)
   @NormalizeName()
   name: string;
   

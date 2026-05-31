@@ -15,14 +15,15 @@ export class ProfileInfoItemComponent {
   title = input.required<string>();
   value = input<string | undefined>();
   editable = input<boolean>(false);
-  type = input<string>("")
+  type = input<string>("");
+  maxlength = input<number | undefined>(undefined);
 
   valueChange = output<string>();
 
   infoBox = input(false);
   infoBoxContent = input("");
 
-  protected valueDisplay = computed(() => this.value() === undefined ? this.translate.instant("page.profile-details.unset") : this.value());
+  protected valueDisplay = computed(() => this.value() === undefined ? this.translate.instant("page.profile.unset") : this.value());
   protected hidden = computed(() => (!this.value()) && !this.editable());
 
   private translate = inject(TranslateService);

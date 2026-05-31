@@ -18,6 +18,13 @@ export class WebPushService {
   private http = inject(HttpClient);
   public readonly notificationsSupported = this.swPush.isEnabled;
 
+
+  async sendSubscriptionIfGranted() {
+    if (Notification.permission == "granted") {
+      await this.requestAndSendSubscription(false);
+    }
+  }
+
   async requestAndSendSubscription(displayAlerts: boolean = true): Promise<void> {
     let sub: PushSubscription | undefined = undefined;
     try {
@@ -42,8 +49,6 @@ export class WebPushService {
     if (!sub) return;
 
     this.sendSubscriptionToServer(sub, displayAlerts);
-    // if (displayAlerts)
-    //   this.alertService.displayMessageAlert(AlertType.INFO, this.translate.instant("prompt.notifications-enabled"));
   }
 
   private sendSubscriptionToServer(subscription: PushSubscription, displayAlerts: boolean = true): void {
