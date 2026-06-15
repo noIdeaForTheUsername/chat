@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { ProfilesController } from "./profiles.controller";
 import { ProfilesDomainModule } from "src/domain/profiles/profiles.module";
 import { ContactsDomainModule } from "src/domain/contacts/contacts.module";
-import { ActionsThrottlerModule } from "src/application/actions-rate-limiting/actions-throttler.module";
+import { ActionsThrottlerModule } from "src/application/shared/actions-rate-limiting/actions-throttler.module";
 
 // This module connects profiles and contacts together, because Contacts are just how
 // the user sees other Profiles and frontend doesn't even know about Contacts.

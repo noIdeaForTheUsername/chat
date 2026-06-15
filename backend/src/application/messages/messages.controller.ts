@@ -3,8 +3,8 @@ import { MessagesService } from './messages.service';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
 import { SendMessageDto } from './dto/send-message.dto';
-import { RateLimitedAction } from '../actions-rate-limiting/rate-limited-action.interface';
-import { ActionsThrottlerService } from '../actions-rate-limiting/actions-throttler.service';
+import { RateLimitedAction } from '../shared/actions-rate-limiting/rate-limited-action.interface';
+import { ActionsThrottlerService } from '../shared/actions-rate-limiting/actions-throttler.service';
 
 
 // Per-account rate limiting

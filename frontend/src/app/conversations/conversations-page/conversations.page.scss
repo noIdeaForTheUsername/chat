@@ -2,6 +2,9 @@
   margin: 16px;
   text-align: center;
   color: var(--ion-text-color-step-300);
+  &.error {
+    color: var(--ion-color-danger);
+  }
 }
 
 ion-button.notifications-btn {

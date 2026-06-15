@@ -1,9 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post } from '@nestjs/common';
-import { ConversationsService } from './conversations.service';
-import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
-import { CreateConversationDto } from './dto/create-conversation.dto';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ConversationType } from 'src/domain/conversations/entities/conversation-type.enum';
-import { throttle } from 'rxjs';
+import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
+import { ConversationsService } from './conversations.service';
+import { CreateConversationDto } from './dto/create-conversation.dto';
 
 @Controller('conversations')
 export class ConversationsController {
@@ -11,8 +10,8 @@ export class ConversationsController {
 
   @Get()
   async getUserConversations(@UserId() userId: number) {
+    // await new Promise((resolve) => setTimeout(() => resolve(null), 3000));
     return await this.conversationsService.getUserConversations(userId);
-    // return await new Promise((resolve) => setTimeout(() => resolve(data), 3000));
   }
 
   @Get(':id')

@@ -2,7 +2,7 @@
 </app-standard-header>
 
 <ion-content class="ion-padding" [fullscreen]="true">
-  <div class="max-width-container">
+  <div class="max-width-container safe-bottom">
     @if (dataLoaded()) {
 
       @let p = profile()!;
@@ -91,22 +91,12 @@
           <ion-item-divider>
             <ion-label>{{'common.actions' | translate}}</ion-label>
           </ion-item-divider>
-
-          <!-- display conversation button -->
-          <app-item-button (click)="goToConversationPage()" [text]="'page.profile.show-conversation' | translate" icon="chatbubble-ellipses"/>
         
           <!-- block button -->
           <app-item-button (click)="promptBlockUser()" [text]="'profile.block' | translate" icon="ban" iconColor="danger"/>
 
         </ion-item-group>
       }
-
-      <!-- "OTHER" SECTION -->
-      <!-- <ion-item-group>
-        <ion-item-divider>
-          <ion-label>{{'common.other' | translate}}</ion-label>
-        </ion-item-divider>
-      </ion-item-group> -->
 
       <!-- BOTTOM NOTE ("looking for other settings?") -->
       @if (!own()) {

@@ -21,7 +21,7 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="max-width-container">
+  <div class="max-width-container safe-bottom">
     <!-- NOTIFICATIONS BUTTON -->
     @if (displayNotificationButton()) {
       <ion-button (click)="requestNotifications()" fill="outline" class="notifications-btn">
@@ -61,8 +61,12 @@
     }
     <!-- Error loading conversations -->
     @else if (this.conversationsLoadErr() !== null) {
-      <h1 class="no-conversations-text">{{"error.data-unavailable.header" | translate}}</h1>
+      <h1 class="no-conversations-text error">{{"error.data-unavailable.header" | translate}}</h1>
       <p class="no-conversations-text">{{"page.conversations.slide-down" | translate}}</p>
+    }
+    <!-- Loading in progress -->
+    @else if (!this.conversationsLoaded()) {
+      <h1 class="no-conversations-text">{{"common.loading" | translate}}</h1>
     }
     <!-- No conversations text -->
     @else {

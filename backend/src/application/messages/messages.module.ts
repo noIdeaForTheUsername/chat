@@ -9,7 +9,7 @@ import { NotBlockingParticipantsModule } from '../shared/not-blocking-participan
 import { MessagesDeliveryService } from './messages-delivery.service';
 import { ProfilesDomainModule } from 'src/domain/profiles/profiles.module';
 import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
-import { ActionsThrottlerModule } from '../actions-rate-limiting/actions-throttler.module';
+import { ActionsThrottlerModule } from '../shared/actions-rate-limiting/actions-throttler.module';
 
 @Module({
   controllers: [MessagesController],

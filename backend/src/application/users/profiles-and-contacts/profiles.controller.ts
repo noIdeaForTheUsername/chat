@@ -5,8 +5,8 @@ import { PatchProfileDto } from './dto/patch-profile.dto';
 import { ContactsDomainService } from 'src/domain/contacts/contacts.service';
 import { Throttle } from '@nestjs/throttler';
 import { SENSITIVE_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
-import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
-import { RateLimitedAction } from 'src/application/actions-rate-limiting/rate-limited-action.interface';
+import { ActionsThrottlerService } from 'src/application/shared/actions-rate-limiting/actions-throttler.service';
+import { RateLimitedAction } from 'src/application/shared/actions-rate-limiting/rate-limited-action.interface';
 
 // This controller doesn't have a helper service and calls the domain services directly
 

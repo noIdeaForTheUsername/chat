@@ -161,8 +161,11 @@ button.alert-button.danger {
 // Max width for centering content on large screens, mainly desktops
 .max-width-container {
   max-width: 1000px;
-  height: 100%;
   margin: auto;
+}
+
+.safe-bottom {
+  margin-bottom: var(--ion-safe-area-bottom);
 }
 
 .highlighted-b b {

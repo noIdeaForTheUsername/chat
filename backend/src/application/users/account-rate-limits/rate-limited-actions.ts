@@ -1,4 +1,4 @@
-import { RateLimitedAction } from "src/application/actions-rate-limiting/rate-limited-action.interface";
+import { RateLimitedAction } from "src/application/shared/actions-rate-limiting/rate-limited-action.interface";
 
 // LOGIN
 

@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Request, Response } from 'express';
-import { ActionsThrottlerService } from 'src/application/actions-rate-limiting/actions-throttler.service';
+import { ActionsThrottlerService } from 'src/application/shared/actions-rate-limiting/actions-throttler.service';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { Account } from 'src/domain/accounts/entities/account.entity';
 import { SessionsService } from 'src/domain/session/sessions.service';
