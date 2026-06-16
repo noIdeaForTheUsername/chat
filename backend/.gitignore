@@ -1,9 +1,8 @@
 # Sensitive files
-/env/
-/certs/
 /.env
 /firebase-private.json
 /dev-extras/chatDeployCommands.txt
+/dev-extras/certs/
 
 # compiled output
 /dist
@@ -36,7 +35,7 @@ lerna-debug.log*
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json

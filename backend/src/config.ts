@@ -1,4 +1,5 @@
 import ms from "ms";
+import path from "path";
 
 // default vals
 let inactiveSessionExpiration = ms('14d');
@@ -45,6 +46,10 @@ export default () => {
       database: process.env.DB_NAME ?? 'chat',
     },
 
+    files: {
+      uploadsDirectory: process.env.FILES_UPLOAD_DIRECTORY ?? './uploads',
+    },
+
     pushNotifications: {
       vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? null,
       vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? null,
@@ -67,6 +72,8 @@ export default () => {
 
   // Further validation only for production mode
 
+  // Auth
+
   if (!process.env.AUTH_SECRET) {
     throw new Error(`AUTH_SECRET is not defined in environment variables. Please generate a strong secret,
       set it in .ENV and keep it safe`);
@@ -79,6 +86,8 @@ export default () => {
     console.warn(getErrorMsg("ABSOLUTE_SESSION_EXPIRATION", `a desired session expiration time like '3600'
       (currently falling back to '${absoluteSessionExpiration}' by default)`));
   }
+
+  // Cookies
 
   if (!process.env.COOKIES_SAME_SITE) {
     throw new Error(getErrorMsg("COOKIES_SAME_SITE", "'strict', 'lax' or 'none'"));
@@ -94,6 +103,8 @@ export default () => {
     throw new Error(getErrorMsg("COOKIES_SECURE", "'true' (recommended) or 'false'"));
   }
 
+  // Notifications
+
   if (
     !configObject.pushNotifications.vapidPublicKey
     || !configObject.pushNotifications.vapidPrivateKey
@@ -101,6 +112,12 @@ export default () => {
   ) {
     console.warn(`VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, and VAPID_CONTACT are not all set in
       environment variables. The push notifications will be disabled.`);
+  }
+
+  // Files
+
+  if (!process.env.FILES_UPLOAD_DIRECTORY) {
+    throw new Error(getErrorMsg("FILES_UPLOAD_DIRECTORY", "a desired folder on the server, outside of the web root"));
   }
 
   return configObject;

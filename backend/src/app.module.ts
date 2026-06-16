@@ -32,6 +32,7 @@ import { OriginFilterGuard } from './shared/web-security/origin-filter.guard';
 import { ServerErrorLoggingExceptionFilter } from './shared/logging/server-error-filter';
 import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 import { LoggingModule } from './shared/logging/logging.module';
+import { FilesModule } from './application/files/files.module';
 
 
 @Module({
@@ -81,7 +82,7 @@ import { LoggingModule } from './shared/logging/logging.module';
     MessagesModule,
     PushModule,
     AccountsDomainModule, // for LoggedInGuard
-    LoggingModule,
+    LoggingModule, FilesModule,
   ],
 
 

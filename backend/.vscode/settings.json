@@ -1,4 +1,12 @@
 {
   "js/ts.tsdk.path": "./node_modules/typescript/lib",
-  "js/ts.tsdk.promptToUseWorkspaceVersion": true
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "js/ts.suggest.autoImports": true,
+  "editor.quickSuggestions": {
+    
+
+    "other": "on",
+    "comments": "off",
+    "strings": "off"
+  }
 }

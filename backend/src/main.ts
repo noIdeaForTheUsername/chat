@@ -10,7 +10,6 @@ import { AppModule } from './app.module';
 import { FcmService } from './application/push-notifications/services/fcm.service';
 import { initSessionMiddleware } from './application/users/sessions/session.middleware';
 import { LoggingService } from './shared/logging/app-logger';
-import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 
 
 async function bootstrap() {
