@@ -8,12 +8,13 @@ import { AnyProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { MessageView } from '../../message-view.interface';
 import { lastValueFrom } from 'rxjs';
+import { FilePreviewComponent } from '@src/app/files/file-preview-component/file-preview.component';
 
 @Component({
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonIcon, TranslatePipe, HoldDirective, VisibleNamePipe],
+  imports: [IonIcon, TranslatePipe, HoldDirective, VisibleNamePipe, FilePreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {
@@ -37,7 +38,7 @@ export class MessageCardComponent  implements OnInit {
   // selection
   private clickLock = false;
   // metadata
-  protected deleted = computed(() => !this.message().text && !this.message().file);
+  protected deleted = computed(() => !this.message().text && !this.message().files);
   protected displayMetadata = computed(() => this.getDisplayMetadata());
   protected displayedDate = computed(() => this.getFormattedDate());
 

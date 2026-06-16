@@ -1,3 +1,5 @@
+import { FileInfo } from "../files/file-types";
+
 export interface Message {
   globalId: number,
   conversationId: number,
@@ -5,5 +7,5 @@ export interface Message {
   timestamp: Date,
   repliedId?: number,
   text?: string,  // no text + no file means "deleted"
-  file?: string, // implement in future
+  files?: FileInfo[],
 }

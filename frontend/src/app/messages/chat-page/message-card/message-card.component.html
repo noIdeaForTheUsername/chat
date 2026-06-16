@@ -1,17 +1,19 @@
-@let repliedId = message().repliedId;
-@let repliedText = message().repliedText;
+@let message = this.message();
+@let repliedId = message.repliedId;
+@let repliedText = message.repliedText;
+
 
 
 <!-- Message -->
 <div class="message-container"
 [class.deleted]="deleted()"
-[class.own]="message().isOwn"
+[class.own]="message.isOwn"
 [class.space-before]="spaceBefore()"
-[class.selected]="selectionService().selectedIds().includes(message().globalId)"
-holdDirective (hold)="showActionMenuInternal(message().globalId)"
+[class.selected]="selectionService().selectedIds().includes(message.globalId)"
+holdDirective (hold)="showActionMenuInternal(message.globalId)"
 (setClickLock)="setClickLock($event)"
-(click)="toggleItemSelectionInternal(message().globalId)"
-(contextmenu)="showActionMenuInternal(message().globalId, $event)">
+(click)="toggleItemSelectionInternal(message.globalId)"
+(contextmenu)="showActionMenuInternal(message.globalId, $event)">
 
   <!-- message metadata -->
   @if (displayMetadata()) { 
@@ -20,9 +22,9 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
 
   <!-- message card -->
   <div
-    [id]="'msg-' + message().globalId"
+    [id]="'msg-' + message.globalId"
     class="message-card"
-    [class.own]="message().isOwn"> 
+    [class.own]="message.isOwn"> 
       @if (repliedId && !deleted()) {
         <!-- response card -->
         <div class="replied-preview clickable" (click)="repliedClickInternal(repliedId)">
@@ -31,6 +33,10 @@ holdDirective (hold)="showActionMenuInternal(message().globalId)"
         </div>
       }
       <!-- message text -->
-        <div class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message().text)}}</div>
+      @if (message.files) {
+        @let testFile = message.files[0];
+        <app-file-preview [file]="testFile"></app-file-preview>
+      }
+      <div class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message.text)}}</div>
     </div>
 </div>

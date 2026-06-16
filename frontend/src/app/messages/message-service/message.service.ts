@@ -15,6 +15,7 @@ import {
   mergeLoadedMessages,
   trimOverflowMessages,
 } from './message-loading-helpers';
+import { MessageFileLoader } from './message-file-loader';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -31,6 +32,7 @@ export class MessageService {
   private readonly conversationService = inject(ConversationService);
   private readonly api = inject(BackendMessageApi);
   private readonly replyPreviewManager = inject(ReplyPreviewManager);
+  private readonly fileLoader = inject(MessageFileLoader);
   private readonly state = inject(MessageStateStore);
   public readonly operations = inject(MessageOperations);
 
@@ -173,6 +175,9 @@ export class MessageService {
       this.state.highestDisplayedId,
       this.state.lowestDisplayedId
     );
+    
+    this.fileLoader.loadFilesForMessages(this.state.lowestDisplayedId, this.state.highestDisplayedId,
+      this.state.currentConvId);
 
     if (displayedMessagesWereEmpty) {
       this.state.messagesWillInit.next();

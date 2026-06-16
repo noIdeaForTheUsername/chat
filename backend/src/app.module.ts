@@ -33,6 +33,8 @@ import { ServerErrorLoggingExceptionFilter } from './shared/logging/server-error
 import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 import { LoggingModule } from './shared/logging/logging.module';
 import { FilesModule } from './application/files/files.module';
+import { FileInfo } from './domain/files/entities/file-info.entity';
+import { ViewedFileInfo } from './domain/files/entities/viewed-file-info';
 
 
 @Module({
@@ -56,7 +58,8 @@ import { FilesModule } from './application/files/files.module';
         entities: [
           Account, Profile, FullProfile, Contact, UserKnownProfile,
           Conversation, Participation, UserConversation,
-          Message, LatestUserMessage, SessionEntity
+          Message, LatestUserMessage, SessionEntity,
+          FileInfo, ViewedFileInfo
         ],
       }),
       async dataSourceFactory(options: any) {

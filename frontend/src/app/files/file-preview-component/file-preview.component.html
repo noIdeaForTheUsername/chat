@@ -1,0 +1,18 @@
+@let file = this.file();
+
+<p style="display: none;">file preview component!</p>
+
+@if (file && file.type == "image") {
+  <img [src]="file.url" [alt]="file.originalName"/>
+}
+@else if (file && file.type == "video") {
+  <video controls>
+    <source [src]="file.url">
+    Your browser does not support the video tag.
+  </video>
+}
+@else if (file && file.type == "downloadable") {
+  <a [href]="file.url" download>
+    {{ file.originalName }}
+  </a>
+}
