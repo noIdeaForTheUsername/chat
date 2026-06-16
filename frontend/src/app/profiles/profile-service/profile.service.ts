@@ -118,7 +118,7 @@ export class ProfileService {
         p.blocked = blocked;
         this.updateProfileInMemory(p);
       },
-      error: (err) => this.alertService.displayError(err.error.message ?? err.status ?? "unknown")
+      error: (err) => this.alertService.displayError(err.status ?? "unknown")
     });
   }
 

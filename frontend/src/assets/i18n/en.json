@@ -108,7 +108,9 @@
         "delete-all": "Delete selected (yours)"
       },
       "options": "Chat options",
-      "copy-failed": "Failed to copy text to clipboard"
+      "copy-failed": "Failed to copy text to clipboard",
+      "attachment-one": "Attachment (1)",
+      "attachment-many": "Attachments ({{count}})"
     },
 
     "profile": {
@@ -301,6 +303,10 @@
     "notifications-unknown-error": {
       "header": "We don't know what happened",
       "description": "An unknown error occurred while trying to enable notifications, and your browser does not provide us any more information on it. Try restarting the app, changing settings, internet browser, or, if you're using phone, downloading the native Android app from the settings menu"
+    },
+    "file-upload-in-progress": {
+      "header": "File upload",
+      "description": "Leaving the page will interrupt ongoing file uploading"
     },
 
     "failed-to-delete": "Failed to delete",

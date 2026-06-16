@@ -1,15 +1,28 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
-import { MessagesDomainService } from 'src/domain/messages/messages.service';
-import { Transactional } from 'typeorm-transactional';
-import { MessagesGateway } from './messages.gateway';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { MessageSentEvent } from 'src/shared/events/message-sent.event';
-import { NotBlockingParticipantsService } from '../shared/not-blocking-participants/not-blocking-participants.service';
+import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
 import { Message } from 'src/domain/messages/entities/message.entity';
-import { Conversation } from 'src/domain/conversations/entities/conversation.entity';
-import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
+import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
+import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
+import { MessageSentEvent } from 'src/shared/events/message-sent.event';
+import { ActionsThrottlerService } from '../shared/actions-rate-limiting/actions-throttler.service';
+import { RateLimitedAction } from '../shared/actions-rate-limiting/rate-limited-action.interface';
+import { NotBlockingParticipantsService } from '../shared/not-blocking-participants/not-blocking-participants.service';
+
+const MESSAGE_SENDING_LIMIT: RateLimitedAction = {
+  name: 'MESSAGE_SEND',
+  limit: 10,
+  ttl: 20 * 1000,
+  logExceeded: false,
+}
+const MESSAGE_SENDING_LIMIT_2: RateLimitedAction = {
+  name: 'MESSAGE_SEND_2',
+  limit: 60,
+  ttl: 4 * 60 * 1000,
+  logExceeded: false,
+}
+
 
 @Injectable()
 export class MessagesService {
@@ -19,6 +32,7 @@ export class MessagesService {
     private conversationsDomainService: ConversationsDomainService,
     private eventEmitter: EventEmitter2,
     private notBlockingParticipantsService: NotBlockingParticipantsService,
+    private readonly actionsThrottler: ActionsThrottlerService
   ){}
 
   async getConversationMessages(callerId: number, conversationId: number, limit: number,
@@ -50,6 +64,9 @@ export class MessagesService {
   async sendMessage(callerId: number, conversationId: number,
     text: string, repliedId?: number)
   {
+    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT, callerId.toString());
+    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT_2, callerId.toString());
+
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
     

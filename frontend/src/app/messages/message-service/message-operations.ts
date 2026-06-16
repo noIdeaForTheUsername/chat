@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ConversationService } from '@src/app/conversations/conversation.service';
 import { WebsocketService } from '@src/app/websockets/websocket-service';
 import { MessageStateStore } from './message-state.store';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +40,8 @@ export class MessageOperations {
 
   sendMessage(text: string, repliedId?: number) {
     const currentConvId = this.state.getCurrentConvId();
-    if (currentConvId === -1) return;
+    if (currentConvId === -1)
+      return;
 
     // Reject too long message
     if (text.length > this.MESSAGE_LENGTH_LIMIT) {
@@ -55,38 +57,75 @@ export class MessageOperations {
 
     this.api.sendMessage(currentConvId, text, repliedId).subscribe({
       next: (res: any) => {
-        if (res.id === undefined) return;
-        if (this.websocket.getConnected()) {
-          this.state.ownMessageSent.next(true);
-        }
-        else {
-          // websocket won't "reflect" the sent message, but HTTP returned success so it was
-          // successfully sent, so add it locally as a hopefully rare fallback
-          this.receiveMessage({
-            globalId: res.id,
-            conversationId: this.state.getCurrentConvId(),
-            senderId: this.authService.getUserIdOrError(),
-            text: text,
-            repliedId,
-            timestamp: new Date(),
-          });
-          this.state.ownMessageSent.next(true);
+        this.handleMessageSendingResponse(res, text, repliedId);
+      },
+      error: (e) => {
+        this.handleMessageSendingError(e);
+      }
+    });
+  }
+
+  sendMessageWithFiles(files: File[], text?: string, repliedId?: number) {
+    const currentConvId = this.state.getCurrentConvId();
+    if (currentConvId === -1)
+      return;
+
+    this.api.uploadFiles(currentConvId, files, text, repliedId).subscribe({
+      next: (event: any) => {
+        console.log("Upload event:", event);
+        if (event.type === HttpEventType.UploadProgress) {
+          // Track upload progress (0-100)
+          if (event.total) {
+            // capped at 95% until the final response
+            const percentage = Math.round((event.loaded / event.total) * 95);
+            this.state.uploadProgress.next(percentage); 
+          }
+        } else if (event instanceof HttpResponse) {
+          this.state.uploadProgress.next(100);
+          this.handleMessageSendingResponse(event.body, text ?? '', repliedId);
         }
       },
       error: (e) => {
-        this.state.ownMessageSent.next(false);
-        if (e.status === 429) {
-          this.alertService.displayError("too-many-messages");
-        }
-        else {
-          this.alertService.displayError(
-            e.error.message ?? e.status ?? 'unknown',
-            undefined,
-            this.translate.instant('error.failed-to-send-msg')
-          );
-        }
+        this.state.uploadProgress.next(0);
+        this.handleMessageSendingError(e);
       }
     });
+  }
+
+  private handleMessageSendingError(e: any) {
+    this.state.ownMessageSent.next(false);
+    if (e.status === 429) {
+      this.alertService.displayError("too-many-messages");
+    }
+    else {
+      this.alertService.displayError(
+        e.status ?? 'unknown',
+        undefined,
+        this.translate.instant('error.failed-to-send-msg')
+      );
+    }
+  }
+
+  private handleMessageSendingResponse(successfulRes: any, messageText: string, messageRepliedId?: number) {
+    if (!successfulRes || !successfulRes.id)
+      throw new Error("Server did not return message ID after message sending");
+
+    if (this.websocket.getConnected()) {
+      this.state.ownMessageSent.next(true);
+    }
+    else {
+      // websocket disconnected so it won't "reflect" the sent message, but HTTP returned success meaning
+      // the message was successfully sent, so add it locally as a fallback
+      this.receiveMessage({
+        globalId: successfulRes.id,
+        conversationId: this.state.getCurrentConvId(),
+        senderId: this.authService.getUserIdOrError(),
+        text: messageText,
+        repliedId: messageRepliedId,
+        timestamp: new Date(),
+      });
+      this.state.ownMessageSent.next(true);
+    }
   }
 
   receiveMessage(message: Message) {

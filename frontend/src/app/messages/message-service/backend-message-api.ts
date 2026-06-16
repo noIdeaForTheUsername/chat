@@ -46,7 +46,6 @@ export class BackendMessageApi {
 
   sendMessage(conversationId: number, text: string, repliedId?: number) {
     return this.http.post(`/conversations/${conversationId}/messages`, {
-      conversationId,
       text,
       repliedId,
     });
@@ -61,6 +60,28 @@ export class BackendMessageApi {
       body: {
         ids: messageIds
       }
+    });
+  }
+
+  uploadFiles(conversationId: number, files: File[], text?: string, repliedId?: number) {
+    const formData = new FormData();
+    
+    // Append files
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+    
+    // Append message data
+    if (text !== undefined && text.length > 0) {
+      formData.append('text', text);
+    }
+    if (repliedId !== undefined) {
+      formData.append('repliedId', repliedId.toString());
+    }
+
+    return this.http.post(`/conversations/${conversationId}/uploads`, formData, {
+      reportProgress: true,
+      observe: 'events'
     });
   }
 

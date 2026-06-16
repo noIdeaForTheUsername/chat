@@ -29,6 +29,7 @@ export class MessageStateStore {
   public messagesWillInit = new Subject<void>();
   public newMessageAppeared = new Subject<void>();
   public ownMessageSent = new Subject<boolean>(); // contains success status
+  public uploadProgress = new Subject<number>(); // 0-100 percentage
 
   // LOADING PROPERTIES
   public readonly dataLoaded = signal(false); // specifies if the initial loading was successful

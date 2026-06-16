@@ -11,15 +11,15 @@ export const environment = {
   // capacitorSocketIoUrl: "https://devchat.serwerigora.com",
 
   // Dev configuration
-  apiUrl: "http://192.168.1.16:3000",
-  socketIoUrl: "http://192.168.1.16:3000",
-  capacitorApiUrl: "http://192.168.1.16:3000",
-  capacitorSocketIoUrl: "http://192.168.1.16:3000",
+  // apiUrl: "http://192.168.1.16:3000",
+  // socketIoUrl: "http://192.168.1.16:3000",
+  // capacitorApiUrl: "http://192.168.1.16:3000",
+  // capacitorSocketIoUrl: "http://192.168.1.16:3000",
 
-  // apiUrl: "http://localhost:3000",
-  // socketIoUrl: "http://localhost:3000",
-  // capacitorApiUrl: "http://localhost:3000",
-  // capacitorSocketIoUrl: "http://localhost:3000",
+  apiUrl: "http://localhost:3000",
+  socketIoUrl: "http://localhost:3000",
+  capacitorApiUrl: "http://localhost:3000",
+  capacitorSocketIoUrl: "http://localhost:3000",
 
   // Production configuration
   // apiUrl: "/api",

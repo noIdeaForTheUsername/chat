@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, NgZone, OnDestroy, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, HostListener, inject, NgZone, OnDestroy, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ConversationService } from '@app/conversations/conversation.service';
@@ -11,7 +11,7 @@ import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/c
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip } from '@ionic/angular/standalone';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
@@ -34,7 +34,7 @@ import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUt
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
-    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip],
+    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -57,6 +57,9 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
   private scrollElement!: HTMLElement;
   
+  // File input (hidden)
+  private fileInput!: HTMLInputElement;
+  
   
   // DATA TO DISPLAY
   protected conversationId: number = -1;
@@ -77,9 +80,20 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected enteredMessage = signal<string>("");
   protected awaitingMessageSendResponse = signal(false);
   protected canSendMessage = computed(() =>
-    (!this.initialLoading()) && this.enteredMessage().length > 0 && !this.awaitingMessageSendResponse());  
+    (!this.initialLoading())
+    && (this.enteredMessage().length > 0 || this.selectedFiles().length > 0)
+    && !this.awaitingMessageSendResponse());  
   protected replyingToId = signal<null | number>(null);
   protected replyingToText = signal<string>("");
+
+  // FILE ATTACHMENT
+  protected selectedFiles = signal<File[]>([]);
+  protected uploadProgress = signal<number>(0);
+  protected attachmentText = computed(() => {
+    const count = this.selectedFiles().length;
+    if (count === 0) return "";
+    return this.translate.instant(count === 1 ? 'page.chat.attachment-one' : 'page.chat.attachment-many', { count });
+  });
 
   // DISPLAYED MESSAGES STATE
   protected firstMessageLoad = true;
@@ -165,6 +179,11 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       this.afterOwnMessageSent(success);
     });
 
+    // Upload progress
+    this.messageService.uploadProgress.subscribe((progress: number) => {
+      this.uploadProgress.set(progress);
+    });
+
     this.messageService.messagesWillRefresh.subscribe(async () => {
       this.saveScrollParams();
     });
@@ -184,6 +203,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initScrollElement();
     this.initSubscriptions();
+    this.initFileInput();
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
@@ -228,11 +248,21 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   sendMessage() {
     const messageText = this.enteredMessage().trim();
-    if (messageText.length === 0) return;
+    if (messageText.length === 0 && this.selectedFiles().length === 0) return;
     this.awaitingMessageSendResponse.set(true);
 
     const replyingTo = this.replyingToId();
-    this.messageService.operations.sendMessage(messageText, replyingTo ?? undefined);
+    
+    // If files are selected, use sendMessageWithFiles instead
+    if (this.selectedFiles().length > 0) {
+      this.messageService.operations.sendMessageWithFiles(
+        this.selectedFiles(),
+        messageText.length > 0 ? messageText : undefined,
+        replyingTo ?? undefined
+      );
+    } else {
+      this.messageService.operations.sendMessage(messageText, replyingTo ?? undefined);
+    }
   }
 
   afterOwnMessageSent(success: boolean) {
@@ -242,6 +272,41 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.enteredMessage.set("");
     this.messageField.value = "";
     this.cancelReply();
+    this.clearAttachments();
+  }
+
+  // ------------------------------------------- FILE ATTACHMENT FUNCTIONS -------------------------------------------
+
+  initFileInput() {
+    // Create a hidden file input if it doesn't exist
+    if (!this.fileInput) {
+      this.fileInput = document.createElement('input');
+      this.fileInput.type = 'file';
+      this.fileInput.multiple = true;
+      this.fileInput.style.display = 'none';
+      this.fileInput.addEventListener('change', (e) => this.onFileInputChange(e));
+      document.body.appendChild(this.fileInput);
+    }
+  }
+
+  openFileSelector() {
+    this.initFileInput();
+    // Clear previous selection
+    this.fileInput.value = '';
+    // Trigger file selection dialog
+    this.fileInput.click();
+  }
+
+  private onFileInputChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFiles.set(Array.from(input.files));
+    }
+  }
+
+  clearAttachments() {
+    this.selectedFiles.set([]);
+    this.uploadProgress.set(0);
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------

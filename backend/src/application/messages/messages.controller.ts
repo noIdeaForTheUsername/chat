@@ -1,26 +1,13 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseArrayOptions, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
-import { MessagesService } from './messages.service';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseArrayPipe, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { ConversationMessagesQuery } from './dto/conversation-messages.query';
 import { SendMessageDto } from './dto/send-message.dto';
-import { RateLimitedAction } from '../shared/actions-rate-limiting/rate-limited-action.interface';
-import { ActionsThrottlerService } from '../shared/actions-rate-limiting/actions-throttler.service';
+import { MessagesService } from './messages.service';
 
 
 // Per-account rate limiting
 
-const MESSAGE_SENDING_LIMIT: RateLimitedAction = {
-  name: 'MESSAGE_SEND',
-  limit: 10,
-  ttl: 20 * 1000,
-  logExceeded: false,
-}
-const MESSAGE_SENDING_LIMIT_2: RateLimitedAction = {
-  name: 'MESSAGE_SEND_2',
-  limit: 60,
-  ttl: 4 * 60 * 1000,
-  logExceeded: false,
-}
+
 
 
 @Controller()
@@ -30,7 +17,6 @@ export class MessagesController {
 
   constructor(
     private readonly messagesService: MessagesService,
-    private readonly actionsThrottler: ActionsThrottlerService
   ) {}
 
   @Get("message-previews")
@@ -77,13 +63,11 @@ export class MessagesController {
     @Param('id') conversationId: number,
     @Body() body: SendMessageDto
   ) {
-    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT, callerId.toString());
-    this.actionsThrottler.incrementAndThrow(MESSAGE_SENDING_LIMIT_2, callerId.toString());
-
     const message = await this.messagesService.sendMessage(
       callerId, conversationId, body.text, body.repliedId);
     return { id: message.globalId };
   }
+
 
   @Delete("conversations/:id/messages/all")
   @HttpCode(HttpStatus.NO_CONTENT)

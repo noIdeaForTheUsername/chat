@@ -76,13 +76,14 @@ import { FilesModule } from './application/files/files.module';
     // ----------------------------------------------------------------------- APPLICATION MODULES
 
     AuthModule,
-    AccountsModule,
+    AccountsModule, 
     ProfilesModule,
     ConversationsModule,
     MessagesModule,
+    FilesModule,
     PushModule,
     AccountsDomainModule, // for LoggedInGuard
-    LoggingModule, FilesModule,
+    LoggingModule,
   ],
 
 

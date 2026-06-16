@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   alertCircleOutline, arrowDown, arrowRedo,
+  attach,
   ban, build,
   chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
@@ -20,18 +21,19 @@ import {
 } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
 import { LanguageService } from './i18n/language.service';
+import { ClosingPreventionComponent } from "./shared/closing-prevention/closing-prevention.component";
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet, AlertWindowComponent],
+  imports: [IonApp, IonRouterOutlet, AlertWindowComponent, ClosingPreventionComponent],
 })
 export class AppComponent {
   constructor(private translate: TranslateService, private languageService: LanguageService) {
     addIcons({ paperPlane, arrowDown, alertCircleOutline, wifiOutline, helpCircle, ban,
       chatbubbleEllipses, pencil, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
-      people, notifications, download, person, personAdd, personRemove,
+      people, notifications, download, person, personAdd, personRemove, attach,
       build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe });
 
     translate.setTranslation('pl', translationsPL);

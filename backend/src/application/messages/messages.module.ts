@@ -15,5 +15,6 @@ import { ActionsThrottlerModule } from '../shared/actions-rate-limiting/actions-
   controllers: [MessagesController],
   providers: [MessagesService, MessagesGateway, MessagesDeliveryService, WsThrottlerGuard],
   imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule, ProfilesDomainModule, NotBlockingParticipantsModule, ActionsThrottlerModule],
+  exports: [MessagesService]
 })
 export class MessagesModule {}

@@ -4,6 +4,9 @@
 /dev-extras/chatDeployCommands.txt
 /dev-extras/certs/
 
+# trash
+/files/
+
 # compiled output
 /dist
 /node_modules

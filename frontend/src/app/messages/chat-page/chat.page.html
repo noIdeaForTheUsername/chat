@@ -90,25 +90,47 @@
 <ion-footer>
   <div class="toolbar-container">
     <ion-toolbar>
-      @if (replyingToId() !== null) {
-        <div class="reply-container">
-          <ion-chip class="reply" (click)="cancelReply()">
-            <p><ion-icon name="close-circle" slot="start"/>
-              {{ replyingToText() }}</p>
-          </ion-chip>
-        </div>
+      <!-- UPLOAD PROGRESS BAR -->
+      @if (uploadProgress() > 0 && uploadProgress() < 100) {
+        <ion-progress-bar type="determinate" [value]="uploadProgress() / 100"
+          [buffer]="uploadProgress() / 100"></ion-progress-bar>  <!--the buffer simply looks nice-->
       }
+
+      <div class="extras-container">
+        <!-- REPLIES AND FILES -->
+        @if (replyingToId() !== null) {
+          <ion-chip (click)="cancelReply()">
+            <p>
+              <ion-icon name="close-circle"/>
+              {{ replyingToText() }}
+              <ion-icon name="arrow-redo"/>
+            </p>
+          </ion-chip>
+        }
+        @if (selectedFiles().length > 0) {
+          <ion-chip>
+            <p>
+              <ion-icon name="attach"/>
+              {{ attachmentText() }}
+              <ion-icon name="close-circle" (click)="clearAttachments()"/>
+            </p>
+          </ion-chip>
+        }
+        <!--TODO FOR FILES: <ion-chip></ion-chip> -->
+      </div>
+
       <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
-        <!-- ATTACH BUTTON
-        <ion-button shape="round" class="round-button" id="open-modal">
+        <!-- ATTACH BUTTON -->
+        <ion-button shape="round" class="round-button" (click)="openFileSelector()" [disabled]="awaitingMessageSendResponse()">
           <ion-icon name="attach" slot="icon-only"></ion-icon>
-        </ion-button> -->
+        </ion-button>
         <!-- MESSAGE INPUT FIELD -->
         <ion-textarea #msg_field
           fill="solid" [autoGrow]="true"
           (ionInput)="onMessageFieldInput($event)"
           (keydown)="onMessageFieldKeydown($event)"
           [placeholder]="'page.chat.message-input' | translate"
+          [disabled]="awaitingMessageSendResponse()"
           rows="1"
           class="message-input glow-on-focus ion-margin ion-flex-auto"
           [autofocus]="true">

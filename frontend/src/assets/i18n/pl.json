@@ -108,7 +108,9 @@
         "delete-all": "Usuń zaznaczone (swoje)"
       },
       "options": "Opcje czatu",
-      "copy-failed": "Nie udało się skopiować tekstu do schowka"
+      "copy-failed": "Nie udało się skopiować tekstu do schowka",
+      "attachment-one": "Załącznik (1)",
+      "attachment-many": "Załączniki ({{count}})"
     },
 
     "profile": {

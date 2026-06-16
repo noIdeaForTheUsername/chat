@@ -54,6 +54,7 @@ export class MessageService {
   public messagesWillInit = this.state.messagesWillInit;
   public newMessageAppeared = this.state.newMessageAppeared;
   public ownMessageSent = this.state.ownMessageSent; // contains success status
+  public uploadProgress = this.state.uploadProgress; // 0-100 percentage
 
   // LOADING PROPERTIES
   public readonly dataLoaded = this.state.dataLoaded; // specifies if the initial loading was successful
