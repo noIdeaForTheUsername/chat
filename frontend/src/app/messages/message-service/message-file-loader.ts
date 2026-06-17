@@ -15,27 +15,41 @@ export class MessageFileLoader {
     
   ) {}
 
-  loadFilesForMessages(minMessageId: number, maxMessageId: number, conversationId: number) {
-    this.fileInfoApi.loadFilesForMessages(minMessageId, maxMessageId, conversationId).subscribe({
-      next: (filesInfo: FileInfo[]) => {
-        this.addFilesIntoMessages(filesInfo);
-      }
+  async loadFilesForMessages(minMessageId: number, maxMessageId: number, conversationId: number) {
+    return new Promise<void>((resolve, reject) => {
+      this.fileInfoApi.loadFilesForMessages(minMessageId, maxMessageId, conversationId).subscribe({
+        next: (filesInfo: FileInfo[]) => {
+          this.addFilesIntoMessages(filesInfo);
+          resolve();
+        },
+        error: (e) => {
+          reject("Failed to load message files: " + e);
+        }
+      });
     });
   }
 
   private addFilesIntoMessages(filesInfo: FileInfo[]) {
     this.state.displayedMessages.update(messages => {
-      for (let i = 0; i < messages.length; i++) {
-        const originalMessage = messages[i];
-        const fileForMessage = filesInfo.find(file => file.messageId == originalMessage.globalId);
-        if (!fileForMessage)
+      for (let i = 0; i < filesInfo.length; i++) {
+        // find file's message
+        const fileInfo = filesInfo[i];
+        const messageIndex = messages.findIndex(m => m.globalId == fileInfo.messageId);
+        if (messageIndex === -1)
           continue;
+        const message = messages[messageIndex];
+        
+        // check if file already exists in message
+        if (message.files?.some(f => f.uuid == fileInfo.uuid))
+          continue;
+        
 
-        let updated = {...originalMessage};
+        let updated = {...message};
         if (!updated.files)
           updated.files = [];
-        updated.files.push(fileForMessage);
-        messages[i] = updated;
+        console.log("adding file to message: ", fileInfo);
+        updated.files.push(fileInfo);
+        messages[messageIndex] = updated;
       }
       return [...messages];
     });

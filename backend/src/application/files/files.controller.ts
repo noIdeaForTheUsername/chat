@@ -3,8 +3,8 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { SendMessageDto } from '../messages/dto/send-message.dto';
 import { MessagesService } from '../messages/messages.service';
-import { FileInfoResponse } from './dto/file-info-response.dto';
-import { FilesService } from './files.service';
+import { FileInfoResponse } from './file-interfaces';
+import { FilesService } from './services/files.service';
 import type { Response } from 'express';
 
 @Controller()
@@ -47,7 +47,6 @@ export class FilesController {
     @UserId() callerId: number,
     @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
-    console.log("serveFilecalled!");
     return await this.filesService.serveFile(fileUuid, callerId, res);
   }
 }

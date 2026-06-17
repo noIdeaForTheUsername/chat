@@ -1,11 +1,14 @@
 @let file = this.file();
 
-<p style="display: none;">file preview component!</p>
 
 @if (file && file.type == "image") {
-  <a [href]="file.url" download>
-  <img [src]="file.url" [alt]="file.originalName" class="mediaPreview"/>
-  </a>
+  <img
+    [src]="file.url"
+    class="mediaPreview"
+    [alt]="file.originalName"
+    [width]="dimensions ? dimensions().width : undefined"
+    [height]="dimensions ? dimensions().height : undefined"
+  />
 }
 @else if (file && file.type == "video") {
   <video controls class="mediaPreview">
@@ -14,7 +17,14 @@
   </video>
 }
 @else if (file && file.type == "downloadable") {
-  <a [href]="file.url" download>
-    {{ file.originalName }}
-  </a>
+  <div class="downloadablePreview" (click)="downloadFile($event)">
+    <div class="fileIcon">
+      <ion-icon name="document"></ion-icon>
+    </div>
+
+    <div class="fileMeta">
+      <strong>{{ file.originalName }}</strong>
+      <span>{{ file.sizeInBytes | fileSize }}</span>
+    </div>
+  </div>
 }

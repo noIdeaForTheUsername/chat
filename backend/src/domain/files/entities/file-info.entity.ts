@@ -25,6 +25,12 @@ export class FileInfo {
   @Column({ name: "size_in_bytes", type: "bigint", nullable: false })
   sizeInBytes: number;
 
+  @Column({ name: "media_width", type: "integer", nullable: true })
+  mediaWidth: number | null;
+
+  @Column({ name: "media_height", type: "integer", nullable: true })
+  mediaHeight: number | null;
+
   getStoredName() {
     return `${this.uuid}.blob`;
   }

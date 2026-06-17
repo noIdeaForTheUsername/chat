@@ -34,7 +34,6 @@ export class FilesStorageService {
   private async getValidFilePathOrThrow(uuid: string) {
     const filename = path.basename(uuid) + ".blob";
     const pathName = path.join(this.uploadsDirectory, filename);
-    console.log(`Checking file path: ${pathName}`);
     await new Promise((resolve, reject) => {
       fs.access(pathName, (err) => {
         if (err)

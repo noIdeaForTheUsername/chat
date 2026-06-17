@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
-import { IonIcon, IonNote } from "@ionic/angular/standalone"
-import { TranslatePipe } from '@ngx-translate/core';
-import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
-import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { AnyProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
-import { MessageView } from '../../message-view.interface';
-import { lastValueFrom } from 'rxjs';
-import { FilePreviewComponent } from '@src/app/files/file-preview-component/file-preview.component';
+import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directive';
+import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
+import { IonIcon } from "@ionic/angular/standalone";
+import { TranslatePipe } from '@ngx-translate/core';
 import { FilesPreviewComponent } from '@src/app/files/files-preview-component/files-preview.component';
+import { lastValueFrom } from 'rxjs';
+import { MessageView } from '../message-view.interface';
 
 @Component({
   selector: 'app-message-card',

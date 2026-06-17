@@ -4,6 +4,7 @@ import { LessThan, MoreThan, Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ViewedFileInfo } from "./entities/viewed-file-info";
 import { Message } from "../messages/entities/message.entity";
+import { FileTypeInfo } from "src/application/files/file-interfaces";
 
 @Injectable()
 export class FilesDomainService {
@@ -15,21 +16,22 @@ export class FilesDomainService {
     private readonly extendedFilesInfo: Repository<ViewedFileInfo>
   ) {}
 
-  async saveFileInfo(file: Express.Multer.File, messageId: number,
-    mimeType: string, mimeTypeTrusted: boolean) {
+  async saveFileInfo(file: Express.Multer.File, messageId: number, fileTypeInfo: FileTypeInfo) {
     let fileInfo = this.filesInfo.create({
       uuid: file.filename.substring(0, file.filename.lastIndexOf('.')),
       messageId: messageId,
       uploadedAt: new Date(),
       originalName: file.originalname,
-      mimeType: mimeType,
-      mimeTypeTrusted: mimeTypeTrusted,
-      sizeInBytes: file.size
+      mimeType: fileTypeInfo.mimeType,
+      mimeTypeTrusted: fileTypeInfo.mimeTypeTrusted,
+      sizeInBytes: file.size,
+      mediaWidth: fileTypeInfo.mediaWidth,
+      mediaHeight: fileTypeInfo.mediaHeight
     });
     return this.filesInfo.save(fileInfo);
   }
 
-  async getExtendedFileInfo(uuid: string, viewerId: number) {
+  async getViewedFileInfo(uuid: string, viewerId: number) {
     return this.extendedFilesInfo.findOneBy({ uuid: uuid, viewerId: viewerId });
   }
 

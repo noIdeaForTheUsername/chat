@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { addIcons } from 'ionicons';
 import {
   alertCircleOutline, arrowDown, arrowRedo,
-  attach,
+  attach, document,
   ban, build,
   chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
@@ -33,7 +33,7 @@ export class AppComponent {
     addIcons({ paperPlane, arrowDown, alertCircleOutline, wifiOutline, helpCircle, ban,
       chatbubbleEllipses, pencil, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
-      people, notifications, download, person, personAdd, personRemove, attach,
+      people, notifications, download, person, personAdd, personRemove, attach, document,
       build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe });
 
     translate.setTranslation('pl', translationsPL);

@@ -126,7 +126,7 @@ export class MessageService {
     return startMessageId + (older ? 1 : -1);
   }
 
-  private handleLoadedMessages(loadedMessages: Message[], messageAmount: number, older: boolean) {
+  private async handleLoadedMessages(loadedMessages: Message[], messageAmount: number, older: boolean) {
     const displayedMessagesWereEmpty = this.state.displayedMessages().length === 0;
     if (!displayedMessagesWereEmpty) {
       this.state.messagesWillRefresh.next();
@@ -143,6 +143,13 @@ export class MessageService {
 
     this.state.displayedMessages.set(mappedViews);
     this.updateMetadataAfterLoad(trimmedMessages, loadedMessages.length, messageAmount, older);
+    try {
+      await this.fileLoader.loadFilesForMessages(this.state.lowestDisplayedId, this.state.highestDisplayedId,
+        this.state.currentConvId);
+    } catch (e) {
+      console.error("Failed to load message files: " + e);
+    }
+      
     this.handleSuccessfulLoad(displayedMessagesWereEmpty);
   }
 
@@ -176,8 +183,6 @@ export class MessageService {
       this.state.lowestDisplayedId
     );
     
-    this.fileLoader.loadFilesForMessages(this.state.lowestDisplayedId, this.state.highestDisplayedId,
-      this.state.currentConvId);
 
     if (displayedMessagesWereEmpty) {
       this.state.messagesWillInit.next();

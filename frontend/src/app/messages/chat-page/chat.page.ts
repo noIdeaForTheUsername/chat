@@ -16,7 +16,7 @@ import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
 import { MessageActionButtons } from './message-action-buttons';
-import { MessageCardComponent } from './message-card/message-card.component';
+import { MessageCardComponent } from '../message-card/message-card.component';
 import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 import { Conversation } from '@app/conversations/conversation.interface';
 import { AnyProfile } from '@app/profiles/profile.interface';
@@ -53,7 +53,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // HTML elements
   @ViewChild(IonContent) private content!: IonContent;
-  @ViewChild("msg_field") protected messageField!: IonTextarea;
+  @ViewChild("message_field") protected messageField!: IonTextarea;
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
   private scrollElement!: HTMLElement;
   
@@ -102,7 +102,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected showScrollDownButton = signal(false);
 
   // EVENT LISTENERS
-  private eventListener: (() => void) | null = null;
+  private visibilityChangedListener: (() => void) | null = null;
+  private fileInputChangeListener: ((event: Event) => void) | null = null;
 
   // ACTION MENU
   protected actionMessageId = signal<number | null>(null);
@@ -216,13 +217,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // ------------------------------------------- ACTIVE VIEWING STATUS MANAGEMENT -------------------------------------------
 
   ionViewDidEnter() {
-    this.eventListener = this.updateActiveViewingStatus.bind(this);
+    this.visibilityChangedListener = this.updateActiveViewingStatus.bind(this);
     this.messageService.setActiveViewingStatus(true);
-    document.addEventListener('visibilitychange', this.eventListener);
+    document.addEventListener('visibilitychange', this.visibilityChangedListener);
   }
 
   ionViewWillLeave() {
-    document.removeEventListener('visibilitychange', this.eventListener!);
+    document.removeEventListener('visibilitychange', this.visibilityChangedListener!);
+    if (this.fileInput) {
+      this.fileInput.removeEventListener('change', this.fileInputChangeListener!);
+      document.body.removeChild(this.fileInput);
+    }
     this.messageService.setActiveViewingStatus(false);
   }
 
@@ -270,9 +275,10 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (!success) return;
     
     this.enteredMessage.set("");
-    this.messageField.value = "";
     this.cancelReply();
     this.clearAttachments();
+    this.messageField.value = "";
+    setTimeout(() => this.messageField.setFocus(), 100);
   }
 
   // ------------------------------------------- FILE ATTACHMENT FUNCTIONS -------------------------------------------
@@ -284,7 +290,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       this.fileInput.type = 'file';
       this.fileInput.multiple = true;
       this.fileInput.style.display = 'none';
-      this.fileInput.addEventListener('change', (e) => this.onFileInputChange(e));
+      this.fileInputChangeListener = (e) => this.onFileInputChange(e);
+      this.fileInput.addEventListener('change', this.fileInputChangeListener);
       document.body.appendChild(this.fileInput);
     }
   }

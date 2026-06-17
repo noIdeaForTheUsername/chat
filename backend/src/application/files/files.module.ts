@@ -3,14 +3,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MulterModule } from '@nestjs/platform-express';
 import { FilesDomainModule } from 'src/domain/files/files.module';
 import { FilesController } from './files.controller';
-import { FilesService } from './files.service';
+import { FilesService } from './services/files.service';
 import { MessagesModule } from '../messages/messages.module';
-import { FilesStorageService } from './files-storage.service';
+import { FilesStorageService } from './services/files-storage.service';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
+import { FileTypesService } from './services/file-types.service';
 
 @Module({
   controllers: [FilesController],
-  providers: [FilesService, FilesStorageService],
+  providers: [FilesService, FileTypesService, FilesStorageService],
   imports: [
     MessagesModule,
     ConversationsDomainModule,

@@ -23,6 +23,12 @@ export class ViewedFileInfo {
   @ViewColumn({ name: "size_in_bytes", })
   sizeInBytes: number;
 
+  @ViewColumn({ name: "media_width" })
+  mediaWidth: number | null;
+  
+  @ViewColumn({ name: "media_height" })
+  mediaHeight: number | null;
+
   // viewer is anyone with access to the conversation
 
   @ViewColumn({ name: "viewer_id" })
