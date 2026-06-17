@@ -9,7 +9,7 @@ export default () => {
   try {
     inactiveSessionExpiration = ms(process.env.INACTIVE_SESSION_EXPIRATION as any) as any as number;
     absoluteSessionExpiration = ms(process.env.ABSOLUTE_SESSION_EXPIRATION as any) as any as number;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Error parsing INACTIVE_SESSION_EXPIRATION or ABSOLUTE_SESSION_EXPIRATION .env variables.
       Input correct values of session lifetimes, like '14d'. Error details: `, error);
   }

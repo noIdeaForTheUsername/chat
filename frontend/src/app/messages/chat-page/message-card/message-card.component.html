@@ -34,8 +34,7 @@ holdDirective (hold)="showActionMenuInternal(message.globalId)"
       }
       <!-- message text -->
       @if (message.files) {
-        @let testFile = message.files[0];
-        <app-file-preview [file]="testFile"></app-file-preview>
+        <app-files-preview [files]="message.files"></app-files-preview>
       }
       <div class="message-text">{{deleted() ? ('page.chat.message-deleted' | translate) : (message.text)}}</div>
     </div>

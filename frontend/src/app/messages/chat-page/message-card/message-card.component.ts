@@ -9,12 +9,13 @@ import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pi
 import { MessageView } from '../../message-view.interface';
 import { lastValueFrom } from 'rxjs';
 import { FilePreviewComponent } from '@src/app/files/file-preview-component/file-preview.component';
+import { FilesPreviewComponent } from '@src/app/files/files-preview-component/files-preview.component';
 
 @Component({
   selector: 'app-message-card',
   templateUrl: './message-card.component.html',
   styleUrls: ['./message-card.component.scss'],
-  imports: [IonIcon, TranslatePipe, HoldDirective, VisibleNamePipe, FilePreviewComponent],
+  imports: [IonIcon, TranslatePipe, HoldDirective, VisibleNamePipe, FilesPreviewComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageCardComponent  implements OnInit {

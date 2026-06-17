@@ -3,12 +3,14 @@
 <p style="display: none;">file preview component!</p>
 
 @if (file && file.type == "image") {
-  <img [src]="file.url" [alt]="file.originalName"/>
+  <a [href]="file.url" download>
+  <img [src]="file.url" [alt]="file.originalName" class="mediaPreview"/>
+  </a>
 }
 @else if (file && file.type == "video") {
-  <video controls>
+  <video controls class="mediaPreview">
     <source [src]="file.url">
-    Your browser does not support the video tag.
+    Your browser does not support videos.
   </video>
 }
 @else if (file && file.type == "downloadable") {
