@@ -8,13 +8,8 @@ import { FilePreviewComponent } from '../file-preview-component/file-preview.com
   styleUrls: ['./files-preview.component.scss'],
   imports: [FilePreviewComponent]
 })
-export class FilesPreviewComponent implements OnInit {
+export class FilesPreviewComponent {
 
   files = input<FileInfo[]>();
-
-  constructor() { }
-
-  ngOnInit() {}
-
 
 }

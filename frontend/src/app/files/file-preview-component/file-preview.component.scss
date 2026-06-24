@@ -4,9 +4,10 @@
   scrollbar-color: var(--ion-color-warning) var(--ion-background-color);
 }
 
-img.mediaPreview {
+.mediaPreview {
   border-radius: 20px;
   max-width: none;
+  color: var(--ion-color-danger);  // for alt text
 }
 
 

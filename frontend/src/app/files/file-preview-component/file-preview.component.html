@@ -6,12 +6,13 @@
     [src]="file.url"
     class="mediaPreview"
     [alt]="file.originalName"
-    [width]="dimensions ? dimensions().width : undefined"
-    [height]="dimensions ? dimensions().height : undefined"
+    [width]="dimensions().width"
+    [height]="dimensions().height"
   />
 }
 @else if (file && file.type == "video") {
-  <video controls class="mediaPreview">
+  <video controls preload="metadata"
+    class="mediaPreview" [width]="dimensions().width" [height]="dimensions().height">
     <source [src]="file.url">
     Your browser does not support videos.
   </video>

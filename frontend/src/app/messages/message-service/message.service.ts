@@ -16,6 +16,7 @@ import {
   trimOverflowMessages,
 } from './message-loading-helpers';
 import { MessageFileLoader } from './message-file-loader';
+import { MessageView } from '../message-view.interface';
 
 // DESCRIPTION: This service doesn't return data. It loads it and manages it internally, providing signals for components to bind to.
 // The chatPage manages the UI only, while being directly connected to this service's variables/signals.
@@ -139,16 +140,15 @@ export class MessageService {
       this.state.lowestDisplayedId,
       this.state.highestDisplayedId
     );
-    const mappedViews = mapMessagesToView(trimmedMessages, this.authService.getUserIdOrError());
-
-    this.state.displayedMessages.set(mappedViews);
     this.updateMetadataAfterLoad(trimmedMessages, loadedMessages.length, messageAmount, older);
+    const mappedViews = mapMessagesToView(trimmedMessages, this.authService.getUserIdOrError());
+    let messagesWithFiles: undefined | MessageView[] = undefined;
     try {
-      await this.fileLoader.loadFilesForMessages(this.state.lowestDisplayedId, this.state.highestDisplayedId,
-        this.state.currentConvId);
+      messagesWithFiles = await this.fileLoader.loadFilesForMessages(mappedViews, this.state.currentConvId);
     } catch (e) {
       console.error("Failed to load message files: " + e);
     }
+    this.state.displayedMessages.set(messagesWithFiles ?? mappedViews);
       
     this.handleSuccessfulLoad(displayedMessagesWereEmpty);
   }

@@ -1,11 +1,11 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from "@nestjs/platform-express";
+import type { Response } from 'express';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
-import { SendMessageDto } from '../messages/dto/send-message.dto';
 import { MessagesService } from '../messages/messages.service';
+import { MessageWithFileDto } from './dto/message-with-file.dto';
 import { FileInfoResponse } from './file-interfaces';
 import { FilesService } from './services/files.service';
-import type { Response } from 'express';
 
 @Controller()
 export class FilesController {
@@ -30,11 +30,13 @@ export class FilesController {
     @UserId() callerId: number,
     @Param('id') conversationId: number,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body() body: SendMessageDto,
+    @Body() body: MessageWithFileDto,
   ): Promise<{ id: number }> {
-    const message = await this.messagesService.sendMessage(callerId, conversationId, body.text, body.repliedId);
+
+    const message = await this.messagesService.sendMessage(callerId, conversationId, body.text ?? "", body.repliedId);
     let promises: Promise<void>[] = [];
-    for (const file of files) {
+    for (let file of files) {
+      file.originalname = getFileNameWithFixedEncoding(file.originalname);
       promises.push(this.filesService.registerUploadedFile(file, message.globalId));
     }
     await Promise.all(promises);
@@ -49,4 +51,8 @@ export class FilesController {
   ): Promise<StreamableFile> {
     return await this.filesService.serveFile(fileUuid, callerId, res);
   }
+}
+
+function getFileNameWithFixedEncoding(brokenFilename: string): string {
+  return Buffer.from(brokenFilename, 'latin1').toString('utf8');
 }

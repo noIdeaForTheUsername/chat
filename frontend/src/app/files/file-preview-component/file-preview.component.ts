@@ -1,8 +1,8 @@
-import { Component, computed, inject, input, OnDestroy, OnInit, Signal } from '@angular/core';
+import { Component, computed, inject, input, OnDestroy, OnInit, signal, Signal } from '@angular/core';
 import { FileInfo } from '../file-types';
 import { IonIcon } from '@ionic/angular/standalone';
 import { FileSizePipe } from '../file-size-pipe';
-import { MediaHeightCalculator } from '../max-media-height-calculator';
+import { MediaDimensionsCalculator } from '../max-media-height-calculator';
 
 @Component({
   selector: 'app-file-preview',
@@ -13,10 +13,10 @@ import { MediaHeightCalculator } from '../max-media-height-calculator';
 export class FilePreviewComponent {
 
   file = input<FileInfo>();
-  private readonly mediaHeightCalculator = inject(MediaHeightCalculator);
+  private readonly mediaDimensionsCalculator = inject(MediaDimensionsCalculator);
   private isFirefox = navigator.userAgent.includes('Firefox');
 
-  protected dimensions: Signal<{ width: number, height: number }> | undefined;
+  protected dimensions: Signal<{ width: number, height: number }> = signal({ width: 0, height: 0 });
 
   ngOnInit() {
     const file = this.file();
@@ -25,8 +25,9 @@ export class FilePreviewComponent {
 
     if ((file.type == "image" || file.type == "video") && file?.mediaWidth && file?.mediaHeight) {
       this.dimensions = computed(() => {
-        const _ = this.mediaHeightCalculator.maxMediaHeight();
-        return this.mediaHeightCalculator.getFilePreviewDimensions(file);
+        const _width = this.mediaDimensionsCalculator.maxMediaWidth();
+        const _height = this.mediaDimensionsCalculator.maxMediaHeight();
+        return this.mediaDimensionsCalculator.getFilePreviewDimensions(file);
       });
     }
   }

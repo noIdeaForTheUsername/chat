@@ -1,11 +1,6 @@
 :host {
   max-width: 100%;
-}
-
-.filePreviewsContainer {
-  max-width: 100%;
-  padding: 12px;
-  padding-bottom: 0;
+  padding: 12px 12px 0 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;

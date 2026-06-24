@@ -52,12 +52,14 @@ export class MessageCardComponent  implements OnInit {
 
   // Output actions
   protected showActionMenuInternal(id: number, eventPreventDefault?: Event) {
-    if (this.deleted()) return;  // don't allow selecting/actions on deleted messages
+    if (this.deleted())
+      return;  // don't allow selecting/actions on deleted messages
     if (eventPreventDefault) eventPreventDefault.preventDefault();
     this.showActionMenu.emit(id);
   }
   protected toggleItemSelectionInternal(id: number) {
-    if (this.deleted()) return;  // don't allow selecting/actions on deleted messages
+    if (this.deleted())
+      return;  // don't allow selecting/actions on deleted messages
     if (!this.clickLock) this.selectionService().toggleItemSelection(id);
   }
   protected repliedClickInternal(messageId: number) {
@@ -89,9 +91,6 @@ export class MessageCardComponent  implements OnInit {
     if (!this.displayMetadata()) return "";
 
     let timestamp = this.message().timestamp;
-
-    // let previousMessageSentOnOtherDay = true;
-    // if (previousTimestamp) previousMessageSentOnOtherDay = timestamp.getDate() != previousTimestamp.getDate();
 
     // Displayed date signal value
     let date = "";

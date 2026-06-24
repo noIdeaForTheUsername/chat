@@ -13,7 +13,7 @@ export class LatestUserMessage {
   senderId: number;
 
   @ViewColumn()
-  text: string;
+  text: string | null;
 
   @ViewColumn()
   timestamp: Date;
