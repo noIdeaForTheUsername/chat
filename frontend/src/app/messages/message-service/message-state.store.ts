@@ -25,6 +25,7 @@ export class MessageStateStore {
 
   // events
   public messagesWillRefresh = new Subject<void>();
+  public messagesDidRefresh = new Subject<void>();
   // additionally, the above signal ISN'T EMITTED after initial loading or teleport. Only the infinite scroll loading!
   public messagesWillInit = new Subject<void>();
   public newMessageAppeared = new Subject<void>();

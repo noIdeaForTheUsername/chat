@@ -6,9 +6,9 @@ import { ActionsThrottlerService } from 'src/application/shared/actions-rate-lim
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { Account } from 'src/domain/accounts/entities/account.entity';
 import { SessionsService } from 'src/domain/session/sessions.service';
-import { PasswordProtectedActionLimitExceededEvent } from 'src/shared/events/password-action-limit-exceeded';
-import { PasswordChangeEvent } from 'src/shared/events/user-global-logout.event';
-import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
+import { PasswordProtectedActionLimitExceededEvent } from 'src/shared/events/auth/password-action-limit-exceeded';
+import { PasswordChangeEvent } from 'src/shared/events/auth/user-global-logout.event';
+import { UserLogoutEvent } from 'src/shared/events/auth/user-logout.event';
 import { LoggingService } from 'src/shared/logging/app-logger';
 import { Severity } from 'src/shared/logging/logging-enums';
 import {

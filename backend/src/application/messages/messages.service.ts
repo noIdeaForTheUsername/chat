@@ -4,8 +4,8 @@ import { ConversationsDomainService } from 'src/domain/conversations/conversatio
 import { Message } from 'src/domain/messages/entities/message.entity';
 import { MessagesDomainService } from 'src/domain/messages/messages.service';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
-import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
-import { MessageSentEvent } from 'src/shared/events/message-sent.event';
+import { MessageDeletedEvent } from 'src/shared/events/messages/message-deleted.event';
+import { MessageSentEvent } from 'src/shared/events/messages/message-sent.event';
 import { ActionsThrottlerService } from '../shared/actions-rate-limiting/actions-throttler.service';
 import { RateLimitedAction } from '../shared/actions-rate-limiting/rate-limited-action.interface';
 import { NotBlockingParticipantsService } from '../shared/not-blocking-participants/not-blocking-participants.service';

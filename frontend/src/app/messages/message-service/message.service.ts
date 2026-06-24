@@ -54,6 +54,7 @@ export class MessageService {
   // events
   public messagesWillRefresh = this.state.messagesWillRefresh;
   // additionally, the above signal ISN'T EMITTED after initial loading or teleport. Only the infinite scroll loading!
+  public messagesDidRefresh = this.state.messagesDidRefresh;
   public messagesWillInit = this.state.messagesWillInit;
   public newMessageAppeared = this.state.newMessageAppeared;
   public ownMessageSent = this.state.ownMessageSent; // contains success status
@@ -149,6 +150,7 @@ export class MessageService {
       console.error("Failed to load message files: " + e);
     }
     this.state.displayedMessages.set(messagesWithFiles ?? mappedViews);
+    this.state.messagesDidRefresh.next();
       
     this.handleSuccessfulLoad(displayedMessagesWereEmpty);
   }
@@ -223,11 +225,13 @@ export class MessageService {
     this.state.currentConvId = convId;
     this.state.loadsCount = 0;
     this.state.displayedMessages.set([]);
+    this.state.messagesDidRefresh.next();
     this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, true);
   }
 
   loadMessagesByStartId(messageId: number, older: boolean) {
     this.state.displayedMessages.set([]);
+    this.state.messagesDidRefresh.next();
     this.state.loadsCount++;
     this.loadConvMessages(this.LOADED_MESSAGES_AMOUNT, older, messageId, true);
   }

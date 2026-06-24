@@ -9,8 +9,9 @@ import { MessageStateStore } from "./message-state.store";
 })
 export class ReplyPreviewManager {
   private readonly state = inject(MessageStateStore);
+  private api = inject(BackendMessageApi);
 
-  constructor(private api: BackendMessageApi) {}
+  constructor() {}
 
   private getDisplayedMessages() {
     return this.state.displayedMessages();
@@ -79,5 +80,6 @@ export class ReplyPreviewManager {
         };
       });
     });
+    this.state.messagesDidRefresh.next();
   }
 }

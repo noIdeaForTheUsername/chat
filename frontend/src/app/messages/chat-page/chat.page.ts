@@ -132,7 +132,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.loadConversationData(this.conversationId);
     
 
-    effect(() => {
+    this.messageService.messagesDidRefresh.subscribe(() => {
       // React to message list changes for scroll management and message acknowledgement
       const msgs = this.messageService.displayedMessages();
       if (msgs.length == 0) return;

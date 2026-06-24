@@ -8,6 +8,7 @@ import { MessagesModule } from '../messages/messages.module';
 import { FilesStorageService } from './services/files-storage.service';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
 import { FileTypesService } from './services/file-types.service';
+import { NotBlockingParticipantsModule } from '../shared/not-blocking-participants/not-blocking-participants.module';
 
 @Module({
   controllers: [FilesController],
@@ -16,6 +17,7 @@ import { FileTypesService } from './services/file-types.service';
     MessagesModule,
     ConversationsDomainModule,
     FilesDomainModule,
+    NotBlockingParticipantsModule,
     MulterModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

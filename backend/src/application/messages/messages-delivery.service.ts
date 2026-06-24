@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { ConversationClearedEvent } from "src/shared/events/conversation-cleared.event";
-import { MessageDeletedEvent } from "src/shared/events/message-deleted.event";
-import { MessageSentEvent } from "src/shared/events/message-sent.event";
+import { MessageDeletedEvent } from "src/shared/events/messages/message-deleted.event";
+import { MessageSentEvent } from "src/shared/events/messages/message-sent.event";
 import { MessagesGateway } from "./messages.gateway";
 import { ConversationsDomainService } from "src/domain/conversations/conversations.service";
 import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
+import { FilesSentEvent } from "src/shared/events/messages/files-sent.event";
 
 // Coordinates message delivery via WebSockets and push notifications
 
@@ -15,7 +16,6 @@ export class MessagesDeliveryService {
   constructor(
     private messagesGateway: MessagesGateway,
     private eventEmitter: EventEmitter2,
-    private conversations: ConversationsDomainService,
     private profiles: ProfilesDomainService
   ) {}
 
@@ -29,28 +29,49 @@ export class MessagesDeliveryService {
     for (const receiverId of payload.receiverIds) {
       const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
       if (!connectedSockets.some(s => s.data.viewedConversation === payload.message.conversationId)) {
-        await this.sendMessagePush(receiverId, payload);
+        // Get the profile of the sender as known by the receiver
+        const profile = await this.profiles.findUserKnownProfile(receiverId, payload.senderId, false);
+        if (!profile)
+          return;
+        // Create notification message
+        const senderName = profile.nick || profile.name || profile.phoneNumber;
+        const text = payload.message.text;
+        const notificationMessage = senderName + ": " +
+          (text.length > 100  // shorten message to max 100 chars
+            ? text.substring(0, 97) + "..."
+            : text);
+
+        await this.sendMessagePush(receiverId, payload.message.conversationId, notificationMessage);
       }
     }
   }
 
-  // Prepares the payload and sends an event to handle by the push notification service
-  private async sendMessagePush(receiverId: number, payload: MessageSentEvent) {
-    const conversation = await this.conversations.findUserConversation(receiverId, payload.message.conversationId, false);
-    if (!conversation) return;
-
-    const profile = await this.profiles.findUserKnownProfile(receiverId, payload.message.senderId, false);
-    if (!profile) return;
-
-    const senderName = profile.nick || profile.name || profile.phoneNumber;
-
-    const header = "newMessage";
-    const message = senderName + ": " +
-    (payload.message.text.length > 100 ?  // shorten message to max 100 chars
-      payload.message.text.substring(0, 97) + "..." :
-      payload.message.text);
+  @OnEvent("filesSent")
+  public async sendFileToUsers(payload: FilesSentEvent) {
     
-    const tag = `new-message:conversation-${payload.message.conversationId}`;
+    // websocket transmission
+    this.messagesGateway.sendFile(payload);
+
+    // Send push if user is not viewing this conversation (even with active connections)
+    for (const receiverId of payload.receiverIds) {
+      const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
+      if (!connectedSockets.some(s => s.data.viewedConversation === payload.conversationId)) {
+        const profile = await this.profiles.findUserKnownProfile(receiverId, payload.senderId, false);
+        if (!profile)
+          return;
+        // Create notification message
+        const senderName = profile.nick || profile.name || profile.phoneNumber;
+        const notificationMessage = [senderName + ": ", "filesSentMessage"];
+        this.sendMessagePush(receiverId, payload.conversationId, notificationMessage);
+      }
+    }
+  }
+
+
+  // Prepares the payload and sends an event to handle by the push notification service
+  private async sendMessagePush(receiverId: number, conversationId: number, message: string | string[]) {
+    const header = "newMessage"; 
+    const tag = `new-message:conversation-${conversationId}`;
 
     this.eventEmitter.emit("pushNotification", {
       userId: receiverId,
@@ -59,7 +80,6 @@ export class MessagesDeliveryService {
       tag,
     });
   }
-
 
   @OnEvent("messageDeleted")
   public async sendMessageDeletionToUsers(payload: MessageDeletedEvent) {

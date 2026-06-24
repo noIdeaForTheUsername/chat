@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FilesInterceptor } from "@nestjs/platform-express";
 import type { Response } from 'express';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
@@ -11,7 +12,8 @@ import { FilesService } from './services/files.service';
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
-    private readonly messagesService: MessagesService
+    private readonly messagesService: MessagesService,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   @Get("conversations/:id/file-info")
@@ -33,13 +35,12 @@ export class FilesController {
     @Body() body: MessageWithFileDto,
   ): Promise<{ id: number }> {
 
+    // send message
     const message = await this.messagesService.sendMessage(callerId, conversationId, body.text ?? "", body.repliedId);
-    let promises: Promise<void>[] = [];
-    for (let file of files) {
-      file.originalname = getFileNameWithFixedEncoding(file.originalname);
-      promises.push(this.filesService.registerUploadedFile(file, message.globalId));
-    }
-    await Promise.all(promises);
+
+    // register files
+    await this.filesService.processUploadedFiles(files, callerId, conversationId, message.globalId);
+
     return { id: message.globalId };
   }
 
@@ -53,6 +54,3 @@ export class FilesController {
   }
 }
 
-function getFileNameWithFixedEncoding(brokenFilename: string): string {
-  return Buffer.from(brokenFilename, 'latin1').toString('utf8');
-}

@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException, StreamableFile } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { randomUUID } from "crypto";
 import multer from 'multer';
@@ -26,7 +26,17 @@ export class FilesStorageService {
   }
 
   async getFileResponseStream(fileUuid: string) {
-    const pathName = await this.getValidFilePathOrThrow(fileUuid);
+    let pathName: string;
+    try {
+      pathName = await this.getValidFilePathOrThrow(fileUuid);
+    }
+    catch (err) {
+      if (err instanceof Error && err.message === "file-not-found")
+        throw new NotFoundException();
+      else
+        throw new InternalServerErrorException();
+    }
+    
     const file = createReadStream(pathName);
     return new StreamableFile(file);
   }
@@ -37,7 +47,7 @@ export class FilesStorageService {
     await new Promise((resolve, reject) => {
       fs.access(pathName, (err) => {
         if (err)
-          reject(new Error("File not found"));
+          reject(new Error("file-not-found"));
         else
           resolve(pathName);
       });

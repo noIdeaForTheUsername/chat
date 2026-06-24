@@ -5,6 +5,8 @@ import { map, Observable, Subject } from 'rxjs';
 import { Message } from '../messages/message.interface';
 import { environment } from '@src/environments/environment';
 import { Capacitor } from '@capacitor/core';
+import { BaseFileInfo } from '../files/file-types';
+import { thumbsUpSharp } from 'ionicons/icons';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +19,9 @@ export class WebsocketService implements OnDestroy {
   public messages$: Observable<Message> = this.messageSubject.asObservable().pipe(
     map((msg: ServerMessage) => serverMessageToMessage(msg))
   );
+
+  private filesSubject = new Subject<BaseFileInfo[]>();
+  public files$: Observable<BaseFileInfo[]> = this.filesSubject.asObservable();
 
   private messageUpdatesSubject = new Subject<ServerMessage>();
   public messageUpdates$: Observable<Message> = this.messageUpdatesSubject.asObservable().pipe(
@@ -80,6 +85,10 @@ export class WebsocketService implements OnDestroy {
     this.socket.on("message", (value: ServerMessage) => {
       this.messageSubject.next(value);
     });
+
+    this.socket.on("files", (value: BaseFileInfo[]) => {
+      this.filesSubject.next(value);
+    }) 
 
     this.socket.on("messageDeleted", (value: ServerMessage) => {
       this.messageUpdatesSubject.next(value);

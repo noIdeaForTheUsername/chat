@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { map } from "rxjs";
 import { ApiUrlService } from "../http/url.service";
 import { BaseFileInfo, FileInfo } from "./file-types";
+import { FileInfoMapperService } from "./file-info-mapper.service";
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class FileInfoApi {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly apiUrlService: ApiUrlService,
+    private readonly fileInfoMapper: FileInfoMapperService
   ) { }
 
   loadFilesForMessages(minMessageId: number, maxMessageId: number, conversationId: number) {
@@ -21,10 +22,7 @@ export class FileInfoApi {
         maxMessageId
       }
     }).pipe(
-      map(filesInfo => filesInfo.map(fileInfo => ({
-        ...fileInfo,
-        url: this.apiUrlService.apiUrl + "/uploads/" + fileInfo.uuid
-      } as FileInfo)))
+      map(filesInfo => filesInfo.map(f => this.fileInfoMapper.mapBaseFileInfo(f)))
     );
   }
 }

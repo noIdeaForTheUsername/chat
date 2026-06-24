@@ -6,14 +6,15 @@ import { OnGatewayConnection, OnGatewayInit, SubscribeMessage, WebSocketGateway,
 import { Server, Socket } from 'socket.io';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
-import { MessageDeletedEvent } from 'src/shared/events/message-deleted.event';
-import { MessageSentEvent } from 'src/shared/events/message-sent.event';
-import { UserLogoutEvent } from 'src/shared/events/user-logout.event';
+import { MessageDeletedEvent } from 'src/shared/events/messages/message-deleted.event';
+import { MessageSentEvent } from 'src/shared/events/messages/message-sent.event';
+import { UserLogoutEvent } from 'src/shared/events/auth/user-logout.event';
 import { WEBSOCKET_EVENTS_RATE_LIMIT } from 'src/shared/global-rate-limiting/rate-limiting-settings';
 import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
 import { getWsAuthMiddleware, getWsOriginFilterMiddleware, getWsSessionMiddleware } from 'src/shared/websocket-middlewares';
 import { MessageAcknowledgeDto } from './dto/message-acknowledge.dto';
 import { MessagesService } from './messages.service';
+import { FilesSentEvent as FilesSentEvent } from 'src/shared/events/messages/files-sent.event';
 
 
 @UsePipes(new ValidationPipe({ whitelist: true, transform: true, exceptionFactory: (errors) => new WsException(errors) }))
@@ -71,6 +72,13 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
     }
   }
 
+  public sendFile(payload: FilesSentEvent) {
+    this.server.to(`user-${payload.senderId}`).emit('files', payload.filesInfo);
+    for (const receiverId of payload.receiverIds) {
+      this.server.to(`user-${receiverId}`).emit('files', payload.filesInfo);
+    }
+  }
+
   public sendMessageDeletion(payload: MessageDeletedEvent) {
     for (const receiverId of payload.receiverIds) {
       this.server.to(`user-${receiverId}`).emit('messageDeleted', payload.message);
@@ -96,7 +104,6 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
       throw new WsException("ConversationId must be a number or null");
     socket.data.viewedConversation = data.conversationId;
   }
-
 
 
   // HELPERS

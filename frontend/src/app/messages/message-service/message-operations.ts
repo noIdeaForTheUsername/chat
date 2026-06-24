@@ -12,6 +12,8 @@ import { ConversationService } from '@src/app/conversations/conversation.service
 import { WebsocketService } from '@src/app/websockets/websocket-service';
 import { MessageStateStore } from './message-state.store';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { MessageFileLoader } from './message-file-loader';
+import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
 
 @Injectable({
   providedIn: 'root',
@@ -26,12 +28,18 @@ export class MessageOperations {
   private readonly conversationService = inject(ConversationService);
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
+  private readonly fileLoader = inject(MessageFileLoader);
 
   private readonly MESSAGE_LENGTH_LIMIT = 4000;  // enforced on backend too
 
   constructor() {
     this.websocket.messages$.subscribe({
       next: (msg: Message) => this.receiveMessage(msg),
+    });
+    this.websocket.files$.subscribe({
+      next: (unmappedFileInfos) => {
+        this.receiveFiles(unmappedFileInfos);
+      }
     });
     this.websocket.messageUpdates$.subscribe({
       next: (msg: Message) => this.receiveMessageUpdate(msg),
@@ -72,7 +80,6 @@ export class MessageOperations {
 
     this.api.uploadFiles(currentConvId, files, text, repliedId).subscribe({
       next: (event: any) => {
-        console.log("Upload event:", event);
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)
           if (event.total) {
@@ -129,17 +136,15 @@ export class MessageOperations {
   }
 
   receiveMessage(message: Message) {
-    if (message.conversationId !== this.state.getCurrentConvId()) return;
-    if (!this.state.displayingNewestMessages()) return;
+    if (message.conversationId !== this.state.getCurrentConvId())
+      return;
+    if (!this.state.displayingNewestMessages())
+      return;
 
-    this.state.displayedMessages.update((msgs) => {
-      const latestMsg = msgs.length > 0 ? msgs[msgs.length - 1] : undefined;
-      return [...msgs, messageToMessageView(message, this.authService.getUserIdOrError(), latestMsg)];
-    });
-
+    this.addNewMessage(message);
     this.state.newMessageAppeared.next();
 
-    if (message.senderId !== this.authService.getUserId()) {
+    if (message.senderId != this.authService.getUserId()) {
       this.conversationService.acknowledgeConversationMessages(this.state.getCurrentConvId(), message.globalId);
     }
 
@@ -148,6 +153,19 @@ export class MessageOperations {
       this.state.getHighestDisplayedId(),
       this.state.getLowestDisplayedId()
     );
+  }
+
+  receiveFiles(filesInfo: (BaseFileInfo | FileInfo)[]) {
+    this.fileLoader.handleIncomingFilesInfo(filesInfo);
+  }
+
+  private addNewMessage(newMessage: Message) {
+    const messages = this.state.displayedMessages();
+    const latestMessage = messages.length > 0 ? messages[messages.length - 1] : undefined;
+    let newMessageView = messageToMessageView(newMessage, this.authService.getUserIdOrError(), latestMessage);
+    newMessageView = this.fileLoader.addPendingFilesToMessage(newMessageView);
+
+    this.state.displayedMessages.update((msgs) => [...msgs, newMessageView]);
   }
 
   deleteMessage(messageId: number) {
@@ -194,6 +212,7 @@ export class MessageOperations {
           : m
       );
     });
+    this.state.messagesDidRefresh.next();
 
     if (message.repliedId) {
       this.replyPreviewManager.loadSingleMessagePreview(
@@ -217,6 +236,7 @@ export class MessageOperations {
     this.state.displayedMessages.update((msgs) => {
       return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
+    this.state.messagesDidRefresh.next();
 
     this.conversationService.updateModifiedMessagePreview(updatedMsg);
   }

@@ -10,7 +10,6 @@ export function serverMessageToMessage(serverMessage: ServerMessage): Message {
   };
 }
 
-// TODO: do something about the "repliedText" field later
 export function messageToMessageView(msg: Message, currentUserId: number, prevMessage?: MessageView): MessageView {
   return {
     ...msg,
