@@ -54,8 +54,8 @@ export class AccountsService {
       for (const admin of admins) {
         const event: PushNotifcationEvent = {
           userId: admin.id,
-          header: ["accountCreatedHeader"],
-          message: ["accountCreatedMessage", phoneNumber],
+          header: { schema: "accountCreatedHeader" },
+          message: { schema: "accountCreatedMessage: $", params: [phoneNumber] },
           tag: "account-creation",
         };
         this.eventEmitter.emit("pushNotification", event);
@@ -117,8 +117,8 @@ export class AccountsService {
     if (activated) {
       const event: PushNotifcationEvent = {
         userId: changedUserId,
-        header: ["accountActivatedHeader"],
-        message: ["accountActivatedMessage"],
+        header: { schema: "accountActivatedHeader" },
+        message: { schema: "accountActivatedMessage" },
         tag: "account-activation",
         // clickUrl: "/chats"
       };

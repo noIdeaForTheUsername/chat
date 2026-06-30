@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
+import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
 import { ConversationClearedEvent } from "src/shared/events/conversation-cleared.event";
+import { FilesSentEvent } from "src/shared/events/messages/files-sent.event";
 import { MessageDeletedEvent } from "src/shared/events/messages/message-deleted.event";
 import { MessageSentEvent } from "src/shared/events/messages/message-sent.event";
+import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
+import { StringTemplate } from "../shared/strings/string-params";
 import { MessagesGateway } from "./messages.gateway";
-import { ConversationsDomainService } from "src/domain/conversations/conversations.service";
-import { ProfilesDomainService } from "src/domain/profiles/profiles.service";
-import { FilesSentEvent } from "src/shared/events/messages/files-sent.event";
 
 // Coordinates message delivery via WebSockets and push notifications
 
@@ -20,7 +21,7 @@ export class MessagesDeliveryService {
   ) {}
 
   @OnEvent("messageSent")
-  public async sendMessageToUsers(payload: MessageSentEvent) {
+  public async sendTextMessageToUsers(payload: MessageSentEvent) {
     
     // websocket transmission
     this.messagesGateway.sendMessage(payload);
@@ -41,44 +42,48 @@ export class MessagesDeliveryService {
             ? text.substring(0, 97) + "..."
             : text);
 
-        await this.sendMessagePush(receiverId, payload.message.conversationId, notificationMessage);
+        await this.sendPush(receiverId, payload.message.conversationId, notificationMessage);
       }
     }
   }
 
   @OnEvent("filesSent")
-  public async sendFileToUsers(payload: FilesSentEvent) {
+  public async sendFileMessageToUsers(payload: FilesSentEvent) {
     
     // websocket transmission
     this.messagesGateway.sendFile(payload);
 
-    // Send push if user is not viewing this conversation (even with active connections)
+    
+    if (payload.messageContainsText)
+      return;  // no notification if message contains text (the text part of the message already triggers a push notification)
+
+    // Send only if user is not viewing this conversation (even with active connections)
     for (const receiverId of payload.receiverIds) {
       const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);
       if (!connectedSockets.some(s => s.data.viewedConversation === payload.conversationId)) {
         const profile = await this.profiles.findUserKnownProfile(receiverId, payload.senderId, false);
         if (!profile)
           return;
+
         // Create notification message
         const senderName = profile.nick || profile.name || profile.phoneNumber;
-        const notificationMessage = [senderName + ": ", "filesSentMessage"];
-        this.sendMessagePush(receiverId, payload.conversationId, notificationMessage);
+        const notificationMessage = { schema: "$: filesSentMessage ($) 📄", params: [senderName, payload.filesInfo.length] };
+        this.sendPush(receiverId, payload.conversationId, notificationMessage);
       }
     }
   }
 
 
   // Prepares the payload and sends an event to handle by the push notification service
-  private async sendMessagePush(receiverId: number, conversationId: number, message: string | string[]) {
-    const header = "newMessage"; 
-    const tag = `new-message:conversation-${conversationId}`;
-
-    this.eventEmitter.emit("pushNotification", {
+  private async sendPush(receiverId: number, conversationId: number, message: string | StringTemplate) {
+    let eventPayload: PushNotifcationEvent = {
       userId: receiverId,
-      header,
+      header: { schema: "newMessage" },
       message,
-      tag,
-    });
+      tag: `new-message:conversation-${conversationId}`
+    };
+
+    this.eventEmitter.emit("pushNotification", eventPayload);
   }
 
   @OnEvent("messageDeleted")

@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
 import { SessionsService } from "src/domain/session/sessions.service";
 import * as webpush from "web-push";
-import { notificationStrings } from "../strings/notification-strings";
 import { LoggingService } from "src/shared/logging/app-logger";
 
 
@@ -51,7 +50,7 @@ export class WebPushService {
         "lang": normalizedLang,
         "data": {
           "onActionClick": {
-            "default": { "operation": "focusLastFocusedOrOpen", "url": /*clickUrl ??*/ notificationStrings.homePage }
+            "default": { "operation": "focusLastFocusedOrOpen", "url": "/chats" }
           }
         }
       }

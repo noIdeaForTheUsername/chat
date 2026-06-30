@@ -1,9 +1,9 @@
+import { StringTemplate } from "src/application/shared/strings/string-params";
 
 
 export class PushNotifcationEvent {
   userId: number;
-  header: string | string[];
-  message: string | string[]; 
+  header: string | StringTemplate;
+  message: string | StringTemplate;
   tag?: string;
-  // clickUrl?: string;
 }

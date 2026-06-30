@@ -7,6 +7,7 @@ import { MessagesService } from '../messages/messages.service';
 import { MessageWithFileDto } from './dto/message-with-file.dto';
 import { FileInfoResponse } from './file-interfaces';
 import { FilesService } from './services/files.service';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller()
 export class FilesController {
@@ -39,12 +40,13 @@ export class FilesController {
     const message = await this.messagesService.sendMessage(callerId, conversationId, body.text ?? "", body.repliedId);
 
     // register files
-    await this.filesService.processUploadedFiles(files, callerId, conversationId, message.globalId);
+    await this.filesService.processUploadedFiles(files, callerId, conversationId, message.globalId, !!body.text);
 
     return { id: message.globalId };
   }
 
   @Get("uploads/:uuid")
+  @SkipThrottle({ fiveSeconds: false })
   async serveFile(
     @Param('uuid') fileUuid: string,
     @UserId() callerId: number,

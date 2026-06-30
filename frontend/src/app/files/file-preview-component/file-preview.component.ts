@@ -3,12 +3,13 @@ import { FileInfo } from '../file-types';
 import { IonIcon } from '@ionic/angular/standalone';
 import { FileSizePipe } from '../file-size-pipe';
 import { MediaDimensionsCalculator } from '../max-media-height-calculator';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-file-preview',
   templateUrl: './file-preview.component.html',
   styleUrls: ['./file-preview.component.scss'],
-  imports: [IonIcon, FileSizePipe],
+  imports: [IonIcon, FileSizePipe, NgOptimizedImage],
 })
 export class FilePreviewComponent {
 

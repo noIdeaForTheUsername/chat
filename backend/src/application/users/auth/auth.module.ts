@@ -6,11 +6,11 @@ import { AuthService } from "./auth.service";
 import { SessionsModule } from "src/domain/session/sessions.module";
 import { ActionsThrottlerModule } from "src/application/shared/actions-rate-limiting/actions-throttler.module";
 import { LoggingModule } from "src/shared/logging/logging.module";
-import { AccountRateLimitsService } from "../account-rate-limits/account-rate-limits.service";
+import { AccountRateLimitsModule } from "../account-rate-limits/account-rate-limits.module";
 
 @Module({
-  imports: [AccountsDomainModule, AccountsModule, SessionsModule, ActionsThrottlerModule, LoggingModule],
+  imports: [AccountsDomainModule, AccountsModule, SessionsModule, ActionsThrottlerModule, LoggingModule, AccountRateLimitsModule],
   controllers: [AuthController],
-  providers: [AuthService, AccountRateLimitsService],
+  providers: [AuthService],
 })
 export class AuthModule {}

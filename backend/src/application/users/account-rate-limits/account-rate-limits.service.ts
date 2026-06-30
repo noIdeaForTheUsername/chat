@@ -1,14 +1,15 @@
-import { ForbiddenException, HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ActionsThrottlerService } from "src/application/shared/actions-rate-limiting/actions-throttler.service";
+import { StringTemplate } from "src/application/shared/strings/string-params";
+import { StringsService } from "src/application/shared/strings/strings.service";
+import { AccountsDomainService } from "src/domain/accounts/accounts.service";
 import { SessionEntity } from "src/domain/session/entity/session.entity";
+import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
 import { LoggingService } from "src/shared/logging/app-logger";
 import { Severity } from "src/shared/logging/logging-enums";
 import { getSidHash } from "src/shared/sid-hash";
-import { AccountsService } from "../accounts/accounts.service";
 import { GLOBAL_BLOCKING_LOGIN_LIMIT_PER_ACCOUNT, GLOBAL_DELAYING_LOGIN_LIMIT_PER_ACCOUNT, LONG_LOGIN_LIMIT_PER_ACCOUNT, PASSWORD_PROTECTED_ACTION_LIMIT_PER_SESSION, SHORT_LOGIN_LIMIT_PER_ACCOUNT } from "./rate-limited-actions";
-import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
-import { AccountsDomainService } from "src/domain/accounts/accounts.service";
 
 
 // Advanced rate limits for account- and auth-related actions, besides the standard @Throttle limits
@@ -21,6 +22,7 @@ export class AccountRateLimitsService {
     private readonly actionsThrottlerService: ActionsThrottlerService,
     private readonly logger: LoggingService,
     private readonly eventEmitter: EventEmitter2,
+    private strings: StringsService
   ) {}
 
 
@@ -42,8 +44,8 @@ export class AccountRateLimitsService {
         );
 
         this.notifyAdministration(
-          ["accountAttackHeader"],
-          ["accountAttackMessage", phoneNumber],
+          { schema: "accountAttackHeader" },
+          { schema: "accountAttackMessage: $", params: [phoneNumber] },
         );
       }
 
@@ -86,7 +88,7 @@ export class AccountRateLimitsService {
     this.actionsThrottlerService.resetLimit(PASSWORD_PROTECTED_ACTION_LIMIT_PER_SESSION, tracker);
   }
 
-  private async notifyAdministration(messageHeader: string[], messageBody: string[], tag?: string) {
+  private async notifyAdministration(messageHeader: string | StringTemplate, messageBody: string | StringTemplate, tag?: string) {
     const admins = await this.accounts.findAdmins(true);
     for (const admin of admins) {
       const event: PushNotifcationEvent = {

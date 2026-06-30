@@ -27,7 +27,9 @@ export class FilesService {
   ) {}
 
 
-  async processUploadedFiles(files: Express.Multer.File[], senderId: number, conversationId: number, messageId: number): Promise<void> {
+  async processUploadedFiles(files: Express.Multer.File[], senderId: number,
+    conversationId: number, messageId: number, messageContainsText: boolean
+  ): Promise<void> {
     files.forEach(file =>
       file.originalname = this.getUtf8FileName(file.originalname)
     );
@@ -42,6 +44,7 @@ export class FilesService {
       participants,
       conversationId,
       messageId,
+      messageContainsText,
       filesInfoResponse
     ));
   }

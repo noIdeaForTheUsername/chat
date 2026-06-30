@@ -6,6 +6,7 @@ export class FilesSentEvent {
     public readonly receiverIds: number[],
     public readonly conversationId: number,
     public readonly messageId: number,
+    public readonly messageContainsText: boolean,
     public readonly filesInfo: FileInfoResponse[]
   ) {}
 }
