@@ -150,6 +150,12 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       if (this.conversation())
         this.loadParticipant(this.conversation()!.participantId);
     });
+    effect(() => {
+      const enteredMsg = this.enteredMessage();
+      if (!this.messageField)
+        return;
+      this.messageField.value = enteredMsg;
+    });
   }
 
   private async loadConversationData(conversationId: number) {
@@ -276,8 +282,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     
     this.enteredMessage.set("");
     this.cancelReply();
-    this.clearAttachments();
-    this.messageField.value = "";
+    this.clearAttachmentsAndCancelUpload(); 
     setTimeout(() => this.messageField.setFocus(), 100);
   }
 
@@ -311,9 +316,28 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  clearAttachments() {
+  clearAttachmentsAndCancelUpload() {
+    this.messageService.operations.cancelFileUpload();
     this.selectedFiles.set([]);
     this.uploadProgress.set(0);
+    this.awaitingMessageSendResponse.set(false);
+  }
+
+  protected onBackButtonClickDuringMessageSending() {
+    if (this.awaitingMessageSendResponse()) {
+      this.alertService.displayPromptAlert(
+        AlertType.DANGER_PROMPT,
+        this.translate.instant('page.chat.cancel-sending-confirm.description'),
+        () => {
+          this.clearAttachmentsAndCancelUpload();
+          this.cancelReply();
+          this.enteredMessage.set("");
+          this.awaitingMessageSendResponse.set(false);
+        },
+        undefined,
+        this.translate.instant('page.chat.cancel-sending-confirm.header')
+      );
+    }
   }
 
   // ------------------------------------------- SCROLL-RELATED FUNCTIONS + ADDITIONAL MSG LOADING (on infinite scroll) -------------------------------------------
@@ -493,6 +517,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "");
   }
   cancelReply() {
+    if (this.awaitingMessageSendResponse())  // message already being sent
+      return;
     this.replyingToId.set(null);
   }
 

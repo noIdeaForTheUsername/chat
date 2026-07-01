@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { Message } from '../message.interface';
 import { MessageView } from '../message-view.interface';
 
@@ -22,6 +22,8 @@ export class MessageStateStore {
   public currentConvNewestMessageId: number = 1;
   public currentConvOldestMessageId: number = 1;
   public loadsCount: number = 0; // number of additional loads since initial conversation load
+
+  public uploadSubscription: Subscription | null = null; // subscription to the current file upload progress observable
 
   // events
   public messagesWillRefresh = new Subject<void>();

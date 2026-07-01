@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { NotBlockingParticipantsService } from 'src/application/shared/not-blocking-participants/not-blocking-participants.service';
@@ -12,6 +12,7 @@ import { FileTypesService } from './file-types.service';
 import { FilesStorageService } from './files-storage.service';
 import { MessageDeletedEvent } from 'src/shared/events/messages/message-deleted.event';
 import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
+import { isUUID } from 'class-validator';
 
 // The file upload and writing themseleves are performed by Multer in FileInterceptor.
 // This service manages metadata and downloads
@@ -32,9 +33,6 @@ export class FilesService {
   async processUploadedFiles(files: Express.Multer.File[], senderId: number,
     conversationId: number, messageId: number, messageContainsText: boolean
   ): Promise<void> {
-    files.forEach(file =>
-      file.originalname = this.getUtf8FileName(file.originalname)
-    );
     const filesInfo = await Promise.all(
       files.map((file) => this.processUploadedFile(file, messageId))
     );
@@ -52,12 +50,16 @@ export class FilesService {
   }
 
   private async processUploadedFile(file: Express.Multer.File, messageId: number): Promise<FileInfo> {
+    file.originalname = this.getUtf8FileName(file.originalname);
+    const fileUuid = this.storage.fileNameToUuid(file.filename);
     const fileTypeInfo = await this.fileTypes.getFileInfo(file);
-    return await this.domainService.saveFileInfo(file, messageId, fileTypeInfo);
+    let fileInfo = await this.domainService.saveFileInfo(file, fileUuid, messageId, fileTypeInfo);
+    await this.storage.renameUploadedFile(file);
+    return fileInfo;
   }
 
   async serveFile(uuid: string, callerId: number, res: Response) {
-    uuid = this.normalizeUuid(uuid);
+    uuid = this.normalizeUuidOrThrow(uuid);
     const info = await this.domainService.getViewedFileInfo(uuid, callerId);
     if (!info)
       throw new NotFoundException();
@@ -77,11 +79,33 @@ export class FilesService {
     return filesInfo.map(file => this.fileTypes.convertFileInfoToResponse(file));
   }
 
-  private normalizeUuid(uuid: string): string {
-    let lastIndexOfDot = uuid.lastIndexOf('.');
-    return uuid.toLowerCase().substring(
-      0, Math.min(36, lastIndexOfDot >= 0 ? lastIndexOfDot : uuid.length)
-    );
+
+
+  
+  @OnEvent("messageDeleted")
+  private async handleMessageDeleted(payload: MessageDeletedEvent) {
+    const fileInfos = await this.domainService.getMessageFilesInfo(payload.message.globalId);
+    if (fileInfos.length === 0)
+      return;
+
+    // Delete files from both DB and filesystem
+    let deletions: Promise<any>[] = [
+      this.domainService.deleteMessageFilesInfo(payload.message.globalId)
+    ];
+    deletions.push(...fileInfos.map(fileInfo => this.storage.deleteFileFromDisk(fileInfo.uuid)));
+    await Promise.allSettled(deletions);
+  }
+
+  @OnEvent("conversationCleared")
+  private async handleConversationCleared(payload: ConversationClearedEvent) {
+    await this.domainService.deleteConversationUserFilesInfo(payload.conversationId, payload.callerId);
+  }
+
+  private normalizeUuidOrThrow(uuid: string): string {
+    uuid = uuid.trim().toLowerCase();
+    if (isUUID(uuid))
+      return uuid;
+    throw new NotFoundException();
   }
 
   private setFileResponseHeaders(res: Response, info: FileInfo | ViewedFileInfo) {
@@ -98,23 +122,5 @@ export class FilesService {
 
   private getLatin1FileName(utf8Filename: string): string {
     return Buffer.from(utf8Filename, 'utf8').toString('latin1');
-  }
-
-  @OnEvent("messageDeleted")
-  async handleMessageDeleted(payload: MessageDeletedEvent) {
-    const fileInfos = await this.domainService.getMessageFiles(payload.message.globalId);
-    if (fileInfos.length === 0)
-      return;
-
-    let deletions: Promise<any>[] = [
-      this.domainService.deleteMessageFiles(payload.message.globalId)  // DB deletion
-    ];
-    deletions.push(...fileInfos.map(fileInfo => this.storage.deleteFileFromDisk(fileInfo.uuid)));  // Filesystem deletions
-    await Promise.all(deletions);
-  }
-
-  @OnEvent("conversationCleared")
-  async handleConversationCleared(payload: ConversationClearedEvent) {
-    this.domainService.deleteConversationUserFilesInfo(payload.conversationId, payload.callerId);
   }
 }

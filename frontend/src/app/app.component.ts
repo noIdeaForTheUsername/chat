@@ -17,7 +17,8 @@ import {
   help, helpCircle, hourglass,
   language,
   logoAndroid, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove,
-  settings, trash, trashBin, wifiOutline
+  settings, trash, trashBin, wifiOutline,
+  arrowBack
 } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
 import { LanguageService } from './i18n/language.service';
@@ -34,7 +35,7 @@ export class AppComponent {
       chatbubbleEllipses, pencil, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
       people, notifications, download, person, personAdd, personRemove, attach, document,
-      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe });
+      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe, arrowBack });
 
     translate.setTranslation('pl', translationsPL);
     translate.setTranslation('en', translationsEN);

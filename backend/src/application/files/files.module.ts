@@ -9,6 +9,9 @@ import { FilesStorageService } from './services/files-storage.service';
 import { ConversationsDomainModule } from 'src/domain/conversations/conversations.module';
 import { FileTypesService } from './services/file-types.service';
 import { NotBlockingParticipantsModule } from '../shared/not-blocking-participants/not-blocking-participants.module';
+import { LoggingModule } from 'src/shared/logging/logging.module';
+import { FilesDomainService } from 'src/domain/files/files.service';
+import { LoggingService } from 'src/shared/logging/app-logger';
 
 @Module({
   controllers: [FilesController],
@@ -18,11 +21,13 @@ import { NotBlockingParticipantsModule } from '../shared/not-blocking-participan
     ConversationsDomainModule,
     FilesDomainModule,
     NotBlockingParticipantsModule,
+    LoggingModule,
     MulterModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        storage: new FilesStorageService(configService).getMulterFileDiskStorage(),
+      imports: [ConfigModule, FilesDomainModule, LoggingModule],
+      inject: [ConfigService, FilesDomainService, LoggingService],
+      useFactory: async (configService: ConfigService,
+      filesDomainService: FilesDomainService, loggingService: LoggingService) => ({
+        storage: new FilesStorageService(configService, filesDomainService, loggingService).getMulterFileDiskStorage(),
         limits: {
           files: 20,
         }

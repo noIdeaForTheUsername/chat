@@ -29,7 +29,7 @@ export class ViewedFileInfo {
   @ViewColumn({ name: "media_height" })
   mediaHeight: number | null;
 
-  // viewer is anyone with access to the conversation
+  // viewer is anyone with access to the conversation (and to the file)
 
   @ViewColumn({ name: "viewer_id" })
   viewerId: number;

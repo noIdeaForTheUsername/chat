@@ -14,12 +14,12 @@ export class FilesDomainService {
     @InjectRepository(FileInfo)
     private readonly filesInfo: Repository<FileInfo>,
     @InjectRepository(ViewedFileInfo)
-    private readonly extendedFilesInfo: Repository<ViewedFileInfo>
+    private readonly viewedFilesInfo: Repository<ViewedFileInfo>
   ) {}
 
-  async saveFileInfo(file: Express.Multer.File, messageId: number, fileTypeInfo: FileTypeInfo) {
+  async saveFileInfo(file: Express.Multer.File, fileUuid: string, messageId: number, fileTypeInfo: FileTypeInfo) {
     let fileInfo = this.filesInfo.create({
-      uuid: file.filename.substring(0, file.filename.lastIndexOf('.')),
+      uuid: fileUuid,
       messageId: messageId,
       uploadedAt: new Date(),
       originalName: file.originalname,
@@ -32,8 +32,13 @@ export class FilesDomainService {
     return this.filesInfo.save(fileInfo);
   }
 
+  async getAllFilesUuids() {
+    return this.filesInfo.find({ select: { uuid: true } });
+  }
+
+  // the function only returns the record if the viewerId-user has access to the file (see ViewedFileInfo entity)
   async getViewedFileInfo(uuid: string, viewerId: number) {
-    return this.extendedFilesInfo.findOneBy({ uuid: uuid, viewerId: viewerId });
+    return this.viewedFilesInfo.findOneBy({ uuid: uuid, viewerId: viewerId });
   }
 
   async getConversationFilesInfo(conversationId: number, minMessageId: number, maxMessageId: number)
@@ -54,11 +59,11 @@ export class FilesDomainService {
       .getMany();
   }
 
-  async getMessageFiles(messageId: number) {
+  async getMessageFilesInfo(messageId: number) {
     return await this.filesInfo.findBy({ messageId: messageId });
   }
 
-  async deleteMessageFiles(messageId: number) {
+  async deleteMessageFilesInfo(messageId: number) {
     return await this.filesInfo.delete({ messageId: messageId });
   }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, Headers, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, InternalServerErrorException, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseFilters, UseInterceptors } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FilesInterceptor } from "@nestjs/platform-express";
 import type { Response } from 'express';
@@ -8,6 +8,7 @@ import { MessageWithFileDto } from './dto/message-with-file.dto';
 import { FileInfoResponse } from './file-interfaces';
 import { FilesService } from './services/files.service';
 import { SkipThrottle } from '@nestjs/throttler';
+import { RequestAbortedExceptionFilter } from './req-aborted.filter';
 
 const maxCacheAgeSeconds = 3600 * 24 * 60; // 60 days
 
@@ -31,6 +32,7 @@ export class FilesController {
   }
 
   @Post("conversations/:id/uploads")
+  @UseFilters(RequestAbortedExceptionFilter)
   @UseInterceptors(FilesInterceptor("files")) 
   async sendMessageWithFiles(
     @UserId() callerId: number,

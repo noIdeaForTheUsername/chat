@@ -29,7 +29,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { STANDARD_RATE_LIMIT } from './shared/global-rate-limiting/rate-limiting-settings';
 import { ScheduleModule } from '@nestjs/schedule';
 import { OriginFilterGuard } from './shared/web-security/origin-filter.guard';
-import { ServerErrorLoggingExceptionFilter } from './shared/logging/server-error-filter';
+import { ServerErrorLoggingExceptionFilter } from './shared/server-error-filter';
 import { HttpLoggingMiddleware } from './shared/logging/http-logging.middleware';
 import { LoggingModule } from './shared/logging/logging.module';
 import { FilesModule } from './application/files/files.module';

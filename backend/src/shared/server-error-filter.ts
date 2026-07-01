@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpException, Injectable } from "@nestjs/common";
 import { BaseExceptionFilter } from "@nestjs/core";
 import { Response } from "express";
-import { LoggingService } from "./app-logger";
+import { LoggingService } from "./logging/app-logger";
 
 @Catch()
 @Injectable()
@@ -21,7 +21,7 @@ export class ServerErrorLoggingExceptionFilter extends BaseExceptionFilter {
     if (!(exception instanceof HttpException)
       || internalServerError
     ) {
-      this.logger.internalServerError(exception);
+      this.logger.internalServerError(exception, "ServerErrorLoggingExceptionFilter");
       if (internalServerError) {  // Override the message for internal server errors
         (exception as any).getResponse().message = "Internal Server Error";
       }

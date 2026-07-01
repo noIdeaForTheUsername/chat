@@ -8,7 +8,16 @@
 @else {
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/chats"></ion-back-button>
+      @if (awaitingMessageSendResponse()) {
+        <!-- blocked back button -->
+        <ion-button (click)="this.onBackButtonClickDuringMessageSending()">
+          <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
+      @else {
+        <!-- standard back button -->
+        <ion-back-button defaultHref="/chats"></ion-back-button>
+      }
     </ion-buttons>
     <ion-title>{{(participant ?? undefined) | visibleName:false}}</ion-title>
     <ion-buttons slot="end">
@@ -108,11 +117,11 @@
           </ion-chip>
         }
         @if (selectedFiles().length > 0) {
-          <ion-chip>
+          <ion-chip (click)="clearAttachmentsAndCancelUpload()">
             <p>
               <ion-icon name="attach"/>
               {{ attachmentText() }}
-              <ion-icon name="close-circle" (click)="clearAttachments()"/>
+              <ion-icon name="close-circle"/>
             </p>
           </ion-chip>
         }

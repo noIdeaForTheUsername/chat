@@ -51,17 +51,8 @@ export class MessageOperations {
     if (currentConvId === -1)
       return;
 
-    // Reject too long message
-    if (text.length > this.MESSAGE_LENGTH_LIMIT) {
-      this.alertService.displayMessageAlert(
-        AlertType.ERROR,
-        this.translate.instant('error.message-too-long.description', { excess: text.length - this.MESSAGE_LENGTH_LIMIT }),
-        undefined,
-        this.translate.instant('error.message-too-long.header')
-      );
-      this.state.ownMessageSent.next(false);
+    if (!this.validateMessageLength(text))
       return;
-    }
 
     this.api.sendMessage(currentConvId, text, repliedId).subscribe({
       next: (res: any) => {
@@ -78,7 +69,10 @@ export class MessageOperations {
     if (currentConvId === -1)
       return;
 
-    this.api.uploadFiles(currentConvId, files, text, repliedId).subscribe({
+    if (!this.validateMessageLength(text ?? ""))
+      return;
+
+    this.state.uploadSubscription = this.api.uploadFiles(currentConvId, files, text, repliedId).subscribe({
       next: (event: any) => {
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)
@@ -99,10 +93,36 @@ export class MessageOperations {
     });
   }
 
+  cancelFileUpload() {
+    if (this.state.uploadSubscription) {
+      this.state.uploadSubscription.unsubscribe();
+      console.warn("File upload canceled by user.");
+    }
+    this.state.uploadSubscription = null;
+    this.state.uploadProgress.next(0);
+  }
+
+  private validateMessageLength(messageText: string) {
+    if (messageText.length > this.MESSAGE_LENGTH_LIMIT) {
+      this.alertService.displayMessageAlert(
+        AlertType.ERROR,
+        this.translate.instant('error.message-too-long.description', { excess: messageText.length - this.MESSAGE_LENGTH_LIMIT }),
+        undefined,
+        this.translate.instant('error.message-too-long.header')
+      );
+      this.state.ownMessageSent.next(false);
+      return false;
+    }
+    return true;
+  }
+
   private handleMessageSendingError(e: any) {
     this.state.ownMessageSent.next(false);
     if (e.status === 429) {
       this.alertService.displayError("too-many-messages");
+    }
+    else if (e.status === 400 && e.error?.message === 'message-too-long') {
+      this.alertService.displayError("message-too-long");
     }
     else {
       this.alertService.displayError(

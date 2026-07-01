@@ -110,7 +110,9 @@
       "options": "Chat options",
       "copy-failed": "Failed to copy text to clipboard",
       "attachment-one": "Attachment (1)",
-      "attachment-many": "Attachments ({{count}})"
+      "attachment-many": "Attachments ({{count}})",
+      "cancel-sending-confirm.header": "Cancel message sending",
+      "cancel-sending-confirm.description": "Leaving the page will cancel the message sending. Are you sure you want to do this?"
     },
 
     "profile": {
