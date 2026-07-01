@@ -34,14 +34,16 @@ export class AuthService {
   // State
   public readonly processing = signal(false);
   public readonly serverUnavailableWhileLoggedOut = signal(false);
-
+  private loginPromptDisplayed = false;
 
   // USER ID / ACCOUNT-ACTIVE GETTERS & SETTERS
 
   private setUserId(id: number | null) {
     this.userId = id;
-    if (id === null) localStorage.removeItem("userId");
-    else localStorage.setItem("userId", id.toString());
+    if (id === null)
+      localStorage.removeItem("userId");
+    else
+      localStorage.setItem("userId", id.toString());
   }
 
   public getUserId(): number | null {
@@ -59,6 +61,10 @@ export class AuthService {
     return this.userAccountActive;
   }
 
+  public getUserWasLoggedInBefore(): boolean {
+    return this.getUserId() !== null && this.getUserAccountActive();
+  }
+
   // AUTHENTHCATION LOADING
 
   loadLocalAuth() {
@@ -72,7 +78,7 @@ export class AuthService {
       timeout(timeoutMs),
       tap((res) => {
         this.processing.set(false);
-        if (!res.id) {  // hopefully never happens
+        if (!res.id) {  // this isn't supposed to happen
           this.alertService.displayError('unknown');
           throw new Error("Successful response but server didn't return the user ID.");
         }
@@ -86,6 +92,25 @@ export class AuthService {
         this.processing.set(false);
         return throwError(() => e);
       })
+    );
+  }
+
+  handleSessionExpiredError() {
+    if (this.getUserId() === null)
+      return;  // user wasn't logged in before, no need to display login prompt
+
+    if (this.loginPromptDisplayed)
+      return;
+    this.loginPromptDisplayed = true;
+
+    this.alertService.displayPromptAlert(AlertType.PROMPT,
+      this.translate.instant("error.unauthorized.description"),
+      () => {
+        if (this.router.url !== '/login')
+          this.router.navigate(['/login'])
+      } ,
+      undefined,
+      this.translate.instant("error.unauthorized.header"),
     );
   }
   

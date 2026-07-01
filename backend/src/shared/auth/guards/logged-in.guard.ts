@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Reflector } from '@nestjs/core';
 import { AccountsDomainService } from 'src/domain/accounts/accounts.service';
 
@@ -13,7 +13,7 @@ export class LoggedInGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     if (context.getType() !== 'http') return true;
     const req = context.switchToHttp().getRequest();
-    const res = context.switchToHttp().getResponse();
+    const res = context.switchToHttp().getResponse() as Response;
 
     const publicAccess = this.reflector.getAllAndOverride('publicAccess',
       [context.getHandler(), context.getClass()]) || false;
@@ -22,7 +22,10 @@ export class LoggedInGuard implements CanActivate {
       if (publicAccess)
         return true;
       else {
-        if (req.cookies.session) res.clearCookie('session');  // clear invalid cookie
+        if (req.cookies.session) {
+          res.setHeader("Clear-Site-Data", "cache");  // sensitive data must be cleared on session expiration
+          res.clearCookie('session');  // clear invalid cookie
+        }
         throw new UnauthorizedException();
       }
     }

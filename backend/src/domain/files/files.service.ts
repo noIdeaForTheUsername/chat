@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ViewedFileInfo } from "./entities/viewed-file-info";
 import { Message } from "../messages/entities/message.entity";
 import { FileTypeInfo } from "src/application/files/file-interfaces";
+import { OnEvent } from "@nestjs/event-emitter";
 
 @Injectable()
 export class FilesDomainService {
@@ -51,5 +52,26 @@ export class FilesDomainService {
       })
       .orderBy('message.globalId', 'DESC')
       .getMany();
+  }
+
+  async getMessageFiles(messageId: number) {
+    return await this.filesInfo.findBy({ messageId: messageId });
+  }
+
+  async deleteMessageFiles(messageId: number) {
+    return await this.filesInfo.delete({ messageId: messageId });
+  }
+
+  async deleteConversationUserFilesInfo(conversationId: number, userId: number /*user whose messages are to be deleted*/) {
+    // DELETE FROM files_info INNER JOIN messages m ON files_info.message_id = m.global_id WHERE m.conversation_id = ? AND m.sender_id = ?
+    await this.filesInfo.query(
+      `DELETE FROM files_info fi
+      USING messages m
+      WHERE fi.message_id = m.global_id
+        AND m.conversation_id = $1
+        AND m.sender_id = $2
+      `,
+      [conversationId, userId],
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { NotBlockingParticipantsService } from 'src/application/shared/not-blocking-participants/not-blocking-participants.service';
 import { ConversationsDomainService } from 'src/domain/conversations/conversations.service';
@@ -10,6 +10,8 @@ import { FilesSentEvent as FilesSentEvent } from 'src/shared/events/messages/fil
 import { FileInfoResponse } from '../file-interfaces';
 import { FileTypesService } from './file-types.service';
 import { FilesStorageService } from './files-storage.service';
+import { MessageDeletedEvent } from 'src/shared/events/messages/message-deleted.event';
+import { ConversationClearedEvent } from 'src/shared/events/conversation-cleared.event';
 
 // The file upload and writing themseleves are performed by Multer in FileInterceptor.
 // This service manages metadata and downloads
@@ -96,5 +98,23 @@ export class FilesService {
 
   private getLatin1FileName(utf8Filename: string): string {
     return Buffer.from(utf8Filename, 'utf8').toString('latin1');
+  }
+
+  @OnEvent("messageDeleted")
+  async handleMessageDeleted(payload: MessageDeletedEvent) {
+    const fileInfos = await this.domainService.getMessageFiles(payload.message.globalId);
+    if (fileInfos.length === 0)
+      return;
+
+    let deletions: Promise<any>[] = [
+      this.domainService.deleteMessageFiles(payload.message.globalId)  // DB deletion
+    ];
+    deletions.push(...fileInfos.map(fileInfo => this.storage.deleteFileFromDisk(fileInfo.uuid)));  // Filesystem deletions
+    await Promise.all(deletions);
+  }
+
+  @OnEvent("conversationCleared")
+  async handleConversationCleared(payload: ConversationClearedEvent) {
+    this.domainService.deleteConversationUserFilesInfo(payload.conversationId, payload.callerId);
   }
 }

@@ -10,11 +10,13 @@ import { MessagesDeliveryService } from './messages-delivery.service';
 import { ProfilesDomainModule } from 'src/domain/profiles/profiles.module';
 import { WsThrottlerGuard } from 'src/shared/global-rate-limiting/ws-throttler.guard';
 import { ActionsThrottlerModule } from '../shared/actions-rate-limiting/actions-throttler.module';
+import { FilesDomainModule } from 'src/domain/files/files.module';
 
 @Module({
   controllers: [MessagesController],
   providers: [MessagesService, MessagesGateway, MessagesDeliveryService, WsThrottlerGuard],
-  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule, ProfilesDomainModule, NotBlockingParticipantsModule, ActionsThrottlerModule],
+  imports: [MessagesDomainModule, ConversationsDomainModule, AccountsDomainModule,
+    ProfilesDomainModule, NotBlockingParticipantsModule, ActionsThrottlerModule, FilesDomainModule],
   exports: [MessagesService]
 })
 export class MessagesModule {}

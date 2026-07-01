@@ -54,7 +54,7 @@ export class AuthController {
   @Post('logout')
   @PublicAccess()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@Req() req: Request, @Res({ passthrough: false }) res: Response) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     this.authService.logout(req, res);
   }
 

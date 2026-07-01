@@ -86,7 +86,7 @@ export class MessagesGateway implements OnGatewayInit, OnGatewayConnection {
   }
 
   public sendConversationCleared(payload: ConversationClearedEvent) {
-    for (const userId of payload.userIds) {
+    for (const userId of payload.conversationParticipants) {
       this.server.to(`user-${userId}`).emit('reloadConversation', payload.conversationId);
     }
   }

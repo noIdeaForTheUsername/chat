@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
 import { AnyProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
@@ -38,13 +38,14 @@ export class MessageCardComponent  implements OnInit {
   // selection
   private clickLock = false;
   // metadata
-  protected deleted = computed(() => !this.message().text && !this.message().files);
+  protected deleted = computed(() => !this.message().text && (this.message().files?.length ?? 0) === 0);
   protected displayMetadata = computed(() => this.getDisplayMetadata());
   protected displayedDate = computed(() => this.getFormattedDate());
 
   // dates formatting
   static dateFormatter = Intl.DateTimeFormat([], {year: "numeric", month: "2-digit", day: "2-digit"});
   static timeFormatter = Intl.DateTimeFormat([], {hour: '2-digit', minute:'2-digit'});
+
 
   async ngOnInit() {
     this.profile.set(await lastValueFrom(this.profileService.getProfileById(this.message().senderId)));

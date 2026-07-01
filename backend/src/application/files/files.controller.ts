@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FilesInterceptor } from "@nestjs/platform-express";
 import type { Response } from 'express';
@@ -9,8 +9,11 @@ import { FileInfoResponse } from './file-interfaces';
 import { FilesService } from './services/files.service';
 import { SkipThrottle } from '@nestjs/throttler';
 
+const maxCacheAgeSeconds = 3600 * 24 * 60; // 60 days
+
 @Controller()
 export class FilesController {
+
   constructor(
     private readonly filesService: FilesService,
     private readonly messagesService: MessagesService,
@@ -47,6 +50,7 @@ export class FilesController {
 
   @Get("uploads/:uuid")
   @SkipThrottle({ fiveSeconds: false })
+  @Header("Cache-Control", `private, max-age=${maxCacheAgeSeconds}, immutable`)
   async serveFile(
     @Param('uuid') fileUuid: string,
     @UserId() callerId: number,

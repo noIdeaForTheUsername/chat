@@ -98,15 +98,16 @@ export class AuthService {
   // LOGOUT
 
   async logout(req: Request, res: Response) {
-    const session: any = req.session;
-    if (!session || !session.userId) {
-      return res.clearCookie('session').send();
-    }
+    res.setHeader('Clear-Site-Data', 'cache');
+    res.clearCookie('session');
 
+    const session: any = req.session;
+    if (!session || !session.userId)
+      return;
+    
     return new Promise((resolve, reject) => {
       req.session.destroy(() => {
-        this.eventEmitter.emit('userLogout', new UserLogoutEvent(session.userId));
-        res.clearCookie('session').send();
+        this.eventEmitter.emit('userLogout', new UserLogoutEvent(session.userId));  
         resolve(null);
       });
     });

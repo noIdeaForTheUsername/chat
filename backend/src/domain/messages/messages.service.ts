@@ -79,7 +79,7 @@ export class MessagesDomainService {
     return result;
   }
 
-  async clearMessageById(conversationId: number, messageId: number) {
+  async deleteMessageById(conversationId: number, messageId: number) {
     const where = { conversationId: conversationId, globalId: messageId };
     await this.messageRepository.update(
       where,
@@ -88,7 +88,7 @@ export class MessagesDomainService {
     return await this.messageRepository.find({ where });
   }
 
-  async clearMultipleMessages(conversationId: number, messageIds: number[], senderId: number) {
+  async deleteMultipleMessages(conversationId: number, messageIds: number[], senderId: number) {
     const where = { conversationId: conversationId, globalId: In(messageIds), senderId: senderId };
     await this.messageRepository.update(
       where,
@@ -97,7 +97,7 @@ export class MessagesDomainService {
     return await this.messageRepository.find({ where });
   }
 
-  async clearAllConversationMessages(conversationId: number, senderId: number) {
+  async deleteAllConversationMessages(conversationId: number, senderId: number) {
     const where = { conversationId: conversationId, senderId: senderId };
     await this.messageRepository.update(
       where,

@@ -103,7 +103,7 @@ export class MessagesService {
     if (message.senderId !== callerId)
       throw new ForbiddenException("cannot-delete-not-own-message");
     
-    const deleted = await this.messagesDomainService.clearMessageById(conversationId, messageId);
+    const deleted = await this.messagesDomainService.deleteMessageById(conversationId, messageId);
     await this.sendRealTimeDeletion(deleted);
   }
 
@@ -111,7 +111,7 @@ export class MessagesService {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
-    const deleted = await this.messagesDomainService.clearMultipleMessages(conversationId, messageIds, callerId);
+    const deleted = await this.messagesDomainService.deleteMultipleMessages(conversationId, messageIds, callerId);
     await this.sendRealTimeDeletion(deleted);
   }
 
@@ -119,8 +119,12 @@ export class MessagesService {
     // assert this conv exists and the caller is a member of it
     await this.conversationsDomainService.findUserConversation(callerId, conversationId, true);
 
-    await this.messagesDomainService.clearAllConversationMessages(conversationId, callerId);
+    await Promise.all([
+      this.messagesDomainService.deleteAllConversationMessages(conversationId, callerId),
+
+    ]);
     this.eventEmitter.emit("conversationCleared", new ConversationClearedEvent(
+      callerId,
       await this.notBlockingParticipantsService.getNotBlockingParticipantsIds(conversationId, callerId),
       conversationId));
   }

@@ -107,7 +107,6 @@ export class MessageFileLoader {
     let updated = {...message};
     if (!updated.files)
       updated.files = [];
-    console.log("adding file to message: ", fileInfo);
     updated.files.push(fileInfo as FileInfo);
     return updated;
   }

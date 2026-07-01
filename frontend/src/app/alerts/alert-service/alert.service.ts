@@ -23,7 +23,6 @@ export class AlertService {
 
   // internal (prevent spamming particular types of alerts)
   private serverConnectionErrorDisplayed = false;
-  private loginPromptDisplayed = false;
 
   setAlertDismissed() {
     this._open.set(false);
@@ -94,20 +93,6 @@ export class AlertService {
     this.displayMessageAlert(AlertType.ERROR,
       message + (error ? `\n\n${JSON.stringify(error)}` : ""),
       undefined, header);
-  }
-
-  displayLoginPrompt() {
-    if (this.loginPromptDisplayed) return;
-    this.loginPromptDisplayed = true;
-
-    this.displayPromptAlert(AlertType.PROMPT,
-      this.translate.instant("error.unauthorized.description"),
-      () => {
-        if (this.router.url !== '/login') this.router.navigate(['/login'])
-      } ,
-      undefined,
-      this.translate.instant("error.unauthorized.header"),
-    );
   }
 
   displayServerConnectionError(always = false) {  // "always" ignores the limit (for directly user-initiated actions, e.g. login)

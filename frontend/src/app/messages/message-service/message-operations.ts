@@ -175,7 +175,8 @@ export class MessageOperations {
     this.api.deleteMessage(messageId, currentConvId).subscribe({
       next: () => this.deleteOwnMessageLocally(messageId),
       error: (e) => {
-        if (e.error.message === 'cannot-delete-not-own-message') return;
+        if (e.error.message === 'cannot-delete-not-own-message')
+          return;
         this.alertService.displayMessageAlert(
           AlertType.ERROR,
           this.translate.instant('error.failed-to-delete')
@@ -225,18 +226,22 @@ export class MessageOperations {
 
   private deleteOwnMessageLocally(messageId: number) {
     const toDelete = this.state.displayedMessages().find(m => m.globalId === messageId);
-    if (!toDelete || !toDelete.isOwn) return;
+    if (!toDelete || !toDelete.isOwn)
+      throw new Error("Attempted to delete a message that is not owned by the user or not displayed");
+
 
     const updatedMsg: MessageView = {
       ...toDelete,
       text: undefined,
       repliedId: undefined,
+      files: undefined,
     };
 
     this.state.displayedMessages.update((msgs) => {
       return msgs.map(m => m.globalId === messageId ? updatedMsg : m);
     });
     this.state.messagesDidRefresh.next();
+
 
     this.conversationService.updateModifiedMessagePreview(updatedMsg);
   }

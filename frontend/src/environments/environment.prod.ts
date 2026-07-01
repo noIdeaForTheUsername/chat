@@ -6,11 +6,11 @@ export const environment = {
   // and a DIFFERENT SUBdomain. That's a workaround to make cookies look "1st-party" so they work on Android
 
   // Production configuration
-  // apiUrl: "/api",
-  // socketIoUrl: "",
-  // capacitorApiUrl: "https://chat.serwerigora.com/api",
-  // capacitorSocketIoUrl: "https://chat.serwerigora.com",
-  // socketIoPath: "/socket.io",
+  apiUrl: "/api",
+  socketIoUrl: "",
+  capacitorApiUrl: "https://chat.serwerigora.com/api",
+  capacitorSocketIoUrl: "https://chat.serwerigora.com",
+  socketIoPath: "/socket.io",
 
 
   // Staging configuartion
@@ -28,11 +28,11 @@ export const environment = {
   // socketIoPath: "/socket.io",
 
   // Dev configuration 2
-  apiUrl: "http://localhost:3000",
-  socketIoUrl: "http://localhost:3000",
-  capacitorApiUrl: "http://localhost:3000",
-  capacitorSocketIoUrl: "http://localhost:3000",
-  socketIoPath: "/socket.io",
+  // apiUrl: "http://localhost:3000",
+  // socketIoUrl: "http://localhost:3000",
+  // capacitorApiUrl: "http://localhost:3000",
+  // capacitorSocketIoUrl: "http://localhost:3000",
+  // socketIoPath: "/socket.io",
 
   
   vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"

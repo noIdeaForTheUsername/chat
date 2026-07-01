@@ -95,7 +95,7 @@ export class MessagesDeliveryService {
 
   @OnEvent("conversationCleared")
   public async sendConversationClearedToUsers(payload: ConversationClearedEvent) {
-    for (const userId of payload.userIds) {
+    for (const userId of payload.conversationParticipants) {
       // No connection or viewingStatus check needed because it doesn't send push
       this.messagesGateway.sendConversationCleared(payload);
     }

@@ -69,13 +69,13 @@ export class AppInitService {
     // Invalid credentials or server down:
 
     // User was logged in before (and should have already been redirected to the "inside" of the app at this point):
-    const previouslyAuthorized = this.auth.getUserId() !== null && this.auth.getUserAccountActive();
-    if (previouslyAuthorized && isServerUnavailableError(err)) {  // server down
+    const loggedInBefore = this.auth.getUserId() !== null && this.auth.getUserAccountActive();
+    if (loggedInBefore && isServerUnavailableError(err)) {  // server down
       this.alertService.displayServerConnectionError();
       this.preloading.set(false);
     }
-    else if (previouslyAuthorized && err.status === 401) {  // session expired
-      this.alertService.displayLoginPrompt();
+    else if (loggedInBefore && err.status === 401) {  // session expired
+      this.auth.handleSessionExpiredError();
       this.preloading.set(false);
     }
     // User wasn't logged in before (redirect needed):
