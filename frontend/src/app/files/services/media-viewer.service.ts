@@ -1,0 +1,65 @@
+import { Injectable, computed, signal } from '@angular/core';
+
+import { FileInfo } from '../file-types';
+@Injectable({
+  providedIn: 'root'
+})
+export class MediaViewerService {
+
+  private readonly _files = signal<FileInfo[] | null>(null);
+  private readonly _index = signal(0);
+
+  readonly files = this._files.asReadonly();
+  readonly index = this._index.asReadonly();
+
+  readonly active = computed(() => this._files() !== null);
+
+  readonly currentFile = computed(() => {
+    const files = this._files();
+    if (!files) return null;
+    return files[this._index()];
+  });
+
+  open(files: FileInfo[], startUuid?: string): void {
+
+    const media = files.filter(f =>
+      f.type === 'image' || f.type === 'video'
+    );
+
+    if (!media.length) {
+      return;
+    }
+
+    let startIndex = 0;
+    if (startUuid) {
+      startIndex = media.findIndex(f => f.uuid === startUuid);
+      if (startIndex === -1) {
+        console.warn(`MediaViewerService: startUuid ${startUuid} not found in the media files`);
+        startIndex = 0;
+      }
+    }
+
+    this._files.set(media);
+    this._index.set(startIndex);
+  }
+
+  close(): void {
+    this._files.set(null);
+    this._index.set(0);
+  }
+
+  next(): void {
+    const files = this._files();
+    if (!files) return;
+
+    this._index.update(i => (i + 1) % files.length);
+  }
+
+  previous(): void {
+    const files = this._files();
+    if (!files) return;
+
+    this._index.update(i => (i - 1 + files.length) % files.length);
+  }
+
+}

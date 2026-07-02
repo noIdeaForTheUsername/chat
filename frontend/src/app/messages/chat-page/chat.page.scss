@@ -44,7 +44,7 @@ div.toolbar-container {
 }
 
 ion-footer {
-  background-color: var(--ion-toolbar-background);
+  background-color: var(--ion-toolbar-background, var(--ion-background-color, #fff));
 }
 
 ion-popover ion-content {

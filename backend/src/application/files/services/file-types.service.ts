@@ -12,6 +12,8 @@ type Dimensions = { width: number | null, height: number | null };
 @Injectable()
 export class FileTypesService {
 
+  private readonly maxDisplayableImageSize = 15 * 1024 * 1024; // 15 MB
+  private readonly maxDisplayableVideoSize = 60 * 1024 * 1024; // 60 MB
 
   async getFileInfo(file: Express.Multer.File): Promise<FileTypeInfo> {
     const { mimeType, mimeTypeTrusted } = await this.getMimeTypeInfo(file);
@@ -34,11 +36,11 @@ export class FileTypesService {
   getAppFileType(fileInfo: FileInfo | ViewedFileInfo): AppFileType {
     let fileType: AppFileType = "downloadable";
 
-    // renderable media must be trusted and have detected dimensions
+    // renderable media must be trusted and have detected dimensions. They also have size limits
     if (fileInfo.mimeTypeTrusted && fileInfo.mediaWidth && fileInfo.mediaHeight) {
-      if (fileInfo.mimeType.includes("image"))
+      if (fileInfo.mimeType.includes("image") && fileInfo.sizeInBytes < this.maxDisplayableImageSize)
         fileType = "image";
-      else if (fileInfo.mimeType.includes("video"))
+      else if (fileInfo.mimeType.includes("video") && fileInfo.sizeInBytes < this.maxDisplayableVideoSize)
         fileType = "video";
     }
     return fileType;

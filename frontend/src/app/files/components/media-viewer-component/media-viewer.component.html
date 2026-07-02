@@ -1,0 +1,50 @@
+@if (viewer.active()) {
+	<div class="overlay">
+		<button
+			class="close"
+			type="button"
+			(click)="viewer.close()">
+			✕
+		</button>
+
+		@if (viewer.files()!.length > 1) {
+			<button
+				class="nav left"
+				type="button"
+				(click)="viewer.previous()">
+				❮
+			</button>
+		}
+
+		<div class="content">
+			@if (viewer.currentFile(); as file) {
+				@if (file.type === 'image') {
+					<img
+							[src]="file.url"
+							[alt]="file.originalName">
+				} @else {
+					<video
+							controls
+							autoplay>
+							<source
+									[src]="file.url">
+					</video>
+				}
+		}
+
+		</div>
+
+		@if (viewer.files()!.length > 1) {
+
+				<button
+						class="nav right"
+						type="button"
+						(click)="viewer.next()">
+						❯
+
+				</button>
+
+		}
+
+	</div>
+}

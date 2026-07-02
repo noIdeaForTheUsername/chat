@@ -24,6 +24,7 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
 import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
+import { ImageViewerOverlayComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
 
 
 @Component({
@@ -34,7 +35,7 @@ import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUt
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
-    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar],
+    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, ImageViewerOverlayComponent],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

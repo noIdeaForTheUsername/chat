@@ -8,7 +8,7 @@ import { MessageWithFileDto } from './dto/message-with-file.dto';
 import { FileInfoResponse } from './file-interfaces';
 import { FilesService } from './services/files.service';
 import { SkipThrottle } from '@nestjs/throttler';
-import { RequestAbortedExceptionFilter } from './req-aborted.filter';
+import { FileUploadExceptionFilter } from './file-upload.filter';
 
 const maxCacheAgeSeconds = 3600 * 24 * 60; // 60 days
 
@@ -32,7 +32,7 @@ export class FilesController {
   }
 
   @Post("conversations/:id/uploads")
-  @UseFilters(RequestAbortedExceptionFilter)
+  @UseFilters(FileUploadExceptionFilter)
   @UseInterceptors(FilesInterceptor("files")) 
   async sendMessageWithFiles(
     @UserId() callerId: number,

@@ -6,7 +6,7 @@ import { HoldDirective } from '@app/shared/selection/hold-directive/hold.directi
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { IonIcon } from "@ionic/angular/standalone";
 import { TranslatePipe } from '@ngx-translate/core';
-import { FilesPreviewComponent } from '@src/app/files/files-preview-component/files-preview.component';
+import { FilesPreviewComponent } from '@src/app/files/components/files-preview-component/files-preview.component';
 import { lastValueFrom } from 'rxjs';
 import { MessageView } from '../message-view.interface';
 

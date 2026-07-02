@@ -63,6 +63,10 @@ export class FilesDomainService {
     return await this.filesInfo.findBy({ messageId: messageId });
   }
 
+  async deleteFileInfo(uuid: string) {
+    return await this.filesInfo.delete({ uuid: uuid });
+  }
+
   async deleteMessageFilesInfo(messageId: number) {
     return await this.filesInfo.delete({ messageId: messageId });
   }

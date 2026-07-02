@@ -1,8 +1,8 @@
-import { Component, computed, inject, input, OnDestroy, OnInit, signal, Signal } from '@angular/core';
-import { FileInfo } from '../file-types';
+import { Component, computed, inject, input, OnDestroy, OnInit, output, signal, Signal } from '@angular/core';
+import { FileInfo } from '../../file-types';
 import { IonIcon } from '@ionic/angular/standalone';
-import { FileSizePipe } from '../file-size-pipe';
-import { MediaDimensionsCalculator } from '../max-media-height-calculator';
+import { FileSizePipe } from '../../file-size-pipe';
+import { MediaDimensionsCalculator } from '../../services/max-media-height-calculator';
 import { NgOptimizedImage } from '@angular/common';
 
 @Component({
@@ -14,6 +14,7 @@ import { NgOptimizedImage } from '@angular/common';
 export class FilePreviewComponent {
 
   file = input<FileInfo>();
+  mediaClick = output<MouseEvent>();
   private readonly mediaDimensionsCalculator = inject(MediaDimensionsCalculator);
   private isFirefox = navigator.userAgent.includes('Firefox');
 

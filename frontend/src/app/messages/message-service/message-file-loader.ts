@@ -1,9 +1,9 @@
 import { inject, Injectable } from "@angular/core";
 import { MessageStateStore } from "./message-state.store";
 import { BaseFileInfo, FileInfo } from "@src/app/files/file-types";
-import { FileInfoApi } from "@src/app/files/file-info-api.service";
+import { FileInfoApi } from "@src/app/files/services/file-info-api.service";
 import { MessageView } from "../message-view.interface";
-import { FileInfoMapperService } from "@src/app/files/file-info-mapper.service";
+import { FileInfoMapperService } from "@src/app/files/services/file-info-mapper.service";
 
 @Injectable({
   providedIn: 'root',

@@ -3,7 +3,7 @@ import { ServerErrorLoggingExceptionFilter } from "src/shared/server-error-filte
 
 
 @Catch()
-export class RequestAbortedExceptionFilter extends ServerErrorLoggingExceptionFilter {
+export class FileUploadExceptionFilter extends ServerErrorLoggingExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     if (exception.message == "Request aborted") {
       exception = new BadRequestException("Request aborted");
