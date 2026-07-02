@@ -11,6 +11,9 @@
   cursor: pointer;
 }
 
+video {
+  background: var(--ion-background-color-step-200);
+}
 
 div.downloadablePreview {
   display: flex;

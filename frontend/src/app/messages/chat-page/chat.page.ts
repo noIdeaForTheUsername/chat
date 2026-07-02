@@ -484,13 +484,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     else if (action == "reply" && this.actionMessageId()) this.replyToMessage(this.actionMessageId()!);
     else if (action == "copy") this.copySelectedMessageToClipboard(this.actionMessageId()!);
     else if (action == "delete") {
-      this.deleteMessage();
+      this.deleteSelectedMessages();
     }
-    else if (action == "download") {} // TODO: IMPLEMENT
     this.actionMessageId.set(null);
   }
 
-  private deleteMessage() {
+  private deleteSelectedMessages() {
+    console.warn("DOWNLOAD!");
     if (this.selectionService.selectionMode()) {  // multiselect delete
       this.promptMessageDeletion(() => {
         this.messageService.operations.deleteMultipleMessages(this.selectionService.selectedIds());
@@ -522,6 +522,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       return;
     this.replyingToId.set(null);
   }
+
 
   // ------------------------------------------- OTHER FUNCTIONS -------------------------------------------
 

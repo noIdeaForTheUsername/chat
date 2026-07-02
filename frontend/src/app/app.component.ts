@@ -6,19 +6,25 @@ import { TranslateService } from '@ngx-translate/core';
 
 import { addIcons } from 'ionicons';
 import {
-  alertCircleOutline, arrowDown, arrowRedo,
-  attach, document,
+  alertCircleOutline,
+  arrowBack,
+  arrowDown, arrowRedo,
+  attach,
   ban, build,
-  chatbubbleEllipses, checkboxOutline, closeCircle, copy, download, ellipse, ellipsisHorizontal,
+  chatbubbleEllipses, checkboxOutline,
+  chevronForward,
+  closeCircle, copy,
+  document,
+  download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
   flame,
   globe,
   handLeft,
   help, helpCircle, hourglass,
+  images,
   language,
   logoAndroid, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove,
-  settings, trash, trashBin, wifiOutline,
-  arrowBack
+  settings, trash, trashBin, wifiOutline
 } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
 import { LanguageService } from './i18n/language.service';
@@ -35,7 +41,8 @@ export class AppComponent {
       chatbubbleEllipses, pencil, help, settings, ellipsisHorizontal, arrowRedo, 
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
       people, notifications, download, person, personAdd, personRemove, attach, document,
-      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe, arrowBack });
+      build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe, arrowBack,
+      images, chevronForward });
 
     translate.setTranslation('pl', translationsPL);
     translate.setTranslation('en', translationsEN);

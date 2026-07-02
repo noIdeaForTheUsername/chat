@@ -2,8 +2,9 @@ import { Component, computed, inject, input, OnDestroy, OnInit, output, signal, 
 import { FileInfo } from '../../file-types';
 import { IonIcon } from '@ionic/angular/standalone';
 import { FileSizePipe } from '../../file-size-pipe';
-import { MediaDimensionsCalculator } from '../../services/max-media-height-calculator';
+import { MediaDimensionsCalculator } from '../../services/media-dimensions-calculator';
 import { NgOptimizedImage } from '@angular/common';
+import { FileDownloaderService } from '../../services/file-downloader';
 
 @Component({
   selector: 'app-file-preview',
@@ -15,8 +16,9 @@ export class FilePreviewComponent {
 
   file = input<FileInfo>();
   mediaClick = output<MouseEvent>();
-  private readonly mediaDimensionsCalculator = inject(MediaDimensionsCalculator);
-  private isFirefox = navigator.userAgent.includes('Firefox');
+  private mediaDimensionsCalculator = inject(MediaDimensionsCalculator);
+  private fileDownloader = inject(FileDownloaderService);
+  
 
   protected dimensions: Signal<{ width: number, height: number }> = signal({ width: 0, height: 0 });
 
@@ -44,14 +46,7 @@ export class FilePreviewComponent {
       return;
     }
 
-    const a = document.createElement('a');
-    a.href = file.url;
-    a.download = file.originalName;
-    if (this.isFirefox) {
-      // firefox for some reason reloads the app without this
-      a.target = "_blank";
-    }
-    a.click();
+    this.fileDownloader.downloadFile(file);
   }
 
 }

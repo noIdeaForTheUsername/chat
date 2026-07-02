@@ -21,6 +21,14 @@ export function isAndroid() {
   return /android/i.test(ua);
 }
 
+export function isFirefox() {
+  return navigator.userAgent.includes('Firefox');
+}
+
+export function isMobile() {
+  return isIOS() || isAndroid();
+}
+
 // This is supposed to detect devices that only support touch input. For example, a laptop with a touchscreen should not be detected as a
 // touch-only device, because it has a keyboard and mouse as well, so the user should be able to use all features of the app without any issues.
 export function isTouchOnlyDevice() {

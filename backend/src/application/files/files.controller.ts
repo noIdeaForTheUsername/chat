@@ -56,9 +56,10 @@ export class FilesController {
   async serveFile(
     @Param('uuid') fileUuid: string,
     @UserId() callerId: number,
+    @Query('download') download: any,
     @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
-    return await this.filesService.serveFile(fileUuid, callerId, res);
+    return await this.filesService.serveFile(fileUuid, callerId, res, !!download);
   }
 }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Response } from 'express';
 import { NotBlockingParticipantsService } from 'src/application/shared/not-blocking-participants/not-blocking-participants.service';
@@ -58,7 +58,7 @@ export class FilesService {
     return fileInfo;
   }
 
-  async serveFile(uuid: string, callerId: number, res: Response) {
+  async serveFile(uuid: string, callerId: number, res: Response, forceDownload: boolean): Promise<StreamableFile> {
     uuid = this.normalizeUuidOrThrow(uuid);
     const info = await this.domainService.getViewedFileInfo(uuid, callerId);
     if (!info)
@@ -66,7 +66,7 @@ export class FilesService {
 
     // this order of operations helps avoid Content-Type mismatch on exceptions
     const fileStream = await this.storage.getFileResponseStream(uuid);
-    this.setFileResponseHeaders(res, info);
+    this.setFileResponseHeaders(res, info, forceDownload);
     return fileStream;
   }
 
@@ -108,10 +108,10 @@ export class FilesService {
     throw new NotFoundException();
   }
 
-  private setFileResponseHeaders(res: Response, info: FileInfo | ViewedFileInfo) {
+  private setFileResponseHeaders(res: Response, info: FileInfo | ViewedFileInfo, forceDownload: boolean) {
     const type = this.fileTypes.getAppFileType(info);
     res.setHeader("Content-Type", info.mimeType);
-    if (type === "downloadable") {
+    if (type === "downloadable" || forceDownload) {
       res.setHeader("Content-Disposition", `attachment; filename="${this.getLatin1FileName(info.originalName)}"`);
     }
   }

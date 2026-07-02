@@ -14,6 +14,7 @@ import { MessageStateStore } from './message-state.store';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { MessageFileLoader } from './message-file-loader';
 import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
+import { FileDownloaderService } from '@src/app/files/services/file-downloader';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,7 @@ export class MessageOperations {
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
   private readonly fileLoader = inject(MessageFileLoader);
+  private readonly fileDownloader = inject(FileDownloaderService);
 
   private readonly MESSAGE_LENGTH_LIMIT = 4000;  // enforced on backend too
 

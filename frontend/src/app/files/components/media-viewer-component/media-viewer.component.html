@@ -16,7 +16,12 @@
 			</button>
 		}
 
-		<div class="content">
+		<div
+			class="content"
+			(touchstart)="touchStart($event)"
+			(touchend)="touchEnd($event)"
+			(touchcancel)="touchCancel()"
+		>
 			@if (currentFile(); as file) {
 				@if (file.type === 'image') {
 					<img
@@ -29,9 +34,14 @@
 						[src]="file.url">
 					</video>
 				}
-		}
-
+			}
 		</div>
+
+		<button 
+			class="download"
+			(click)="viewer.download()">
+			<ion-icon name="download"/>
+		</button>
 
 		@if (viewer.files()!.length > 1) {
 			<button

@@ -1,4 +1,9 @@
+@if (groupMedia()) {
+  <app-media-group [media]="files()" (click)="onMediaGroupClick()"/>
+}
 
 @for (file of files(); track file.uuid) {
-  <app-file-preview [file]="file" (mediaClick)="onFileClick(file)"></app-file-preview>
+  @if (!(groupMedia() && (file.type == 'image' || file.type == "video"))) {
+    <app-file-preview [file]="file" (mediaClick)="onFileClick(file)"/>
+  }
 }

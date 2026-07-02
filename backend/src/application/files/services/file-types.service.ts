@@ -13,7 +13,7 @@ type Dimensions = { width: number | null, height: number | null };
 export class FileTypesService {
 
   private readonly maxDisplayableImageSize = 15 * 1024 * 1024; // 15 MB
-  private readonly maxDisplayableVideoSize = 60 * 1024 * 1024; // 60 MB
+  private readonly maxDisplayableVideoSize = 30 * 1024 * 1024; // 30 MB
 
   async getFileInfo(file: Express.Multer.File): Promise<FileTypeInfo> {
     const { mimeType, mimeTypeTrusted } = await this.getMimeTypeInfo(file);

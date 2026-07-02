@@ -1,7 +1,7 @@
 :host {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: 20;
 }
 
 .overlay {
@@ -25,8 +25,13 @@
   justify-content: center;
   align-items: center;
 
-  padding: clamp(24px, 5vw, 64px);
   box-sizing: border-box;
+}
+
+@media (min-width: 1000px) {
+  .content {
+    padding: 10vh;
+  }
 }
 
 img,
@@ -39,6 +44,10 @@ video {
   object-fit: contain;
 
   border-radius: 10px;
+}
+
+video {
+  background: #111;
 }
 
 .close,
@@ -59,8 +68,30 @@ video {
   transform .2s;
 }
 
+.download {
+  z-index: 1;
+  position: fixed;
+  bottom: 5%;
+  width: 20%;
+  height: clamp(40px, 10%, 70px);
+
+  display: block;
+  background: var(--ion-color-primary);
+  border-radius: 32px;
+  outline: solid rgba(var(--ion-color-primary-rgb), 0.2) 5px;
+  transition: transform 0.5s;
+  ion-icon {
+    font-size: 1.7rem;
+    color: black;
+  }
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
 .nav {
-  background: rgb(255 255 255 / 12%);
+  background: rgb(255 255 255 / 30%);
+  box-shadow: 0 0 20px rgb(0 0 0);
   width: 52px;
   height: 52px;
 }

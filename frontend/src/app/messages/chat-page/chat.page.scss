@@ -56,6 +56,10 @@ ion-popover ion-content {
   }
 }
 
+ion-fab {
+  z-index: 10;
+}
+
 div.extras-container {
   display: flex;
   padding: 0 20%;

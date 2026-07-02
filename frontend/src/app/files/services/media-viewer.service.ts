@@ -1,10 +1,13 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { FileInfo } from '../file-types';
+import { FileDownloaderService } from './file-downloader';
 @Injectable({
   providedIn: 'root'
 })
 export class MediaViewerService {
+
+  private fileDownloader = inject(FileDownloaderService);
 
   private readonly _files = signal<FileInfo[] | null>(null);
   private readonly _index = signal(0);
@@ -71,4 +74,9 @@ export class MediaViewerService {
     this._index.set(newIndex);
   }
 
+  download() {
+    const file = this.currentFile();
+    if (file)
+      this.fileDownloader.downloadFile(file);
+  }
 }

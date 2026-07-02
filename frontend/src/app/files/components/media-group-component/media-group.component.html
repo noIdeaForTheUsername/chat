@@ -1,0 +1,22 @@
+<div #container id="container">
+  <div id="info">
+    <ion-icon name="images"/>
+    <span>Pliki: {{ mediaNumber() }}</span>
+    <ion-icon name="chevron-forward"/>
+  </div>
+
+  @for (preview of previews(); track preview.uuid) {
+    @if (preview.type == "image") {
+      <img
+        [src]="preview.url"
+        [alt]="preview.originalName"
+        [class]="`preview-${previews().indexOf(preview) + 1}`"/>
+    }
+    @else if (preview.type == "video") {
+      <img
+        src="assets/video-preview.webp"
+        alt="video icon"
+        [class]="`preview-${previews().indexOf(preview) + 1}`"/>
+    }
+  }
+</div>

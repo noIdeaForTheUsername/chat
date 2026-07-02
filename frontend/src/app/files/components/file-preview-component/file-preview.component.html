@@ -12,7 +12,7 @@
   />
 }
 @else if (file && file.type == "video") {
-  <video controls preload="metadata" (click)="mediaClick.emit($event)"
+  <video controls preload="none" (click)="mediaClick.emit($event)"
     class="mediaPreview" [width]="dimensions().width" [height]="dimensions().height">
     <source [src]="file.url">
     Your browser does not support videos.
