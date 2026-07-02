@@ -45,15 +45,11 @@ video {
 .nav {
   position: fixed;
 
-  width: 52px;
-  height: 52px;
-
   border: none;
   border-radius: 50%;
 
   cursor: pointer;
 
-  background: rgb(255 255 255 / 12%);
   color: white;
 
   font-size: 28px;
@@ -61,6 +57,12 @@ video {
   transition:
   background .2s,
   transform .2s;
+}
+
+.nav {
+  background: rgb(255 255 255 / 12%);
+  width: 52px;
+  height: 52px;
 }
 
 .close:hover,
@@ -72,6 +74,9 @@ video {
 .close {
   top: 20px;
   left: 20px;
+  width: 70px;
+  height: 70px;
+  background: rgb(255 128 128 / 50%);
 }
 
 .nav.left {
@@ -90,8 +95,16 @@ video {
 
   .close,
   .nav {
+    font-size: 22px;
+  }
+
+  .nav {
     width: 44px;
     height: 44px;
-    font-size: 22px;
+  }
+
+  .close {
+    width: 60px;
+    height: 60px;
   }
 }
