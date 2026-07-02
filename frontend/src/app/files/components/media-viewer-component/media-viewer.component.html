@@ -17,17 +17,16 @@
 		}
 
 		<div class="content">
-			@if (viewer.currentFile(); as file) {
+			@if (currentFile(); as file) {
 				@if (file.type === 'image') {
 					<img
-							[src]="file.url"
-							[alt]="file.originalName">
-				} @else {
+						[src]="file.url"
+						[alt]="file.originalName">
+				} @else if (file.type === 'video') {
 					<video
-							controls
-							autoplay>
-							<source
-									[src]="file.url">
+						controls
+						preload="metadata"
+						[src]="file.url">
 					</video>
 				}
 		}
@@ -35,16 +34,13 @@
 		</div>
 
 		@if (viewer.files()!.length > 1) {
+			<button
+				class="nav right"
+				type="button"
+				(click)="viewer.next()">
+				❯
 
-				<button
-						class="nav right"
-						type="button"
-						(click)="viewer.next()">
-						❯
-
-				</button>
-
+			</button>
 		}
-
 	</div>
 }

@@ -19,8 +19,6 @@ export class FilesPreviewComponent {
     if (!files)
       return;
 
-    console.log("clicked file", clickedFile);
-
     if (clickedFile.type === 'image' || clickedFile.type === 'video') 
       this.fileViewerService.open(files, clickedFile.uuid);
   }

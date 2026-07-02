@@ -16,7 +16,8 @@ export class MediaViewerService {
 
   readonly currentFile = computed(() => {
     const files = this._files();
-    if (!files) return null;
+    if (!files)
+      return null;
     return files[this._index()];
   });
 
@@ -52,14 +53,22 @@ export class MediaViewerService {
     const files = this._files();
     if (!files) return;
 
-    this._index.update(i => (i + 1) % files.length);
+    let newIndex = this._index() + 1;
+    if (newIndex >= files.length) {
+      newIndex = 0;
+    }
+    this._index.set(newIndex);
   }
 
   previous(): void {
     const files = this._files();
     if (!files) return;
 
-    this._index.update(i => (i - 1 + files.length) % files.length);
+    let newIndex = this._index() - 1;
+    if (newIndex < 0) {
+      newIndex = files.length - 1;
+    }
+    this._index.set(newIndex);
   }
 
 }

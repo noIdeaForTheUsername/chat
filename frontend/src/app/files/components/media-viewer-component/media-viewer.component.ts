@@ -18,6 +18,7 @@ import { MediaViewerService } from '../../services/media-viewer.service';
 export class ImageViewerOverlayComponent {
 
   protected readonly viewer = inject(MediaViewerService);
+  protected currentFile = this.viewer.currentFile;
   private active = this.viewer.active;
   private host = inject(ElementRef<HTMLElement>);
   private renderer = inject(Renderer2);
