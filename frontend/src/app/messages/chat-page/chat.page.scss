@@ -62,10 +62,16 @@ ion-fab {
 
 div.extras-container {
   display: flex;
-  padding: 0 20%;
+  align-items: center;
+  padding: 0 4px;
+  gap: 8px;
+
+  >* {
+    min-width: 20%;
+  }
 
   ion-chip {
-    margin-top: 10px;
+    margin: 0;
     text-overflow: ellipsis;
     white-space: nowrap;
 
@@ -85,6 +91,19 @@ div.extras-container {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+
+  ion-button {
+    font-size: 0.8rem;
+    --color: var(--ion-color-tertiary);
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  .md div.extras-container ion-chip {
+    margin-top: 8px;
   }
 }
 

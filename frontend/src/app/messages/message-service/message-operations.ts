@@ -15,6 +15,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { MessageFileLoader } from './message-file-loader';
 import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
 import { FileDownloaderService } from '@src/app/files/services/file-downloader';
+import { FileCompressorService } from '@src/app/files/services/file-compressor';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,7 @@ export class MessageOperations {
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
   private readonly fileLoader = inject(MessageFileLoader);
-  private readonly fileDownloader = inject(FileDownloaderService);
+  private readonly fileCompressor = inject(FileCompressorService);
 
   private readonly MESSAGE_LENGTH_LIMIT = 4000;  // enforced on backend too
 
@@ -66,15 +67,16 @@ export class MessageOperations {
     });
   }
 
-  sendMessageWithFiles(files: File[], text?: string, repliedId?: number) {
+  async sendMessageWithFiles(files: File[], text?: string, repliedId?: number) {
     const currentConvId = this.state.getCurrentConvId();
     if (currentConvId === -1)
       return;
-
     if (!this.validateMessageLength(text ?? ""))
       return;
 
-    this.state.uploadSubscription = this.api.uploadFiles(currentConvId, files, text, repliedId).subscribe({
+    let compressedFiles = await this.fileCompressor.compressFilesIfPossible(files);
+    
+    this.state.uploadSubscription = this.api.uploadFiles(currentConvId, compressedFiles, text, repliedId).subscribe({
       next: (event: any) => {
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)
@@ -98,7 +100,6 @@ export class MessageOperations {
   cancelFileUpload() {
     if (this.state.uploadSubscription) {
       this.state.uploadSubscription.unsubscribe();
-      console.warn("File upload canceled by user.");
     }
     this.state.uploadSubscription = null;
     this.state.uploadProgress.next(0);

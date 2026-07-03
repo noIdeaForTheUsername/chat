@@ -11,7 +11,7 @@ import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/c
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonLabel, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
@@ -33,7 +33,7 @@ import { ImageViewerOverlayComponent } from "@src/app/files/components/media-vie
   styleUrls: ['./chat.page.scss'],
   standalone: true,
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
-    IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
+    IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet, IonLabel,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
     SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, ImageViewerOverlayComponent],
   providers: [SelectionService],
@@ -258,7 +258,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  sendMessage() {
+  async sendMessage() {
     const messageText = this.enteredMessage().trim();
     if (messageText.length === 0 && this.selectedFiles().length === 0) return;
     this.awaitingMessageSendResponse.set(true);
@@ -267,7 +267,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     
     // If files are selected, use sendMessageWithFiles instead
     if (this.selectedFiles().length > 0) {
-      this.messageService.operations.sendMessageWithFiles(
+      await this.messageService.operations.sendMessageWithFiles(
         this.selectedFiles(),
         messageText.length > 0 ? messageText : undefined,
         replyingTo ?? undefined
@@ -515,7 +515,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   replyToMessage(id: number) {
     this.replyingToId.set(this.actionMessageId());
-    this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "");
+    this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "💬");
   }
   cancelReply() {
     if (this.awaitingMessageSendResponse())  // message already being sent

@@ -119,13 +119,17 @@
         @if (selectedFiles().length > 0) {
           <ion-chip (click)="clearAttachmentsAndCancelUpload()">
             <p>
-              <ion-icon name="attach"/>
-              {{ attachmentText() }}
               <ion-icon name="close-circle"/>
+              {{ attachmentText() }}
+              <ion-icon name="attach"/>
             </p>
           </ion-chip>
+
+          <ion-button fill="clear">
+            <ion-icon name="settings" slot="start"/>
+            <ion-label>Jakość</ion-label>
+          </ion-button>
         }
-        <!--TODO FOR FILES: <ion-chip></ion-chip> -->
       </div>
 
       <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
