@@ -18,7 +18,7 @@
     @if (blocked()) {
       <p><i>{{ "page.conversations.unblock-hint" | translate }}</i></p>
     } @else {
-      <p>{{conversationView().lastMessageText || "─"}}</p>  <!--the dots look nice and prevent the list elements from suddenly changing their heights after loading-->
+      <p>{{conversationView().lastMessageText || "---"}}</p>  <!--the dots look nice and prevent the list elements from suddenly changing their heights after loading-->
     }
   </ion-label>
   @if (conversationView().unreadMessages) { <ion-icon name="ellipse" slot="end" color="primary"></ion-icon> }

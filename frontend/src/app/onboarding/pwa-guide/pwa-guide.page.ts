@@ -8,7 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { isIOS, isAndroid } from '@src/app/shared/platform-detection/platformUtils';
 import { RouterLink } from '@angular/router';
 import { MediaViewerComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
-import { MediaViewerService } from '@src/app/files/services/media-viewer.service';
+import { MediaViewerService } from '@src/app/files/services/loading-and-displaying/media-viewer.service';
 import { FileInfo } from '@src/app/files/file-types';
 
 @Component({

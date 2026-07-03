@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core";
-import { BaseFileInfo, FileInfo } from "../file-types";
+import { BaseFileInfo, FileInfo } from "../../file-types";
 
 @Injectable({
   providedIn: "root" 

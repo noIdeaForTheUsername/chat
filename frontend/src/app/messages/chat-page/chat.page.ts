@@ -25,8 +25,9 @@ import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
 import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
 import { MediaViewerComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
-import { FileCompressorService } from '@src/app/files/services/file-compressor';
-import { FilesValidatorService } from '@src/app/files/services/file-validator';
+import { FileCompressorService } from '@src/app/files/services/sending/file-compressor';
+import { FilesValidatorService } from '@src/app/files/services/sending/file-validator';
+import { FilesSelectionService } from '@src/app/files/services/sending/files-selection-service';
 
 
 @Component({
@@ -38,7 +39,7 @@ import { FilesValidatorService } from '@src/app/files/services/file-validator';
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
     SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, MediaViewerComponent],
-  providers: [SelectionService],
+  providers: [SelectionService, FilesSelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatPage implements AfterViewInit, OnDestroy {
@@ -51,6 +52,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private alertService = inject(AlertService);
   private fileCompressor = inject(FileCompressorService);
   private fileValidator = inject(FilesValidatorService);
+  private filesSelectionService = inject(FilesSelectionService);
 
   // SETTINGS
   private readonly SCROLL_TO_BOTTOM_BUTTON_PX = 1500;
@@ -92,7 +94,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   protected replyingToText = signal<string>("");
 
   // FILE ATTACHMENT
-  protected selectedFiles = signal<File[]>([]);
+  protected selectedFiles = this.filesSelectionService.selectedFiles;
   protected uploadProgress = signal<number>(0);
   protected attachmentText = computed(() => {
     const count = this.selectedFiles().length;
@@ -222,7 +224,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initScrollElement();
     this.initSubscriptions();
-    this.initFileInput();
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
@@ -237,6 +238,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ionViewDidEnter() {
     this.visibilityChangedListener = this.updateActiveViewingStatus.bind(this);
     this.messageService.setActiveViewingStatus(true);
+    this.filesSelectionService.reset();
     document.addEventListener('visibilitychange', this.visibilityChangedListener);
   }
 
@@ -271,12 +273,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   async sendMessage() {
     const messageText = this.enteredMessage().trim();
-    if (messageText.length === 0 && this.selectedFiles().length === 0) return;
+    if (messageText.length === 0 && this.selectedFiles().length === 0)
+      return;
     this.awaitingMessageSendResponse.set(true);
 
     const replyingTo = this.replyingToId();
     
-    // If files are selected, use sendMessageWithFiles instead
+    // If files are selected, use sendMessageWithFiles
     if (this.selectedFiles().length > 0) {
       await this.messageService.operations.sendMessageWithFiles(
         this.selectedFiles(),
@@ -299,61 +302,31 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   // ------------------------------------------- FILE ATTACHMENT FUNCTIONS -------------------------------------------
-
-  initFileInput() {
-    // Create a hidden file input if it doesn't exist
-    if (!this.fileInput) {
-      this.fileInput = document.createElement('input');
-      this.fileInput.type = 'file';
-      this.fileInput.multiple = true;
-      this.fileInput.style.display = 'none';
-      this.fileInputChangeListener = (e) => this.onFileInputChange(e);
-      this.fileInput.addEventListener('change', this.fileInputChangeListener);
-      document.body.appendChild(this.fileInput);
-    }
-  }
-
-  onAttachmentButtonClick() {
-    this.initFileInput();
-    if (this.selectedFiles().length > 0) {
-      this.alertService.displayPromptAlert(
-        AlertType.PROMPT,
-        this.translate.instant('page.chat.attachment-replace-confirm'),
-        () => {
-          this.openFileSelectionDialog();
-        },
-        undefined,
-        this.translate.instant('common.are-you-sure')
-      );
-    }
-    else
-      this.openFileSelectionDialog();
-  }
-
-  private openFileSelectionDialog() {
-    this.fileInput.value = '';  // Clear previous selection
-    this.fileInput.click();  // Trigger file selection dialog
-  }
-
-  private onFileInputChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length == 0)
-      return;
-
-    let files = Array.from(input.files);
-    let validFiles = this.fileValidator.validateAndFilterSingleMessageFiles(files);
-
-    this.selectedFiles.set(validFiles);
-  }
   
 
   protected onCompressionSettingChange(event: CustomEvent) {
     this.fileCompressor.enableCompression.set(event.detail.value !== 'not-compressed');
   }
 
+  onAttachmentButtonClick() {
+    this.filesSelectionService.openSelectionPrompt();
+  }
+
+  @HostListener('document:drop', ['$event'])
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    document.body.classList.remove('drag');
+    this.filesSelectionService.handleDrop(event);
+  }
+
+  @HostListener('document:paste', ['$event'])
+  onPaste(event: ClipboardEvent) {
+    this.filesSelectionService.handlePaste(event);
+  }
+
   clearAttachmentsAndCancelUpload() {
     this.messageService.operations.cancelFileUpload();
-    this.selectedFiles.set([]);
+    this.filesSelectionService.reset();
     this.uploadProgress.set(0);
     this.awaitingMessageSendResponse.set(false);
   }
@@ -477,10 +450,29 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   // ------------------------------------------- APPEARANCE FUNCTIONS -------------------------------------------
 
-  highlightElement(elem: HTMLElement) {
+  protected highlightElement(elem: HTMLElement) {
     if (elem.classList.contains("highlight-pulse")) return;
     elem.classList.add("highlight-pulse");
     setTimeout(() => elem.classList.remove("highlight-pulse"), 1000);
+  }
+
+  // Drag response (for file drop)
+
+  @HostListener('document:dragover', ['$event'])
+  protected onDragOver(event: DragEvent) {
+    event.preventDefault();
+    document.body.classList.add('drag');
+  }
+  
+  @HostListener('document:dragleave', ['$event'])
+  protected onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    document.body.classList.remove('drag');
+  }
+  @HostListener('document:drag', ['$event'])
+  protected onDrop2(event: DragEvent) {
+    event.preventDefault();
+    document.body.classList.remove('drag');
   }
 
   // ------------------------------------------- MESSAGE SELECTION + OPENABLE MENUS (popover, action sheet) -------------------------------------------

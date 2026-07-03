@@ -7,7 +7,7 @@ import {
   Renderer2,
   ViewChild
 } from '@angular/core';
-import { MediaViewerService } from '../../services/media-viewer.service';
+import { MediaViewerService } from '../../services/loading-and-displaying/media-viewer.service';
 import { IonIcon } from '@ionic/angular/standalone';
 import { ViewportService } from '@src/app/shared/viewport/viewport.service';
 import Panzoom from '@panzoom/panzoom';

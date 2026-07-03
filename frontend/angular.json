@@ -35,7 +35,7 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/css/variables.scss"],
+            "styles": ["src/global.scss", "src/shared-css/variables.scss"],
             "scripts": [],
             "browser": "src/main.ts"
           },
@@ -110,7 +110,7 @@
                 "output": "assets"
               }
             ],
-            "styles": ["src/global.scss", "src/theme/variables.scss"],
+            "styles": ["src/global.scss", "src/shared-css/variables.scss"],
             "scripts": []
           },
           "configurations": {

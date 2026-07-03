@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
-import { BaseFileInfo, FileInfo } from "../file-types";
-import { ApiUrlService } from "../../http/url.service";
+import { BaseFileInfo, FileInfo } from "../../file-types";
+import { ApiUrlService } from "../../../http/url.service";
 
 @Injectable({
   providedIn: 'root',

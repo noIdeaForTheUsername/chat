@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, computed, effect, ElementRef, inject, input, OnInit, ViewChild } from '@angular/core';
 import { FileInfo } from '../../file-types';
-import { MediaDimensionsCalculator } from '../../services/media-dimensions-calculator';
+import { MediaDimensionsCalculator } from '../../services/loading-and-displaying/media-dimensions-calculator';
 import { IonIcon } from '@ionic/angular/standalone';
 
 @Component({

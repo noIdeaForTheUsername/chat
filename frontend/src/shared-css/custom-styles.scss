@@ -1,0 +1,102 @@
+input, textarea {  // Input cursor color
+  caret-color: var(--caret-color) !important;
+}
+
+
+
+// Text selection color
+::-moz-selection {
+  color: rgb(0, 0, 0);
+  background: var(--ion-color-primary-tint, white);
+}
+::selection {
+  color: rgb(0, 0, 0);
+  background: var(--ion-color-primary-tint, white);
+}
+
+
+// Selection
+*[color="primary"] ::selection, *[color="secondary"] ::selection, *[color="tertiary"] ::selection {
+  color: var(--ion-text-color);
+  background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
+}
+*[color="primary"] ::-moz-selection, [color="secondary"] ::-moz-selection, *[color="tertiary"] ::-moz-selection {
+  color: var(--ion-text-color);
+  background-color: var(--ion-card-background, var(--ion-item-background, var(--ion-background-color, #fff)));
+}
+
+// Text colors modifications in some places, because "primary" is barely visible on light mode
+html {
+  .alert-button.sc-ion-alert-md, .action-sheet-button.sc-ion-action-sheet-ios, .alert-button-inner.sc-ion-alert-ios {
+    color: var(--darker-text-color);
+    font-weight: 600;
+  }
+}
+ion-button[fill="outline"][color="primary"], ion-button[fill="outline"]:not([color]) {
+  --border-color: var(--darker-text-color);
+  --color: var(--darker-text-color);
+  font-weight: 600;
+}
+a {
+  color: rgb(56, 56, 246);
+  font-weight: 600;
+}
+
+
+// Message input field (doesn't work in isolated component)
+
+ion-textarea.message-input {
+  --ion-margin: 8px;
+  --color: inherit;
+  min-height: 36px !important;
+  max-height: 50vh;
+
+  label {
+    --background: var(--ion-background-color-step-25, #f2f2f2);
+    --border-radius: 20px;
+    border-bottom-width: 0px !important;
+    --highlight-color-focused: rgba(0, 0, 0, 0);
+    border-end-end-radius: var(--border-radius) !important;
+    border-end-start-radius: var(--border-radius) !important;
+    
+    --padding-top: 12px;
+    --padding-bottom: 11px;
+    --padding-start: 15px;
+    --padding-end: 12px;  // overriden on ios
+    
+    div.textarea-highlight {
+      display: none;
+    }
+  }
+}
+
+.drag ion-textarea.message-input label {
+  --background: rgba(0, 255, 255, 0.7);
+  --border-style: dashed;
+  --border-color: white;
+  --border-width: 4px;
+}
+
+.drag ion-textarea.message-input {
+  border: 2px dashed white;
+}
+
+ion-textarea.message-input[auto-grow] .textarea-wrapper,
+ion-textarea.message-input[auto-grow] .textarea-wrapper-inner,
+ion-textarea.message-input[auto-grow] .native-wrapper,
+ion-textarea.message-input[auto-grow] .native-textarea {
+  max-height: 50vh;
+}
+
+ion-textarea.message-input[auto-grow] .native-textarea {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.ios ion-textarea.message-input label {
+  --padding-end: 11px;
+}
+.ios ion-textarea.message-input label {
+  --background: var(--ion-background-color-step-150, #d9d9d9);
+}

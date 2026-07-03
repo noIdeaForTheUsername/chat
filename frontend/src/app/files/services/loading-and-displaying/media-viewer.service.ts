@@ -1,6 +1,6 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { FileInfo } from '../file-types';
+import { FileInfo } from '../../file-types';
 import { FileDownloaderService } from './file-downloader';
 @Injectable({
   providedIn: 'root'

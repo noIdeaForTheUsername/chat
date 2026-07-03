@@ -14,8 +14,8 @@ import { MessageStateStore } from './message-state.store';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { MessageFileLoader } from './message-file-loader';
 import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
-import { FileDownloaderService } from '@src/app/files/services/file-downloader';
-import { FileCompressorService } from '@src/app/files/services/file-compressor';
+import { FileDownloaderService } from '@src/app/files/services/loading-and-displaying/file-downloader';
+import { FileCompressorService } from '@src/app/files/services/sending/file-compressor';
 
 @Injectable({
   providedIn: 'root',
@@ -81,9 +81,9 @@ export class MessageOperations {
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)
           if (event.total) {
-            // capped at 95% until the final response
-            const percentage = Math.round((event.loaded / event.total) * 95);
-            this.state.uploadProgress.next(percentage); 
+            // lerp from 5-95% based on upload progress
+            const percentage = Math.round((event.loaded / event.total) * 90 + 5);
+            this.state.uploadProgress.next(percentage);
           }
         } else if (event instanceof HttpResponse) {
           this.state.uploadProgress.next(100);

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { FileInfo } from "../file-types";
+import { FileInfo } from "../../file-types";
 import { isFirefox, isMobile } from "@src/app/shared/platform-detection/platformUtils";
 
 @Injectable({
