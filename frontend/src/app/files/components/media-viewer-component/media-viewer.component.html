@@ -39,11 +39,13 @@
 			}
 		</div>
 
-		<button 
-			class="download"
-			(click)="viewer.download()">
-			<ion-icon name="download"/>
-		</button>
+		@if (viewer.showDownloadButton()) {
+			<button 
+				class="download"
+				(click)="viewer.download()">
+				<ion-icon name="download"/>
+			</button>
+		}
 
 		@if (viewer.files()!.length > 1) {
 			<button

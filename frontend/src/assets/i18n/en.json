@@ -64,7 +64,7 @@
       "title": "Installation",
       "description": "Depending on the browser, this may look a little different. Find the <b>\"Add to Home Screen\"</b> option in the <b>browser menu</b> (which is usually opened by a button in the corner of the screen), then select <b>\"Install.\"</b> The app will appear as an icon on your device's home screen or desktop.",
       "ios-description": "Unfortunately, web application installation on iOS only works in <b>Safari</b> browser. To install the app, open Safari's menu (the box with an arrow pointing up), then <b>scroll down</b> and select <b>\"Add to Home Screen.\"</b> The app will appear as an icon on your device's home screen.",
-      "image-hint": "Click the image to open it in a new view and be able to zoom in",
+      "image-hint": "Click the image to be able to zoom in",
       "android-recommendation": "<b>NOTE:</b> It looks like you're on an Android device. We strongly recommend you to use <a>this installation method (click to see)</a> instead of the one below."
     },
     "android-guide": {

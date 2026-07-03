@@ -17,6 +17,9 @@ export class MediaViewerService {
 
   readonly active = computed(() => this._files() !== null);
 
+  private _showDownloadButton = signal(true);
+  public readonly showDownloadButton = this._showDownloadButton.asReadonly();
+
   readonly currentFile = computed(() => {
     const files = this._files();
     if (!files)
@@ -24,7 +27,8 @@ export class MediaViewerService {
     return files[this._index()];
   });
 
-  open(files: FileInfo[], startUuid?: string): void {
+  open(files: FileInfo[], startUuid?: string, downloadButton: boolean = true): void {
+    this._showDownloadButton.set(downloadButton);
 
     const media = files.filter(f =>
       f.type === 'image' || f.type === 'video'

@@ -25,18 +25,16 @@
       <p class="highlighted-b" [innerHTML]="'page.pwa-guide.ios-description' | translate"></p>
       <hr/>
       <i>{{ 'page.pwa-guide.image-hint' | translate }}</i>
-      <a href="assets/ios-installation-guide.webp" target="_blank" rel="noopener">
-        <img src="assets/ios-installation-guide.webp"/>
-      </a>
+      <img src="assets/ios-installation-guide.webp" (click)="openGuideViewer()"/>
     }
     @else {
       <p class="highlighted-b" [innerHTML]="'page.pwa-guide.description' | translate"></p>
       <hr/>
       <i>{{ 'page.pwa-guide.image-hint' | translate }}</i>
-      <a href="assets/installation-guide.webp" target="_blank" rel="noopener">
-        <img src="assets/installation-guide.webp"/>
-      </a>
+      <img src="assets/installation-guide.webp" (click)="openGuideViewer()"/>
     }
     
   </div>
 </ion-content>
+
+<app-media-viewer/>
