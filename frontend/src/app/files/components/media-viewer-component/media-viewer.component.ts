@@ -4,10 +4,13 @@ import {
   effect,
   ElementRef,
   inject,
-  Renderer2
+  Renderer2,
+  ViewChild
 } from '@angular/core';
 import { MediaViewerService } from '../../services/media-viewer.service';
 import { IonIcon } from '@ionic/angular/standalone';
+import { ViewportService } from '@src/app/shared/viewport/viewport.service';
+import Panzoom from '@panzoom/panzoom';
 
 @Component({
   selector: 'app-media-viewer',
@@ -17,78 +20,76 @@ import { IonIcon } from '@ionic/angular/standalone';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IonIcon]
 })
-export class ImageViewerOverlayComponent {
+export class MediaViewerComponent {
 
   protected readonly viewer = inject(MediaViewerService);
   protected currentFile = this.viewer.currentFile;
   private active = this.viewer.active;
   private host = inject(ElementRef<HTMLElement>);
   private renderer = inject(Renderer2);
+  private viewportService = inject(ViewportService);
 
   constructor() {
     effect(() => {
       const active = this.active();
       if (active) {
         this.renderer.removeStyle(this.host.nativeElement, 'display');
+        this.viewportService.enableZoom();
       } else {
         this.renderer.setStyle(this.host.nativeElement, 'display', 'none');
+        this.viewportService.disableZoom();
       }
-    })
+    });
+
+    effect(() => {
+      const file = this.currentFile();
+      this.panzoom?.reset();
+    });
   }
 
 
-  // AI-generated swipe code below:
+  private panzoom?: ReturnType<typeof Panzoom>;
 
-  private touchStartX = 0;
-  private touchStartY = 0;
-  private touchActive = false;
-
-  protected touchStart(event: TouchEvent): void {
-
-    if (event.touches.length !== 1) {
+  @ViewChild('mediaElement')
+  set mediaElement(element: ElementRef<HTMLImageElement | HTMLVideoElement> | undefined) {
+    if (!element) {
       return;
     }
 
-    const touch = event.touches[0];
+    this.panzoom?.destroy();
 
-    this.touchStartX = touch.clientX;
-    this.touchStartY = touch.clientY;
-    this.touchActive = true;
+    this.panzoom = Panzoom(element.nativeElement, {
+      maxScale: 5,
+      minScale: 1,
+      step: 1
+    });
+
+    this.handlePanDisabling();
+
+    element.nativeElement.parentElement!
+      .addEventListener('wheel', this.panzoom.zoomWithWheel);
+
+    element.nativeElement.addEventListener('touchend', () => {
+      this.handlePanDisabling();
+    });
+
+    element.nativeElement.addEventListener('wheel', () => {
+      this.handlePanDisabling();
+    });
   }
 
-  protected touchEnd(event: TouchEvent): void {
+  private handlePanDisabling(): void {
+    const scale = this.panzoom?.getScale() ?? 1;
 
-    if (!this.touchActive) {
-      return;
-    }
-
-    this.touchActive = false;
-
-    if (event.changedTouches.length !== 1) {
-      return;
-    }
-
-    const touch = event.changedTouches[0];
-
-    const deltaX = touch.clientX - this.touchStartX;
-    const deltaY = touch.clientY - this.touchStartY;
-
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-      return;
-    }
-
-    if (Math.abs(deltaX) < 60) {
-      return;
-    }
-
-    if (deltaX > 0) {
-      this.viewer.previous();
+    if (scale <= 1) {
+      this.panzoom?.reset();
+      this.panzoom?.setOptions({
+        disablePan: true
+      });
     } else {
-      this.viewer.next();
+      this.panzoom?.setOptions({
+        disablePan: false
+      });
     }
-  }
-
-  protected touchCancel(): void {
-    this.touchActive = false;
   }
 }

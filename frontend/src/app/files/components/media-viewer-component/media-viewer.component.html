@@ -8,7 +8,7 @@
 		</button>
 
 		@if (viewer.files()!.length > 1) {
-			<button
+			<button 
 				class="nav left"
 				type="button"
 				(click)="viewer.previous()">
@@ -16,11 +16,13 @@
 			</button>
 		}
 
-		<div
-			class="content"
-			(touchstart)="touchStart($event)"
+		<!-- (touchstart)="touchStart($event)"
 			(touchend)="touchEnd($event)"
-			(touchcancel)="touchCancel()"
+			(touchcancel)="touchCancel()" -->
+
+		<div
+			#mediaElement
+			class="content"
 		>
 			@if (currentFile(); as file) {
 				@if (file.type === 'image') {
@@ -35,20 +37,13 @@
 					</video>
 				}
 			}
-
-			<div class="download-container">
-				<div class="spacer">
-
-				</div>
-				<button 
-					class="download"
-					(click)="viewer.download()">
-					<ion-icon name="download"/>
-				</button>
-			</div>
 		</div>
 
-		
+		<button 
+			class="download"
+			(click)="viewer.download()">
+			<ion-icon name="download"/>
+		</button>
 
 		@if (viewer.files()!.length > 1) {
 			<button

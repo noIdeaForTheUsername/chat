@@ -24,7 +24,7 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
 import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
-import { ImageViewerOverlayComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
+import { MediaViewerComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
 import { FileCompressorService } from '@src/app/files/services/file-compressor';
 import { FilesValidatorService } from '@src/app/files/services/file-validator';
 
@@ -37,7 +37,7 @@ import { FilesValidatorService } from '@src/app/files/services/file-validator';
   imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonSelect, IonSelectOption,
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
-    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, ImageViewerOverlayComponent],
+    SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, MediaViewerComponent],
   providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

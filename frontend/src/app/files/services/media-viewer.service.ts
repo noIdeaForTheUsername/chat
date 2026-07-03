@@ -79,4 +79,4 @@ export class MediaViewerService {
     if (file)
       this.fileDownloader.downloadFile(file);
   }
-}
+} 
