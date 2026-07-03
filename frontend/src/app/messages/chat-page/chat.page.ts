@@ -11,7 +11,7 @@ import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/c
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonLabel, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonSelect, IonSelectOption, IonHeader, IonLabel, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MessageService } from '../message-service/message.service';
@@ -25,6 +25,8 @@ import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
 import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
 import { ImageViewerOverlayComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
+import { FileCompressorService } from '@src/app/files/services/file-compressor';
+import { FilesValidatorService } from '@src/app/files/services/file-validator';
 
 
 @Component({
@@ -32,8 +34,8 @@ import { ImageViewerOverlayComponent } from "@src/app/files/components/media-vie
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons,
-    IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet, IonLabel,
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonButtons, IonSelect, IonSelectOption,
+    IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
     SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, ImageViewerOverlayComponent],
   providers: [SelectionService],
@@ -47,6 +49,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private messageService = inject(MessageService);
   public selectionService = inject(SelectionService);
   private alertService = inject(AlertService);
+  private fileCompressor = inject(FileCompressorService);
+  private fileValidator = inject(FilesValidatorService);
 
   // SETTINGS
   private readonly SCROLL_TO_BOTTOM_BUTTON_PX = 1500;
@@ -116,6 +120,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   private firstMessageId: string = "";
   private firstMessageTopDistance: number | undefined = undefined;  // for infinite scroll correction
   private teleportingToMessageId: number | null = null;  // for scrollToMessage after conversation reload (eg. after sending a message)
+
+  protected get qualitySelectAlertOptions() {
+    return {
+      header: this.translate.instant("page.chat.quality-options.title"),
+      message: this.translate.instant("page.chat.quality-options.hint"),
+    };
+  }
 
   // ------------------------------------------- INIT/LOAD FUNCTIONS -------------------------------------------
 
@@ -515,7 +526,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
 
   replyToMessage(id: number) {
     this.replyingToId.set(this.actionMessageId());
-    this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "💬");
+    this.replyingToText.set(this.messages().find(m => m.globalId === id)?.text || "Message");
   }
   cancelReply() {
     if (this.awaitingMessageSendResponse())  // message already being sent

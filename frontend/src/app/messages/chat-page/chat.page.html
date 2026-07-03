@@ -96,6 +96,7 @@
   </ion-action-sheet>
 </ion-content>
 
+<!-- BOTTOM MESSAGE BAR -->
 <ion-footer>
   <div class="toolbar-container">
     <ion-toolbar>
@@ -105,39 +106,51 @@
           [buffer]="uploadProgress() / 100"></ion-progress-bar>  <!--the buffer simply looks nice-->
       }
 
+      <!-- CHIPS ABOVE MESSAGE INPUT -->
       <div class="extras-container">
-        <!-- REPLIES AND FILES -->
+        <!-- reply -->
         @if (replyingToId() !== null) {
           <ion-chip (click)="cancelReply()">
             <p>
-              <ion-icon name="close-circle"/>
+              <ion-icon name="close-circle" class="close-icon"/>
               {{ replyingToText() }}
-              <ion-icon name="arrow-redo"/>
             </p>
+            <ion-icon name="arrow-redo"/>
           </ion-chip>
         }
+        <!-- files -->
         @if (selectedFiles().length > 0) {
           <ion-chip (click)="clearAttachmentsAndCancelUpload()">
             <p>
-              <ion-icon name="close-circle"/>
+              <ion-icon name="close-circle" class="close-icon"/>
               {{ attachmentText() }}
-              <ion-icon name="attach"/>
             </p>
+            <ion-icon name="attach"/>
           </ion-chip>
 
-          <ion-button fill="clear">
-            <ion-icon name="settings" slot="start"/>
-            <ion-label>Jakość</ion-label>
-          </ion-button>
+          <!-- quality select -->
+          <div>
+            <ion-select
+              [label]="'page.chat.quality-options.title' | translate" label-placement="stacked"
+              interface="alert" [interfaceOptions]="qualitySelectAlertOptions"
+              [placeholder]="'page.chat.quality-options.default' | translate"
+              (ionChange)="onCompressionSettingChange($event)"
+              >
+              <ion-select-option value="compressed">{{ 'page.chat.quality-options.compressed' | translate }}</ion-select-option>
+              <ion-select-option value="not-compressed">{{ 'page.chat.quality-options.not-compressed' | translate }}</ion-select-option>
+            </ion-select>
+          </div>
         }
       </div>
 
+      <!-- MESSAGE INPUT FIELD AND BUTTONS -->
       <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
-        <!-- ATTACH BUTTON -->
+        <!-- attach button -->
         <ion-button shape="round" class="round-button" (click)="openFileSelector()" [disabled]="awaitingMessageSendResponse()">
           <ion-icon name="attach" slot="icon-only"></ion-icon>
         </ion-button>
-        <!-- MESSAGE INPUT FIELD -->
+
+        <!-- input field -->
         <ion-textarea #message_field
           fill="solid" [autoGrow]="true"
           (ionInput)="onMessageFieldInput($event)"
@@ -148,6 +161,7 @@
           class="message-input glow-on-focus ion-margin ion-flex-auto"
           [autofocus]="true">
         </ion-textarea>
+
         <!-- SEND BUTTON -->
         <ion-button shape="round" color="primary" fill="solid" class="round-button"
         [disabled]="!canSendMessage()"

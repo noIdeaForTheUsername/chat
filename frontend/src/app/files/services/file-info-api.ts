@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { map } from "rxjs";
 import { ApiUrlService } from "../../http/url.service";
 import { BaseFileInfo, FileInfo } from "../file-types";
-import { FileInfoMapperService } from "./file-info-mapper.service";
+import { FileInfoMapperService } from "./file-info-mapper";
 
 @Injectable({
   providedIn: 'root',

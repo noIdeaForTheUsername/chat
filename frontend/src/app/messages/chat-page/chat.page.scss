@@ -63,11 +63,12 @@ ion-fab {
 div.extras-container {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0 4px;
   gap: 8px;
 
   >* {
-    min-width: 20%;
+    min-width: min(100px, 25%);
   }
 
   ion-chip {
@@ -78,7 +79,7 @@ div.extras-container {
     ion-icon {
       color: var(--ion-text-color-step-500);
 
-      &[name="close-circle"] {  // close icon
+      &.close-icon {  // close icon
         color: var(--ion-text-color);
       }
     }
@@ -93,17 +94,12 @@ div.extras-container {
     }
   }
 
-  ion-button {
+  ion-select {
     font-size: 0.8rem;
-    --color: var(--ion-color-tertiary);
-    --padding-top: 0;
-    --padding-bottom: 0;
-    --padding-start: 0;
-    --padding-end: 0;
   }
+}
 
-  .md div.extras-container ion-chip {
-    margin-top: 8px;
-  }
+.md div.extras-container ion-chip {
+  margin-top: 8px;
 }
 

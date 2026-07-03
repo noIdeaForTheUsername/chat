@@ -112,7 +112,14 @@
       "attachment-one": "Attachment (1)",
       "attachment-many": "Attachments ({{count}})",
       "cancel-sending-confirm.header": "Cancel message sending",
-      "cancel-sending-confirm.description": "Leaving the page will cancel the message sending. Are you sure you want to do this?"
+      "cancel-sending-confirm.description": "Leaving the page will cancel the message sending. Are you sure you want to do this?",
+      "quality-options": {
+        "title": "Quality",
+        "hint": "Only applies to images. Default compression reduces the size of images, loading time, and data transfer. Full quality preserves all details.",
+        "default": "Default",
+        "compressed": "Default (compressed)",
+        "not-compressed": "Full"
+      },
     },
 
     "profile": {

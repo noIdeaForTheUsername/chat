@@ -112,7 +112,14 @@
       "attachment-one": "Załącznik (1)",
       "attachment-many": "Załączniki ({{count}})",
       "cancel-sending-confirm.header": "Anuluj wysyłanie wiadomości",
-      "cancel-sending-confirm.description": "Opuszczenie strony spowoduje anulowanie wysyłania wiadomości. Czy na pewno chcesz to zrobić?"
+      "cancel-sending-confirm.description": "Opuszczenie strony spowoduje anulowanie wysyłania wiadomości. Czy na pewno chcesz to zrobić?",
+      "quality-options": {
+        "title": "Jakość",
+        "hint": "Dotyczy tylko zdjęć. Domyślna kompresja zmniejsza rozmiar obrazów, czas ładowania i transfer danych. Pełna jakość zachowuje wszystkie szczegóły.",
+        "default": "Domyślna",
+        "compressed": "Domyślna (skompresowana)",
+        "not-compressed": "Pełna"
+      },
     },
 
     "profile": {

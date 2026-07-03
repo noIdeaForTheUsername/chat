@@ -39,9 +39,9 @@ export class FileCompressorService {
   }
 
   private async compressImage(file: File) {
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/"))
       throw new Error("File to compress is not an image.");
-    }
+    
     let fileName = this.getExtensionlessFileName(file);
     console.log("file name: " + fileName);
     const compressedBlob = await imageCompression(file, this.compressionOptions);
