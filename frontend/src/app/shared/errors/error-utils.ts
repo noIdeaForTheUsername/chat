@@ -42,7 +42,7 @@ export function getErrorMessageKey(errorCode: number | string | null, translate:
       else
         mappedId = httpCodeMap.get(intId);
 
-      errorCode = mappedId || "data-unavailable";  // HTTP codes fallback to "data-unavailable"
+      errorCode = mappedId || "unknown";
     }
     // String ID: try to map extra known error codes to error keys
     else if (typeof errorCode === 'string') {

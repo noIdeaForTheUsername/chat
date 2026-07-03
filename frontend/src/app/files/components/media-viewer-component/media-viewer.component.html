@@ -35,13 +35,20 @@
 					</video>
 				}
 			}
+
+			<div class="download-container">
+				<div class="spacer">
+
+				</div>
+				<button 
+					class="download"
+					(click)="viewer.download()">
+					<ion-icon name="download"/>
+				</button>
+			</div>
 		</div>
 
-		<button 
-			class="download"
-			(click)="viewer.download()">
-			<ion-icon name="download"/>
-		</button>
+		
 
 		@if (viewer.files()!.length > 1) {
 			<button

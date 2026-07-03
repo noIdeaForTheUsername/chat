@@ -22,10 +22,39 @@
   height: 100vh;
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 
   box-sizing: border-box;
+}
+
+.download-container {
+  z-index: 1;
+  width: 30%;
+  height: 100px;
+
+  display: flex;
+  flex-direction: column;
+
+  .spacer {
+    flex: 1;
+  }
+}
+
+.download {
+  width: 100%;
+  background: var(--ion-color-primary);
+  border-radius: 32px;
+  outline: solid rgba(var(--ion-color-primary-rgb), 0.2) 5px;
+  transition: transform 0.5s;
+  ion-icon {
+    font-size: 1.7rem;
+    color: black;
+  }
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 @media (min-width: 1000px) {
@@ -39,7 +68,7 @@ video {
   display: block;
 
   max-width: 100%;
-  max-height: 100%;
+  max-height: 90%;
 
   object-fit: contain;
 
@@ -66,27 +95,6 @@ video {
   transition:
   background .2s,
   transform .2s;
-}
-
-.download {
-  z-index: 1;
-  position: fixed;
-  bottom: 5%;
-  width: 20%;
-  height: clamp(40px, 10%, 70px);
-
-  display: block;
-  background: var(--ion-color-primary);
-  border-radius: 32px;
-  outline: solid rgba(var(--ion-color-primary-rgb), 0.2) 5px;
-  transition: transform 0.5s;
-  ion-icon {
-    font-size: 1.7rem;
-    color: black;
-  }
-  &:hover {
-    transform: scale(1.05);
-  }
 }
 
 .nav {

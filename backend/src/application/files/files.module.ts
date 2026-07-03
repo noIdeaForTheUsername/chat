@@ -29,7 +29,8 @@ import { LoggingService } from 'src/shared/logging/app-logger';
       filesDomainService: FilesDomainService, loggingService: LoggingService) => ({
         storage: new FilesStorageService(configService, filesDomainService, loggingService).getMulterFileDiskStorage(),
         limits: {
-          files: 20,
+          files: FilesStorageService.filesPerMessageLimit,
+          fileSize: FilesStorageService.fileSizeLimitBytes
         }
       }),
     }),

@@ -313,19 +313,42 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  openFileSelector() {
+  onAttachmentButtonClick() {
     this.initFileInput();
-    // Clear previous selection
-    this.fileInput.value = '';
-    // Trigger file selection dialog
-    this.fileInput.click();
+    if (this.selectedFiles().length > 0) {
+      this.alertService.displayPromptAlert(
+        AlertType.PROMPT,
+        this.translate.instant('page.chat.attachment-replace-confirm'),
+        () => {
+          this.openFileSelectionDialog();
+        },
+        undefined,
+        this.translate.instant('common.are-you-sure')
+      );
+    }
+    else
+      this.openFileSelectionDialog();
+  }
+
+  private openFileSelectionDialog() {
+    this.fileInput.value = '';  // Clear previous selection
+    this.fileInput.click();  // Trigger file selection dialog
   }
 
   private onFileInputChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFiles.set(Array.from(input.files));
-    }
+    if (!input.files || input.files.length == 0)
+      return;
+
+    let files = Array.from(input.files);
+    let validFiles = this.fileValidator.validateAndFilterSingleMessageFiles(files);
+
+    this.selectedFiles.set(validFiles);
+  }
+  
+
+  protected onCompressionSettingChange(event: CustomEvent) {
+    this.fileCompressor.enableCompression.set(event.detail.value !== 'not-compressed');
   }
 
   clearAttachmentsAndCancelUpload() {

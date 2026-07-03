@@ -20,7 +20,7 @@ export class FilePreviewComponent {
   private fileDownloader = inject(FileDownloaderService);
   
 
-  protected dimensions: Signal<{ width: number, height: number }> = signal({ width: 0, height: 0 });
+  protected dimensions = signal({ width: 0, height: 0 });
 
   ngOnInit() {
     const file = this.file();
@@ -28,11 +28,9 @@ export class FilePreviewComponent {
       return;
 
     if ((file.type == "image" || file.type == "video") && file?.mediaWidth && file?.mediaHeight) {
-      this.dimensions = computed(() => {
-        const _width = this.mediaDimensionsCalculator.maxMediaWidth();
-        const _height = this.mediaDimensionsCalculator.maxMediaHeight();
-        return this.mediaDimensionsCalculator.getFilePreviewDimensions(file);
-      });
+      // this was originally computed() and dyniamically updated on resize
+      // but ngOptimizedImage didn't like that which caused trouble
+      this.dimensions.set(this.mediaDimensionsCalculator.getFilePreviewDimensions(file));
     }
   }
 

@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Header, Headers, InternalServerErrorException, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseFilters, UseInterceptors } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Body, Controller, Get, Header, Param, Post, Query, Res, StreamableFile, UploadedFiles, UseFilters, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from "@nestjs/platform-express";
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
 import { UserId } from 'src/shared/auth/decorators/user-id.decorator';
 import { MessagesService } from '../messages/messages.service';
 import { MessageWithFileDto } from './dto/message-with-file.dto';
 import { FileInfoResponse } from './file-interfaces';
-import { FilesService } from './services/files.service';
-import { SkipThrottle } from '@nestjs/throttler';
 import { FileUploadExceptionFilter } from './file-upload.filter';
+import { FILES_UPLOAD_RATE_LIMIT } from './rate-limit';
+import { FilesService } from './services/files.service';
 
 const maxCacheAgeSeconds = 3600 * 24 * 60; // 60 days
 
@@ -18,7 +18,6 @@ export class FilesController {
   constructor(
     private readonly filesService: FilesService,
     private readonly messagesService: MessagesService,
-    private readonly eventEmitter: EventEmitter2
   ) {}
 
   @Get("conversations/:id/file-info")
@@ -34,6 +33,7 @@ export class FilesController {
   @Post("conversations/:id/uploads")
   @UseFilters(FileUploadExceptionFilter)
   @UseInterceptors(FilesInterceptor("files")) 
+  @Throttle(FILES_UPLOAD_RATE_LIMIT)
   async sendMessageWithFiles(
     @UserId() callerId: number,
     @Param('id') conversationId: number,

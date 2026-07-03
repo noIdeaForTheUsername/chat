@@ -111,6 +111,7 @@
       "copy-failed": "Failed to copy text to clipboard",
       "attachment-one": "Attachment (1)",
       "attachment-many": "Attachments ({{count}})",
+      "attachment-replace-confirm": "Do you want to clear and re-select the attachments?",
       "cancel-sending-confirm.header": "Cancel message sending",
       "cancel-sending-confirm.description": "Leaving the page will cancel the message sending. Are you sure you want to do this?",
       "quality-options": {
@@ -120,6 +121,8 @@
         "compressed": "Default (compressed)",
         "not-compressed": "Full"
       },
+      "max-files-exceeded": "You cannot send more than {{max}} files in a single message",
+      "max-file-size-exceeded": "You cannot send files larger than {{max}} MB. Files that exceeded the size: {{fileNames}}"
     },
 
     "profile": {
@@ -267,9 +270,9 @@
       "header": "Invalid data",
       "description": "Provided data is invalid. Check if the input is correct."
     },
-    "too-many-requests": {
+    "too-many-requests": {  
       "header": "Too many actions",
-      "description": "You have exceeded the actions limit on the server and it denies access. This may happen if you click very quickly or if there are too many users in your network. Please try again later."
+      "description": "You have exceeded the actions limit on the server. This may happen if you click very quickly, upload huge amounts of data, or if there are too many users in your network. Please try again later."
     },
     "too-many-messages": {
       "header": "Slow down!",

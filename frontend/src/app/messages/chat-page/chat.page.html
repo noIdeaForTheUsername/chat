@@ -132,6 +132,7 @@
           <div>
             <ion-select
               [label]="'page.chat.quality-options.title' | translate" label-placement="stacked"
+              [disabled]="this.awaitingMessageSendResponse()"
               interface="alert" [interfaceOptions]="qualitySelectAlertOptions"
               [placeholder]="'page.chat.quality-options.default' | translate"
               (ionChange)="onCompressionSettingChange($event)"
@@ -146,7 +147,7 @@
       <!-- MESSAGE INPUT FIELD AND BUTTONS -->
       <ion-buttons class="message-bar ion-margin-vertical ion-display-flex ion-justify-content-between ion-flex-nowrap ion-margin-horizontal">
         <!-- attach button -->
-        <ion-button shape="round" class="round-button" (click)="openFileSelector()" [disabled]="awaitingMessageSendResponse()">
+        <ion-button shape="round" class="round-button" (click)="onAttachmentButtonClick()" [disabled]="awaitingMessageSendResponse()">
           <ion-icon name="attach" slot="icon-only"></ion-icon>
         </ion-button>
 
