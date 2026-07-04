@@ -2,32 +2,31 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, HostListener, inject, NgZone, OnDestroy, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Conversation } from '@app/conversations/conversation.interface';
 import { ConversationService } from '@app/conversations/conversation.service';
 import { LoadingIndicator } from '@app/loading/loading-indicator-component/loading-indicator.component';
 import { ProfilePreviewComponent } from '@app/profiles/profile-preview-component/profile-preview.component';
 import { ProfileService } from '@app/profiles/profile-service/profile.service';
+import { AnyProfile } from '@app/profiles/profile.interface';
 import { VisibleNamePipe } from '@app/profiles/visible-name-pipe/visible-name-pipe';
 import { CornerMenuComponent } from '@app/shared/headers/corner-menu-component/corner-menu.component';
 import { ItemButtonComponent } from '@app/shared/inputs/item-button-component/item-button.component';
 import { SelectionService } from '@app/shared/selection/selection-service/selection.service';
 import { SelectionToolbarComponent } from '@app/shared/selection/selection-toolbar-component/selection-toolbar.component';
-import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFooter, IonSelect, IonSelectOption, IonHeader, IonLabel, IonIcon, IonTextarea, IonTitle, IonToolbar, ScrollDetail, IonChip, IonProgressBar } from '@ionic/angular/standalone';
+import { IonActionSheet, IonBackButton, IonButton, IonButtons, IonChip, IonContent, IonFab, IonFabButton, IonFooter, IonHeader, IonIcon, IonProgressBar, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToolbar, ScrollDetail } from '@ionic/angular/standalone';
 import type { OverlayEventDetail } from '@ionic/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { MessageService } from '../message-service/message.service';
-import { MessageActionButtons } from './message-action-buttons';
-import { MessageCardComponent } from '../message-card/message-card.component';
-import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
-import { Conversation } from '@app/conversations/conversation.interface';
-import { AnyProfile } from '@app/profiles/profile.interface';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
 import { AlertType } from '@src/app/alerts/alert-type.enum';
-import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
 import { MediaViewerComponent } from "@src/app/files/components/media-viewer-component/media-viewer.component";
 import { FileCompressorService } from '@src/app/files/services/sending/file-compressor';
-import { FilesValidatorService } from '@src/app/files/services/sending/file-validator';
 import { FilesSelectionService } from '@src/app/files/services/sending/files-selection-service';
+import { isTouchOnlyDevice } from '@src/app/shared/platform-detection/platformUtils';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { MessageCardComponent } from '../message-card/message-card.component';
+import { MessageService } from '../message-service/message.service';
+import { MessageActionButtons } from './message-action-buttons';
+import { MessageLoadingIndicatorComponent } from './message-loading-indicator/message-loading-indicator.component';
 
 
 @Component({
@@ -51,7 +50,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   public selectionService = inject(SelectionService);
   private alertService = inject(AlertService);
   private fileCompressor = inject(FileCompressorService);
-  private fileValidator = inject(FilesValidatorService);
   private filesSelectionService = inject(FilesSelectionService);
 
   // SETTINGS
@@ -224,6 +222,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initScrollElement();
     this.initSubscriptions();
+    this.fileCompressor.enableCompression.set(true);
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
