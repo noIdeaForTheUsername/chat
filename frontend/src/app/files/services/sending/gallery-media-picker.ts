@@ -11,7 +11,6 @@ export class GalleryMediaPickerService {
 
   private alertService = inject(AlertService);
   private translate = inject(TranslateService);
-
   
   public async prompt(limit: number): Promise<File[]> {
     const { results: galleryResults } = await Camera.chooseFromGallery({
@@ -21,7 +20,7 @@ export class GalleryMediaPickerService {
       includeMetadata: true,
     });
     let files: File[] = [];
-    if (galleryResults.length > limit)
+    if (galleryResults.length)
       files = await this.galleryResultsToFiles(galleryResults);
     return files;
   }
@@ -34,7 +33,7 @@ export class GalleryMediaPickerService {
       if (result.status === 'fulfilled')
         successfulFiles.push(result.value)
       else
-        console.error('Error converting media to file:', result.reason);
+        console.error('Error converting media to file: ' + result.reason);
     }
     if (successfulFiles.length < promiseResults.length) {
       this.alertService.displayMessageAlert(

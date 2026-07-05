@@ -514,7 +514,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   private deleteSelectedMessages() {
-    console.warn("DOWNLOAD!");
     if (this.selectionService.selectionMode()) {  // multiselect delete
       this.promptMessageDeletion(() => {
         this.messageService.operations.deleteMultipleMessages(this.selectionService.selectedIds());

@@ -1,17 +1,21 @@
 export const environment = {
   production: true,
 
-  // Protocol and host might be left empty for same-origin requests
-  // do not forget to update the hostname capacitor.config.ts when changing the API URLs. Change it to THE SAME master domain
-  // and a DIFFERENT SUBdomain. That's a workaround to make cookies look "1st-party" so they work on Android
+  // WHEN UPDATING DON'T FORGET:
+  // - Protocol and host might (and should) be left empty for same-origin requests
+  // - update the hostname capacitor.config.ts when changing the API URLs. Change it to THE SAME master domain
+  // and a DIFFERENT SUBdomain. That's a workaround to make cookies look "1st-party" so they work on Android (shitty but nothing else worked)
+  // - there's /api and /socket.io excluded from navigationUrls in ngsw-config.json, so if you change the API URLs,
+  // make sure to update that file too so the service worker doesn't intercept those requests and break the app (for example, file downloads)
 
-  // Production configuration
+  // MAIN PRODUCTION CONFIGURATION
   apiUrl: "/api",
   socketIoUrl: "",
   capacitorApiUrl: "https://chat.serwerigora.com/api",
   capacitorSocketIoUrl: "https://chat.serwerigora.com",
   socketIoPath: "/socket.io",
 
+  // TESTING CONFIGURATIONS (testing in production mode is sometimes needed):
 
   // Staging configuartion
   // apiUrl: "/api",

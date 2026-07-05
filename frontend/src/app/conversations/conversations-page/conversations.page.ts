@@ -168,11 +168,6 @@ export class ConversationsPage implements OnInit {
     if (typeof(input) == "string") this.searchFilter.set(input);
   }
 
-  // performPlusButtonAction(event: CustomEvent<OverlayEventDetail>) {
-  //   if (event.detail.role == "cancel" || event.detail.role == 'backdrop') return;
-  //   this.router.navigate([event.detail.data]);
-  // }
-
   openMultiselectActionSheet() {
     this.multiselectActionSheetOpen.set(true);
   }

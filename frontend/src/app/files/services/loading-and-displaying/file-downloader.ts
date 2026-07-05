@@ -13,12 +13,6 @@ export class FileDownloaderService {
     const a = document.createElement('a');
     a.href = file.url + this.downloadQuery;
     a.download = file.originalName;
-    document.body.appendChild(a);
-    if (isFirefox() && !isMobile()) {
-      // firefox for some reason reloads the app without this
-      a.target = "_blank";
-    }
     a.click();
-    document.body.removeChild(a);
   }
 }
