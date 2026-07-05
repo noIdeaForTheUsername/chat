@@ -43,7 +43,6 @@ export class FileCompressorService {
       throw new Error("File to compress is not an image.");
     
     let fileName = this.getExtensionlessFileName(file);
-    console.log("file name: " + fileName);
     const compressedBlob = await imageCompression(file, this.compressionOptions);
     return new File([compressedBlob], fileName + ".webp",  // name preservation
       { type: compressedBlob.type, lastModified: file.lastModified });

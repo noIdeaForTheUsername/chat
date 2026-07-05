@@ -85,11 +85,11 @@ export class MessageService {
   }
 
   public getLowestDisplayedId() {
-    return this.state.getLowestDisplayedId();
+    return this.state.lowestDisplayedId;
   }
 
   public getHighestDisplayedId() {
-    return this.state.getHighestDisplayedId();
+    return this.state.highestDisplayedId;
   }
 
   // PRIVATE FUNCTIONS

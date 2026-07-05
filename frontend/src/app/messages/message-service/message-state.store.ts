@@ -44,14 +44,6 @@ export class MessageStateStore {
     return this.currentConvId;
   }
 
-  public getLowestDisplayedId() {
-    return this.lowestDisplayedId;
-  }
-
-  public getHighestDisplayedId() {
-    return this.highestDisplayedId;
-  }
-
   public updateDisplayedMessagesMetadata(
     messages: Message[],
     updateConvNewestMessageId = false,

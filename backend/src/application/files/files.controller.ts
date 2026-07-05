@@ -51,7 +51,13 @@ export class FilesController {
   }
 
   @Get("uploads/:uuid")
-  @SkipThrottle({ fiveSeconds: false })
+  @SkipThrottle({ fiveSeconds: true })
+  @Throttle({
+    minute: {
+      ttl: 60 * 1000,
+      limit: 500,  // tolerate the user scrolling like crazy in a conversation full of files
+    }
+  })
   @Header("Cache-Control", `private, max-age=${maxCacheAgeSeconds}, immutable`)
   async serveFile(
     @Param('uuid') fileUuid: string,

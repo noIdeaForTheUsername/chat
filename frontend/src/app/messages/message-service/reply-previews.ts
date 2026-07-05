@@ -61,7 +61,7 @@ export class ReplyPreviewManager {
     if (found) this.addPreviews(found);
   }
 
-  public addPreviews(messageWithRepliedTextOrArray: Message | Message[]) {
+  private addPreviews(messageWithRepliedTextOrArray: Message | Message[]) {
     this.state.displayedMessages.update((msgs) => {
       const messagesWithRepliedTexts = Array.isArray(messageWithRepliedTextOrArray)
         ? messageWithRepliedTextOrArray
@@ -76,10 +76,26 @@ export class ReplyPreviewManager {
 
         return {
           ...msg,
-          repliedText: messageWithRepliedText.text?.trim() || undefined,
+          repliedText: this.getRepliedTextFromMessage(messageWithRepliedText),
         };
       });
     });
     this.state.messagesDidRefresh.next();
+  }
+
+  getRepliedTextFromMessage(messageWithRepliedText: Message | MessageView): string | undefined {
+    let text = messageWithRepliedText.text?.trim();
+    if (text && text.length > 0) {
+      return text;
+    }
+    else if (messageWithRepliedText.files) {
+      if (messageWithRepliedText.files.every(f => f.type === 'image' || f.type === "video"))
+        return "🖼️";
+      else
+        return "📄";
+    }
+    else {
+      return undefined;
+    }
   }
 }

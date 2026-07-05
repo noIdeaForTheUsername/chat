@@ -15,7 +15,7 @@ export const STANDARD_RATE_LIMIT = {
   day: {
     name: "day",
     ttl: 24 * 3600 * 1000,
-    limit: 10000,
+    limit: 15000,
   },
 }
 

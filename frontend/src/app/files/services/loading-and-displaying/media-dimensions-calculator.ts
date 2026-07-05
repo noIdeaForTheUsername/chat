@@ -54,7 +54,6 @@ export class MediaDimensionsCalculator {
         height: this._maxMediaHeight
       };
     }
-
     return dimensions;
   }
 }

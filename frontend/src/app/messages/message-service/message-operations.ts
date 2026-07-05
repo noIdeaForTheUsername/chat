@@ -173,8 +173,8 @@ export class MessageOperations {
 
     this.replyPreviewManager.loadSingleMessagePreview(
       message,
-      this.state.getHighestDisplayedId(),
-      this.state.getLowestDisplayedId()
+      this.state.highestDisplayedId,
+      this.state.lowestDisplayedId
     );
   }
 
@@ -187,6 +187,9 @@ export class MessageOperations {
     const latestMessage = messages.length > 0 ? messages[messages.length - 1] : undefined;
     let newMessageView = messageToMessageView(newMessage, this.authService.getUserIdOrError(), latestMessage);
     newMessageView = this.fileLoader.addPendingFilesToMessage(newMessageView);
+    if (newMessageView.globalId > this.state.highestDisplayedId) {
+      this.state.highestDisplayedId = newMessageView.globalId;
+    }
 
     this.state.displayedMessages.update((msgs) => [...msgs, newMessageView]);
   }
@@ -241,8 +244,8 @@ export class MessageOperations {
     if (message.repliedId) {
       this.replyPreviewManager.loadSingleMessagePreview(
         message,
-        this.state.getHighestDisplayedId(),
-        this.state.getLowestDisplayedId()
+        this.state.highestDisplayedId,
+        this.state.lowestDisplayedId
       );
     }
   }

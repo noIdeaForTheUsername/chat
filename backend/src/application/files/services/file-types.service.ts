@@ -75,18 +75,33 @@ export class FileTypesService {
   }
 
   private async getMediaFileDimensions(filePath: string, mimeType: string): Promise<Dimensions> {
-    if (mimeType?.includes("image")) {
-      const dims = await imageSizeFromFile(filePath);
-      return { width: dims.width, height: dims.height };
-    }
-    else if (mimeType?.includes("video")) {
-      const info = await ffprobe(filePath, { path: ffprobeStatic.path });
-      for (const stream of info.streams) {
-        if (stream.codec_type == "video" && stream.width && stream.height) {
-          return { width: stream.width, height: stream.height };
-        }
+    try {
+      if (mimeType?.includes("image")) {
+        return await this.getImageDimensions(filePath);
+      }
+      else if (mimeType?.includes("video")) {
+        return await this.getVideoDimensions(filePath);
       }
     }
+    catch (error) {}  // On error return null dimensions
     return { width: null, height: null };
+  }
+
+  private async getImageDimensions(filePath: string): Promise<Dimensions> {
+    const dims = await imageSizeFromFile(filePath);
+    if ([5, 6, 7, 8].includes(dims.orientation ?? 1))
+      return { width: dims.height, height: dims.width };
+    else
+      return { width: dims.width, height: dims.height };
+  }
+  
+  private async getVideoDimensions(filePath: string): Promise<Dimensions> {
+    const info = await ffprobe(filePath, { path: ffprobeStatic.path });
+    for (const stream of info.streams) {
+      if (stream.codec_type == "video" && stream.width && stream.height) {
+        return { width: stream.width, height: stream.height };
+      }
+    }
+    throw new Error("no-video-stream");
   }
 }
