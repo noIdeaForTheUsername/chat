@@ -74,6 +74,8 @@ export class MessageOperations {
     if (!this.validateMessageLength(text ?? ""))
       return;
 
+    this.state.uploadProgress.next(5);
+
     let compressedFiles = await this.fileCompressor.compressFilesIfPossible(files);
     
     this.state.uploadSubscription = this.api.uploadFiles(currentConvId, compressedFiles, text, repliedId).subscribe({

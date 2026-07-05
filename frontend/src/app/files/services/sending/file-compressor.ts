@@ -28,8 +28,7 @@ export class FileCompressorService {
         output.push(file);
     }
 
-    let compressionPromises = filesToCompress.map(file =>
-      this.compressImage(file));
+    let compressionPromises = filesToCompress.map(file => this.compressImage(file));
     output.push(...(await Promise.all(compressionPromises)));
     return output; 
   }

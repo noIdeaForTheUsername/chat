@@ -60,6 +60,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   @ViewChild(IonContent) private content!: IonContent;
   @ViewChild("message_field") protected messageField!: IonTextarea;
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
+  @ViewChild('quality_select') protected qualitySelect!: IonSelect;
   private scrollElement!: HTMLElement;
   
   // File input (hidden)
@@ -222,7 +223,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.initScrollElement();
     this.initSubscriptions();
-    this.fileCompressor.enableCompression.set(true);
+    this.filesSelectionService.reset();
   }
   private async initScrollElement() {
     this.scrollElement = await this.content.getScrollElement();
@@ -237,7 +238,6 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   ionViewDidEnter() {
     this.visibilityChangedListener = this.updateActiveViewingStatus.bind(this);
     this.messageService.setActiveViewingStatus(true);
-    this.filesSelectionService.reset();
     document.addEventListener('visibilitychange', this.visibilityChangedListener);
   }
 
@@ -275,18 +275,17 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (messageText.length === 0 && this.selectedFiles().length === 0)
       return;
     this.awaitingMessageSendResponse.set(true);
-
-    const replyingTo = this.replyingToId();
     
     // If files are selected, use sendMessageWithFiles
     if (this.selectedFiles().length > 0) {
+      this.fileCompressor.enableCompression.set(this.qualitySelect.value !== "not-compressed");
       await this.messageService.operations.sendMessageWithFiles(
         this.selectedFiles(),
         messageText.length > 0 ? messageText : undefined,
-        replyingTo ?? undefined
+        this.replyingToId() ?? undefined
       );
     } else {
-      this.messageService.operations.sendMessage(messageText, replyingTo ?? undefined);
+      this.messageService.operations.sendMessage(messageText, this.replyingToId() ?? undefined);
     }
   }
 

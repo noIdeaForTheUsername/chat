@@ -131,6 +131,7 @@
           <!-- quality select -->
           <div>
             <ion-select
+              #quality_select
               [label]="'page.chat.quality-options.title' | translate" label-placement="stacked"
               [disabled]="this.awaitingMessageSendResponse()"
               interface="alert" [interfaceOptions]="qualitySelectAlertOptions"

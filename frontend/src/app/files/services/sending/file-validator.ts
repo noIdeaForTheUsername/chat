@@ -9,7 +9,7 @@ import { AlertType } from "@src/app/alerts/alert-type.enum";
 export class FilesValidatorService {
 
   private readonly MAX_FILE_SIZE_MB = 2500;
-  private readonly MAX_FILES_PER_MESSAGE = 30;
+  public static readonly MAX_FILES_PER_MESSAGE = 30;
   
   private alertService = inject(AlertService);
   private translate = inject(TranslateService);
@@ -24,10 +24,10 @@ export class FilesValidatorService {
   }
 
   private validateAmount(files: File[]): boolean {
-    if (files.length > this.MAX_FILES_PER_MESSAGE) {
+    if (files.length > FilesValidatorService.MAX_FILES_PER_MESSAGE) {
       this.alertService.displayMessageAlert(
         AlertType.ERROR,
-        this.translate.instant('page.chat.max-files-exceeded', { max: this.MAX_FILES_PER_MESSAGE }),
+        this.translate.instant('page.chat.max-files-exceeded', { max: FilesValidatorService.MAX_FILES_PER_MESSAGE }),
       );
       return false;
     }
