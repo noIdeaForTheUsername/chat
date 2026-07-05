@@ -18,12 +18,14 @@ import {
   download, ellipse, ellipsisHorizontal,
   ellipsisHorizontalCircle,
   flame,
+  folderOpen,
   globe,
   handLeft,
   help, helpCircle, hourglass,
   images,
   language,
   logoAndroid, logOut, notifications, paperPlane, pencil, people, person, personAdd, personRemove,
+  playCircle,
   settings, star, trash, trashBin, wifiOutline
 } from 'ionicons/icons';
 import { AlertWindowComponent } from "./alerts/alert-window/alert-window.component";
@@ -42,7 +44,7 @@ export class AppComponent {
       ellipsisHorizontalCircle, closeCircle, checkboxOutline, trash, trashBin,
       people, notifications, download, person, personAdd, personRemove, attach, document,
       build, logOut, language, copy, ellipse, flame, handLeft, hourglass, logoAndroid, globe, arrowBack,
-      images, chevronForward, star });
+      images, folderOpen, chevronForward, playCircle });
 
     translate.setTranslation('pl', translationsPL);
     translate.setTranslation('en', translationsEN);

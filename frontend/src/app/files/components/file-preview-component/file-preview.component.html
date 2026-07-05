@@ -12,11 +12,10 @@
   />
 }
 @else if (file && file.type == "video") {
-  <video controls preload="none" (click)="mediaClick.emit($event)"
-    class="mediaPreview" [width]="dimensions().width" [height]="dimensions().height">
-    <source [src]="file.url">
-    Your browser does not support videos.
-  </video>
+  <div (click)="mediaClick.emit($event)"
+    class="mediaPreview videoPreview" [style.width]="dimensions().width + 'px'" [style.height]="dimensions().height + 'px'">
+    <ion-icon name="play-circle"></ion-icon>
+  </div>
 }
 @else if (file && file.type == "downloadable") {
   <div class="downloadablePreview" (click)="downloadFile($event)">

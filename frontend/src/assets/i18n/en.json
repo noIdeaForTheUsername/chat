@@ -122,7 +122,12 @@
         "not-compressed": "Full"
       },
       "max-files-exceeded": "You cannot send more than {{max}} files in a single message",
-      "max-file-size-exceeded": "You cannot send files larger than {{max}} MB. Files that exceeded the size: {{fileNames}}"
+      "max-file-size-exceeded": "You cannot send files larger than {{max}} MB. Files that exceeded the size: {{fileNames}}",
+      "select-file-source": {
+        "header": "Select files from...",
+        "gallery": "Gallery",
+        "all-files": "All files"
+      }
     },
 
     "profile": {
@@ -322,6 +327,7 @@
     },
 
     "failed-to-delete": "Failed to delete",
-    "failed-to-send-msg": "Failed to send message"
+    "failed-to-send-msg": "Failed to send message",
+    "gallery-conversion-failed": "Failed to process {{count}} of the selected files"
   }
 }

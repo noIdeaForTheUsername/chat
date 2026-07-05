@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
   },
   server: {
     androidScheme: 'https',
-    hostname: `chatfrontend.serwerigora.com` // This is needed to make cookies work on Android, as they only work on a first-party domain. A workaround.
+    hostname: `chatfrontend.serwerigora.com`, // This is needed to make cookies work on Android, as they only work on a first-party domain. A workaround.
   }
 };
 

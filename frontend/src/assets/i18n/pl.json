@@ -122,7 +122,12 @@
         "not-compressed": "Pełna"
       },
       "max-files-exceeded": "Nie możesz wysłać więcej niż {{max}} plików w jednej wiadomości",
-      "max-file-size-exceeded": "Nie możesz wysłać pliku większego niż {{max}} MB. Pliki, które przekroczyły rozmiar: {{fileNames}}"
+      "max-file-size-exceeded": "Nie możesz wysłać pliku większego niż {{max}} MB. Pliki, które przekroczyły rozmiar: {{fileNames}}",
+      "select-file-source": {
+        "header": "Wybierz pliki...",
+        "gallery": "Galeria",
+        "all-files": "Wszystkie pliki"
+      }
     },
 
     "profile": {
@@ -316,6 +321,7 @@
     },
 
     "failed-to-delete": "Nie udało się usunąć",
-    "failed-to-send-msg": "Nie udało się wysłać wiadomości"
+    "failed-to-send-msg": "Nie udało się wysłać wiadomości",
+    "gallery-conversion-failed": "Nie udało się przetworzyć {{count}} z wybranych plików"
   }
 }

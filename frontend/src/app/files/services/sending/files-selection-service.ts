@@ -1,10 +1,16 @@
-import { HostListener, inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";
+import { Capacitor } from "@capacitor/core";
 import { FilesValidatorService } from "./file-validator";
+import { GalleryMediaPickerService } from "./gallery-media-picker";
+import { ActionSheetController } from "@ionic/angular/standalone";
+import { TranslateService } from "@ngx-translate/core";
 
 @Injectable()
 export class FilesSelectionService {
 
   private filesValidator = inject(FilesValidatorService);
+  private translate = inject(TranslateService);
+  private galleryMediaPicker = inject(GalleryMediaPickerService);
 
   private _selectedFiles = signal<File[]>([]);
   public readonly selectedFiles = this._selectedFiles.asReadonly();
@@ -13,7 +19,7 @@ export class FilesSelectionService {
   private fileInputChangeListener: ((this: HTMLInputElement, ev: Event) => any) | null = null;
 
 
-  constructor() {
+  constructor(private actionSheetCtrl: ActionSheetController) {
     // Init file input
     this.fileInput = document.createElement('input');
     this.fileInput.type = 'file';
@@ -28,20 +34,12 @@ export class FilesSelectionService {
     this._selectedFiles.set([]);
   }
 
-  public openSelectionPrompt() {
-    this.fileInput.value = '';  // Clear previous selection to avoid problems
-    this.fileInput.click();
-  }
-
   public handlePaste(event: ClipboardEvent) {
     const items = event.clipboardData?.items;
-    console.log("pasted items: ", items);
-
     if (!items)
       return;
 
     const files: File[] = [];
-
     for (const item of Array.from(items)) {
       if (item.kind !== 'file')
         continue;
@@ -60,6 +58,54 @@ export class FilesSelectionService {
     if (!files.length)
       return;
     this.addFiles(files);
+  }
+
+  public async openSelectionPrompt() {
+    if (Capacitor.getPlatform() == "android") {
+      await this.promptForAndroidFileSourceSelection();
+    }
+    else
+      this.openBrowserFileInput();
+  }
+
+  
+
+  private openBrowserFileInput() {
+    this.fileInput.value = '';  // Clear previous selection to avoid problems
+    this.fileInput.click();
+  }
+
+  private async openAndroidGalleryPicker() {
+    const files = await this.galleryMediaPicker.prompt(
+      FilesValidatorService.MAX_FILES_PER_MESSAGE - this._selectedFiles().length);
+    if (files.length) {
+      this.addFiles(files);
+    }
+  }
+
+  private async promptForAndroidFileSourceSelection() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: this.translate.instant("page.chat.select-file-source.header"),
+      buttons: [
+        {
+          text: this.translate.instant("page.chat.select-file-source.gallery"),
+          icon: 'images',
+          handler: () => this.openAndroidGalleryPicker()
+        },
+        {
+          text: this.translate.instant("page.chat.select-file-source.all-files"),
+          icon: 'folder-open',
+          handler: () => this.openBrowserFileInput()
+        },
+        {
+          text: this.translate.instant("common.cancel"),
+          icon: 'close',
+          role: 'cancel',
+          cssClass: "bold-text"
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 
   private onFileInputChange(event: Event) {

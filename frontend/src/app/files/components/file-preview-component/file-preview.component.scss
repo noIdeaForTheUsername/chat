@@ -11,8 +11,27 @@
   cursor: pointer;
 }
 
-video {
+.videoPreview {
   background: var(--ion-background-color-step-200);
+  position: relative;
+
+  ion-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 90px;
+    height: 90px;
+    color: black;
+  }
+}
+
+@media (max-width: 768px) {
+  .videoPreview ion-icon {
+    width: 45px;
+    height: 45px;
+  }
 }
 
 div.downloadablePreview {
