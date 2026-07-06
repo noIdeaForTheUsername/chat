@@ -8,13 +8,15 @@ import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-
 import { RouterLink } from '@angular/router';
 import { NotificationsService } from '@src/app/notifications/notifications.service';
 import { AlertService } from '@src/app/alerts/alert-service/alert.service';
+import { isAndroid } from '@src/app/shared/platform-detection/platformUtils';
+import { AndroidInstallationComponent } from '../android-installation-component/android-installation.component';
 
 @Component({
   selector: 'app-account-inactive',
   templateUrl: './account-inactive.page.html',
   styleUrls: ['./account-inactive.page.scss'],
   standalone: true,
-  imports: [IonContent, IonIcon, CommonModule, FormsModule, StandardHeaderComponent, RouterLink,
+  imports: [IonContent, IonIcon, CommonModule, FormsModule, StandardHeaderComponent, RouterLink, AndroidInstallationComponent,
     TranslatePipe, IonButton, IonButtons, LanguageButtonComponent, RouterLink, IonCard, IonCardHeader, IonCardTitle, IonCardContent]
 })
 export class AccountInactivePage {
@@ -23,6 +25,7 @@ export class AccountInactivePage {
   protected notificationsService = inject(NotificationsService);
 
   protected runningAsPwa = signal(false);
+  protected androidAppAvailable = signal(false);
 
   protected reloadPage() {
     window.location.reload();
@@ -33,5 +36,6 @@ export class AccountInactivePage {
       window.matchMedia('(display-mode: standalone)').matches
       || (window.navigator as any).standalone === true
     );
+    this.androidAppAvailable.set(isAndroid());
   }
 }

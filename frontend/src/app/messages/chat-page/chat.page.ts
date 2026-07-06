@@ -38,7 +38,7 @@ import { MessageLoadingIndicatorComponent } from './message-loading-indicator/me
     IonBackButton, IonFooter, IonTextarea, IonButton, IonIcon, IonFab, IonFabButton, IonActionSheet,
     MessageLoadingIndicatorComponent, ProfilePreviewComponent, TranslatePipe, VisibleNamePipe, MessageCardComponent, LoadingIndicator,
     SelectionToolbarComponent, RouterLink, CornerMenuComponent, ItemButtonComponent, IonChip, IonProgressBar, MediaViewerComponent],
-  providers: [SelectionService, FilesSelectionService],
+  providers: [SelectionService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatPage implements AfterViewInit, OnDestroy {
@@ -59,6 +59,8 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   // HTML elements
   @ViewChild(IonContent) private content!: IonContent;
   @ViewChild("message_field") protected messageField!: IonTextarea;
+  protected messageFieldHadFocus = false;
+  protected messageFieldInput: HTMLTextAreaElement | null = null;
   @ViewChild('corner_menu') protected cornerMenu!: CornerMenuComponent;
   @ViewChild('quality_select') protected qualitySelect!: IonSelect;
   private scrollElement!: HTMLElement;
@@ -100,6 +102,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (count === 0) return "";
     return this.translate.instant(count === 1 ? 'page.chat.attachment-one' : 'page.chat.attachment-many', { count });
   });
+  protected readonly progressBarType = "indeterminate";
 
   // DISPLAYED MESSAGES STATE
   protected firstMessageLoad = true;
@@ -221,12 +224,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.initScrollElement();
+    this.initAsyncHtmlElements();
     this.initSubscriptions();
     this.filesSelectionService.reset();
   }
-  private async initScrollElement() {
+  private async initAsyncHtmlElements() {
     this.scrollElement = await this.content.getScrollElement();
+    this.messageFieldInput = await this.messageField.getInputElement();
   }
 
   private waitForDomStable(): Promise<void> {
@@ -274,13 +278,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     const messageText = this.enteredMessage().trim();
     if (messageText.length === 0 && this.selectedFiles().length === 0)
       return;
+    this.messageFieldHadFocus = document.activeElement === this.messageFieldInput;
     this.awaitingMessageSendResponse.set(true);
     
     // If files are selected, use sendMessageWithFiles
     if (this.selectedFiles().length > 0) {
       this.fileCompressor.enableCompression.set(this.qualitySelect.value !== "not-compressed");
-      await this.messageService.operations.sendMessageWithFiles(
-        this.selectedFiles(),
+      await this.messageService.operations.sendMessageWithSelectedFiles(
         messageText.length > 0 ? messageText : undefined,
         this.replyingToId() ?? undefined
       );
@@ -290,13 +294,15 @@ export class ChatPage implements AfterViewInit, OnDestroy {
   }
 
   afterOwnMessageSent(success: boolean) {
+    this.uploadProgress.set(0);
     this.awaitingMessageSendResponse.set(false);
-    if (!success) return;
+    if (!success)
+      return;
     
     this.enteredMessage.set("");
     this.cancelReply();
-    this.clearAttachmentsAndCancelUpload(); 
-    setTimeout(() => this.messageField.setFocus(), 100);
+    if ((this.messageFieldHadFocus))
+      setTimeout(() => this.messageField.setFocus(), 100);
   }
 
   // ------------------------------------------- FILE ATTACHMENT FUNCTIONS -------------------------------------------

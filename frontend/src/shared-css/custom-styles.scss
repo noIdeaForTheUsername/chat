@@ -100,3 +100,9 @@ ion-textarea.message-input[auto-grow] .native-textarea {
 .ios ion-textarea.message-input label {
   --background: var(--ion-background-color-step-150, #d9d9d9);
 }
+
+img {
+  -webkit-user-drag: none !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+}

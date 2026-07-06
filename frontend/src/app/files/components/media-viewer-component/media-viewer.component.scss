@@ -67,7 +67,7 @@ video {
 }
 
 .download {
-  bottom: 5%;
+  bottom: calc(5% + var(--ion-safe-area-bottom, 0px));
   width: 20%;
   height: 40px;
 
@@ -99,8 +99,8 @@ video {
   .download {
     width: 44px;
     height: 44px;
-    bottom: 20px;
-    right: 20px;
+    bottom: calc(20px + var(--ion-safe-area-bottom, 0px));
+    right: calc(20px + var(--ion-safe-area-right, 0px));
   }
 }
 
@@ -120,8 +120,8 @@ video {
 }
 
 .close {
-  top: 20px;
-  left: 20px;
+  top: calc(20px + var(--ion-safe-area-top, 0px));
+  left: calc(20px + var(--ion-safe-area-left, 0px));
   width: 70px;
   height: 70px;
   background: rgb(255 128 128 / 50%);

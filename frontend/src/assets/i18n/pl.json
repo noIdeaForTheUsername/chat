@@ -55,6 +55,7 @@
       "different-account": "Chcę zalogować się na inne konto",
       "meantime": "W międzyczasie",
       "install-label": "Zainstaluj aplikację, aby mieć do niej dostęp z ekranu głównego",
+      "alternate-installation-way": "Alternatywna metoda instalacji",
       "install-button": "Zainstaluj",
       "notifications-label": "Włącz powiadomienia, aby otrzymywać informacje o aktywacji konta lub nowych odebranych wiadomościach",
       "notifications-button": "Włącz"
@@ -123,6 +124,7 @@
       },
       "max-files-exceeded": "Nie możesz wysłać więcej niż {{max}} plików w jednej wiadomości",
       "max-file-size-exceeded": "Nie możesz wysłać pliku większego niż {{max}} MB. Pliki, które przekroczyły rozmiar: {{fileNames}}",
+      "max-total-size-exceeded": "Łączny rozmiar wszystkich plików w jednej wiadomości nie może przekraczać {{max}} MB. Nadmiarowe pliki nie zostaną wysłane. Przepraszamy!",
       "select-file-source": {
         "header": "Wybierz pliki...",
         "gallery": "Galeria",
@@ -316,12 +318,18 @@
       "description": "Jeśli chcesz je włączyć, musisz to zmienić ręcznie w ustawieniach przeglądarki internetowej lub urządzenia (to poza kontrolą tej aplikacji)"
     },
     "notifications-unknown-error": {
-      "header": "Nie wiemy, co się stało",
-      "description": "Wystąpił nieznany błąd podczas próby włączenia powiadomień, a Twoja przeglądarka nie dostarcza nam żadnych dodatkowych informacji na ten temat. Spróbuj ponownie uruchomić aplikację, zmienić ustawienia, przeglądarkę, lub, jeśli używasz telefonu, pobrać natywną aplikację Androida z menu ustawień"
+      "header": "Sprawdź ustawienia przeglądarki",
+      "description": "Wystąpił nieznany błąd podczas próby włączenia powiadomień. Sprawdź ustawienia powiadomień w przeglądarce lub, jeśli używasz telefonu, pobierz aplikację Androida z menu ustawień"
     },
 
     "failed-to-delete": "Nie udało się usunąć",
     "failed-to-send-msg": "Nie udało się wysłać wiadomości",
     "gallery-conversion-failed": "Nie udało się przetworzyć {{count}} z wybranych plików"
+  },
+
+  "file-toast": {
+    "download-started": "Rozpoczęto pobieranie pliku.",
+    "download-finished": "Plik pobrany do katalogu {{catalog}}.",
+    "already-downloading": "Plik jest pobierany."
   }
 }

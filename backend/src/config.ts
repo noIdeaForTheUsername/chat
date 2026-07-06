@@ -48,6 +48,7 @@ export default () => {
 
     files: {
       uploadsDirectory: process.env.FILES_UPLOAD_DIRECTORY ?? './uploads',
+      ffprobePath: process.env.FFPROBE_PATH ?? undefined
     },
 
     pushNotifications: {

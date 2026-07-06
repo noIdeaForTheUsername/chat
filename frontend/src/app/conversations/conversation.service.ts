@@ -8,8 +8,9 @@ import { AlertService } from '@app/alerts/alert-service/alert.service';
 import { AlertType } from '@app/alerts/alert-type.enum';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { catchError, finalize, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, finalize, Observable, of, Subject, tap, throwError } from 'rxjs';
 import { WebsocketService } from '../websockets/websocket-service';
+import { RefreshService } from '../loading/refresh.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +25,13 @@ export class ConversationService {
   public readonly conversations = signal<Conversation[]>([]);
   public readonly conversationsLoaded = signal(false);
   public readonly loadErr = signal<number | null>(null);
-  // public readonly loadErrorCode = signal<number | null>(null);
 
   // not included in dataLoaded boolean, because it's non-critical
   public readonly conversationsMessagePreviews = signal(new Map<number, Message | null>());  // convIDs as keys; used for message previews, unread count etc
     
   private api = new BackendConversationApi(this.authService.getUserId());
+
+  public newConversation$ = new Subject<void>();
 
   constructor() {
     this.loadConversations().subscribe();
@@ -172,7 +174,11 @@ export class ConversationService {
     const conv = this.conversations().find(c => c.id === message.conversationId);
     if (!conv) {  
       // new conversation received
-      this.loadConversations().subscribe();
+      this.loadConversations().subscribe({
+        next: () => {
+          this.newConversation$.next();
+        }
+      });
       return;
     };
     // update message preview

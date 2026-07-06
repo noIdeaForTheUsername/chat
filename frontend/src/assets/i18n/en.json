@@ -55,8 +55,9 @@
       "description": "Your account creation request has been received. Before you can use the app, please <b>wait for an administrator to activate</b> your account. This should not take longer than a day.",
       "different-account": "I want to log in to a different account",
       "meantime": "In the meantime",
-      "install-label": "Install the app to have access from your phone's home screen",
+      "install-label": "Install the app to have access from your device's home screen",
       "install-button": "Install",
+      "alternate-installation-way": "Alternate installation way",
       "notifications-label": "Enable notifications to get informed about account activation or new received messages",
       "notifications-button": "Enable"
     },
@@ -123,6 +124,7 @@
       },
       "max-files-exceeded": "You cannot send more than {{max}} files in a single message",
       "max-file-size-exceeded": "You cannot send files larger than {{max}} MB. Files that exceeded the size: {{fileNames}}",
+      "max-total-size-exceeded": "The total size of all files in a single message cannot exceed {{max}} MB. Excessive files will not be sent. Sorry!",
       "select-file-source": {
         "header": "Select files from...",
         "gallery": "Gallery",
@@ -318,8 +320,8 @@
       "description": "To enable notifications, you have to go to your browser or device settings and manually allow them (this is out of the app's control)"
     },
     "notifications-unknown-error": {
-      "header": "We don't know what happened",
-      "description": "An unknown error occurred while trying to enable notifications, and your browser does not provide us any more information on it. Try restarting the app, changing settings, internet browser, or, if you're using phone, downloading the native Android app from the settings menu"
+      "header": "Check browser settings",
+      "description": "An unknown error occurred while trying to enable notifications. Check your browser or device settings for notification options, or download the Android app from the settings menu."
     },
     "file-upload-in-progress": {
       "header": "File upload",
@@ -328,6 +330,14 @@
 
     "failed-to-delete": "Failed to delete",
     "failed-to-send-msg": "Failed to send message",
-    "gallery-conversion-failed": "Failed to process {{count}} of the selected files"
+    "gallery-conversion-failed": "Failed to process {{count}} of the selected files",
+    "file-download-failed": "Failed to download the file.",
+    "file-no-store-permission": "Permission to store files has been denied. Change settings and try again."
+  },
+
+  "file-toast": {
+    "download-started": "Downloading file...",
+    "download-finished": "File downloaded to the {{catalog}} folder.",
+    "already-downloading": "The file is already being downloaded."
   }
 }

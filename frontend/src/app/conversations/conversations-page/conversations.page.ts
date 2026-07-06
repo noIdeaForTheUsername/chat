@@ -86,13 +86,11 @@ export class ConversationsPage implements OnInit {
   // -------------------------------------------------------- PRIVATE FUNCTIONS
 
   constructor() {
-    effect(() => {
-      // Load missing metadata when conversations change
-      const conversations = this.conversations();
-      if (this.refreshService.checkDataMissing(conversations))  {
-        this.refreshService.refreshData(undefined, false);
-      }
-    })
+    // effect(() => {
+    //   // Load missing metadata when conversations change
+    //   const conversations = this.conversations();
+    //   this.refreshService.refreshIfDataMissing(conversations);
+    // })
   }
 
   async ngOnInit() {

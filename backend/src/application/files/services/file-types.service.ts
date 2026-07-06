@@ -6,6 +6,7 @@ import ffprobe from "ffprobe";
 import ffprobeStatic from "ffprobe-static";
 import { FileInfo } from "src/domain/files/entities/file-info.entity";
 import { ViewedFileInfo } from "src/domain/files/entities/viewed-file-info";
+import { ConfigService } from "@nestjs/config";
 
 type Dimensions = { width: number | null, height: number | null };
 
@@ -14,6 +15,13 @@ export class FileTypesService {
 
   private readonly maxDisplayableImageSize = 15 * 1024 * 1024; // 15 MB
   private readonly maxDisplayableVideoSize = 30 * 1024 * 1024; // 30 MB
+  
+  private ffprobePath: string;
+  constructor(
+    private config: ConfigService
+  ) {
+    this.ffprobePath = this.config.get<string>("files.ffprobePath") ?? ffprobeStatic.path;
+  }
 
   async getFileInfo(file: Express.Multer.File): Promise<FileTypeInfo> {
     const { mimeType, mimeTypeTrusted } = await this.getMimeTypeInfo(file);
@@ -96,7 +104,7 @@ export class FileTypesService {
   }
   
   private async getVideoDimensions(filePath: string): Promise<Dimensions> {
-    const info = await ffprobe(filePath, { path: ffprobeStatic.path });
+    const info = await ffprobe(filePath, { path: this.ffprobePath });
     for (const stream of info.streams) {
       if (stream.codec_type == "video" && stream.width && stream.height) {
         return { width: stream.width, height: stream.height };

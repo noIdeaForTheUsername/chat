@@ -16,6 +16,8 @@ import { MessageFileLoader } from './message-file-loader';
 import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
 import { FileDownloaderService } from '@src/app/files/services/loading-and-displaying/file-downloader';
 import { FileCompressorService } from '@src/app/files/services/sending/file-compressor';
+import { FilesValidatorService } from '@src/app/files/services/sending/file-validator';
+import { FilesSelectionService } from '@src/app/files/services/sending/files-selection-service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +33,9 @@ export class MessageOperations {
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
   private readonly fileLoader = inject(MessageFileLoader);
+  private readonly fileSelector = inject(FilesSelectionService);
   private readonly fileCompressor = inject(FileCompressorService);
+  private readonly fileValidator = inject(FilesValidatorService);
 
   private readonly MESSAGE_LENGTH_LIMIT = 4000;  // enforced on backend too
 
@@ -67,7 +71,8 @@ export class MessageOperations {
     });
   }
 
-  async sendMessageWithFiles(files: File[], text?: string, repliedId?: number) {
+  async sendMessageWithSelectedFiles(text?: string, repliedId?: number) {
+    let files = this.fileSelector.selectedFiles();
     const currentConvId = this.state.getCurrentConvId();
     if (currentConvId === -1)
       return;
@@ -75,10 +80,20 @@ export class MessageOperations {
       return;
 
     this.state.uploadProgress.next(5);
-
     let compressedFiles = await this.fileCompressor.compressFilesIfPossible(files);
-    
-    this.state.uploadSubscription = this.api.uploadFiles(currentConvId, compressedFiles, text, repliedId).subscribe({
+
+    this.fileSelector.replaceAllFilesWithoutValidation(compressedFiles);  // this allows to later properly remove the sent files from selection
+
+    const validFiles = this.fileValidator.validateSentMessageFiles(compressedFiles);
+    if (!validFiles || validFiles.length === 0) {
+      this.state.uploadProgress.next(100);
+      this.state.ownMessageSent.next(false);
+      return;
+    }
+      
+    this.fileSelector.removeFiles(validFiles);
+
+    this.state.uploadSubscription = this.api.uploadFiles(currentConvId, validFiles, text, repliedId).subscribe({
       next: (event: any) => {
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)

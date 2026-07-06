@@ -5,7 +5,9 @@ import { GalleryMediaPickerService } from "./gallery-media-picker";
 import { ActionSheetController } from "@ionic/angular/standalone";
 import { TranslateService } from "@ngx-translate/core";
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class FilesSelectionService {
 
   private filesValidator = inject(FilesValidatorService);
@@ -32,6 +34,15 @@ export class FilesSelectionService {
 
   public reset() {
     this._selectedFiles.set([]);
+  }
+  public removeFiles(filesToRemove: File[]) {
+    const currentFiles = this._selectedFiles();
+    const remainingFiles = currentFiles.filter(file => !filesToRemove.some(file2 => this.isSameFile(file, file2)));
+    this._selectedFiles.set(remainingFiles);
+  }
+  
+  public replaceAllFilesWithoutValidation(newFiles: File[]) {
+    this._selectedFiles.set(newFiles);
   }
 
   public handlePaste(event: ClipboardEvent) {
@@ -120,7 +131,7 @@ export class FilesSelectionService {
   private addFiles(files: File[]): void {
     const currentFiles = this._selectedFiles();
     const uniqueNewFiles = files.filter(file => !currentFiles.some(file2 => this.isSameFile(file, file2)));
-    const validNewFiles = this.filesValidator.validateAndFilterSingleMessageFiles(uniqueNewFiles);
+    const validNewFiles = this.filesValidator.validateSelectedMessageFiles(uniqueNewFiles);
     this._selectedFiles.set([...currentFiles, ...validNewFiles]);
   }
 

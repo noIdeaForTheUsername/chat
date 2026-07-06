@@ -29,6 +29,11 @@ hr {
   border: 2px solid transparent;
   animation: pulse-border 2s infinite ease-in-out;
 }
+div.highlighted-card {
+  border-radius: 16px;
+  margin: 10px;
+  padding: 20px;
+}
 
 @keyframes pulse-border {
   0% {

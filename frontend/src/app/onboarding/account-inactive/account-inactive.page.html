@@ -20,9 +20,35 @@
     <hr/>
     <h2>{{ 'page.account-inactive.meantime' | translate }}:</h2>
 
-    <!-- The user has to re-enable notifications in PWA anyways so displaying in browser doesn't make sense -->
-    <!-- if user continues using in browser without PWA then they will see a button on the Conversations page -->
+
+    @if (androidAppAvailable()) {
+      <div class="highlighted-card">
+        <app-android-installation/>
+      </div>
+      @if (!runningAsPwa()) {
+        <p>{{ 'page.account-inactive.alternate-installation-way' | translate }}:</p>
+      }
+    }
+
+    @if (!runningAsPwa()) {
+      <ion-card class="highlighted-card">
+        <ion-card-header>
+          <ion-card-title>
+            <ion-icon name="download"/>
+            {{ 'page.account-inactive.install-label' | translate }}
+          </ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button routerLink="/installation-guide">
+            {{ 'page.account-inactive.install-button' | translate }}
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    }
+
     @if (runningAsPwa()) {
+      <!-- The user has to re-enable notifications in PWA anyways so displaying in browser doesn't make sense -->
+      <!-- if user continues using in browser without PWA then they will see a button on the Conversations page -->
       <ion-card class="highlighted-card">
         <ion-card-header>
           <ion-card-title>
@@ -37,19 +63,5 @@
         </ion-card-content>
       </ion-card>
     }
-
-    <ion-card class="highlighted-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="download"/>
-          {{ 'page.account-inactive.install-label' | translate }}
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-button routerLink="/installation-guide">
-          {{ 'page.account-inactive.install-button' | translate }}
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
   </div>
 </ion-content>

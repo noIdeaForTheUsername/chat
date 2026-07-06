@@ -61,7 +61,7 @@ export class MediaViewerComponent {
     this.panzoom = Panzoom(element.nativeElement, {
       maxScale: 5,
       minScale: 1,
-      step: 1
+      step: 0.7
     });
 
     this.handlePanDisabling();

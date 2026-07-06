@@ -102,7 +102,7 @@
     <ion-toolbar>
       <!-- UPLOAD PROGRESS BAR -->
       @if (uploadProgress() > 0 && uploadProgress() < 100) {
-        <ion-progress-bar type="determinate" [value]="uploadProgress() / 100"
+        <ion-progress-bar [type]="progressBarType" [value]="progressBarType == 'indeterminate' ? undefined : uploadProgress() / 100"
           [buffer]="uploadProgress() / 100"></ion-progress-bar>  <!--the buffer simply looks nice-->
       }
 
