@@ -15,6 +15,12 @@ export const environment = {
   capacitorSocketIoUrl: "https://chat.serwerigora.com",
   socketIoPath: "/socket.io",
 
+  vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU",
+
+  maxFileSizeMB: 1024,
+  maxTotalFilesSizeMB: 1024,
+  maxFilesPerMessage: 30,
+
   // TESTING CONFIGURATIONS (testing in production mode is sometimes needed):
 
   // Staging configuartion
@@ -37,7 +43,4 @@ export const environment = {
   // capacitorApiUrl: "http://localhost:3000",
   // capacitorSocketIoUrl: "http://localhost:3000",
   // socketIoPath: "/socket.io",
-
-  
-  vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
 };

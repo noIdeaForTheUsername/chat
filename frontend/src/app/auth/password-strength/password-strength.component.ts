@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { REQUIRED_PASSWORD_LENGTH } from '@src/app/shared/inputs/form-utils';
 
@@ -6,7 +6,8 @@ import { REQUIRED_PASSWORD_LENGTH } from '@src/app/shared/inputs/form-utils';
   selector: 'app-password-strength',
   templateUrl: './password-strength.component.html',
   styleUrls: ['./password-strength.component.scss'],
-  imports: [TranslatePipe]
+  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PasswordStrengthComponent{
 

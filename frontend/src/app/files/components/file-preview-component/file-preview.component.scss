@@ -12,7 +12,10 @@
 }
 
 .videoPreview {
-  background: var(--ion-background-color-step-200);
+  background-image: url("/assets/video-player-placeholder.webp");  //var(--ion-background-color-step-200);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
   position: relative;
 
   ion-icon {

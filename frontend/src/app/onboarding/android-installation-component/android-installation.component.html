@@ -1,5 +1,5 @@
 <div class="account-form-container">
-  <a href="/android-download/app-release.apk" download>
+  <a href="/android-download/app-release.apk" [download]="!isAndroid">
     <ion-button expand="block" fill="solid" shape="round">
       <ion-icon name="logo-android" slot="start"></ion-icon>
       {{ 'page.android-guide.download' | translate }}

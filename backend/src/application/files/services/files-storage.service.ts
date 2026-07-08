@@ -14,7 +14,7 @@ import { isUUID } from "class-validator";
 export class FilesStorageService {
 
   public readonly uploadsDirectory: string;
-  public static readonly fileSizeLimitBytes = 1024 * 1024 * 2550; // 2550 MB 
+  public static readonly fileSizeLimitBytes = 1024 ** 3; // 1 GB
   public static readonly filesPerMessageLimit = 30;
   private readonly filesMaxUploadTimeMs = 1000 * 3600 * 24;
   private readonly unuploadedFilePrefix = 'unuploaded-';

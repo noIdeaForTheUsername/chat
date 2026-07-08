@@ -29,7 +29,11 @@ export const environment = {
   
   socketIoPath: "/socket.io",
 
-  vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU"
+  vapidPublicKey: "BMyiXPt22cjNGJqKGb_KdJCklow0_ig7C-qbNKXBLu48eycO9cf8mFDrzqTk95pdzE-Fnr-uzB1cUIZQwu95enU",
+
+  maxFileSizeMB: 99,
+  maxTotalFilesSizeMB: 99,
+  maxFilesPerMessage: 30,
 };
 
 /*

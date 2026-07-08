@@ -1,23 +1,21 @@
+import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Message } from '@app/messages/message.interface';
-import { MessageView } from '../message-view.interface';
-import { messageToMessageView } from '../message-utils';
-import { AlertType } from '@app/alerts/alert-type.enum';
-import { BackendMessageApi } from './backend-message-api';
-import { ReplyPreviewManager } from './reply-previews';
-import { AuthService } from '@app/auth/auth.service';
 import { AlertService } from '@app/alerts/alert-service/alert.service';
+import { AlertType } from '@app/alerts/alert-type.enum';
+import { AuthService } from '@app/auth/auth.service';
+import { Message } from '@app/messages/message.interface';
 import { TranslateService } from '@ngx-translate/core';
 import { ConversationService } from '@src/app/conversations/conversation.service';
-import { WebsocketService } from '@src/app/websockets/websocket-service';
-import { MessageStateStore } from './message-state.store';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { MessageFileLoader } from './message-file-loader';
 import { BaseFileInfo, FileInfo } from '@src/app/files/file-types';
-import { FileDownloaderService } from '@src/app/files/services/loading-and-displaying/file-downloader';
 import { FileCompressorService } from '@src/app/files/services/sending/file-compressor';
 import { FilesValidatorService } from '@src/app/files/services/sending/file-validator';
-import { FilesSelectionService } from '@src/app/files/services/sending/files-selection-service';
+import { WebsocketService } from '@src/app/websockets/websocket-service';
+import { messageToMessageView } from '../message-utils';
+import { MessageView } from '../message-view.interface';
+import { BackendMessageApi } from './backend-message-api';
+import { MessageFileLoader } from './message-file-loader';
+import { MessageStateStore } from './message-state.store';
+import { ReplyPreviewManager } from './reply-previews';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +31,6 @@ export class MessageOperations {
   private readonly websocket = inject(WebsocketService);
   private readonly state = inject(MessageStateStore);
   private readonly fileLoader = inject(MessageFileLoader);
-  private readonly fileSelector = inject(FilesSelectionService);
   private readonly fileCompressor = inject(FileCompressorService);
   private readonly fileValidator = inject(FilesValidatorService);
 
@@ -71,35 +68,27 @@ export class MessageOperations {
     });
   }
 
-  async sendMessageWithSelectedFiles(text?: string, repliedId?: number) {
-    let files = this.fileSelector.selectedFiles();
+  async sendMessageWithSelectedFiles(files: File[], text?: string, repliedId?: number) {
     const currentConvId = this.state.getCurrentConvId();
     if (currentConvId === -1)
       return;
     if (!this.validateMessageLength(text ?? ""))
       return;
 
-    this.state.uploadProgress.next(5);
     let compressedFiles = await this.fileCompressor.compressFilesIfPossible(files);
-
-    this.fileSelector.replaceAllFilesWithoutValidation(compressedFiles);  // this allows to later properly remove the sent files from selection
-
     const validFiles = this.fileValidator.validateSentMessageFiles(compressedFiles);
     if (!validFiles || validFiles.length === 0) {
       this.state.uploadProgress.next(100);
       this.state.ownMessageSent.next(false);
       return;
     }
-      
-    this.fileSelector.removeFiles(validFiles);
 
     this.state.uploadSubscription = this.api.uploadFiles(currentConvId, validFiles, text, repliedId).subscribe({
       next: (event: any) => {
         if (event.type === HttpEventType.UploadProgress) {
           // Track upload progress (0-100)
           if (event.total) {
-            // lerp from 5-95% based on upload progress
-            const percentage = Math.round((event.loaded / event.total) * 90 + 5);
+            const percentage = event.loaded / event.total * 100;
             this.state.uploadProgress.next(percentage);
           }
         } else if (event instanceof HttpResponse) {

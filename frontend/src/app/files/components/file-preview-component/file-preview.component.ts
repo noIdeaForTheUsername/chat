@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnDestroy, OnInit, output, signal, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnDestroy, OnInit, output, signal, Signal } from '@angular/core';
 import { FileInfo } from '../../file-types';
 import { IonIcon } from '@ionic/angular/standalone';
 import { FileSizePipe } from '../../file-size-pipe';
@@ -11,6 +11,7 @@ import { FileDownloaderService } from '../../services/loading-and-displaying/fil
   templateUrl: './file-preview.component.html',
   styleUrls: ['./file-preview.component.scss'],
   imports: [IonIcon, FileSizePipe, NgOptimizedImage],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilePreviewComponent {
 

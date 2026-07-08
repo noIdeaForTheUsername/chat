@@ -101,9 +101,9 @@
   <div class="toolbar-container">
     <ion-toolbar>
       <!-- UPLOAD PROGRESS BAR -->
-      @if (uploadProgress() > 0 && uploadProgress() < 100) {
-        <ion-progress-bar [type]="progressBarType" [value]="progressBarType == 'indeterminate' ? undefined : uploadProgress() / 100"
-          [buffer]="uploadProgress() / 100"></ion-progress-bar>  <!--the buffer simply looks nice-->
+      @if (awaitingMessageSendResponse() && selectedFiles().length > 0) {
+        <ion-progress-bar [type]="progressBarType()" [value]="uploadProgressDisplay()"
+          [buffer]="uploadProgressDisplay()"></ion-progress-bar>  <!--the buffer simply looks nice-->
       }
 
       <!-- CHIPS ABOVE MESSAGE INPUT -->

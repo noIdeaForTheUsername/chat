@@ -102,7 +102,13 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (count === 0) return "";
     return this.translate.instant(count === 1 ? 'page.chat.attachment-one' : 'page.chat.attachment-many', { count });
   });
-  protected readonly progressBarType = "indeterminate";
+  protected progressBarType = computed(() => 
+    (this.uploadProgress() > 0 && this.uploadProgress() <= 100) ? 'determinate' : 'indeterminate'
+  );
+  protected uploadProgressDisplay = computed(() => 
+    this.progressBarType() == 'indeterminate' ? undefined
+    : ((this.uploadProgress()/100) * 0.9) + 0.05  // lerp 0.05-0.95
+  );
 
   // DISPLAYED MESSAGES STATE
   protected firstMessageLoad = true;
@@ -285,6 +291,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
     if (this.selectedFiles().length > 0) {
       this.fileCompressor.enableCompression.set(this.qualitySelect.value !== "not-compressed");
       await this.messageService.operations.sendMessageWithSelectedFiles(
+        this.filesSelectionService.selectedFiles(),
         messageText.length > 0 ? messageText : undefined,
         this.replyingToId() ?? undefined
       );
@@ -300,6 +307,7 @@ export class ChatPage implements AfterViewInit, OnDestroy {
       return;
     
     this.enteredMessage.set("");
+    this.filesSelectionService.reset();
     this.cancelReply();
     if ((this.messageFieldHadFocus))
       setTimeout(() => this.messageField.setFocus(), 100);

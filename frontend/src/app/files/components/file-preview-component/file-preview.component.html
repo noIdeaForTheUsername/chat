@@ -12,6 +12,7 @@
   />
 }
 @else if (file && file.type == "video") {
+  <!-- no actual <video> element so it's not loaded before clicking -->
   <div (click)="mediaClick.emit($event)"
     class="mediaPreview videoPreview" [style.width]="dimensions().width + 'px'" [style.height]="dimensions().height + 'px'">
     <ion-icon name="play-circle"></ion-icon>

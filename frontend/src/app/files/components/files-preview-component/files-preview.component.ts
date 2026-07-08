@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit } from '@angular/core';
 import { FileInfo } from '../../file-types';
 import { FilePreviewComponent } from '../file-preview-component/file-preview.component';
 import { MediaViewerService } from '../../services/loading-and-displaying/media-viewer.service';
@@ -8,7 +8,8 @@ import { MediaGroupComponent } from "../media-group-component/media-group.compon
   selector: 'app-files-preview',
   templateUrl: './files-preview.component.html',
   styleUrls: ['./files-preview.component.scss'],
-  imports: [FilePreviewComponent, MediaGroupComponent]
+  imports: [FilePreviewComponent, MediaGroupComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilesPreviewComponent {
 

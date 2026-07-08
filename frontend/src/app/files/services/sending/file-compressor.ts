@@ -6,10 +6,11 @@ import imageCompression, { Options } from 'browser-image-compression';
 })
 export class FileCompressorService {
 
+  private readonly compressedExtension = "webp";
   private readonly compressionOptions: Options = {
     maxWidthOrHeight: 1920,
     useWebWorker: true,
-    fileType: "image/webp",
+    fileType: `image/${this.compressedExtension}`,
     initialQuality: 0.85,
   };
 
@@ -33,7 +34,7 @@ export class FileCompressorService {
     return output; 
   }
 
-  private getFileTypeEligibleForCompression(file: File): boolean {
+  public getFileTypeEligibleForCompression(file: File): boolean {
     return file.type.startsWith("image/") && !file.type.includes("gif") && !file.type.includes("svg");
   }
 
@@ -42,9 +43,9 @@ export class FileCompressorService {
       throw new Error("File to compress is not an image.");
     
     let fileName = this.getExtensionlessFileName(file);
-    const compressedBlob = await imageCompression(file, this.compressionOptions);
-    return new File([compressedBlob], fileName + ".webp",  // name preservation
-      { type: compressedBlob.type, lastModified: file.lastModified });
+    let compressedFile = await imageCompression(file, this.compressionOptions);
+    return new File([compressedFile], `${fileName}.${this.compressedExtension}`,  // name preservation
+      { type: compressedFile.type, lastModified: file.lastModified });
   }
 
   private getExtensionlessFileName(file: File): string {

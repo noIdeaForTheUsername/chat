@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, ElementRef, inject, input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, ElementRef, inject, input, OnInit, ViewChild } from '@angular/core';
 import { FileInfo } from '../../file-types';
 import { MediaDimensionsCalculator } from '../../services/loading-and-displaying/media-dimensions-calculator';
 import { IonIcon } from '@ionic/angular/standalone';
@@ -7,7 +7,8 @@ import { IonIcon } from '@ionic/angular/standalone';
   selector: 'app-media-group',
   templateUrl: './media-group.component.html',
   styleUrls: ['./media-group.component.scss'],
-  imports: [IonIcon]
+  imports: [IonIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MediaGroupComponent implements AfterViewInit {
 

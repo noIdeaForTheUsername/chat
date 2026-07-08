@@ -18,14 +18,13 @@ export class AppInitService {
   
   // Settings
   // Pages that are accessible without login and considered "outside" of the main app
-  private readonly outsidePages = ['/', "/#", '/login', '/register', "/account-inactive", "/installation-guide"];
+  private readonly outsidePages = ['/', '/login', '/register', "/account-inactive", "/installation-guide"];
   private readonly successStartPage = '/chats';
 
   public readonly loadingError = signal<string | null>(null);
   public readonly loadingErrorJson = signal<string | null>(null);
   public readonly preloading = signal(true);
 
-  // public blockLoadPage = false;
 
   async initializeApp() {
     await this.loadAuthAndRedirect();
@@ -86,7 +85,8 @@ export class AppInitService {
     }
     else if (err.status === 401) {  // server available but unauthorized, go to the welcome page
       if (!this.isOnOutsidePage()) {
-        this.router.navigateByUrl('/');
+        window.location.href = '/';
+        // this.router.navigateByUrl('/');
       }
       this.preloading.set(false);
     }
@@ -100,9 +100,7 @@ export class AppInitService {
   }
 
   private isOnOutsidePage(): boolean {
-    const route = this.router.url.replace('#', '');
-
-    return this.outsidePages.includes(route)
-      /*|| this.outsidePages.includes(route.replace('#', ''))*/;
+    const route = window.location.hash.replace("#", "");
+    return route === "" || this.outsidePages.includes(route);
   }
 }
