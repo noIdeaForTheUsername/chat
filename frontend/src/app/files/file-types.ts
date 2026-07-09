@@ -13,4 +13,8 @@ export interface FileInfo extends BaseFileInfo {
   url: string;
 }
 
+export interface MediaViewerFileInfo extends FileInfo {
+  loaded: boolean;
+}
+
 export type FileType = "image" | "video" | "downloadable";

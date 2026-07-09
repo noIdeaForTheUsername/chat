@@ -1,31 +1,43 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
-import { FileInfo } from '../../file-types';
+import { MediaViewerFileInfo, FileInfo } from '../../file-types';
 import { FileDownloaderService } from './file-downloader';
 @Injectable({
   providedIn: 'root'
 })
 export class MediaViewerService {
 
+  // Settings
+  private readonly NEARBY_FILES_AUTOLOADED = 4;
+
+  // Dependencies
   private fileDownloader = inject(FileDownloaderService);
 
-  private readonly _files = signal<FileInfo[] | null>(null);
+  // Private state
+  private readonly _files = signal<MediaViewerFileInfo[] | null>(null);
   private readonly _index = signal(0);
-
-  readonly files = this._files.asReadonly();
-  readonly index = this._index.asReadonly();
-
-  readonly active = computed(() => this._files() !== null);
-
   private _showDownloadButton = signal(true);
-  public readonly showDownloadButton = this._showDownloadButton.asReadonly();
 
+  // Public state
+  readonly active = computed(() => this._files() !== null);  // "active" means the media viewer is open
+  readonly files = this._files.asReadonly();
+  readonly currentIndex = this._index.asReadonly();
+  public readonly showDownloadButton = this._showDownloadButton.asReadonly();
+  readonly filesToLoad = computed(() => {
+    const files = this._files();
+    const currentIndex = this._index();
+    if (!files) return [];
+    return files.slice(Math.max(0, currentIndex - this.NEARBY_FILES_AUTOLOADED),
+      Math.min(files.length, currentIndex + this.NEARBY_FILES_AUTOLOADED + 1));
+  });
   readonly currentFile = computed(() => {
     const files = this._files();
     if (!files)
       return null;
     return files[this._index()];
   });
+  
+
 
   open(files: FileInfo[], startUuid?: string, downloadButton: boolean = true): void {
     this._showDownloadButton.set(downloadButton);
@@ -47,7 +59,12 @@ export class MediaViewerService {
       }
     }
 
-    this._files.set(media);
+    const mappedMedia: MediaViewerFileInfo[] = media.map(f => ({
+      ...f,
+      loaded: false
+    }));
+
+    this._files.set(mappedMedia);
     this._index.set(startIndex);
   }
 
@@ -79,8 +96,20 @@ export class MediaViewerService {
   }
 
   download() {
-    const file = this.currentFile();
-    if (file)
-      this.fileDownloader.downloadFile(file);
+    const currentFile = this.currentFile();
+    if (currentFile)
+      this.fileDownloader.downloadFile(currentFile);
   }
-} 
+
+  setFileLoaded(uuid: string): void {
+    this._files.update(files => {
+      if (!files) return files;
+
+      return files.map(file =>
+        file.uuid === uuid
+          ? { ...file, loaded: true }
+          : file
+      );
+    });
+  }
+}

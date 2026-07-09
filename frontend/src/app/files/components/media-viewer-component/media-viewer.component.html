@@ -16,23 +16,34 @@
 			</button>
 		}
 
+		@let currentFile = viewer.currentFile();
+
 		<div
 			#mediaElement
 			class="content"
 		>
-			@if (currentFile(); as file) {
+		  <!-- Render all "filesToLoad" so they are pre-fetched, but only display the current file (see: [class.not-displayed]="...") -->
+			@for (file of viewer.filesToLoad(); track file.uuid) {
 				@if (file.type === 'image') {
 					<img
+						[class.not-displayed]="currentFile?.uuid !== file.uuid"
+						(load)="viewer.setFileLoaded(file.uuid)"
+						[class.loading]="!currentFile?.loaded"
 						[src]="file.url"
 						[alt]="file.originalName">
 				} @else if (file.type === 'video') {
 					<video
+						[class.not-displayed]="currentFile?.uuid !== file.uuid"
 						controls
 						[src]="file.url">
 					</video>
 				}
 			}
 		</div>
+
+		@if (currentFile?.type == "image" && !currentFile?.loaded) {
+			<app-loading-indicator class="loading-indicator" color="primary"/>
+		}
 
 		@if (viewer.showDownloadButton()) {
 			<button 

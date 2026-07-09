@@ -9,13 +9,11 @@
     @if (preview.type == "image") {
       <img
         [src]="preview.url"
-        [alt]="preview.originalName"
         [class]="`preview-${previews().indexOf(preview) + 1}`"/>
     }
     @else if (preview.type == "video") {
       <img
         src="assets/video-icon.webp"
-        alt="video icon"
         [class]="`preview-${previews().indexOf(preview) + 1}`"/>
     }
   }

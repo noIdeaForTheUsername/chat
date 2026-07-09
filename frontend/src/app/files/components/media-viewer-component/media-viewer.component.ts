@@ -4,13 +4,15 @@ import {
   effect,
   ElementRef,
   inject,
+  OnDestroy,
   Renderer2,
+  signal,
   ViewChild
 } from '@angular/core';
 import { MediaViewerService } from '../../services/loading-and-displaying/media-viewer.service';
 import { IonIcon } from '@ionic/angular/standalone';
-import { ViewportService } from '@src/app/shared/viewport/viewport.service';
 import Panzoom from '@panzoom/panzoom';
+import { LoadingIndicator } from "@src/app/loading/loading-indicator-component/loading-indicator.component";
 
 @Component({
   selector: 'app-media-viewer',
@@ -18,32 +20,28 @@ import Panzoom from '@panzoom/panzoom';
   templateUrl: './media-viewer.component.html',
   styleUrl: './media-viewer.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IonIcon]
+  imports: [IonIcon, LoadingIndicator]
 })
-export class MediaViewerComponent {
+export class MediaViewerComponent implements OnDestroy {
 
   protected readonly viewer = inject(MediaViewerService);
   protected currentFile = this.viewer.currentFile;
   private active = this.viewer.active;
   private host = inject(ElementRef<HTMLElement>);
   private renderer = inject(Renderer2);
-  private viewportService = inject(ViewportService);
+
+  private mediaElementRef: ElementRef<HTMLImageElement | HTMLVideoElement> | undefined;
+  private zoomWithWheelHandler: any = null;
+  private handlePanDisablingHandler: any = null;
 
   constructor() {
     effect(() => {
       const active = this.active();
       if (active) {
         this.renderer.removeStyle(this.host.nativeElement, 'display');
-        this.viewportService.enableZoom();
       } else {
         this.renderer.setStyle(this.host.nativeElement, 'display', 'none');
-        this.viewportService.disableZoom();
       }
-    });
-
-    effect(() => {
-      const file = this.currentFile();
-      this.panzoom?.reset();
     });
   }
 
@@ -55,8 +53,18 @@ export class MediaViewerComponent {
     if (!element) {
       return;
     }
+    this.destroyPanzoom();
+    this.mediaElementRef = element;
+    this.initPanzoom();
+  }
 
-    this.panzoom?.destroy();
+  private initPanzoom() {
+    const element = this.mediaElementRef;
+    if (!element)
+      return;
+    // Fix "Panzoom should be called on elements that have been attached to the DOM"
+    if (!element.nativeElement.isConnected)
+      return;
 
     this.panzoom = Panzoom(element.nativeElement, {
       maxScale: 5,
@@ -66,16 +74,26 @@ export class MediaViewerComponent {
 
     this.handlePanDisabling();
 
-    element.nativeElement.parentElement!
-      .addEventListener('wheel', this.panzoom.zoomWithWheel);
+    this.zoomWithWheelHandler = this.panzoom.zoomWithWheel;
+    this.handlePanDisablingHandler = this.handlePanDisabling.bind(this);
 
-    element.nativeElement.addEventListener('touchend', () => {
-      this.handlePanDisabling();
-    });
+    element.nativeElement.parentElement?.addEventListener('wheel', this.zoomWithWheelHandler);
+    element.nativeElement.addEventListener('touchend', this.handlePanDisablingHandler);
+    element.nativeElement.addEventListener('wheel', this.handlePanDisablingHandler);
+  }
 
-    element.nativeElement.addEventListener('wheel', () => {
-      this.handlePanDisabling();
-    });
+  private destroyPanzoom() {
+    this.removeEventHandlers();
+    this.panzoom?.destroy();
+    this.panzoom = undefined;
+  }
+  private removeEventHandlers() {
+    const element = this.mediaElementRef;
+    if (!element)
+      return;
+    element.nativeElement.parentElement?.removeEventListener('wheel', this.zoomWithWheelHandler);
+    element.nativeElement.removeEventListener('touchend', this.handlePanDisablingHandler);
+    element.nativeElement.removeEventListener('wheel', this.handlePanDisablingHandler);
   }
 
   private handlePanDisabling(): void {
@@ -91,5 +109,9 @@ export class MediaViewerComponent {
         disablePan: false
       });
     }
+  }
+
+  ngOnDestroy() {
+    this.destroyPanzoom()
   }
 }
