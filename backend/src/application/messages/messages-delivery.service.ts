@@ -26,6 +26,9 @@ export class MessagesDeliveryService {
     // websocket transmission
     this.messagesGateway.sendMessage(payload);
 
+    if (!payload.message.text)
+      return;
+
     // Send push if user is not viewing this conversation (even with active connections)
     for (const receiverId of payload.receiverIds) {
       const connectedSockets = await this.messagesGateway.getActiveUserSockets(receiverId);

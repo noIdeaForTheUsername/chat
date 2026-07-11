@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { MediaViewerFileInfo, FileInfo } from '../../file-types';
-import { FileDownloaderService } from './file-downloader';
+import { FileDownloaderService } from '../downloading/file-downloader';
 @Injectable({
   providedIn: 'root'
 })

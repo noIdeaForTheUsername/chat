@@ -4,7 +4,7 @@ import { IonIcon } from '@ionic/angular/standalone';
 import { FileSizePipe } from '../../file-size-pipe';
 import { MediaDimensionsCalculator } from '../../services/loading-and-displaying/media-dimensions-calculator';
 import { NgOptimizedImage } from '@angular/common';
-import { FileDownloaderService } from '../../services/loading-and-displaying/file-downloader';
+import { FileDownloaderService } from '../../services/downloading/file-downloader';
 
 @Component({
   selector: 'app-file-preview',

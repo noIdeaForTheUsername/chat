@@ -39,7 +39,7 @@ export class AndroidFileDownloader {
 
     const success = await this.tryDownloadingFile(file, downloadUrl);
     if (success)
-      await this.showTranslatedToast("file-toast.download-finished", { catalog: this.downloadDirectoryName });
+      await this.showTranslatedToast("file-toast.download-finished-catalog", { catalog: this.downloadDirectoryName });
 
     this.activeDownloads.delete(downloadUrl);
   }

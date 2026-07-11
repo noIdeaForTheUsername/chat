@@ -75,7 +75,7 @@ export class MessageOperations {
     if (!this.validateMessageLength(text ?? ""))
       return;
 
-    let compressedFiles = await this.fileCompressor.compressFilesIfPossible(files);
+    let compressedFiles = await this.fileCompressor.compressEligibleFiles(files);
     const validFiles = this.fileValidator.validateSentMessageFiles(compressedFiles);
     if (!validFiles || validFiles.length === 0) {
       this.state.uploadProgress.next(100);

@@ -1,4 +1,4 @@
-import { Injectable, signal } from "@angular/core";
+import { inject, Injectable, signal } from "@angular/core";import { isIOS } from "@src/app/shared/platform-detection/platformUtils";
 import imageCompression, { Options } from 'browser-image-compression';
 
 @Injectable({
@@ -16,7 +16,7 @@ export class FileCompressorService {
 
   public enableCompression = signal(true);
 
-  public async compressFilesIfPossible(files: File[]) {
+  public async compressEligibleFiles(files: File[]) {
     if (!this.enableCompression())
       return files;
 
@@ -28,14 +28,43 @@ export class FileCompressorService {
       else
         output.push(file);
     }
-
-    let compressionPromises = filesToCompress.map(file => this.compressImage(file));
-    output.push(...(await Promise.all(compressionPromises)));
+    
+    output.push(...(await this.tryCompressFiles(filesToCompress)));
     return output; 
+  }
+
+  private async tryCompressFiles(compressableFiles: File[]): Promise<File[]> {
+    let output: File[] = [];
+    // IOS compression:
+    if (isIOS() && compressableFiles.length > 0) {  // on IOS (even in chrome) compression often doesn't work at all
+      try {
+        let firstCompression = this.compressImage(compressableFiles[0]);
+        output.push(await firstCompression);
+        compressableFiles.shift();
+      }
+      catch (err) {
+        console.error(err);
+        return compressableFiles;  // if the first compression fails on IOS, don't try anymore and return original files
+      }
+    }
+    // Standard path:
+    let compressionPromises = compressableFiles.map(file => this.tryCompressImage(file));
+    output.push(...(await Promise.all(compressionPromises)));
+    return output;
   }
 
   public getFileTypeEligibleForCompression(file: File): boolean {
     return file.type.startsWith("image/") && !file.type.includes("gif") && !file.type.includes("svg");
+  }
+
+  private async tryCompressImage(file: File): Promise<File> {
+    try {
+      return await this.compressImage(file);
+    }
+    catch (error) {
+      console.error(error);
+      return file;
+    }
   }
 
   private async compressImage(file: File) {

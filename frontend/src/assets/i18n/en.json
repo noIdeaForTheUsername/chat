@@ -337,7 +337,7 @@
 
   "file-toast": {
     "download-started": "Downloading file...",
-    "download-finished": "File downloaded to the {{catalog}} folder.",
+    "download-finished-catalog": "File downloaded to the {{catalog}} folder.",
     "already-downloading": "The file is already being downloaded."
   }
 }

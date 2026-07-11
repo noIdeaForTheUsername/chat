@@ -324,12 +324,14 @@
 
     "failed-to-delete": "Nie udało się usunąć",
     "failed-to-send-msg": "Nie udało się wysłać wiadomości",
-    "gallery-conversion-failed": "Nie udało się przetworzyć {{count}} z wybranych plików"
+    "gallery-conversion-failed": "Nie udało się przetworzyć {{count}} z wybranych plików",
+    "file-download-failed": "Nie udało się pobrać pliku.",
+    "file-no-store-permission": "Odmowa uprawnień do przechowywania plików. Zmień ustawienia i spróbuj ponownie."
   },
 
   "file-toast": {
     "download-started": "Rozpoczęto pobieranie pliku.",
-    "download-finished": "Plik pobrany do katalogu {{catalog}}.",
+    "download-finished-catalog": "Plik pobrany do katalogu {{catalog}}.",
     "already-downloading": "Plik jest pobierany."
   }
 }
