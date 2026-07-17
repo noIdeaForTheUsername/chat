@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { notificationStrings } from './strings';
 import { LoggingService } from 'src/shared/logging/app-logger';
-import { StringTemplate as StringTemplate } from './string-params';
+import { StringTemplate as StringTemplate } from './string-template';
 
 @Injectable()
 export class StringsService {
@@ -29,8 +29,8 @@ export class StringsService {
   Example: "accountCreatedMessage: $", ["Alice"] -> "New account created: Alice"
   */
   getFromTemplate(stringTemplate: StringTemplate, language: 'pl' | 'en'): string {
-    let { schema, params } = stringTemplate;
-    let output = schema;
+    const { schema, params } = stringTemplate;
+    let output = "" + schema;
     const stringKeyRegex = /[a-zA-Z]+/g;
     
     for (const match of output.matchAll(stringKeyRegex)) {

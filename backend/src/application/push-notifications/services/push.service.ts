@@ -5,7 +5,8 @@ import { PushNotifcationEvent } from "src/shared/events/push-notification.event"
 import { FcmService } from "./fcm.service";
 import { WebPushService } from "./web-push.service";
 import { StringsService } from "src/application/shared/strings/strings.service";
-import { StringTemplate } from "src/application/shared/strings/string-params";
+import { StringTemplate } from "src/application/shared/strings/string-template";
+import { LoggingService } from "src/shared/logging/app-logger";
 
 // PushService is the orchestrator while Fcm and WebPush services actually send the notifications
 
@@ -18,7 +19,8 @@ export class PushService {
     private sessionsService: SessionsService,
     private webPushService: WebPushService,
     private fcmService: FcmService,
-    private strings: StringsService
+    private strings: StringsService,
+    private logger: LoggingService,
   ) {}
 
 
@@ -33,25 +35,24 @@ export class PushService {
     const sessions = await this.sessionsService.getUserSessions(payload.userId);
     for (const session of sessions) {
       const normalizedLang = this.strings.getNormalizedLang(session.language);
-      payload.header = this.normalizeString(payload.header, normalizedLang);
-      payload.message = this.normalizeString(payload.message, normalizedLang);
+      const normalizedHeader = this.normalizeString(payload.header, normalizedLang);
+      const normalizedMessage = this.normalizeString(payload.message, normalizedLang);
 
       if (session.pushSubscription) {
-        console.log("performing sendNotification for user", payload.userId, "session", session.sid);
-        this.webPushService.sendNotification(session, payload.header, payload.message,
+        this.webPushService.sendNotification(session, normalizedHeader, normalizedMessage,
           normalizedLang, this.notificationTTL, payload.tag);
       }
       else if (session.fcmToken) {
-        this.fcmService.sendNotification(session, payload.header, payload.message,
+        this.fcmService.sendNotification(session, normalizedHeader, normalizedMessage,
           normalizedLang, this.notificationTTL, payload.tag);
       }
     }
   }
 
-  private normalizeString(stringOrStringParams: string | StringTemplate, language: 'pl' | 'en'): string {
-    if (typeof stringOrStringParams === "object") {
-      return this.strings.getFromTemplate(stringOrStringParams, language);
+  private normalizeString(stringOrTemplate: string | StringTemplate, language: 'pl' | 'en'): string {
+    if (typeof stringOrTemplate === "object") {
+      return this.strings.getFromTemplate(stringOrTemplate, language);
     }
-    return stringOrStringParams;
+    return stringOrTemplate;
   }
 }

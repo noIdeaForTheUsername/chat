@@ -1,4 +1,4 @@
-import { StringTemplate } from "src/application/shared/strings/string-params";
+import { StringTemplate } from "src/application/shared/strings/string-template";
 
 
 export class PushNotifcationEvent {

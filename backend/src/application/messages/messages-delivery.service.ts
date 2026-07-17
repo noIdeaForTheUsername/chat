@@ -6,7 +6,7 @@ import { FilesSentEvent } from "src/shared/events/messages/files-sent.event";
 import { MessageDeletedEvent } from "src/shared/events/messages/message-deleted.event";
 import { MessageSentEvent } from "src/shared/events/messages/message-sent.event";
 import { PushNotifcationEvent } from "src/shared/events/push-notification.event";
-import { StringTemplate } from "../shared/strings/string-params";
+import { StringTemplate } from "../shared/strings/string-template";
 import { MessagesGateway } from "./messages.gateway";
 
 // Coordinates message delivery via WebSockets and push notifications
@@ -71,7 +71,7 @@ export class MessagesDeliveryService {
         // Create notification message
         const senderName = profile.nick || profile.name || profile.phoneNumber;
         const notificationMessage = { schema: "$: filesSentMessage ($) 📄", params: [senderName, payload.filesInfo.length] };
-        this.sendPush(receiverId, payload.conversationId, notificationMessage);
+        await this.sendPush(receiverId, payload.conversationId, notificationMessage);
       }
     }
   }

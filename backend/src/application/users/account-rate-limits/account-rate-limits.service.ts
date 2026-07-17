@@ -1,7 +1,7 @@
 import { HttpException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { ActionsThrottlerService } from "src/application/shared/actions-rate-limiting/actions-throttler.service";
-import { StringTemplate } from "src/application/shared/strings/string-params";
+import { StringTemplate } from "src/application/shared/strings/string-template";
 import { StringsService } from "src/application/shared/strings/strings.service";
 import { AccountsDomainService } from "src/domain/accounts/accounts.service";
 import { SessionEntity } from "src/domain/session/entity/session.entity";

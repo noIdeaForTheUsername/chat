@@ -120,7 +120,6 @@ export class AccountsService {
         header: { schema: "accountActivatedHeader" },
         message: { schema: "accountActivatedMessage" },
         tag: "account-activation",
-        // clickUrl: "/chats"
       };
       this.logger.securityLog(
         `Admin id=${callerAdminId} has activated account id=${changedUserId}`,
