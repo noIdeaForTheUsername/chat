@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { LoadingIndicator } from "@src/app/loading/loading-indicator-component/loading-indicator.component";
 import { Router } from '@angular/router';
 import { PasswordStrengthComponent } from "@src/app/auth/password-strength/password-strength.component";
-import { passwordsValidatorOptional } from '@src/app/shared/inputs/form-utils';
+import { passwordsValidatorOptional, phoneNumberRegex } from '@src/app/shared/inputs/form-utils';
 
 @Component({
   selector: 'app-account-settings',
@@ -79,7 +79,7 @@ export class AccountSettingsPage implements OnInit {
   protected form = new FormGroup({
     currentPassword: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email]),
-    phoneNumber: new FormControl('+48 ', [Validators.pattern(/^[+][0-9 ]*$/)]),
+    phoneNumber: new FormControl('+48 ', [Validators.pattern(phoneNumberRegex)]),
     // passwords optional when both empty — validator enforces requirements/match conditionally
     password: new FormControl('', { nonNullable: true }),
     passwordRepeat: new FormControl('', { nonNullable: true }),

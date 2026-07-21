@@ -5,8 +5,7 @@ export class ModifyAccountDto {
   @IsOptional()
   @IsPhoneNumber()
   @NormalizePhone()
-  @MaxLength(13)
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @IsString()
   @MaxLength(100)

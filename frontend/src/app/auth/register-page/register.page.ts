@@ -9,7 +9,7 @@ import { IonButton, IonButtons, IonContent } from '@ionic/angular/standalone';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
 import { PasswordStrengthComponent } from "../password-strength/password-strength.component";
-import { passwordsValidator } from '@src/app/shared/inputs/form-utils';
+import { passwordsValidator, phoneNumberRegex } from '@src/app/shared/inputs/form-utils';
 
 
 
@@ -23,8 +23,6 @@ import { passwordsValidator } from '@src/app/shared/inputs/form-utils';
 })
 export class RegisterPage {
 
-  private readonly REQUIRED_PASSWORD_LENGTH = 10;
-
   protected auth = inject(AuthService);
   private alertService = inject(AlertService);
   protected translate = inject(TranslateService);
@@ -33,7 +31,7 @@ export class RegisterPage {
 
   form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    phoneNumber: new FormControl('+48 ', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\+[0-9 ]+$/)] }),
+    phoneNumber: new FormControl('+48 ', { nonNullable: true, validators: [Validators.required, Validators.pattern(phoneNumberRegex)] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     passwordRepeat: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     bio: new FormControl(''),

@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '@app/auth/auth.service';
 import { LanguageButtonComponent } from "@src/app/i18n/language-button/language-button.component";
+import { phoneNumberRegex } from '@src/app/shared/inputs/form-utils';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +32,7 @@ export class LoginPage {
   // protected displayBackButton = computed(() => this.authService.getUserId() !== null);
 
   loginForm = new FormGroup({
-    phoneNumber: new FormControl('+48 ', { nonNullable: true, validators: [Validators.required, Validators.pattern(/^\+[0-9 ]+$/)] }),
+    phoneNumber: new FormControl('+48 ', { nonNullable: true, validators: [Validators.required, Validators.pattern(phoneNumberRegex)] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 

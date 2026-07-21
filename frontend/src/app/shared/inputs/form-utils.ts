@@ -33,3 +33,5 @@ export function passwordsValidatorOptional(control: AbstractControl): Validation
   return ((password.length === 0 && passwordRepeat.length === 0)
     || (strongPassword && passwordsMatch)) ? null : { passwordInvalid: true };
 }
+
+export const phoneNumberRegex = /^\+(?=(?:[\s-]*\d){1,15}[\s-]*$)[1-9][\d\s-]*$/;
