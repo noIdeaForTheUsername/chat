@@ -12,10 +12,11 @@ import { NotBlockingParticipantsModule } from '../shared/not-blocking-participan
 import { LoggingModule } from 'src/shared/logging/logging.module';
 import { FilesDomainService } from 'src/domain/files/files.service';
 import { LoggingService } from 'src/shared/logging/app-logger';
+import { FilesCleanupService } from './services/files-cleanup.service';
 
 @Module({
   controllers: [FilesController],
-  providers: [FilesService, FileTypesService, FilesStorageService],
+  providers: [FilesService, FileTypesService, FilesStorageService, FilesCleanupService],
   imports: [
     MessagesModule,
     ConversationsDomainModule,
@@ -25,9 +26,8 @@ import { LoggingService } from 'src/shared/logging/app-logger';
     MulterModule.registerAsync({
       imports: [ConfigModule, FilesDomainModule, LoggingModule],
       inject: [ConfigService, FilesDomainService, LoggingService],
-      useFactory: async (configService: ConfigService,
-      filesDomainService: FilesDomainService, loggingService: LoggingService) => ({
-        storage: new FilesStorageService(configService, filesDomainService, loggingService).getMulterFileDiskStorage(),
+      useFactory: async (configService: ConfigService, loggingService: LoggingService) => ({
+        storage: new FilesStorageService(configService, loggingService).getMulterFileDiskStorage(),
         limits: {
           files: FilesStorageService.filesPerMessageLimit,
           fileSize: FilesStorageService.fileSizeLimitBytes

@@ -4,8 +4,6 @@ import { randomUUID } from "crypto";
 import multer from 'multer';
 import fs, { createReadStream } from 'fs';
 import path, { basename } from "path";
-import { Cron, CronExpression } from "@nestjs/schedule";
-import { FilesDomainService } from "src/domain/files/files.service";
 import { LoggingService } from "src/shared/logging/app-logger";
 import { isUUID } from "class-validator";
 
@@ -16,12 +14,10 @@ export class FilesStorageService {
   public readonly uploadsDirectory: string;
   public static readonly fileSizeLimitBytes = 1024 ** 3; // 1 GB
   public static readonly filesPerMessageLimit = 30;
-  private readonly filesMaxUploadTimeMs = 1000 * 3600 * 24;
-  private readonly unuploadedFilePrefix = 'unuploaded-';
+  public readonly unuploadedFilePrefix = 'unuploaded-';
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly filesDomainService: FilesDomainService,
     private readonly logger: LoggingService
   ) {
     this.uploadsDirectory = this.configService.getOrThrow("files.uploadsDirectory");
@@ -61,60 +57,21 @@ export class FilesStorageService {
     return new StreamableFile(file);
   }
 
-  async deleteFileFromDisk(fileUuid: string) {
+  public async deleteFileFromDiskByUuid(fileUuid: string) {
+    let pathName = await this.getExistingFilePath(fileUuid);
+    await this.deleteFileFromDiskByPath(pathName);
+  }
+
+  public async deleteFileFromDiskByPath(path: string) {
     try {
-      let pathName = await this.getExistingFilePath(fileUuid);
-      await fs.promises.unlink(pathName);
+      await fs.promises.unlink(path);
     }
     catch (err) {
       if (err.code === 'ENOENT')
         return;  // ignore, file already gone
       else
-        this.logger.error(`Failed to delete file with UUID ${fileUuid} from disk. Error: ${err}`, "FilesStorageService");
+        throw err;
     }
-  }
-
-  @Cron(CronExpression.EVERY_8_HOURS)
-  private async deleteFilesWithoutDatabaseInfo() {
-    this.logger.log("Starting uploads cleanup job. Files in the uploads directory that"
-      + " don't have database info will be deleted.", "FilesStorageService");
-
-    const allDatabaseFilesUuids = new Set<string>((
-      await this.filesDomainService.getAllFilesUuids()).map((entity) => entity.uuid
-    ));
-    const fileNames = await fs.promises.readdir(this.uploadsDirectory);
-
-    let deletions: Promise<any>[] = [];
-    for (const fileName of fileNames) {
-
-      if (await this.getFileBeingUploaded(fileName))
-        continue;
-
-      const fileSystemUuid = this.fileNameToUuid(fileName);
-      if (allDatabaseFilesUuids.has(fileSystemUuid))
-        continue;
-
-      deletions.push(this.deleteFileFromDisk(fileSystemUuid));
-      if (deletions.length >= 100) {
-        await Promise.allSettled(deletions);
-        deletions = [];
-      }
-    }
-    if (deletions.length > 0)
-      await Promise.allSettled(deletions);
-
-    this.logger.log("Uploads cleanup job completed.", "FilesStorageService");
-  }
-
-  private async getFileBeingUploaded(fileName: string): Promise<boolean> {
-    if (fileName.startsWith(this.unuploadedFilePrefix)) {
-      const fileCreatedAt = (await fs.promises.stat(path.join(this.uploadsDirectory, fileName))).mtimeMs;
-      const fileAge = Date.now() - fileCreatedAt;
-      if (fileAge < this.filesMaxUploadTimeMs) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private async getExistingFilePath(uuid: string): Promise<string> {

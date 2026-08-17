@@ -92,8 +92,8 @@ export class FilesService {
     let deletions: Promise<any>[] = [
       this.domainService.deleteMessageFilesInfo(payload.message.globalId)
     ];
-    deletions.push(...fileInfos.map(fileInfo => this.storage.deleteFileFromDisk(fileInfo.uuid)));
-    await Promise.allSettled(deletions);
+    deletions.push(...fileInfos.map(fileInfo => this.storage.deleteFileFromDiskByUuid(fileInfo.uuid)));
+    await Promise.allSettled(deletions);  // ignores errors because FilesCleanupService exists
   }
 
   @OnEvent("conversationCleared")
