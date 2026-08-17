@@ -16,7 +16,7 @@ export class FilesCleanupService {
     private readonly filesDomainService: FilesDomainService
   ) { }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_8_HOURS)
   private async tryDeleteFilesWithoutDatabaseInfo() {
     this.logger.log("Starting uploads cleanup job. Files in the uploads directory that"
       + " don't have database info will be deleted.", "FilesCleanupService");
